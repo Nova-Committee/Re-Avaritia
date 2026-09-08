@@ -146,7 +146,8 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(ExtremeCraftScreen.class, 174, 90, 22, 12, ExtremeCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeSmithingScreen.class, 86, 40, 22, 12, ExtremeSmithingRecipeCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeAnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
-        registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler());
+        registration.addGenericGuiContainerHandler(committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen.class, new JeiContainerHandler<>());
+        registration.addGenericGuiContainerHandler(committee.nova.mods.avaritia.client.screen.BaseContainerScreen.class, new JeiContainerHandler<>());
     }
 
     @Override

@@ -1,11 +1,16 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -200,27 +205,41 @@ public class AvaritiaConfigScreen extends Screen {
     protected void init() {
         super.init();
         clearWidgets();
-
-        resetButton = addRenderableWidget(Button.builder(Component.translatable("controls.reset"), btn -> {
+        resetButton = addRenderableWidget(UiInspector.name(Button.builder(Component.translatable("controls.reset"), btn -> {
             resetToDefaults();
             updateWidgetValues();
             ModConfig.save();
-        }).bounds(width / 2 - 102, height - 30, 100, 20).build());
-
-        backButton = addRenderableWidget(Button.builder(Component.translatable("gui.back"), btn -> {
+        }).bounds(width / 2 - 102, height - 30, 100, 20).build(), "config.reset"));
+        backButton = addRenderableWidget(UiInspector.name(Button.builder(Component.translatable("gui.back"), btn -> {
             ModConfig.save();
             minecraft.setScreen(parent);
-        }).bounds(width / 2 + 2, height - 30, 100, 20).build());
+        }).bounds(width / 2 + 2, height - 30, 100, 20).build(), "config.back"));
+        for (ConfigEntry<?> entry : configEntries) {
+            entry.initWidgets(this, MARGIN, START_Y, width - 2 * MARGIN);
+        }
+        repositionEntries();
+    }
 
+    private void repositionEntries() {
+        int viewportTop = START_Y;
+        int viewportBottom = height - 40;
         for (int i = 0; i < configEntries.size(); i++) {
             ConfigEntry<?> entry = configEntries.get(i);
-            int x = MARGIN;
             int y = START_Y + i * ENTRY_HEIGHT - scrollOffset;
-            if (y + ENTRY_HEIGHT > START_Y && y < height - 40) {
-                entry.initWidgets(this, x, y, width - 2 * MARGIN);
+            AbstractWidget control = entry.control();
+            if (control != null) {
+                boolean fullyVisible = y >= viewportTop && y + ENTRY_HEIGHT <= viewportBottom;
+                if (control.isFocused() && !fullyVisible) {
+                    control.setFocused(false);
+                }
+                control.visible = fullyVisible;
+                control.active = fullyVisible;
+                control.setX(width - MARGIN - 100);
+                control.setY(y + 10);
             }
         }
     }
+
 
     private void updateWidgetValues() {
         for (ConfigEntry<?> entry : configEntries) {
@@ -237,7 +256,7 @@ public class AvaritiaConfigScreen extends Screen {
             if (Math.abs(scrollVelocity) < MIN_VELOCITY) {
                 scrollVelocity = 0;
             }
-            init();
+            repositionEntries();
         }
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
@@ -276,7 +295,7 @@ public class AvaritiaConfigScreen extends Screen {
         lastScrollTime = currentTime;
         int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
         scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollDelta));
-        init();
+        repositionEntries();
         return true;
     }
 
@@ -291,7 +310,7 @@ public class AvaritiaConfigScreen extends Screen {
                 double clickPosition = (event.y() - START_Y) / scrollbarHeight;
                 scrollOffset = (int) (clickPosition * maxOffset);
                 scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
-                init();
+                repositionEntries();
                 isDraggingScrollbar = true;
                 return true;
             }
@@ -307,7 +326,7 @@ public class AvaritiaConfigScreen extends Screen {
             double positionRatio = (event.y() - START_Y - (double) scrollbarHandleHeight / 2) / (scrollbarHeight - scrollbarHandleHeight);
             scrollOffset = (int) (positionRatio * maxOffset);
             scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
-            init();
+            repositionEntries();
             return true;
         }
         return super.mouseDragged(event, dragX, dragY);
@@ -346,6 +365,9 @@ public class AvaritiaConfigScreen extends Screen {
 
         abstract void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width);
         abstract void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font);
+        AbstractWidget control() {
+            return null;
+        }
         abstract void updateWidgetValue();
 
         void updateValue(T newValue) {
@@ -417,6 +439,11 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
+        AbstractWidget control() {
+            return checkBox;
+        }
+
+        @Override
         void updateWidgetValue() {
             if (checkBox != null) {
                 currentValue = valueSupplier.get();
@@ -470,6 +497,11 @@ public class AvaritiaConfigScreen extends Screen {
             for (int i = 0; i < wrappedDesc.size(); i++) {
                 graphics.text(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xFFAAAAAA);
             }
+        }
+
+        @Override
+        AbstractWidget control() {
+            return editBox;
         }
 
         @Override

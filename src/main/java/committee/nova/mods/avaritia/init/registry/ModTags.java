@@ -42,4 +42,7 @@ public class ModTags {
     public static final TagKey<Block> INCORRECT_FOR_INFINITY_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "incorrect_for_infinity_tool"));
 
     public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", "neutral_creatures"));
+    public static final TagKey<EntityType<?>> INFINITY_BUCKET_AQUATIC = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_bucket_aquatic"));
+    public static final TagKey<EntityType<?>> INFINITY_BUCKET_BOSSES = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_bucket_bosses"));
+    public static final TagKey<EntityType<?>> INFINITY_BUCKET_CAPTURING_NOT_SUPPORTED = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_bucket_capturing_not_supported"));
 }

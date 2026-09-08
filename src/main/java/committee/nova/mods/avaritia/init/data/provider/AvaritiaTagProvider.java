@@ -86,7 +86,7 @@ public class AvaritiaTagProvider implements DataProvider {
                         ModItems.infinity_boots.get()
                 );
 
-                tag(ModTags.CURIOS_RING).add(ModItems.neutron_ring.get());
+                tag(ModTags.CURIOS_RING).add(ModItems.neutron_ring.get(), ModItems.infinity_ring.get());
                 tag(ModTags.CURIOS_CHARM).add(ModItems.infinity_totem.get());
                 tag(ModTags.CURIOS_BACK).add(ModItems.infinity_elytra.get());
 

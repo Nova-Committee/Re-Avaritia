@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.container.InfinityChestContainer;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPacket;
@@ -8,10 +9,10 @@ import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPacke
 import committee.nova.mods.avaritia.common.net.chest.ChannelAction;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -29,11 +30,15 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_BUTTON_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_BUTTON_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_TEXTURE_Y;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_HEIGHT;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_WIDTH;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_X;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_Y;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_TEXTURE_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.lockTextureX;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.sortTextureX;
 
 /** 无尽箱 15×7 虚拟库存界面。 */
@@ -49,7 +54,6 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
     private static final int LEGACY_PLAYER_SECTION_Y = 178;
 
     private EditBox searchBox;
-    private Button lockButton;
     private final WidgetSprites legacyButtonSprites = new WidgetSprites(TEXTURE, TEXTURE);
     private boolean draggingScrollbar;
     private ItemResource lastDragged = ItemResource.EMPTY;
@@ -72,17 +76,14 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
             menu.setFilterFromClient(value);
             NetworkHandler.sendToServer(new C2SInfinityChestFilterPacket(menu.containerId, value));
         });
-        addRenderableWidget(searchBox);
+        addRenderableWidget(UiInspector.name(searchBox, "chest.search"));
 
-        lockButton = addRenderableWidget(Button.builder(lockText(), button -> {
-            menu.toggleLockClient();
-            button.setMessage(lockText());
-            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
-        }).bounds(leftPos + 231, topPos + 151, 17, 18).build());
-        lockButton.active = menu.getOwner().equals(minecraft.player.getUUID());
+        addRenderableWidget(UiInspector.name(
+                new LegacyLockButton(leftPos + LOCK_BUTTON_X, topPos + LOCK_BUTTON_Y), "chest.lock"));
 
-        addRenderableWidget(new LegacySortButton(leftPos + SORT_BUTTON_X, topPos + SORT_BUTTON_Y));
+        addRenderableWidget(UiInspector.name(new LegacySortButton(leftPos + SORT_BUTTON_X, topPos + SORT_BUTTON_Y), "chest.sort"));
     }
+
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
@@ -229,7 +230,9 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         int handleY = y + (int) Math.round(menu.getChestContainer().getScroll() * (SCROLLBAR_HEIGHT - handleHeight));
         graphics.fill(x + 2, handleY, x + SCROLLBAR_WIDTH - 2, handleY + handleHeight,
                 menu.getChestContainer().canScroll() ? 0xFFC0C0C0 : 0xFF707070);
+        UiInspector.region("chest.scrollbar", x, y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT, null, menu.getChestContainer().canScroll());
     }
+
 
     private int scrollbarHandleHeight() {
         int variants = menu.getChestContainer().totalVariants();
@@ -254,8 +257,20 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         return slot != null && menu.virtualIndex(slot) >= 0;
     }
 
-    private Component lockText() {
-        return Component.literal(menu.isLocked() ? "L" : "U");
+    private void toggleLock() {
+        if (minecraft.player == null || !menu.getOwner().equals(minecraft.player.getUUID())) {
+            return;
+        }
+        menu.toggleLockClient();
+        searchBox.setFocused(false);
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
+    }
+
+    private String ownerDisplayName() {
+        if (minecraft.player != null && menu.getOwner().equals(minecraft.player.getUUID())) {
+            return minecraft.player.getGameProfile().name();
+        }
+        return menu.getOwner().toString();
     }
 
     private void cycleSort() {
@@ -282,6 +297,24 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
                 com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
                 || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
                 com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
+    }
+
+    private final class LegacyLockButton extends ImageButton {
+        private LegacyLockButton(int x, int y) {
+            super(x, y, SORT_BUTTON_WIDTH, SORT_BUTTON_HEIGHT, legacyButtonSprites,
+                    ignored -> toggleLock());
+        }
+
+        @Override
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            int textureY = LOCK_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
+                    lockTextureX(menu.isLocked()), textureY,
+                    width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+            setTooltip(Tooltip.create(menu.isLocked()
+                    ? Component.translatable("gui.avaritia.owner", "§c" + ownerDisplayName())
+                    : Component.translatable("gui.avaritia.public")));
+        }
     }
 
     private final class LegacySortButton extends ImageButton {

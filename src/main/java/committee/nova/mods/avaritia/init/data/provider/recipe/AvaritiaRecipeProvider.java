@@ -516,6 +516,15 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('d', ModItems.endest_pearl.get())
                         .put('e', ModItems.infinity_catalyst.get()),
                 "has_end_crafting_table", has(ModBlocks.end_crafting_table.get()), "neutron_ring");
+        extremeShaped(output, RecipeCategory.MISC, ModItems.infinity_ring.get(), 4,
+                new String[]{"  aaaaa  ", " accccca ", "ac bbb ca", "acb d bca", "acbdedbca", "acb d bca", "ac bbb ca", " accccca ", "  aaaaa  "},
+                keyMap()
+                        .put('a', ModItems.infinity_ingot.get())
+                        .put('b', ModItems.neutron_ingot.get())
+                        .put('c', ModItems.crystal_matrix_ingot.get())
+                        .put('d', ModItems.endest_pearl.get())
+                        .put('e', ModItems.neutron_ring.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_ring");
         extremeShaped(output, RecipeCategory.MISC, ModItems.record_fragment.get(), 4, 3,
                 new String[]{"       ", "       ", "   a   ", "  aba  ", "   a   ", "       ", "       "},
                 keyMap().put('a', ModItems.neutron_pile.get()).put('b', tagIngredient("music_discs")),

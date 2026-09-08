@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.misc.NeutronHorseArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingDimensions;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -70,16 +71,20 @@ public class AbilityHandler {
 
     private static void handleChestStateChange(Player player, String key, boolean hasChest) {
         boolean isFlyingGameMode = !PlayerUtils.isPlayingMode(player);
+        boolean personalFlight = InfinityRingDimensions.isPersonal(player.level());
         FlightInfo flightInfo = entitiesWithFlight.computeIfAbsent(key, uuid -> new FlightInfo());
-        if (isFlyingGameMode || hasChest) {
+        if (isFlyingGameMode || hasChest || personalFlight) {
+            boolean ownedSource = hasChest || personalFlight;
             if (!flightInfo.hadFlightItem) {
-                if (!player.getAbilities().mayfly) {
+                if (ownedSource && !player.getAbilities().mayfly) {
                     updateClientServerFlight(player, true);
+                    flightInfo.grantedByUs = true;
                 }
                 flightInfo.hadFlightItem = true;
-            } else if (flightInfo.wasFlyingGameMode && !isFlyingGameMode) {
+            } else if (flightInfo.wasFlyingGameMode && !isFlyingGameMode && ownedSource) {
                 updateClientServerFlight(player, true, flightInfo.wasFlying);
-            } else if (flightInfo.wasFlyingAllowed && !player.getAbilities().mayfly) {
+                flightInfo.grantedByUs = true;
+            } else if (flightInfo.grantedByUs && flightInfo.wasFlyingAllowed && !player.getAbilities().mayfly && ownedSource) {
                 updateClientServerFlight(player, true, flightInfo.wasFlying);
             }
             flightInfo.wasFlyingGameMode = isFlyingGameMode;
@@ -93,10 +98,11 @@ public class AbilityHandler {
             }
         } else {
             if (flightInfo.hadFlightItem) {
-                if (player.getAbilities().mayfly) {
+                if (flightInfo.grantedByUs && player.getAbilities().mayfly) {
                     updateClientServerFlight(player, false);
                 }
                 flightInfo.hadFlightItem = false;
+                flightInfo.grantedByUs = false;
             }
             flightInfo.wasFlyingGameMode = false;
             flightInfo.wasFlying = player.getAbilities().flying;
@@ -199,7 +205,6 @@ public class AbilityHandler {
 
     @SubscribeEvent
     public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
-        stripAbilities(event.getEntity());
         reapplyFly(event.getEntity());
     }
 
@@ -260,6 +265,7 @@ public class AbilityHandler {
 
     public static class FlightInfo {
         public boolean hadFlightItem;
+        public boolean grantedByUs;
         public boolean wasFlyingGameMode;
         public boolean wasFlyingAllowed;
         public boolean wasFlying;

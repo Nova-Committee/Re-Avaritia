@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -10,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -28,6 +31,8 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     private Button lockButton;
     private Button ejectButton;
     private Button configButton;
+    private ScreenRectangle material;
+    private ScreenRectangle progress;
 
     public NeutronCompressorScreen(NeutronCompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, ScreenTextures.NEUTRON_COMPRESSOR);
@@ -38,16 +43,12 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         super.init();
         int x = this.leftPos;
         int y = this.topPos;
+        material = PortableLayout.translate(new ScreenRectangle(63, 35, 17, 16), x, y);
+        progress = PortableLayout.translate(new ScreenRectangle(89, 35, 23, 16), x, y);
 
-        // 添加锁定按钮
-        this.lockButton =  new LockButton(x + 40, y + 55);
-
-        // 添加弹出按钮
-        this.ejectButton = new EjectButton(x + 40, y + 20);
-
-        // 添加配置按钮
-        this.configButton = new SideConfigButton(this, x - 20, y);
-
+        this.lockButton = UiInspector.name(new LockButton(x + 40, y + 55), "compressor.lock");
+        this.ejectButton = UiInspector.name(new EjectButton(x + 40, y + 20), "compressor.eject");
+        this.configButton = UiInspector.name(new SideConfigButton(this, x - 20, y), "compressor.config");
         this.addRenderableWidget(this.lockButton);
         this.addRenderableWidget(this.ejectButton);
         this.addRenderableWidget(this.configButton);
@@ -128,11 +129,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
     @Override
     protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        int x = this.leftPos;
-        int y = this.topPos;
-
-        // 原有的材料提示
-        if (pMouseX > x + 63 && pMouseX < x + 79 && pMouseY > y + 35 && pMouseY < y + 51) {
+        if (PortableLayout.contains(material, pMouseX, pMouseY)) {
             List<Component> tooltip = new ArrayList<>();
 
             if (this.getMaterialCount() < 1) {
@@ -164,20 +161,19 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
     @Override
     protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
-        int x = this.leftPos;
-        int y = this.topPos;
-
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
-                int i2 = this.getMaterialBarScaled(16);
-                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, x + 63, y + 35, 176, 18, i2 + 1, 16, 256, 256);
+                int filled = this.getMaterialBarScaled(material.width() - 1);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, material.left(), material.top(), 176, 18, filled + 1, material.height(), 256, 256);
             }
 
             if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
-                int i2 = this.getProgressBarScaled(22);
-                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, x + 89, y + 35, 176, 0, i2 + 1, 16, 256, 256);
+                int filled = this.getProgressBarScaled(progress.width() - 1);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, progress.left(), progress.top(), 176, 0, filled + 1, progress.height(), 256, 256);
             }
         }
+        UiInspector.region("compressor.material", material, null, true);
+        UiInspector.region("compressor.progress", progress, null, false);
     }
 
     private Component getMaterialStackDisplayName() {

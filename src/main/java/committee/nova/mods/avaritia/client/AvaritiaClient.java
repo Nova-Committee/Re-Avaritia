@@ -37,12 +37,14 @@ import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityChestScreen;
+import committee.nova.mods.avaritia.client.screen.InfinityBucketScreen;
+import committee.nova.mods.avaritia.client.screen.InfinityRingControlScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityClockScreen;
 import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
 import committee.nova.mods.avaritia.client.screen.TesseractScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCollectorScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
-import committee.nova.mods.avaritia.client.screen.NeutronRingScreen;
+import committee.nova.mods.avaritia.client.screen.NeutronRingManageScreen;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
@@ -52,6 +54,7 @@ import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPacket;
+import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -278,19 +281,23 @@ public class AvaritiaClient {
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
+        ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.updateDimensions = InfinityRingControlScreen::applyKnownLevels;
+        ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
+        ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
         event.register(ModMenus.extreme_crafting_table.get(), ExtremeCraftScreen::new);
         event.register(ModMenus.nether_crafting_tile_table.get(), NetherCraftScreen::new);
         event.register(ModMenus.end_crafting_tile_table.get(), EndCraftScreen::new);
         event.register(ModMenus.sculk_crafting_tile_table.get(), SculkCraftScreen::new);
         event.register(ModMenus.neutron_collector.get(), NeutronCollectorScreen::new);
         event.register(ModMenus.neutron_compressor.get(), NeutronCompressorScreen::new);
-        event.register(ModMenus.neutron_ring.get(), NeutronRingScreen::new);
         event.register(ModMenus.extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         event.register(ModMenus.extreme_anvil.get(), ExtremeAnvilScreen::new);
         event.register(ModMenus.infinity_chest.get(), InfinityChestScreen::new);
         event.register(ModMenus.tesseract.get(), TesseractScreen::new);
         event.register(ModMenus.tesseract_channel.get(), TesseractChannelScreen::new);
         event.register(ModMenus.infinity_clock_menu.get(), InfinityClockScreen::new);
+        event.register(ModMenus.infinity_bucket.get(), InfinityBucketScreen::new);
         event.register(ModMenus.GENERIC_9x27.get(), CompressedChestScreen::new);
     }
 

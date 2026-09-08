@@ -39,9 +39,9 @@ public class ModItems {
     private static boolean blockItemsRegistered = false;
 
     // curios
-    public static final DeferredItem<Item> neutron_ring = item("neutron_ring", id -> new NeutronRingItem(), false);
+    public static final DeferredItem<Item> neutron_ring = item("neutron_ring", id -> new NeutronRingItem());
     public static final DeferredItem<Item> infinity_totem = item("infinity_totem", id -> new InfinityTotemItem());
-    public static final DeferredItem<Item> infinity_ring = item("infinity_ring", id -> new InfinityRingItem(), false);
+    public static final DeferredItem<Item> infinity_ring = item("infinity_ring", id -> new InfinityRingItem());
     public static final DeferredItem<Item> infinity_umbrella = item("infinity_umbrella", id -> new InfinityUmbrellaItem());
     public static final DeferredItem<Item> infinity_clock = item("infinity_clock", id -> new InfinityClockItem());
     public static final DeferredItem<Item> side_config_card = item("side_config_card", id -> new SideConfigurationCardItem());

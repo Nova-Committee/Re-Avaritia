@@ -6,14 +6,20 @@ import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
 import committee.nova.mods.avaritia.common.component.CrystalSpearCooldown;
 import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
-import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
+import committee.nova.mods.avaritia.common.component.InfinityBucketContents;
+import committee.nova.mods.avaritia.common.component.InfinityBucketControl;
+import committee.nova.mods.avaritia.common.component.InfinityBucketCreatures;
+import committee.nova.mods.avaritia.common.component.InfinityBucketFluids;
+import committee.nova.mods.avaritia.common.component.NeutronRingContents;
 import committee.nova.mods.avaritia.common.component.InfinityChestReference;
+import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
 import committee.nova.mods.avaritia.common.component.SpearTargetReference;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -86,6 +92,47 @@ public class ModDataComponents {
                     .cacheEncoding()
                     .build()
     );
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<InfinityBucketContents>> INFINITY_BUCKET = DATA_COMPONENTS.register(
+            "infinity_bucket",
+            () -> DataComponentType.<InfinityBucketContents>builder()
+                    .persistent(InfinityBucketContents.CODEC)
+                    .networkSynchronized(InfinityBucketContents.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<InfinityBucketFluids>> INFINITY_BUCKET_FLUIDS = DATA_COMPONENTS.register(
+            "infinity_bucket_fluids",
+            () -> DataComponentType.<InfinityBucketFluids>builder()
+                    .persistent(InfinityBucketFluids.CODEC)
+                    .networkSynchronized(InfinityBucketFluids.STREAM_CODEC)
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<InfinityBucketCreatures>> INFINITY_BUCKET_CREATURES = DATA_COMPONENTS.register(
+            "infinity_bucket_creatures",
+            () -> DataComponentType.<InfinityBucketCreatures>builder()
+                    .persistent(InfinityBucketCreatures.CODEC)
+                    .networkSynchronized(InfinityBucketCreatures.STREAM_CODEC)
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<InfinityBucketControl>> INFINITY_BUCKET_CONTROL = DATA_COMPONENTS.register(
+            "infinity_bucket_control",
+            () -> DataComponentType.<InfinityBucketControl>builder()
+                    .persistent(InfinityBucketControl.CODEC)
+                    .networkSynchronized(InfinityBucketControl.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<NeutronRingContents>> NEUTRON_RING = DATA_COMPONENTS.register(
+            "neutron_ring",
+            () -> DataComponentType.<NeutronRingContents>builder()
+                    .persistent(NeutronRingContents.CODEC)
+                    .networkSynchronized(NeutronRingContents.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> INFINITY_BUCKET_MENU_NONCE = DATA_COMPONENTS.register(
+            "infinity_bucket_menu_nonce",
+            () -> DataComponentType.<java.util.UUID>builder()
+                    .networkSynchronized(UUIDUtil.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+
+
 
 
 

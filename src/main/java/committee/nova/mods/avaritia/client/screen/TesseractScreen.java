@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
 import committee.nova.mods.avaritia.common.container.InfinityChestContainer;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -58,30 +60,30 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
         search.setMaxLength(64);
         search.setValue(menu.filter());
         search.setResponder(value -> menu.setFilterFromClient(value.toLowerCase(Locale.ROOT)));
-        addRenderableWidget(search);
+        addRenderableWidget(UiInspector.name(search, "tesseract.search"));
 
-        addLegacyButton(CONTROL_X, CRAFTING_TOGGLE_Y, CONTROL_SIZE, CONTROL_SIZE,
+        UiInspector.name(addLegacyButton(CONTROL_X, CRAFTING_TOGGLE_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> toggleTextureX(menu.isCraftingMode()), () -> CRAFTING_ICON_TEXTURE_Y, 1,
-                Component.translatable("gui.avaritia.tesseract.button.craft"));
-        addLegacyButton(CONTROL_X, LOCK_Y, CONTROL_SIZE, CONTROL_SIZE,
+                Component.translatable("gui.avaritia.tesseract.button.craft")), "tesseract.crafting");
+        UiInspector.name(addLegacyButton(CONTROL_X, LOCK_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> toggleTextureX(menu.isLocked()), () -> LOCK_ICON_TEXTURE_Y, 0,
-                Component.translatable("gui.avaritia.tesseract.button.lock"));
-        addLegacyButton(CONTROL_X, CHANNEL_Y, CONTROL_SIZE, CONTROL_SIZE,
+                Component.translatable("gui.avaritia.tesseract.button.lock")), "tesseract.lock");
+        UiInspector.name(addLegacyButton(CONTROL_X, CHANNEL_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> CHANNEL_ICON_TEXTURE_Y, 5,
-                Component.translatable("gui.avaritia.tesseract.button.channel"));
-        addLegacyButton(CONTROL_X, SORT_Y, CONTROL_SIZE, CONTROL_SIZE,
+                Component.translatable("gui.avaritia.tesseract.button.channel")), "tesseract.channel");
+        UiInspector.name(addLegacyButton(CONTROL_X, SORT_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> sortTextureY(menu.sortType()), -1,
-                Component.translatable("gui.avaritia.tesseract.button.sort"));
-        addLegacyButton(CONTROL_X, VIEW_Y, CONTROL_SIZE, CONTROL_SIZE,
+                Component.translatable("gui.avaritia.tesseract.button.sort")), "tesseract.sort");
+        UiInspector.name(addLegacyButton(CONTROL_X, VIEW_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> viewTextureY(menu.viewType()), 4,
-                Component.translatable("gui.avaritia.tesseract.button.view"));
+                Component.translatable("gui.avaritia.tesseract.button.view")), "tesseract.view");
 
-        craftingButtons.add(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_CHANNEL_Y,
-                CRAFT_TO_CHANNEL_TEXTURE_Y, 6, Component.translatable("gui.avaritia.tesseract.craft.channel_short")));
-        craftingButtons.add(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_INVENTORY_Y,
-                CRAFT_TO_INVENTORY_TEXTURE_Y, 10, Component.translatable("gui.avaritia.tesseract.craft.inventory_short")));
-        craftingButtons.add(addCraftButton(CRAFT_BUTTON_X, CRAFT_AND_DROP_Y,
-                CRAFT_AND_DROP_TEXTURE_Y, 14, Component.translatable("gui.avaritia.tesseract.craft.drop_short")));
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_CHANNEL_Y,
+                CRAFT_TO_CHANNEL_TEXTURE_Y, 6, Component.translatable("gui.avaritia.tesseract.craft.channel_short")), "tesseract.craft.channel"));
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_INVENTORY_Y,
+                CRAFT_TO_INVENTORY_TEXTURE_Y, 10, Component.translatable("gui.avaritia.tesseract.craft.inventory_short")), "tesseract.craft.inventory"));
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_AND_DROP_Y,
+                CRAFT_AND_DROP_TEXTURE_Y, 14, Component.translatable("gui.avaritia.tesseract.craft.drop_short")), "tesseract.craft.drop"));
         updateCraftingButtons();
     }
 
@@ -141,7 +143,9 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + slice.destinationY(),
                     0.0F, slice.sourceY(), imageWidth, slice.height(), TEXTURE_SIZE, TEXTURE_SIZE);
         }
+        UiInspector.region("tesseract.storage", new ScreenRectangle(leftPos, topPos, imageWidth, INVENTORY_LABEL_Y), null, true);
     }
+
 
     @Override
     protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {

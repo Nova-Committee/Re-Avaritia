@@ -74,6 +74,15 @@ public final class NetworkHandler {
                 new S2CChannelStatePack.Handler());
         registrar.playToClient(S2CInfinityChestStatePacket.TYPE, S2CInfinityChestStatePacket.STREAM_CODEC,
                 new S2CInfinityChestStatePacket.Handler());
+        registrar.playToClient(S2CInfinityRingOpenPack.TYPE, S2CInfinityRingOpenPack.STREAM_CODEC,
+                new S2CInfinityRingOpenPack.Handler());
+        registrar.playToClient(S2CUpdateDimensionsPack.TYPE, S2CUpdateDimensionsPack.STREAM_CODEC,
+                new S2CUpdateDimensionsPack.Handler());
+        registrar.playToClient(S2CNeutronRingOpenPack.TYPE, S2CNeutronRingOpenPack.STREAM_CODEC,
+                new S2CNeutronRingOpenPack.Handler());
+        registrar.playToClient(S2CNeutronRingPreviewPack.TYPE, S2CNeutronRingPreviewPack.STREAM_CODEC,
+                new S2CNeutronRingPreviewPack.Handler());
+
 
         // === 客户端 → 服务端 (C2S) ===
         registrar.playToServer(C2SCompressorEjectPacket.TYPE, C2SCompressorEjectPacket.STREAM_CODEC,
@@ -110,6 +119,11 @@ public final class NetworkHandler {
                 new C2SInfinityChestActionPacket.Handler());
         registrar.playToServer(C2SInfinityChestFilterPacket.TYPE, C2SInfinityChestFilterPacket.STREAM_CODEC,
                 new C2SInfinityChestFilterPacket.Handler());
+        registrar.playToServer(C2SInfinityRingPack.TYPE, C2SInfinityRingPack.STREAM_CODEC,
+                new C2SInfinityRingPack.Handler());
+        registrar.playToServer(C2SNeutronRingPack.TYPE, C2SNeutronRingPack.STREAM_CODEC,
+                new C2SNeutronRingPack.Handler());
+
 
         // === 双向 ===
         registrar.playBidirectional(NbtDataPacket.TYPE, NbtDataPacket.STREAM_CODEC,

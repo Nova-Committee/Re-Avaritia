@@ -47,6 +47,8 @@ public class AvaritiaLanguageProvider implements DataProvider {
         }
         addStorageTranslations(language, locale);
         addProjectETranslations(language, locale);
+        addInfinityBucketTranslations(language, locale);
+        addPortableUiTranslations(language, locale);
         return language;
     }
 
@@ -106,6 +108,159 @@ public class AvaritiaLanguageProvider implements DataProvider {
         language.addProperty("gui.avaritia.tesseract.craft.inventory_short", channelValues[12]);
         language.addProperty("gui.avaritia.tesseract.craft.drop_short", channelValues[13]);
     }
+
+    private static void addInfinityBucketTranslations(JsonObject language, String locale) {
+        String[] values = switch (locale) {
+            case "zh_cn" -> new String[]{
+                    "远海鲸吞之桶", "流体", "生物", "搜索", "当前：%s", "强制放置",
+                    "删除", "清空", "确认删除？", "确认清空？", "转移", "空", "%s：%s mB",
+                    "强制环境放置已开启", "生物：%s", "桶内数据过大，无法继续存入"
+            };
+            case "zh_tw" -> new String[]{
+                    "遠海鯨吞之桶", "流體", "生物", "搜尋", "目前：%s", "強制放置",
+                    "刪除", "清空", "確認刪除？", "確認清空？", "轉移", "空", "%s：%s mB",
+                    "強制環境放置已開啟", "生物：%s", "桶內資料過大，無法繼續存入"
+            };
+            case "ja_jp" -> new String[]{
+                    "インフィニティバケツ", "流体", "生物", "検索", "選択中: %s", "強制設置",
+                    "削除", "全消去", "削除しますか？", "全消去しますか？", "転送", "空", "%s: %s mB",
+                    "環境制限を無視して設置", "生物: %s", "容量超過のため格納できません"
+            };
+            case "uk_ua" -> new String[]{
+                    "Відро нескінченності", "Рідини", "Істоти", "Пошук", "Вибрано: %s", "Примусове розміщення",
+                    "Видалити", "Очистити", "Підтвердити видалення?", "Підтвердити очищення?", "Передати", "Порожньо", "%s: %s мВ",
+                    "Примусове розміщення ввімкнено", "Істота: %s", "Дані завеликі для збереження"
+            };
+            default -> new String[]{
+                    "Infinity Bucket", "Fluids", "Creatures", "Search", "Selected: %s", "Force Place",
+                    "Delete", "Clear", "Confirm delete?", "Confirm clear?", "Transfer", "Empty", "%s: %s mB",
+                    "Force environment placement on", "Creature: %s",
+                    "Bucket contents are too large to store"
+            };
+        };
+        language.addProperty("gui.avaritia.infinity_bucket.title", values[0]);
+        language.addProperty("gui.avaritia.infinity_bucket.fluids", values[1]);
+        language.addProperty("gui.avaritia.infinity_bucket.creatures", values[2]);
+        language.addProperty("gui.avaritia.infinity_bucket.search", values[3]);
+        language.addProperty("gui.avaritia.infinity_bucket.selected", values[4]);
+        language.addProperty("gui.avaritia.infinity_bucket.force", values[5]);
+        language.addProperty("gui.avaritia.infinity_bucket.delete", values[6]);
+        language.addProperty("gui.avaritia.infinity_bucket.clear", values[7]);
+        language.addProperty("gui.avaritia.infinity_bucket.confirm_delete", values[8]);
+        language.addProperty("gui.avaritia.infinity_bucket.confirm_clear", values[9]);
+        language.addProperty("gui.avaritia.infinity_bucket.transfer", values[10]);
+        language.addProperty("gui.avaritia.infinity_bucket.transfer.in", switch (locale) {
+            case "zh_cn" -> "从容器灌入桶中";
+            case "zh_tw" -> "從容器灌入桶中";
+            case "ja_jp" -> "容器からバケツへ";
+            case "uk_ua" -> "З контейнера у відро";
+            default -> "Fill bucket from container";
+        });
+        language.addProperty("gui.avaritia.infinity_bucket.transfer.out", switch (locale) {
+            case "zh_cn" -> "从桶灌入容器";
+            case "zh_tw" -> "從桶灌入容器";
+            case "ja_jp" -> "バケツから容器へ";
+            case "uk_ua" -> "З відра у контейнер";
+            default -> "Fill container from bucket";
+        });
+        language.addProperty("gui.avaritia.infinity_bucket.empty", values[11]);
+        language.addProperty("gui.avaritia.infinity_bucket.amount", values[12]);
+        language.addProperty("tooltip.avaritia.infinity_bucket.force.on", values[13]);
+        language.addProperty("tooltip.avaritia.infinity_bucket.creature", values[14]);
+        language.addProperty("message.avaritia.infinity_bucket.too_large", values[15]);
+    }
+
+    private static void addPortableUiTranslations(JsonObject language, String locale) {
+        boolean zh = "zh_cn".equals(locale);
+        boolean tw = "zh_tw".equals(locale);
+        boolean ja = "ja_jp".equals(locale);
+        language.addProperty("gui.avaritia.portable.search", zh ? "搜索空间" : tw ? "搜尋空間" : ja ? "空間を検索" : "Search spaces");
+        language.addProperty("gui.avaritia.portable.actions", zh ? "操作" : tw ? "操作" : ja ? "操作" : "Actions");
+        language.addProperty("gui.avaritia.portable.confirm", zh ? "确认" : tw ? "確認" : ja ? "確認" : "Confirm");
+        language.addProperty("gui.avaritia.portable.no_results", zh ? "没有匹配的空间。" : tw ? "沒有符合的空間。" : ja ? "一致する空間はありません。" : "No matching spaces.");
+        language.addProperty("gui.avaritia.infinity_ring.add_candidate", zh ? "添加 %s？" : tw ? "新增 %s？" : ja ? "%s を追加しますか？" : "Add %s?");
+        language.addProperty("gui.avaritia.infinity_ring.access.help", zh ? "私有：仅你。好友：名单中的玩家。公开：除封禁外任何人。角色：访客可进入，成员受信任，管理员可改世界设置。" : "Private: only you. Friends: listed players. Public: anyone except banned. Roles: Visitor can enter, Member is trusted, Admin can change world settings.");
+        language.addProperty("gui.avaritia.infinity_ring.access.private.info", zh ? "仅所有者可进入。" : "Only the owner can enter.");
+        language.addProperty("gui.avaritia.infinity_ring.access.friends.info", zh ? "所有者以及列出的访客、成员和管理员。" : "Owner plus listed visitors, members, and admins.");
+        language.addProperty("gui.avaritia.infinity_ring.access.public.info", zh ? "除被封禁者外任何人可进入。" : "Anyone except banned players can enter.");
+        language.addProperty("gui.avaritia.infinity_ring.terrain.void.info", zh ? "虚空世界。" : "Void world.");
+        language.addProperty("gui.avaritia.infinity_ring.terrain.sky_island.info", zh ? "空岛世界。" : "Sky island world.");
+        language.addProperty("gui.avaritia.infinity_ring.terrain.flat.info", zh ? "超平坦世界。" : "Flat world.");
+        language.addProperty("gui.avaritia.infinity_ring.time.follow.info", zh ? "跟随主世界时间。" : "Follow Overworld time.");
+        language.addProperty("gui.avaritia.infinity_ring.time.day.info", zh ? "永远白昼。" : "Always day.");
+        language.addProperty("gui.avaritia.infinity_ring.time.night.info", zh ? "永远夜晚。" : "Always night.");
+        language.addProperty("gui.avaritia.infinity_ring.time.cycle.info", zh ? "正常日夜循环。" : "Normal day/night cycle.");
+        language.addProperty("gui.avaritia.infinity_ring.weather.follow.info", zh ? "跟随主世界天气。" : "Follow Overworld weather.");
+        language.addProperty("gui.avaritia.infinity_ring.weather.clear.info", zh ? "永远晴朗。" : "Always clear.");
+        language.addProperty("gui.avaritia.infinity_ring.weather.rain.info", zh ? "永远下雨。" : "Always rain.");
+        language.addProperty("gui.avaritia.infinity_ring.weather.thunder.info", zh ? "永远雷暴。" : "Always thunder.");
+        language.addProperty("gui.avaritia.infinity_ring.role", zh ? "角色" : "Role");
+        language.addProperty("gui.avaritia.infinity_ring.role.visitor", zh ? "访客" : "Visitor");
+        language.addProperty("gui.avaritia.infinity_ring.role.member", zh ? "成员" : "Member");
+        language.addProperty("gui.avaritia.infinity_ring.role.admin", zh ? "管理员" : "Admin");
+        language.addProperty("gui.avaritia.infinity_ring.role.banned", zh ? "封禁" : "Banned");
+        language.addProperty("gui.avaritia.infinity_ring.ban", zh ? "封禁" : "Ban");
+        language.addProperty("gui.avaritia.infinity_ring.unban", zh ? "解封" : "Unban");
+        language.addProperty("gui.avaritia.infinity_ring.search_players", zh ? "搜索玩家" : "Search players");
+        language.addProperty("gui.avaritia.infinity_ring.no_matching_players", zh ? "没有匹配的玩家。" : "No matching players.");
+        language.addProperty("gui.avaritia.infinity_ring.empty_players", zh ? "还没有玩家。" : "No players yet.");
+        language.addProperty("gui.avaritia.infinity_ring.delete_message", zh ? "永久删除此个人维度？此操作无法撤销。" : "Permanently delete this personal dimension? This cannot be undone.");
+        language.addProperty("gui.avaritia.infinity_ring.ban_confirm", zh ? "将 %s 从此维度封禁？" : "Ban %s from this dimension?");
+        language.addProperty("gui.avaritia.infinity_ring.remove_confirm", zh ? "移除 %s？" : "Remove %s?");
+        language.addProperty("tooltip.avaritia.neutron_ring.desc", zh ? "储存 16 格立方并在别处放置。" : "Store a 16-block cube and place it elsewhere.");
+        language.addProperty("gui.avaritia.neutron_ring.title", zh ? "纳须弥空间" : "Neutron Ring Spaces");
+        language.addProperty("gui.avaritia.neutron_ring.empty", zh ? "尚未保存空间。先右键方块，再使用戒指。" : "No spaces saved. Right-click a block, then use the ring.");
+        language.addProperty("gui.avaritia.neutron_ring.choose", zh ? "点击空间预览。右键操作。拖动旋转。" : "Click a space to preview. Right-click for actions. Drag to rotate.");
+        language.addProperty("gui.avaritia.neutron_ring.rename", zh ? "重命名" : "Rename");
+        language.addProperty("gui.avaritia.neutron_ring.deselect", zh ? "取消选择" : "Deselect");
+        language.addProperty("gui.avaritia.neutron_ring.delete", zh ? "删除" : "Delete");
+        language.addProperty("gui.avaritia.neutron_ring.delete_confirm", zh ? "再点一次" : "Click again");
+        language.addProperty("gui.avaritia.neutron_ring.delete_message", zh ? "永久删除 %s？此操作无法撤销。" : "Permanently delete %s? This cannot be undone.");
+        language.addProperty("gui.avaritia.neutron_ring.default_name", zh ? "空间 %s" : "Space %s");
+        language.addProperty("gui.avaritia.neutron_ring.size", "%s: %s");
+        language.addProperty("gui.avaritia.neutron_ring.select", zh ? "选择" : "Select");
+        language.addProperty("gui.avaritia.neutron_ring.preview_size", "%s×%s×%s  ·  %s blocks");
+        language.addProperty("gui.avaritia.neutron_ring.library", zh ? "已保存空间 · %s" : "Saved spaces · %s");
+        language.addProperty("gui.avaritia.neutron_ring.reset_view", zh ? "复位" : "Reset");
+        language.addProperty("gui.avaritia.neutron_ring.preview_controls", zh ? "左键拖动旋转 · 右键拖动平移 · 滚轮缩放" : "Left-drag rotate · Right-drag pan · Scroll zoom");
+        language.addProperty("gui.avaritia.neutron_ring.preview_loading", zh ? "正在加载结构…" : "Loading structure…");
+        language.addProperty("gui.avaritia.neutron_ring.preview_missing", zh ? "无法加载该结构预览。" : "Could not load that structure preview.");
+        language.addProperty("gui.avaritia.neutron_ring.empty_list", zh ? "还没有保存的空间。" : "No saved spaces yet.");
+        language.addProperty("gui.avaritia.neutron_ring.active", zh ? "已选中" : "Active");
+        language.addProperty("gui.avaritia.neutron_ring.clear_filter", zh ? "清除过滤" : "Clear filter");
+        language.addProperty("message.avaritia.neutron_ring.base_set", zh ? "基点已设置。使用戒指储存此空间。" : "Base set. Use the ring to store this space.");
+        language.addProperty("message.avaritia.neutron_ring.saved", zh ? "已储存 %s。" : "Stored %s.");
+        language.addProperty("message.avaritia.neutron_ring.place_preview", zh ? "放置预览已设置。使用戒指释放。" : "Placement preview set. Use the ring to release.");
+        language.addProperty("message.avaritia.neutron_ring.placed", zh ? "空间已释放。" : "Space released.");
+        language.addProperty("message.avaritia.neutron_ring.no_base", zh ? "先右键方块设置基点。" : "Right-click a block to set the base first.");
+        language.addProperty("message.avaritia.neutron_ring.no_place", zh ? "先右键方块预览放置。" : "Right-click a block to preview placement first.");
+        language.addProperty("message.avaritia.neutron_ring.full", zh ? "此戒指无法再储存更多空间。" : "This ring cannot store more spaces.");
+        language.addProperty("message.avaritia.neutron_ring.missing", zh ? "该空间不存在。" : "That space is missing.");
+        language.addProperty("message.avaritia.neutron_ring.place_failed", zh ? "无法释放该空间。" : "Could not release that space.");
+        language.addProperty("message.avaritia.neutron_ring.legacy_pending", zh ? "还有 %s 组旧纳须弥物品已安全保留；腾出物品栏空间后再次使用戒指取回。" : "Safely retaining %s legacy Neutron Ring stacks. Free inventory space and use the ring again to recover them.");
+        language.addProperty("gui.avaritia.infinity_bucket.tab.fluids", zh ? "流体" : "Fluids");
+        language.addProperty("gui.avaritia.infinity_bucket.tab.creatures", zh ? "生物" : "Creatures");
+        language.addProperty("gui.avaritia.infinity_bucket.search", zh ? "搜索" : "Search");
+        language.addProperty("gui.avaritia.infinity_bucket.selected", zh ? "当前：%s" : "Selected: %s");
+        language.addProperty("gui.avaritia.infinity_bucket.empty", zh ? "空" : "Empty");
+        language.addProperty("gui.avaritia.infinity_bucket.no_results", zh ? "没有匹配项。" : "No results.");
+        language.addProperty("gui.avaritia.infinity_bucket.select", zh ? "选择" : "Select");
+        language.addProperty("gui.avaritia.infinity_bucket.delete", zh ? "删除" : "Delete");
+        language.addProperty("gui.avaritia.infinity_bucket.clear", zh ? "清空" : "Clear");
+        language.addProperty("gui.avaritia.infinity_bucket.clear_filter", zh ? "清除过滤" : "Clear filter");
+        language.addProperty("gui.avaritia.infinity_bucket.list_hint", zh ? "右键列表转移。" : "Right-click the list to transfer.");
+        language.addProperty("gui.avaritia.infinity_bucket.over_capacity", zh ? "超过容量。" : "Over capacity.");
+        language.addProperty("gui.avaritia.infinity_bucket.delete.confirm", zh ? "确认删除？" : "Confirm delete?");
+        language.addProperty("gui.avaritia.infinity_bucket.delete.message", zh ? "删除 %s？" : "Delete %s?");
+        language.addProperty("gui.avaritia.infinity_bucket.clear.confirm", zh ? "确认清空？" : "Confirm clear?");
+        language.addProperty("gui.avaritia.infinity_bucket.clear.message", zh ? "清空全部内容？" : "Clear all contents?");
+        language.addProperty("container.avaritia.infinity_bucket", zh ? "远海鲸吞之桶" : "Infinity Bucket");
+        language.addProperty("tooltip.avaritia.infinity_bucket.selected", zh ? "已选择" : "Selected");
+        language.addProperty("tooltip.avaritia.infinity_bucket.message", zh ? "无尽桶" : "Infinity Bucket");
+        language.addProperty("tooltip.avaritia.infinity_bucket.creature", zh ? "生物：%s %s" : "Creature: %s %s");
+        language.addProperty("tooltip.avaritia.infinity_bucket.message_creature", zh ? "生物" : "Creature");
+    }
+
 
     private static String legacyJson(String locale) {
         return switch (locale) {
@@ -474,7 +629,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "item.avaritia.infinity_nugget": "Infinity Nugget",
               "item.avaritia.infinity_pants": "Infinity Pants",
               "item.avaritia.infinity_pickaxe": "World Breaker",
-              "item.avaritia.infinity_ring": "Infinity Ring(WIP)",
+              "item.avaritia.infinity_ring": "Infinity Ring",
               "item.avaritia.infinity_shield": "Shield of the Earth Core",
               "item.avaritia.infinity_shovel": "Planet Eater",
               "item.avaritia.infinity_sword": "Sword of the Cosmos",
@@ -584,7 +739,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.infinity_clock.desc": "Control of your time...",
               "tooltip.avaritia.infinity_ingot.desc": "The fury of the universe in the palm of your hand.",
               "tooltip.avaritia.infinity_nugget.desc": "Angel's tears...",
-              "tooltip.avaritia.infinity_ring.desc": "...",
+              "tooltip.avaritia.infinity_ring.desc": "A pocket universe bound to your soul.",
               "tooltip.avaritia.infinity_totem.desc": "Eternal Guardian...",
               "tooltip.avaritia.infinity_umbrella.desc": "Instant eternity...",
               "tooltip.avaritia.infinity_upgrade.desc": "Accelerate upgrade!",
@@ -1039,7 +1194,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "item.avaritia.infinity_nugget": "インフィニティ塊",
               "item.avaritia.infinity_pants": "インフィニティレギンス",
               "item.avaritia.infinity_pickaxe": "世界の破壊者",
-              "item.avaritia.infinity_ring": "インフィニティリング（開発中）",
+              "item.avaritia.infinity_ring": "インフィニティリング",
               "item.avaritia.infinity_shield": "地殻の守護盾",
               "item.avaritia.infinity_shovel": "惑星を貪る者",
               "item.avaritia.infinity_sword": "コスモスの剣",
@@ -1149,7 +1304,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.infinity_clock.desc": "時を操る...",
               "tooltip.avaritia.infinity_ingot.desc": "宇宙の猛威を、この手のひらに",
               "tooltip.avaritia.infinity_nugget.desc": "天使の涙...",
-              "tooltip.avaritia.infinity_ring.desc": "...",
+              "tooltip.avaritia.infinity_ring.desc": "魂に結ばれたポケット宇宙。",
               "tooltip.avaritia.infinity_totem.desc": "永久の守護者...",
               "tooltip.avaritia.infinity_umbrella.desc": "瞬間的な永遠...",
               "tooltip.avaritia.infinity_upgrade.desc": "アップグレードを加速！",
@@ -1604,7 +1759,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "item.avaritia.infinity_nugget": "无尽之泪",
               "item.avaritia.infinity_pants": "无尽护腿",
               "item.avaritia.infinity_pickaxe": "世界崩解之镐",
-              "item.avaritia.infinity_ring": "穹宇洞虚之戒（WIP）",
+              "item.avaritia.infinity_ring": "穹宇洞虚之戒",
               "item.avaritia.infinity_shield": "地核磐石之盾",
               "item.avaritia.infinity_shovel": "星球吞噬之铲",
               "item.avaritia.infinity_sword": "寰宇支配之剑",
@@ -1714,7 +1869,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.infinity_clock.desc": "掌控时间…",
               "tooltip.avaritia.infinity_ingot.desc": "汝掌心中者，寰宇之力也。",
               "tooltip.avaritia.infinity_nugget.desc": "圣灵的眼泪…",
-              "tooltip.avaritia.infinity_ring.desc": "纳须弥于芥子…",
+              "tooltip.avaritia.infinity_ring.desc": "纳须弥于芥子，维度与玩家绑定。",
               "tooltip.avaritia.infinity_totem.desc": "永恒守护…",
               "tooltip.avaritia.infinity_umbrella.desc": "刹那永恒…",
               "tooltip.avaritia.infinity_upgrade.desc": "加速模式!",
@@ -2168,7 +2323,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "item.avaritia.infinity_nugget": "無盡之淚",
               "item.avaritia.infinity_pants": "無盡護腿",
               "item.avaritia.infinity_pickaxe": "世界崩解之鎬",
-              "item.avaritia.infinity_ring": "穹宇洞虛之戒（WIP）",
+              "item.avaritia.infinity_ring": "穹宇洞虛之戒",
               "item.avaritia.infinity_shield": "地核磐石之盾",
               "item.avaritia.infinity_shovel": "星球吞噬之鏟",
               "item.avaritia.infinity_sword": "寰宇支配之劍",
@@ -2277,7 +2432,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.infinity_clock.desc": "掌控時間…",
               "tooltip.avaritia.infinity_ingot.desc": "汝掌心中者，寰宇之力也。",
               "tooltip.avaritia.infinity_nugget.desc": "聖靈的眼淚…",
-              "tooltip.avaritia.infinity_ring.desc": "納須彌於芥子…",
+              "tooltip.avaritia.infinity_ring.desc": "納須彌於芥子，維度與玩家綁定。",
               "tooltip.avaritia.infinity_totem.desc": "永恆守護…",
               "tooltip.avaritia.infinity_umbrella.desc": "剎那永恆…",
               "tooltip.avaritia.infinity_upgrade.desc": "加速模式！",
@@ -2743,7 +2898,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "item.avaritia.infinity_nugget": "Самородок нескінченності",
               "item.avaritia.infinity_pants": "Штани нескінченності",
               "item.avaritia.infinity_pickaxe": "Світоруйнівник",
-              "item.avaritia.infinity_ring": "Кільце нескінченності (WIP)",
+              "item.avaritia.infinity_ring": "Кільце нескінченності",
               "item.avaritia.infinity_shield": "Щит ядра Землі",
               "item.avaritia.infinity_shovel": "Пожирач планет",
               "item.avaritia.infinity_sword": "Меч Космосу",
@@ -3042,7 +3197,44 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.tool.infinity_shield_float": "Floating",
               "item.avaritia.neutron_nautilus_armor": "Neutron Nautilus Armor",
               "item.avaritia.neutron_wolf_armor": "Neutron Wolf Armor",
-              "item.avaritia.neutron_harness": "Neutron Harness"
+              "item.avaritia.neutron_harness": "Neutron Harness",
+              "gui.avaritia.infinity_ring.create": "Create Personal Dimension",
+              "gui.avaritia.infinity_ring.control": "Dimension Control",
+              "gui.avaritia.infinity_ring.confirm": "Create",
+              "gui.avaritia.infinity_ring.player": "Player name",
+              "gui.avaritia.infinity_ring.add_friend": "Add friend",
+              "gui.avaritia.infinity_ring.remove_friend": "Remove friend",
+              "gui.avaritia.infinity_ring.visit": "Visit",
+              "gui.avaritia.infinity_ring.friends": "Friends: %s",
+              "gui.avaritia.infinity_ring.tab.world": "World",
+              "gui.avaritia.infinity_ring.tab.access": "Permissions",
+              "gui.avaritia.infinity_ring.option.terrain": "World Type",
+              "gui.avaritia.infinity_ring.option.time": "Time",
+              "gui.avaritia.infinity_ring.option.weather": "Weather",
+              "gui.avaritia.infinity_ring.option.access": "Access",
+              "gui.avaritia.infinity_ring.terrain.void": "Void",
+              "gui.avaritia.infinity_ring.terrain.sky_island": "Sky Island",
+              "gui.avaritia.infinity_ring.terrain.flat": "Flat",
+              "gui.avaritia.infinity_ring.time.follow": "Follow Overworld",
+              "gui.avaritia.infinity_ring.time.day": "Day",
+              "gui.avaritia.infinity_ring.time.night": "Night",
+              "gui.avaritia.infinity_ring.time.cycle": "Cycle",
+              "gui.avaritia.infinity_ring.weather.follow": "Follow Overworld",
+              "gui.avaritia.infinity_ring.weather.clear": "Clear",
+              "gui.avaritia.infinity_ring.weather.rain": "Rain",
+              "gui.avaritia.infinity_ring.weather.thunder": "Thunder",
+              "gui.avaritia.infinity_ring.access.private": "Private",
+              "gui.avaritia.infinity_ring.access.friends": "Friends",
+              "gui.avaritia.infinity_ring.access.public": "Public",
+              "message.avaritia.infinity_ring.created": "Personal dimension created.",
+              "message.avaritia.infinity_ring.already_exists": "You already have a personal dimension.",
+              "message.avaritia.infinity_ring.denied": "You cannot enter this dimension.",
+              "message.avaritia.infinity_ring.unknown_player": "Unknown player.",
+              "message.avaritia.infinity_ring.missing": "That player has no personal dimension.",
+              "message.avaritia.infinity_ring.deleted": "Personal dimension deleted.",
+              "message.avaritia.infinity_ring.delete_failed": "Could not delete the personal dimension.",
+              "gui.avaritia.infinity_ring.delete": "Delete Dimension",
+              "gui.avaritia.infinity_ring.delete_confirm": "Click again to delete forever"
             }
             """;
             case "ja_jp" -> """
@@ -3131,7 +3323,44 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.tool.infinity_shield_float": "浮遊",
               "item.avaritia.neutron_nautilus_armor": "ニュートロン・ノーチラスアーマー",
               "item.avaritia.neutron_wolf_armor": "ニュートロン・ウルフアーマー",
-              "item.avaritia.neutron_harness": "ニュートロン・ハーネス"
+              "item.avaritia.neutron_harness": "ニュートロン・ハーネス",
+              "gui.avaritia.infinity_ring.create": "個人ディメンションを作成",
+              "gui.avaritia.infinity_ring.control": "ディメンション操作",
+              "gui.avaritia.infinity_ring.confirm": "作成",
+              "gui.avaritia.infinity_ring.player": "プレイヤー名",
+              "gui.avaritia.infinity_ring.add_friend": "フレンド追加",
+              "gui.avaritia.infinity_ring.remove_friend": "フレンド削除",
+              "gui.avaritia.infinity_ring.visit": "訪問",
+              "gui.avaritia.infinity_ring.friends": "フレンド: %s",
+              "gui.avaritia.infinity_ring.tab.world": "ワールド",
+              "gui.avaritia.infinity_ring.tab.access": "権限",
+              "gui.avaritia.infinity_ring.option.terrain": "ワールドタイプ",
+              "gui.avaritia.infinity_ring.option.time": "時間",
+              "gui.avaritia.infinity_ring.option.weather": "天候",
+              "gui.avaritia.infinity_ring.option.access": "アクセス",
+              "gui.avaritia.infinity_ring.terrain.void": "虚空",
+              "gui.avaritia.infinity_ring.terrain.sky_island": "空島",
+              "gui.avaritia.infinity_ring.terrain.flat": "超平坦",
+              "gui.avaritia.infinity_ring.time.follow": "オーバーワールドに追従",
+              "gui.avaritia.infinity_ring.time.day": "昼",
+              "gui.avaritia.infinity_ring.time.night": "夜",
+              "gui.avaritia.infinity_ring.time.cycle": "サイクル",
+              "gui.avaritia.infinity_ring.weather.follow": "オーバーワールドに追従",
+              "gui.avaritia.infinity_ring.weather.clear": "晴れ",
+              "gui.avaritia.infinity_ring.weather.rain": "雨",
+              "gui.avaritia.infinity_ring.weather.thunder": "雷雨",
+              "gui.avaritia.infinity_ring.access.private": "非公開",
+              "gui.avaritia.infinity_ring.access.friends": "フレンド",
+              "gui.avaritia.infinity_ring.access.public": "公開",
+              "gui.avaritia.infinity_ring.delete": "ディメンションを削除",
+              "gui.avaritia.infinity_ring.delete_confirm": "もう一度クリックで完全削除",
+              "message.avaritia.infinity_ring.created": "個人ディメンションを作成した。",
+              "message.avaritia.infinity_ring.already_exists": "すでに個人ディメンションを持っている。",
+              "message.avaritia.infinity_ring.denied": "このディメンションには入れない。",
+              "message.avaritia.infinity_ring.unknown_player": "未知のプレイヤー。",
+              "message.avaritia.infinity_ring.missing": "そのプレイヤーに個人ディメンションはない。",
+              "message.avaritia.infinity_ring.deleted": "個人ディメンションを削除した。",
+              "message.avaritia.infinity_ring.delete_failed": "個人ディメンションを削除できなかった。"
             }
             """;
             case "zh_cn" -> """
@@ -3220,7 +3449,44 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.tool.infinity_shield_float": "漂浮",
               "item.avaritia.neutron_nautilus_armor": "中子鹦鹉螺铠",
               "item.avaritia.neutron_wolf_armor": "中子战狼铠",
-              "item.avaritia.neutron_harness": "中子战魂铠"
+              "item.avaritia.neutron_harness": "中子战魂铠",
+              "gui.avaritia.infinity_ring.create": "创建个人维度",
+              "gui.avaritia.infinity_ring.control": "维度控制",
+              "gui.avaritia.infinity_ring.confirm": "创建",
+              "gui.avaritia.infinity_ring.player": "玩家名",
+              "gui.avaritia.infinity_ring.add_friend": "添加好友",
+              "gui.avaritia.infinity_ring.remove_friend": "移除好友",
+              "gui.avaritia.infinity_ring.visit": "访问",
+              "gui.avaritia.infinity_ring.friends": "好友：%s",
+              "gui.avaritia.infinity_ring.tab.world": "世界",
+              "gui.avaritia.infinity_ring.tab.access": "权限",
+              "gui.avaritia.infinity_ring.option.terrain": "世界类型",
+              "gui.avaritia.infinity_ring.option.time": "时间",
+              "gui.avaritia.infinity_ring.option.weather": "天气",
+              "gui.avaritia.infinity_ring.option.access": "访问权限",
+              "gui.avaritia.infinity_ring.terrain.void": "虚空",
+              "gui.avaritia.infinity_ring.terrain.sky_island": "空岛",
+              "gui.avaritia.infinity_ring.terrain.flat": "超平坦",
+              "gui.avaritia.infinity_ring.time.follow": "跟随主世界",
+              "gui.avaritia.infinity_ring.time.day": "白昼",
+              "gui.avaritia.infinity_ring.time.night": "夜晚",
+              "gui.avaritia.infinity_ring.time.cycle": "循环",
+              "gui.avaritia.infinity_ring.weather.follow": "跟随主世界",
+              "gui.avaritia.infinity_ring.weather.clear": "晴",
+              "gui.avaritia.infinity_ring.weather.rain": "雨",
+              "gui.avaritia.infinity_ring.weather.thunder": "雷暴",
+              "gui.avaritia.infinity_ring.access.private": "私有",
+              "gui.avaritia.infinity_ring.access.friends": "好友",
+              "gui.avaritia.infinity_ring.access.public": "公开",
+              "message.avaritia.infinity_ring.created": "个人维度已创建。",
+              "message.avaritia.infinity_ring.already_exists": "你已经拥有个人维度。",
+              "message.avaritia.infinity_ring.denied": "无法进入该维度。",
+              "message.avaritia.infinity_ring.unknown_player": "未知玩家。",
+              "message.avaritia.infinity_ring.missing": "该玩家没有个人维度。",
+              "message.avaritia.infinity_ring.deleted": "个人维度已删除。",
+              "message.avaritia.infinity_ring.delete_failed": "无法删除个人维度。",
+              "gui.avaritia.infinity_ring.delete": "删除维度",
+              "gui.avaritia.infinity_ring.delete_confirm": "再点一次永久删除"
             }
             """;
             case "zh_tw" -> """
@@ -3309,7 +3575,44 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.tool.infinity_shield_float": "漂浮",
               "item.avaritia.neutron_nautilus_armor": "中子鸚鵡螺鎧",
               "item.avaritia.neutron_wolf_armor": "中子戰狼鎧",
-              "item.avaritia.neutron_harness": "中子戰魂鎧"
+              "item.avaritia.neutron_harness": "中子戰魂鎧",
+              "gui.avaritia.infinity_ring.create": "建立個人維度",
+              "gui.avaritia.infinity_ring.control": "維度控制",
+              "gui.avaritia.infinity_ring.confirm": "建立",
+              "gui.avaritia.infinity_ring.player": "玩家名",
+              "gui.avaritia.infinity_ring.add_friend": "新增好友",
+              "gui.avaritia.infinity_ring.remove_friend": "移除好友",
+              "gui.avaritia.infinity_ring.visit": "造訪",
+              "gui.avaritia.infinity_ring.friends": "好友：%s",
+              "gui.avaritia.infinity_ring.tab.world": "世界",
+              "gui.avaritia.infinity_ring.tab.access": "權限",
+              "gui.avaritia.infinity_ring.option.terrain": "世界類型",
+              "gui.avaritia.infinity_ring.option.time": "時間",
+              "gui.avaritia.infinity_ring.option.weather": "天氣",
+              "gui.avaritia.infinity_ring.option.access": "存取權限",
+              "gui.avaritia.infinity_ring.terrain.void": "虛空",
+              "gui.avaritia.infinity_ring.terrain.sky_island": "空島",
+              "gui.avaritia.infinity_ring.terrain.flat": "超平坦",
+              "gui.avaritia.infinity_ring.time.follow": "跟隨主世界",
+              "gui.avaritia.infinity_ring.time.day": "白晝",
+              "gui.avaritia.infinity_ring.time.night": "夜晚",
+              "gui.avaritia.infinity_ring.time.cycle": "循環",
+              "gui.avaritia.infinity_ring.weather.follow": "跟隨主世界",
+              "gui.avaritia.infinity_ring.weather.clear": "晴",
+              "gui.avaritia.infinity_ring.weather.rain": "雨",
+              "gui.avaritia.infinity_ring.weather.thunder": "雷暴",
+              "gui.avaritia.infinity_ring.access.private": "私有",
+              "gui.avaritia.infinity_ring.access.friends": "好友",
+              "gui.avaritia.infinity_ring.access.public": "公開",
+              "gui.avaritia.infinity_ring.delete": "刪除維度",
+              "gui.avaritia.infinity_ring.delete_confirm": "再點一次永久刪除",
+              "message.avaritia.infinity_ring.created": "個人維度已建立。",
+              "message.avaritia.infinity_ring.already_exists": "你已經擁有個人維度。",
+              "message.avaritia.infinity_ring.denied": "無法進入該維度。",
+              "message.avaritia.infinity_ring.unknown_player": "未知玩家。",
+              "message.avaritia.infinity_ring.missing": "該玩家沒有個人維度。",
+              "message.avaritia.infinity_ring.deleted": "個人維度已刪除。",
+              "message.avaritia.infinity_ring.delete_failed": "無法刪除個人維度。"
             }
             """;
             case "uk_ua" -> """
@@ -3398,7 +3701,44 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.tool.infinity_shield_float": "Ширяння",
               "item.avaritia.neutron_nautilus_armor": "Нейтронна броня наутилуса",
               "item.avaritia.neutron_wolf_armor": "Нейтронна броня вовка",
-              "item.avaritia.neutron_harness": "Нейтронна упряж"
+              "item.avaritia.neutron_harness": "Нейтронна упряж",
+              "gui.avaritia.infinity_ring.create": "Створити особистий вимір",
+              "gui.avaritia.infinity_ring.control": "Керування виміром",
+              "gui.avaritia.infinity_ring.confirm": "Створити",
+              "gui.avaritia.infinity_ring.player": "Ім'я гравця",
+              "gui.avaritia.infinity_ring.add_friend": "Додати друга",
+              "gui.avaritia.infinity_ring.remove_friend": "Видалити друга",
+              "gui.avaritia.infinity_ring.visit": "Відвідати",
+              "gui.avaritia.infinity_ring.friends": "Друзі: %s",
+              "gui.avaritia.infinity_ring.tab.world": "Світ",
+              "gui.avaritia.infinity_ring.tab.access": "Дозволи",
+              "gui.avaritia.infinity_ring.option.terrain": "Тип світу",
+              "gui.avaritia.infinity_ring.option.time": "Час",
+              "gui.avaritia.infinity_ring.option.weather": "Погода",
+              "gui.avaritia.infinity_ring.option.access": "Доступ",
+              "gui.avaritia.infinity_ring.terrain.void": "Порожнеча",
+              "gui.avaritia.infinity_ring.terrain.sky_island": "Небесний острів",
+              "gui.avaritia.infinity_ring.terrain.flat": "Суперплоский",
+              "gui.avaritia.infinity_ring.time.follow": "Слідувати за Верхнім світом",
+              "gui.avaritia.infinity_ring.time.day": "День",
+              "gui.avaritia.infinity_ring.time.night": "Ніч",
+              "gui.avaritia.infinity_ring.time.cycle": "Цикл",
+              "gui.avaritia.infinity_ring.weather.follow": "Слідувати за Верхнім світом",
+              "gui.avaritia.infinity_ring.weather.clear": "Ясно",
+              "gui.avaritia.infinity_ring.weather.rain": "Дощ",
+              "gui.avaritia.infinity_ring.weather.thunder": "Гроза",
+              "gui.avaritia.infinity_ring.access.private": "Приватний",
+              "gui.avaritia.infinity_ring.access.friends": "Друзі",
+              "gui.avaritia.infinity_ring.access.public": "Публічний",
+              "message.avaritia.infinity_ring.created": "Особистий вимір створено.",
+              "message.avaritia.infinity_ring.already_exists": "У вас уже є особистий вимір.",
+              "message.avaritia.infinity_ring.denied": "Ви не можете увійти до цього виміру.",
+              "message.avaritia.infinity_ring.unknown_player": "Невідомий гравець.",
+              "message.avaritia.infinity_ring.missing": "У цього гравця немає особистого виміру.",
+              "message.avaritia.infinity_ring.deleted": "Особистий вимір видалено.",
+              "message.avaritia.infinity_ring.delete_failed": "Не вдалося видалити особистий вимір.",
+              "gui.avaritia.infinity_ring.delete": "Видалити вимір",
+              "gui.avaritia.infinity_ring.delete_confirm": "Натисніть ще раз, щоб видалити назавжди"
             }
             """;
             default -> "{}";

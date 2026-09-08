@@ -26,8 +26,6 @@ public class ModMenus {
         return MENUS.register(name, container);
     }
 
-    public static DeferredHolder<MenuType<?>, MenuType<NeutronRingMenu>> neutron_ring = menu("neutron_ring",
-            () -> new MenuType<>((IContainerFactory<NeutronRingMenu>)NeutronRingMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<TierCraftMenu>> sculk_crafting_tile_table = menu("sculk_crafting_tile_table",
             () -> new MenuType<>((IContainerFactory<TierCraftMenu>)TierCraftMenu::sculk, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<TierCraftMenu>> nether_crafting_tile_table = menu("nether_crafting_tile_table",
@@ -54,4 +52,6 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<CompressedChestMenu>)CompressedChestMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil",
             () -> new MenuType<>((IContainerFactory<ExtremeAnvilMenu>)ExtremeAnvilMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<InfinityBucketMenu>> infinity_bucket = menu("infinity_bucket",
+            () -> new MenuType<>((IContainerFactory<InfinityBucketMenu>) InfinityBucketMenu::new, FeatureFlagSet.of()));
 }

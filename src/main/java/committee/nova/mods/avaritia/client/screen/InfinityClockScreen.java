@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockTimes;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -16,10 +17,6 @@ import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> {
-    private int guiLeft, guiTop;
-    private static final int CLOCK_IMAGE_WIDTH = 176;
-    private static final int CLOCK_IMAGE_HEIGHT = 166;
-
     private EditBox timeInput;
 
     public InfinityClockScreen(InfinityClockMenu container, Inventory inventory, Component title) {
@@ -29,31 +26,22 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
     @Override
     protected void subInit() {
         super.subInit();
-        guiLeft = (this.width - CLOCK_IMAGE_WIDTH) / 2;
-        guiTop = (this.height - CLOCK_IMAGE_HEIGHT) / 2;
-
+        int startX = this.leftPos + 17;
+        int startY = this.topPos + 22;
         int buttonW = 22;
         int spacing = 2;
-        int startX = guiLeft + 17;
-        int startY = guiTop + 22;
-
-        // 修复按钮点击事件，添加玩家参数
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, InfinityClockTimes.SUNRISE));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, InfinityClockTimes.DAY));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, InfinityClockTimes.SUNSET));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, InfinityClockTimes.NIGHT));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, InfinityClockTimes.MIDNIGHT));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, InfinityClockTimes.LATE_NIGHT));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, InfinityClockTimes.SUNRISE), "clock.preset.0"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, InfinityClockTimes.DAY), "clock.preset.6000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, InfinityClockTimes.SUNSET), "clock.preset.12000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, InfinityClockTimes.NIGHT), "clock.preset.14000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, InfinityClockTimes.MIDNIGHT), "clock.preset.18000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, InfinityClockTimes.LATE_NIGHT), "clock.preset.22000"));
         this.titleLabelX = 62;
-        timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
+        timeInput = new EditBox(this.font, this.leftPos + 38, this.topPos + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
-        addRenderableWidget(timeInput);
+        addRenderableWidget(UiInspector.name(timeInput, "clock.input"));
     }
 
-    @Override
-    protected void extractBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
-        timeInput.extractRenderState(graphics, x, y, partialTick);
-    }
 
     @Override
     public boolean keyPressed(KeyEvent event) {

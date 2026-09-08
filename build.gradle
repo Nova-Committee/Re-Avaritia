@@ -25,6 +25,15 @@ sourceSets.main.resources {
 sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
 sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
 
+sourceSets {
+    gameTest
+}
+
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
 repositories {
     mavenCentral()
 
@@ -93,32 +102,53 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo sourceSets.gameTest
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+        "${mod_id}_gametest" {
+            sourceSet(sourceSets.gameTest)
+        }
+    }
 
     runs {
         client {
             client()
+            loadedMods = [mods."${mod_id}"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            if (providers.gradleProperty('uiInspect').map { it.toBoolean() }.getOrElse(false)) {
+                systemProperty 'avaritia.ui.inspect', 'true'
+                systemProperty 'avaritia.ui.inspectOutput', layout.buildDirectory.dir('ui-inspection').get().asFile.absolutePath
+                gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
+            }
         }
 
         server {
             server()
+            loadedMods = [mods."${mod_id}"]
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         gameTestServer {
             type = "gameTestServer"
+            gameDirectory = layout.buildDirectory.dir('gametest').get().asFile
+            sourceSet = sourceSets.gameTest
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_gametest"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         serverData {
             serverData()
+            loadedMods = [mods."${mod_id}"]
             gameDirectory.set(layout.projectDirectory.dir('run-data'))
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
         clientData {
             clientData()
+            loadedMods = [mods."${mod_id}"]
             gameDirectory.set(layout.projectDirectory.dir('run-data'))
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
@@ -129,11 +159,6 @@ neoForge {
         }
     }
 
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-    }
 }
 
 dependencies {
@@ -159,6 +184,8 @@ dependencies {
     annotationProcessor libs.lombok
 
     // JUnit (test)
+    gameTestImplementation sourceSets.main.output
+
     testImplementation platform(libs.junit.bom)
     testImplementation libs.junit.api
     testRuntimeOnly libs.junit.engine

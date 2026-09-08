@@ -8,11 +8,18 @@ final class InfinityChestScreenLayout {
     static final int SORT_BUTTON_Y = 151;
     static final int SORT_TEXTURE_X = 303;
     static final int SORT_TEXTURE_Y = 0;
+    static final int LOCK_BUTTON_X = 231;
+    static final int LOCK_BUTTON_Y = 151;
+    static final int LOCK_TEXTURE_Y = 36;
 
     private InfinityChestScreenLayout() {
     }
 
     static int sortTextureX(int sortType) {
         return SORT_TEXTURE_X + sortType * SORT_BUTTON_WIDTH;
+    }
+
+    static int lockTextureX(boolean locked) {
+        return SORT_TEXTURE_X + (locked ? 0 : SORT_BUTTON_WIDTH);
     }
 }
