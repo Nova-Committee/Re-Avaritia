@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 
 ### Added
 
+* Add Infinity Ring and Neutron Ring to the main creative tab, and a 9×9 extreme-table recipe that upgrades a Neutron Ring into an Infinity Ring.
 * Port the four Infinity Shield modes from 26.1.2: normal, defending, ultimate defending, and floating, including their held and blocking models.
 * Support immediate shield blocking, full-speed movement and sprinting while blocking, damage reflection, projectile deflection, and floating-mode fall protection.
 * Preserve piercing-arrow bypass and suppress shield interaction vibrations, matching the 26.1.2 use effects.
