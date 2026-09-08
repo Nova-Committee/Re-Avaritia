@@ -34,9 +34,9 @@ public class ModItems {
     //test
     public static RegistryObject<Item> test_sword = item("test_sword", () -> new Item(new Item.Properties()), false);
     //curios
-    public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new, false);
+    public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
-    public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new, false);
+    public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static RegistryObject<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
     public static RegistryObject<Item> infinity_chest = item("infinity_chest",

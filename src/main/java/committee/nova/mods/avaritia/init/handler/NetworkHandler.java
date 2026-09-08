@@ -70,6 +70,15 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SInfinityChestActionPack.class, C2SInfinityChestActionPack::write, C2SInfinityChestActionPack::new, C2SInfinityChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SInfinityChestFilterPack.class, C2SInfinityChestFilterPack::write, C2SInfinityChestFilterPack::new, C2SInfinityChestFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        CHANNEL.registerMessage(id++, C2SInfinityRingPack.class, C2SInfinityRingPack::write, C2SInfinityRingPack::new, C2SInfinityRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2CInfinityRingOpenPack.class, S2CInfinityRingOpenPack::write, S2CInfinityRingOpenPack::new, S2CInfinityRingOpenPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CUpdateDimensionsPack.class, S2CUpdateDimensionsPack::write, S2CUpdateDimensionsPack::new, S2CUpdateDimensionsPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, C2SNeutronRingPack.class, C2SNeutronRingPack::write, C2SNeutronRingPack::new, C2SNeutronRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2CNeutronRingOpenPack.class, S2CNeutronRingOpenPack::write, S2CNeutronRingOpenPack::new, S2CNeutronRingOpenPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, S2CNeutronRingPreviewPack.class, S2CNeutronRingPreviewPack::write, S2CNeutronRingPreviewPack::new, S2CNeutronRingPreviewPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, C2SInfinityBucketActionPack.class, C2SInfinityBucketActionPack::write, C2SInfinityBucketActionPack::new, C2SInfinityBucketActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+
     }
 
     public static void sendNbtDataToServer(CompoundTag tag) {

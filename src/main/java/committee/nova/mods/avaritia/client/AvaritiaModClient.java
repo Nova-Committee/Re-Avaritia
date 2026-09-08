@@ -12,6 +12,10 @@ import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
+import committee.nova.mods.avaritia.client.screen.InfinityRingControlScreen;
+import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
+import committee.nova.mods.avaritia.client.screen.NeutronRingManageScreen;
+import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.client.model.HumanoidModel;
@@ -76,6 +80,16 @@ public class AvaritiaModClient {
         ModMenus.onClientSetup();
         ModTileEntities.onClientSetup();
         ModSearches.onClientSetup();
+        ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.updateDimensions = InfinityRingClient::applyDimensions;
+        ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
+        ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
+    }
+
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) resourceManager ->
+                NeutronSpacePreviewRenderer.invalidate());
     }
 
     @SubscribeEvent

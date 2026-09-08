@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.capability;
 
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
-import committee.nova.mods.avaritia.common.item.misc.NeutronRingItem;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +24,7 @@ public class RingStorageProvider implements ICapabilitySerializable<CompoundTag>
     public RingStorageProvider(ItemStack stack, CompoundTag nbt) {
         this.inv = ItemStackWrapper.create(81, builder -> {
             builder.setDefaultSlotLimit(Integer.MAX_VALUE);
-            builder.setCanInsert((slot, stack2) -> !(stack2.getItem() instanceof NeutronRingItem));
+            builder.setCanInsert((slot, stack2) -> false);
         });
         this.inventoryCap = LazyOptional.of(() -> inv);
     }

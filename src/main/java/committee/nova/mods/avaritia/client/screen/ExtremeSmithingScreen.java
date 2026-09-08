@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,14 +32,20 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
     private final CyclingSlotBackground additionalIcon2 = new CyclingSlotBackground(3);
     private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
+    private ScreenRectangle errorIcon;
     private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
 
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-
         super(pMenu, pPlayerInventory, pTitle, Res.EXTREME_SMITHING_TEX);
         this.titleLabelX = 74;
         this.titleLabelY = 6;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.errorIcon = PortableLayout.translate(new ScreenRectangle(65, 46, 28, 21), this.getGuiLeft(), this.getGuiTop());
     }
 
     private boolean hasRecipeError() {
@@ -47,8 +56,9 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
 
     @Override
     protected void renderErrorIcon(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
-        if (this.hasRecipeError()) {
-            pGuiGraphics.blit(Res.EXTREME_SMITHING_TEX, pX + 65, pY + 46, this.imageWidth, 0, 28, 21);
+        if (this.hasRecipeError() && this.errorIcon != null) {
+            pGuiGraphics.blit(Res.EXTREME_SMITHING_TEX, this.errorIcon.left(), this.errorIcon.top(), this.imageWidth, 0, this.errorIcon.width(), this.errorIcon.height());
+            UiInspector.region("smithing.error", this.errorIcon, null, true);
         }
     }
 
@@ -94,7 +104,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
 
     private void renderOnboardingTooltips(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
         Optional<Component> optional = Optional.empty();
-        if (this.hasRecipeError() && this.isHovering(65, 46, 28, 21, pMouseX, pMouseY)) {
+        if (this.hasRecipeError() && this.errorIcon != null && PortableLayout.contains(this.errorIcon, pMouseX, pMouseY)) {
             optional = Optional.of(ERROR_TOOLTIP);
         }
 

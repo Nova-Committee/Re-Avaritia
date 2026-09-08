@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -10,14 +12,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> {
-    private int guiLeft, guiTop;
-    private final int imageWidth = 176;
-    private final int imageHeight = 166;
 
     private EditBox timeInput;
 
@@ -28,54 +28,42 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
     @Override
     protected void subInit() {
         super.subInit();
-        guiLeft = (this.width - imageWidth) / 2;
-        guiTop = (this.height - imageHeight) / 2;
-
+        int originX = this.getGuiLeft();
+        int originY = this.getGuiTop();
         int buttonW = 22;
-        int buttonH = 24;
         int spacing = 2;
-        int startX = guiLeft + 17;
-        int startY = guiTop + 22;
+        ScreenRectangle firstPreset = PortableLayout.translate(new ScreenRectangle(17, 22, 22, 24), originX, originY);
+        ScreenRectangle input = PortableLayout.translate(new ScreenRectangle(38, 52, 113, 10), originX, originY);
 
-        // 修复按钮点击事件，添加玩家参数
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, 0));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, 6000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, 12000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, 18000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, 22000));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 0, firstPreset.top(), 17, 22, 0, 0), "clock.preset.0"));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 1, firstPreset.top(), 41, 22, 1, 6000), "clock.preset.6000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 2, firstPreset.top(), 65, 22, 2, 12000), "clock.preset.12000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 3, firstPreset.top(), 89, 22, 3, 14000), "clock.preset.14000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 4, firstPreset.top(), 113, 22, 4, 18000), "clock.preset.18000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(firstPreset.left() + (buttonW + spacing) * 5, firstPreset.top(), 137, 22, 5, 22000), "clock.preset.22000"));
         this.titleLabelX = 62;
-        timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
+        timeInput = new EditBox(this.font, input.left(), input.top(), input.width(), input.height(), Component.literal(""));
         timeInput.setMaxLength(10);
-        addRenderableWidget(timeInput);
-    }
-
-
-    @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        timeInput.render(pGuiGraphics, pX, pY, pPartialTick);
+        addRenderableWidget(UiInspector.name(timeInput, "clock.input"));
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (timeInput.isFocused() && keyCode == 257) { // 回车键
+        if (timeInput.isFocused() && keyCode == 257) {
             try {
                 int time = Integer.parseInt(timeInput.getValue());
-                // 发送网络包到服务端
                 NetworkHandler.CHANNEL.sendToServer(new C2SSetTimePacket(time));
                 return true;
-            } catch (NumberFormatException e) {
-                // 输入不是有效数字，忽略
+            } catch (NumberFormatException ignored) {
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    // 自定义按钮
     static class TimeButton extends AbstractWidget {
         private final int texU, texV;
         private final int index;
-        private final int timeValue; // 存储时间值
+        private final int timeValue;
         private final int w = 22;
         private final int h = 24;
 
@@ -101,7 +89,6 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
 
         @Override
         public void onClick(double mouseX, double mouseY) {
-            // 发送网络包到服务端
             NetworkHandler.CHANNEL.sendToServer(new C2SSetTimePacket(timeValue));
         }
 

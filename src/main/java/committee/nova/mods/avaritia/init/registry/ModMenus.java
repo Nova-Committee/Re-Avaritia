@@ -37,20 +37,20 @@ public class ModMenus {
         MenuScreens.register(neutron_collector.get(), NeutronCollectorScreen::new);
         MenuScreens.register(compressor.get(), NeutronCompressorScreen::new);
         MenuScreens.register(GENERIC_9x27.get(), CompressedChestScreen::new);
-        MenuScreens.register(neutron_ring.get(), NeutronRingScreen::new);
         MenuScreens.register(tesseract.get(), TesseractScreen::new);
         MenuScreens.register(tesseract_channel.get(), TesseractChannelScreen::new);
         MenuScreens.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
         MenuScreens.register(infinity_clock_menu.get(), InfinityClockScreen::new);
         MenuScreens.register(infinity_chest.get(), InfinityChestScreen::new);
+        MenuScreens.register(infinity_bucket.get(), InfinityBucketScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
         return MENUS.register(name, container);
     }
 
-    public static RegistryObject<MenuType<NeutronRingMenu>> neutron_ring = menu("neutron_ring", () -> IForgeMenuType.create(NeutronRingMenu::new));
+
     public static RegistryObject<MenuType<TierCraftMenu>> sculk_crafting_tile_table = menu("sculk_crafting_tile_table", () -> IForgeMenuType.create(TierCraftMenu::sculk));
     public static RegistryObject<MenuType<TierCraftMenu>> nether_crafting_tile_table = menu("nether_crafting_tile_table", () -> IForgeMenuType.create(TierCraftMenu::nether));
     public static RegistryObject<MenuType<TierCraftMenu>> end_crafting_tile_table = menu("end_crafting_tile_table", () -> IForgeMenuType.create(TierCraftMenu::end));
@@ -65,4 +65,5 @@ public class ModMenus {
     public static RegistryObject<MenuType<InfinityClockMenu>> infinity_clock_menu =
             menu("infinity_clock_menu", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityClockMenu(id, inv)));
     public static RegistryObject<MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest", () -> IForgeMenuType.create(InfinityChestMenu::new));
+    public static RegistryObject<MenuType<InfinityBucketMenu>> infinity_bucket = menu("infinity_bucket", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityBucketMenu(id, inv)));
 }

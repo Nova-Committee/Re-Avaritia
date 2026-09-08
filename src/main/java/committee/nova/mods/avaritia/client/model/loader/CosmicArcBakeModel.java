@@ -12,16 +12,20 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,22 @@ public class CosmicArcBakeModel extends WrappedItemModel {
         super(wrapped);
         this.maskSprite = maskSprite;
         this.cosmic = true;
+        this.parentState = TransformUtils.DEFAULT_TRIDENT;
+        this.overrideList = new ItemOverrides() {
+            @Override
+            public BakedModel resolve(@NotNull BakedModel originalModel, @NotNull ItemStack stack, ClientLevel world, LivingEntity entity, int seed) {
+                CosmicArcBakeModel.this.entity = entity;
+                CosmicArcBakeModel.this.world = ((world == null) ? ((entity == null) ? null : ((ClientLevel) entity.level())) : null);
+                if (stack.is(ModItems.infinity_trident.get())) {
+                    CosmicArcBakeModel.this.parentState = isThrowingTrident(stack, entity)
+                            ? TransformUtils.DEFAULT_THROWING_TRIDENT
+                            : TransformUtils.DEFAULT_TRIDENT;
+                } else {
+                    CosmicArcBakeModel.this.parentState = TransformUtils.DEFAULT_ITEM;
+                }
+                return originalModel;
+            }
+        };
     }
 
     @Override
@@ -48,7 +68,6 @@ public class CosmicArcBakeModel extends WrappedItemModel {
 
         // 渲染基础模型
         if (stack.is(ModItems.infinity_trident.get())) {
-            this.parentState = isThrowingTrident(stack) ? TransformUtils.DEFAULT_THROWING_TRIDENT : TransformUtils.DEFAULT_TRIDENT;
             if (transformType == ItemDisplayContext.GUI || transformType == ItemDisplayContext.GROUND || transformType == ItemDisplayContext.FIXED) {
                 this.cosmic = true;
                 this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
@@ -62,7 +81,6 @@ public class CosmicArcBakeModel extends WrappedItemModel {
                 pStack.popPose();
             }
         } else {
-            this.parentState = TransformUtils.DEFAULT_ITEM;
             this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         }
 
@@ -133,7 +151,7 @@ public class CosmicArcBakeModel extends WrappedItemModel {
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
     }
 
-    private boolean isThrowingTrident(ItemStack stack) {
-        return this.entity != null && this.entity.isUsingItem() && this.entity.getUseItem() == stack;
+    private static boolean isThrowingTrident(ItemStack stack, LivingEntity entity) {
+        return entity != null && entity.isUsingItem() && entity.getUseItem() == stack;
     }
 }

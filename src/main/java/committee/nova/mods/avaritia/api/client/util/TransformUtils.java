@@ -102,13 +102,14 @@ public class TransformUtils {
         DEFAULT_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
 
         map = new HashMap<>();
+        // Mirror left-hand X translations; PerspectiveModel already supplies the rotation correction.
         map.put(ItemDisplayContext.GROUND,                   create(   4F,  4F,   2F, 0F,   0F,  0F,0.25F));
         map.put(ItemDisplayContext.FIXED,                    create(  -2F,  4F,  -5F, 0F, 180F,  0F, 0.5F));
         map.put(ItemDisplayContext.GUI,                      create(   2F,  3F,   0F,15F, -25F, -5F,0.65F));
         map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(   8F,-17F,   9F, 0F,  90F,180F,   1F));
-        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(   8F,-17F,  -7F, 0F,  90F,180F,   1F));
+        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(  -8F,-17F,  -7F, 0F,  90F,180F,   1F));
         map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(  -3F, 17F,   1F, 0F, -90F, 25F,   1F));
-        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(  13F, 17F,   1F, 0F,  90F,-25F,   1F));
+        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create( -13F, 17F,   1F, 0F,  90F,-25F,   1F));
         DEFAULT_THROWING_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
         //@formatter:on
     }

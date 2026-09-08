@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="avaritia_gametest"
+version="1.0"
+displayName="Avaritia GameTests"
+description="Isolated gameplay regression tests; not included in production artifacts."

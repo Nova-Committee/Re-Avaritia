@@ -1,374 +1,338 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import lombok.Getter;
-import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-/**
- * @Project: Avaritia
- * @author cnlimiter
- * @CreateTime: 2025/3/1 15:00
- * @Description:
- */
+/** 使用 1.20.1 材质图集的超立方体频道选择界面。 */
 public class TesseractChannelScreen extends AbstractContainerScreen<TesseractChannelMenu> {
-    @Setter
-    @Getter
-    private int blitOffset;
+    static final int WIDTH = 88;
+    static final int HEIGHT = 154;
+    static final int ROWS = 9;
+
     private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_SELECT;
-    private EditBox searchBox;
-    //private EditBox nameBox;
-    private ChannelScrollBar scrollBar;
-    private final ArrayList<int[]> filterChannels = new ArrayList<>();
-    private int scrollAt = 0;
+    private static final int TEXTURE_SIZE = 256;
+    private static final int ROW_X = 7;
+    private static final int ROW_Y = 8;
+    private static final int ROW_WIDTH = 64;
+    private static final int ROW_HEIGHT = 12;
+    private static final int SCROLLBAR_X = 74;
+    private static final int SCROLLBAR_Y = 8;
+    private static final int SCROLLBAR_WIDTH = 9;
+    private static final int SCROLLBAR_HEIGHT = 90;
+
     private final ClientChannelManager channelManager = ClientChannelManager.getInstance();
-    private boolean lShifting = false;
-    // 添加一个字段来跟踪上次频道数量
-    private int lastMyChannelsCount = 0;
-    private int lastOtherChannelsCount = 0;
-    private int lastPublicChannelsCount = 0;
+    private final List<ChannelEntry> filteredChannels = new ArrayList<>();
+    private final List<ChannelRowButton> channelButtons = new ArrayList<>();
+    private EditBox searchBox;
+    private int scrollOffset;
+    private boolean draggingScrollbar;
+    private ScreenRectangle panel;
+    private ScreenRectangle listBounds;
+    private ScreenRectangle scrollbar;
+    private ScreenRectangle scrollbarHandle;
 
-    public TesseractChannelScreen(TesseractChannelMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
-        this.imageWidth = 88;
-        this.imageHeight = 190;
-        channelManager.addScreen(this);
+    public TesseractChannelScreen(TesseractChannelMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title);
+        imageWidth = WIDTH;
+        imageHeight = HEIGHT;
     }
-
-    public void blit(GuiGraphics pPoseStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float) pUOffset, (float) pVOffset, pUWidth, pVHeight, 256, 256);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void renderLabels(GuiGraphics stack, int i, int j) {
-    }
-
 
     @Override
     protected void init() {
+        String query = searchBox == null ? "" : searchBox.getValue();
         super.init();
-        this.leftPos = (this.width - imageWidth + 4) / 2;
-        this.topPos = (this.height - imageHeight) / 2;
-        this.scrollBar = new ChannelScrollBar(leftPos + 74, topPos + 8, 9, 90);
-        this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new AddChannelButton(this, leftPos + 7, topPos + 131));
-        this.addRenderableWidget(new RenameButton(this, leftPos + 27, topPos + 131));
-        this.addRenderableWidget(new DeleteButton(leftPos + 47, topPos + 131));
-        this.addRenderableWidget(new BackButton(leftPos + 67, topPos + 131));
-        this.searchBox = new EditBox(this.font, leftPos + 7, topPos + 118, 76, 12, Component.translatable("gui.avaritia.search"));
-        this.searchBox.setMaxLength(64);
-        this.searchBox.setBordered(false);
-        this.addRenderableWidget(searchBox);
-        for (int i = 0; i < 9; i++) {
-            this.addRenderableWidget(new ChannelButton(leftPos + 7, topPos + 8 + i * 12, i));
+        leftPos = (width - imageWidth) / 2;
+        topPos = (height - imageHeight) / 2;
+        panel = new ScreenRectangle(getGuiLeft(), getGuiTop(), imageWidth, imageHeight);
+        listBounds = PortableLayout.translate(new ScreenRectangle(ROW_X, ROW_Y, ROW_WIDTH, ROW_HEIGHT * ROWS), panel.left(), panel.top());
+        scrollbar = PortableLayout.translate(new ScreenRectangle(SCROLLBAR_X, SCROLLBAR_Y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT), panel.left(), panel.top());
+        draggingScrollbar = false;
+        channelManager.addScreen(this);
+
+        searchBox = new EditBox(font, leftPos + 7, topPos + 118, 76, 12,
+                Component.translatable("gui.avaritia.search"));
+        searchBox.setMaxLength(64);
+        searchBox.setBordered(false);
+        searchBox.setHint(Component.translatable("gui.avaritia.search"));
+        searchBox.setValue(query);
+        searchBox.setResponder(ignored -> updateChannelList());
+        addRenderableWidget(UiInspector.name(searchBox, "channels.search"));
+
+        channelButtons.clear();
+        for (int row = 0; row < ROWS; row++) {
+            ChannelRowButton button = new ChannelRowButton(listBounds.left(),
+                    listBounds.top() + row * ROW_HEIGHT, row);
+            channelButtons.add(button);
+            addRenderableWidget(button);
         }
-        this.updateChannelList();
+
+        LegacyIconButton addButton = new LegacyIconButton(leftPos + 7, topPos + 131,
+                18, 18, 202, 0, 18, this::openAddDialog);
+        addButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.addChannel.tip2")
+                .append("\n").append(Component.translatable("gui.avaritia.addChannel.tip3"))));
+        addRenderableWidget(UiInspector.name(addButton, "channels.add"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 27, topPos + 131,
+                16, 16, 202, 34, 16, this::openRenameDialog), "channels.rename"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 47, topPos + 131,
+                16, 16, 202, 18, 16, () -> sendMenuButton(0)), "channels.delete"));
+        LegacyIconButton backButton = new LegacyIconButton(leftPos + 67, topPos + 131,
+                16, 16, 202, 50, 16, () -> sendMenuButton(1));
+        backButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.backChannel.tip1")));
+        addRenderableWidget(UiInspector.name(backButton, "channels.back"));
+
+        updateChannelList();
     }
 
-    @Override
-    @ParametersAreNonnullByDefault
-    public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    private void openAddDialog() {
+        PortableUi.prompt(this, Component.translatable("gui.avaritia.addChannel.tip2"), "默认的频道", 64, false,
+                input -> NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
+                        new C2SAddChannelPack(input, hasShiftDown())));
     }
 
-    @Override
-    protected void containerTick() {
-        super.containerTick();
-        //nameBox.tick();
-        searchBox.tick();
-        // 检查频道数量是否发生变化
-        if (channelManager.myChannels.size() != lastMyChannelsCount ||
-                channelManager.otherChannels.size() != lastOtherChannelsCount ||
-                channelManager.publicChannels.size() != lastPublicChannelsCount) {
+    private void openRenameDialog() {
+        if (channelManager.selectedChannelName.isEmpty() || channelManager.selectedChannelType == 1) {
+            return;
+        }
+        int selectedId = channelManager.selectedChannelID;
+        int selectedType = channelManager.selectedChannelType;
+        PortableUi.prompt(this, Component.translatable("gui.avaritia.renameChannel.tip1", channelManager.selectedChannelName),
+                channelManager.selectedChannelName, 64, false, input -> {
+                    if (channelManager.selectedChannelID == selectedId
+                            && channelManager.selectedChannelType == selectedType) {
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
+                                new C2SRenameChannelPack(menu.containerId, input));
+                    }
+                });
+    }
 
-            updateChannelList();
-            lastMyChannelsCount = channelManager.myChannels.size();
-            lastOtherChannelsCount = channelManager.otherChannels.size();
-            lastPublicChannelsCount = channelManager.publicChannels.size();
+    private void sendMenuButton(int id) {
+        if (minecraft != null && minecraft.gameMode != null) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
         }
     }
 
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void renderBg(GuiGraphics poseStack, float partialTick, int mouseX, int mouseY) {
-        //RenderSystem.setShaderTexture(0, GUI_IMG);
-        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, imageWidth, 154);
-        //this.blit(poseStack, this.leftPos, this.topPos + 98, 0, 7, imageWidth, 151);
+    private void selectChannel(int row) {
+        ChannelEntry entry = rowEntry(row);
+        if (entry != null) {
+            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
+                    new C2SSetChannelPack(menu.containerId, entry.type, entry.id));
+        }
+    }
+
+    private ChannelEntry rowEntry(int row) {
+        int index = scrollOffset + row;
+        return index >= 0 && index < filteredChannels.size() ? filteredChannels.get(index) : null;
     }
 
     public void updateChannelList() {
-        filterChannels.clear();
-        ArrayList<int[]> temp = new ArrayList<>();
-
-        channelManager.myChannels.forEach((integer, s) -> {
-            if (s.contains(searchBox.getValue())) temp.add(new int[]{0, integer});
-        });
-        temp.sort((o1, o2) -> channelManager.myChannels.get(o1[1]).compareTo(channelManager.myChannels.get(o2[1])));
-        filterChannels.addAll(temp);
-
-        temp.clear();
-        channelManager.otherChannels.forEach((integer, s) -> {
-            if (s.contains(searchBox.getValue())) temp.add(new int[]{1, integer});
-        });
-        temp.sort((o1, o2) -> channelManager.otherChannels.get(o1[1]).compareTo(channelManager.otherChannels.get(o2[1])));
-        filterChannels.addAll(temp);
-
-        temp.clear();
-        channelManager.publicChannels.forEach((integer, s) -> {
-            if (s.contains(searchBox.getValue())) temp.add(new int[]{2, integer});
-        });
-        temp.sort((o1, o2) -> channelManager.publicChannels.get(o1[1]).compareTo(channelManager.publicChannels.get(o2[1])));
-        filterChannels.addAll(temp);
-
-        scrollBar.setScrollTagSize(10.0D / filterChannels.size() * 182);
-    }
-
-    @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if (pButton == 1) {
-            if (searchBox.isMouseOver(pMouseX, pMouseY)) {
-                searchBox.setValue("");
-                searchBox.setFocused(true);
-                searchBox.setEditable(true);
-                updateChannelList();
-            }
+        if (searchBox == null) {
+            return;
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+        String filter = searchBox.getValue().strip().toLowerCase(Locale.ROOT);
+        filteredChannels.clear();
+        appendChannels((byte) 0, channelManager.myChannels, filter);
+        appendChannels((byte) 1, channelManager.otherChannels, filter);
+        appendChannels((byte) 2, channelManager.publicChannels, filter);
+        setScrollOffset(scrollOffset);
+    }
+
+    private void appendChannels(byte type, Map<Integer, String> channels, String filter) {
+        channels.entrySet().stream()
+                .filter(entry -> filter.isEmpty() || entry.getValue().toLowerCase(Locale.ROOT).contains(filter))
+                .sorted(Map.Entry.comparingByValue(String.CASE_INSENSITIVE_ORDER))
+                .map(entry -> new ChannelEntry(type, entry.getKey(), entry.getValue()))
+                .forEach(filteredChannels::add);
+    }
+
+    static int maxScrollOffset(int channelCount) {
+        return Math.max(0, channelCount - ROWS);
+    }
+
+    private void setScrollOffset(int value) {
+        scrollOffset = Math.max(0, Math.min(maxScrollOffset(filteredChannels.size()), value));
+        for (int row = 0; row < channelButtons.size(); row++) {
+            channelButtons.get(row).visible = rowEntry(row) != null;
+        }
+        updateScrollbar();
+    }
+
+    private void updateScrollbar() {
+        int handleHeight = filteredChannels.size() <= ROWS ? scrollbar.height()
+                : Math.max(8, ROWS * scrollbar.height() / filteredChannels.size());
+        int maximumOffset = maxScrollOffset(filteredChannels.size());
+        int travel = scrollbar.height() - handleHeight;
+        int handleY = scrollbar.top() + (maximumOffset == 0 ? 0 : scrollOffset * travel / maximumOffset);
+        scrollbarHandle = new ScreenRectangle(scrollbar.left(), handleY, scrollbar.width(), handleHeight);
+    }
+
+    private void updateScrollFromMouse(double mouseY) {
+        int maximumOffset = maxScrollOffset(filteredChannels.size());
+        if (maximumOffset == 0) {
+            setScrollOffset(0);
+            return;
+        }
+        int handleHeight = scrollbarHandle.height();
+        double ratio = (mouseY - scrollbar.top() - handleHeight / 2.0D)
+                / Math.max(1, scrollbar.height() - handleHeight);
+        setScrollOffset((int) Math.round(Math.max(0.0D, Math.min(1.0D, ratio)) * maximumOffset));
     }
 
     @Override
-    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
-        scrollBar.mouseReleased(pMouseX, pMouseY, pButton);
-        return super.mouseReleased(pMouseX, pMouseY, pButton);
-    }
-
-    @Override
-    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        if (scrollBar.isScrolling()) scrollBar.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-    }
-
-    @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        if (pMouseX >= leftPos + 21 && pMouseX <= leftPos + 187 && pMouseY >= topPos + 7 && pMouseY <= topPos + 189) {
-            if (filterChannels.size() <= 10) {
-                scrollAt = 0;
-                scrollBar.setScrolledOn(0.0D);
-            } else {
-                int a;
-                if (pDelta <= 0) a = scrollAt + 1;
-                else a = scrollAt - 1;
-                scrollAt = Math.max(0, Math.min(filterChannels.size() - 10, a));
-                scrollBar.setScrolledOn((double) scrollAt / (filterChannels.size() - 10));
-            }
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (delta != 0.0D && PortableLayout.contains(panel, mouseX, mouseY)) {
+            setScrollOffset(scrollOffset + (delta > 0.0D ? -1 : 1));
             return true;
-        } else return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+        }
+        return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
     @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (pKeyCode == InputConstants.KEY_LSHIFT) lShifting = true;
-        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 1 && searchBox.isMouseOver(mouseX, mouseY)) {
+            searchBox.setValue("");
+            searchBox.setFocused(true);
+            return true;
+        }
+        if (button == 0 && PortableLayout.contains(scrollbar, mouseX, mouseY)) {
+            draggingScrollbar = true;
+            updateScrollFromMouse(mouseY);
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
-        if (searchBox.isFocused()) updateChannelList();
-        if (pKeyCode == InputConstants.KEY_LSHIFT) lShifting = false;
-        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (draggingScrollbar) {
+            updateScrollFromMouse(mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
-    private class ChannelScrollBar extends SimpleScrollBar {
-
-        public ChannelScrollBar(int x, int y, int weight, int height) {
-            super(x, y, weight, height);
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            draggingScrollbar = false;
         }
-
-        @Override
-        public void draggedTo(double scrolledOn) {
-            if (filterChannels.size() <= 10) scrollAt = 0;
-            else scrollAt = Math.round((float) (scrolledOn * (filterChannels.size() - 10)));
-        }
-
-        @Override
-        public void beforeRender() {
-        }
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private class ChannelButton extends ImageButton {
+    @Override
+    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        graphics.blit(GUI_IMG, panel.left(), panel.top(), 0, 0, panel.width(), panel.height(), TEXTURE_SIZE, TEXTURE_SIZE);
+        UiInspector.region("channels.list", listBounds, listBounds, true);
+        UiInspector.region("channels.scrollbar", scrollbar, null, filteredChannels.size() > ROWS);
+    }
 
-        private final int buttonID;
+    @Override
+    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+    }
 
-        public ChannelButton(int pX, int pY, int id) {
-            super(pX, pY, 64, 12, 0, 154, GUI_IMG, button -> {
-                int[] a = filterChannels.get(id + scrollAt);
-                NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SSetChannelPack(menu.containerId, (byte) a[0], a[1]));
-            });
-            this.buttonID = id;
+    @Override
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderScrollbar(graphics);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    private void renderScrollbar(GuiGraphics graphics) {
+        if (filteredChannels.size() <= ROWS || scrollbarHandle == null) {
+            return;
+        }
+        graphics.fill(scrollbarHandle.left() + 2, scrollbarHandle.top(),
+                scrollbarHandle.right() - 2, scrollbarHandle.bottom(), 0xFF777777);
+        graphics.renderOutline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
+                scrollbarHandle.width() - 2, scrollbarHandle.height() + 2, 0xFF202020);
+    }
+
+    @Override
+    public void onClose() {
+        channelManager.onScreenClose();
+        super.onClose();
+    }
+
+    private record ChannelEntry(byte type, int id, String name) {
+    }
+
+    private final class ChannelRowButton extends ImageButton {
+        private final int row;
+
+        private ChannelRowButton(int x, int y, int row) {
+            super(x, y, listBounds.width(), ROW_HEIGHT, 0, 154, GUI_IMG, ignored -> selectChannel(row));
+            this.row = row;
         }
 
         @Override
-        @ParametersAreNonnullByDefault
-        public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            this.visible = buttonID + scrollAt < filterChannels.size();
-            super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        }
-
-        @Override
-        public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int[] a = filterChannels.get(buttonID + scrollAt);
-            float vOffset = this.isHoveredOrFocused() ? 166.0F : 154.0F;
-            if (a[0] == channelManager.selectedChannelType && a[1] == channelManager.selectedChannelID) vOffset += 24;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), 0.0F, vOffset, this.width, this.height, 256, 256);
-            String channelName;
-            switch (a[0]) {
-                case 0 -> channelName = "§a" + channelManager.myChannels.get(a[1]);
-                case 1 -> channelName = "§c" + channelManager.otherChannels.get(a[1]);
-                default -> channelName = channelManager.publicChannels.get(a[1]);
+        public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            ChannelEntry entry = rowEntry(row);
+            if (entry == null) {
+                return;
             }
-            pPoseStack.drawString(font, channelName, this.getX() + 4.0F, this.getY() + 4.0F, 16777215, false);
-        }
-
-    }
-
-    private class AddChannelButton extends ImageButton {
-        public AddChannelButton(TesseractChannelScreen pScreen, int pX, int pY) {
-            super(pX, pY, 18, 18, 202, 0, GUI_IMG, pButton -> {
-                Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
-                    if (!input.isEmpty()) {
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SAddChannelPack(input, lShifting));
-                        pScreen.updateChannelList();
-                    }
-                }));
-            });
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            float uOffset = this.isHoveredOrFocused() ? 220.0F : 202.0F;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 0, this.width, this.height, 256, 256);
-            List<FormattedCharSequence> list = new ArrayList<>();
-            list.add(Component.translatable("gui.avaritia.addChannel.tip2").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.addChannel.tip3").getVisualOrderText());
-            //list.add(Component.translatable("gui.avaritia.addChannel.tip4").getVisualOrderText());
-            if (this.isHovered) setTooltipForNextRenderPass(list);
-        }
-    }
-
-    private class RenameButton extends ImageButton {
-
-        public RenameButton(TesseractChannelScreen pScreen, int pX, int pY) {
-            super(pX, pY, 16, 16, 202, 34, GUI_IMG, pButton -> {
-                Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入新的频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
-                    if (!input.isEmpty()) {
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SRenameChannelPack(menu.containerId, input));
-                        pScreen.updateChannelList();
-                    }
-                }));
-            });
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 34, this.width, this.height, 256, 256);
-            List<FormattedCharSequence> list = new ArrayList<>();
-            if (channelManager.selectedChannelName.isEmpty()) {
-                list.add(Component.translatable("gui.avaritia.emptyChannel.tip4").getVisualOrderText());
-            } else {
-                String flag1 = "";
-                boolean permissions = true;
-                if (channelManager.selectedChannelType == 0) flag1 = "§a";
-                    //频道名非空，类型为-1(其实非0和2就行)，代表是其他人设置的频道。
-                else if (channelManager.selectedChannelType != 2) {
-                    flag1 = "§c";
-                    permissions = false;
-                }
-                list.add(Component.translatable("gui.avaritia.renameChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
-                if (!permissions)
-                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+            int vOffset = 154;
+            if (isHoveredOrFocused()) {
+                vOffset += 12;
             }
-            if (this.isHovered) setTooltipForNextRenderPass(list);
-        }
-
-    }
-
-    private class DeleteButton extends ImageButton {
-
-        public DeleteButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 202, 18, GUI_IMG, pButton ->
-                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0));
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 18, this.width, this.height, 256, 256);
-            List<FormattedCharSequence> list = new ArrayList<>();
-            if (channelManager.selectedChannelName.isEmpty()) {
-                list.add(Component.translatable("gui.avaritia.emptyChannel.tip4").getVisualOrderText());
-            } else {
-                String flag1 = "";
-                boolean permissions = true;
-                if (channelManager.selectedChannelType == 0) flag1 = "§a";
-                else if (channelManager.selectedChannelType != 2) {
-                    flag1 = "§c";
-                    permissions = false;
-                }
-                list.add(Component.translatable("gui.avaritia.removeChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
-                list.add(Component.translatable("gui.avaritia.removeChannel.tip2").getVisualOrderText());
-                if (!permissions)
-                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+            if (entry.type == channelManager.selectedChannelType && entry.id == channelManager.selectedChannelID) {
+                vOffset += 24;
             }
-            if (this.isHovered) setTooltipForNextRenderPass(list);
+            graphics.blit(GUI_IMG, getX(), getY(), 0, vOffset, width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+            if (UiInspector.enabled()) {
+                long key = ((long) entry.type << 32) | Integer.toUnsignedLong(entry.id);
+                UiInspector.row("channels.list", key, scrollOffset + row, getX(), getY(), getWidth(), getHeight(), listBounds, active);
+            }
+            int color = switch (entry.type) {
+                case 0 -> 0x55FF55;
+                case 1 -> 0xFF5555;
+                default -> 0xFFFFFF;
+            };
+            String label = font.plainSubstrByWidth(entry.name, getWidth() - 8);
+            graphics.drawString(font, label, getX() + 4, getY() + 2, color, false);
         }
-
     }
 
-    private class BackButton extends ImageButton {
+    private final class LegacyIconButton extends ImageButton {
+        private final int u;
+        private final int v;
+        private final int hoverOffset;
 
-        public BackButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 202, 50, GUI_IMG, pButton ->
-                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1));
+        private LegacyIconButton(int x, int y, int buttonWidth, int buttonHeight,
+                                 int u, int v, int hoverOffset, Runnable action) {
+            super(x, y, buttonWidth, buttonHeight, 0, 0, GUI_IMG, ignored -> action.run());
+            this.u = u;
+            this.v = v;
+            this.hoverOffset = hoverOffset;
         }
 
         @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            List<FormattedCharSequence> list = new ArrayList<>();
-            float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 50, this.width, this.height, 256, 256);
-            list.add(Component.translatable("gui.avaritia.backChannel.tip1").getVisualOrderText());
-            if (this.isHovered) setTooltipForNextRenderPass(list);
+        public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            int uOffset = isHoveredOrFocused() ? u + hoverOffset : u;
+            graphics.blit(GUI_IMG, getX(), getY(), uOffset, v, width, height, TEXTURE_SIZE, TEXTURE_SIZE);
         }
     }
 }

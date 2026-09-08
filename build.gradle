@@ -219,6 +219,18 @@ test {
     useJUnitPlatform()
 }
 
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 /**
  * Configures properties common to all run configurations
  */
@@ -244,10 +256,14 @@ legacyForge {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
+        "${mod_id}_gametest" {
+            sourceSet sourceSets.gameTest
+        }
     }
 
     runs {
         configureEach {
+            loadedMods = [mods."${mod_id}"]
             gameDirectory = project.file('run')
             systemProperties.putAll(commonSystemProperties)
             jvmArguments.addAll(
@@ -257,12 +273,15 @@ legacyForge {
         }
         client {
             client()
+            if (providers.gradleProperty('uiInspect').map { it.toBoolean() }.getOrElse(false)) {
+                systemProperty 'avaritia.ui.inspect', 'true'
+                systemProperty 'avaritia.ui.inspectOutput', layout.buildDirectory.dir('ui-inspection').get().asFile.absolutePath
+                gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
+            }
         }
         gametestWorld {
             client()
-            programArguments.addAll(
-                    "--username", "Dev", "--quickPlaySingleplayer", "New World"
-            )
+            gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
         }
         server {
             server()
@@ -276,14 +295,17 @@ legacyForge {
                     '--existing', file('src/main/resources').absolutePath
             )
         }
-        // Use to run the tests
         gametest {
             type = "gameTestServer"
+            systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
             gameDirectory = project.file("build/gametest")
+            sourceSet = sourceSets.gameTest
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_gametest"]
         }
     }
 
     addModdingDependenciesTo(sourceSets.test)
+    addModdingDependenciesTo(sourceSets.gameTest)
 }
 
 

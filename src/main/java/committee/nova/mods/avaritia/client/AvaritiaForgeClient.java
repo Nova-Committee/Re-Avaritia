@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
+import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
@@ -90,11 +91,13 @@ public class AvaritiaForgeClient {
             mc.setScreen(new AvaritiaConfigScreen(mc.screen));
         }
 
-        // region filter 过滤界面
         while (FILTER_KEY.consumeClick()) {
             if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof IFilterItem) {
                 Minecraft.getInstance().setScreen(new ItemFilterScreen());
             }
+        }
+        while (RING_KEY.consumeClick()) {
+            NetworkHandler.CHANNEL.sendToServer(new C2SOpenRingPack());
         }
         // endregion
 

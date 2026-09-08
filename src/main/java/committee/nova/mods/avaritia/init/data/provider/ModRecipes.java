@@ -453,6 +453,23 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('e', ModItems.infinity_catalyst.get())
                 .unlockedBy("has_block", has(ModBlocks.end_crafting_table.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.infinity_ring.get())
+                .pattern("  aaaaa  ")
+                .pattern(" accccca ")
+                .pattern("ac bbb ca")
+                .pattern("acb d bca")
+                .pattern("acbdedbca")
+                .pattern("acb d bca")
+                .pattern("ac bbb ca")
+                .pattern(" accccca ")
+                .pattern("  aaaaa  ")
+                .define('a', ModItems.infinity_ingot.get())
+                .define('b', ModItems.neutron_ingot.get())
+                .define('c', ModItems.crystal_matrix_ingot.get())
+                .define('d', ModItems.endest_pearl.get())
+                .define('e', ModItems.neutron_ring.get())
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.END_PORTAL_FRAME, 2)
                 .pattern("     ")
                 .pattern("fghgf")

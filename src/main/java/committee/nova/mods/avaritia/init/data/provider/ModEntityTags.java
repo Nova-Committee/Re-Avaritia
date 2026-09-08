@@ -42,5 +42,26 @@ public class ModEntityTags extends EntityTypeTagsProvider {
                 tag(ModTags.NEUTRAL_CREATURES).add(entityType);
             }
         });
+        tag(ModTags.AQUATIC_CAPTURABLE).add(
+                net.minecraft.world.entity.EntityType.COD,
+                net.minecraft.world.entity.EntityType.SALMON,
+                net.minecraft.world.entity.EntityType.PUFFERFISH,
+                net.minecraft.world.entity.EntityType.TROPICAL_FISH,
+                net.minecraft.world.entity.EntityType.AXOLOTL,
+                net.minecraft.world.entity.EntityType.TADPOLE,
+                net.minecraft.world.entity.EntityType.SQUID,
+                net.minecraft.world.entity.EntityType.GLOW_SQUID,
+                net.minecraft.world.entity.EntityType.DOLPHIN
+        );
+        ForgeRegistries.ENTITY_TYPES.getValues().forEach(entityType -> {
+            MobCategory category = entityType.getCategory();
+            if (category == MobCategory.WATER_CREATURE
+                    || category == MobCategory.UNDERGROUND_WATER_CREATURE
+                    || category == MobCategory.WATER_AMBIENT
+                    || category == MobCategory.AXOLOTLS) {
+                tag(ModTags.AQUATIC_CAPTURABLE).add(entityType);
+            }
+        });
+        tag(ModTags.CAPTURING_NOT_SUPPORTED);
     }
 }

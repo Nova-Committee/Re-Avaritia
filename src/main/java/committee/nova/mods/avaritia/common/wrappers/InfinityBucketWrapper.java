@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.wrappers;
 
+import committee.nova.mods.avaritia.common.item.misc.InfinityBucketContents;
 import committee.nova.mods.avaritia.common.item.misc.InfinityBucketItem;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +14,7 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProvider {
@@ -31,10 +33,11 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
 
     @Override
     public @NotNull FluidStack getFluidInTank(int tank) {
-        return InfinityBucketItem.getFluids(container).stream()
-                .skip(tank)
-                .findFirst()
-                .orElse(FluidStack.EMPTY);
+        List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
+        if (tank < 0 || tank >= fluids.size()) {
+            return FluidStack.EMPTY;
+        }
+        return fluids.get(tank);
     }
 
     @Override
@@ -49,34 +52,60 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
 
     @Override
     public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
-        if (container.getCount() != 1 && resource.isEmpty()) {
+        if (container.getCount() != 1 || resource.isEmpty()) {
             return 0;
         }
 
         List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
-
-        FluidStack contained = fluids.stream()
-                .filter(fluid -> fluid.isFluidEqual(resource))
-                .findFirst()
-                .orElse(FluidStack.EMPTY);
+        FluidStack contained = FluidStack.EMPTY;
+        for (FluidStack fluid : fluids) {
+            if (fluid.isFluidEqual(resource)) {
+                contained = fluid;
+                break;
+            }
+        }
 
         int fillAmount;
         if (contained.isEmpty()) {
+            if (fluids.size() >= InfinityBucketContents.MAX_FLUID_ENTRIES) {
+                return 0;
+            }
             fillAmount = resource.getAmount();
+            if (fillAmount <= 0) {
+                return 0;
+            }
             FluidStack filled = resource.copy();
             filled.setAmount(fillAmount);
-            fluids.add(0, filled);
+            List<FluidStack> proposed = new ArrayList<>(fluids);
+            proposed.add(filled);
+            if (!InfinityBucketContents.canStore(proposed, InfinityBucketItem.getCreatures(container))) {
+                return 0;
+            }
+            if (action.execute()) {
+                if (!InfinityBucketItem.trySetFluids(container, proposed)) {
+                    return 0;
+                }
+            }
         } else {
             fillAmount = Math.min(Integer.MAX_VALUE - contained.getAmount(), resource.getAmount());
-            contained.grow(fillAmount);
-            fluids.remove(contained);
-            fluids.add(0, contained);
+            if (fillAmount <= 0) {
+                return 0;
+            }
+            FluidStack grown = contained.copy();
+            grown.grow(fillAmount);
+            List<FluidStack> proposed = new ArrayList<>(fluids.size());
+            for (FluidStack fluid : fluids) {
+                proposed.add(fluid.isFluidEqual(contained) ? grown : fluid.copy());
+            }
+            if (!InfinityBucketContents.canStore(proposed, InfinityBucketItem.getCreatures(container))) {
+                return 0;
+            }
+            if (action.execute()) {
+                if (!InfinityBucketItem.trySetFluids(container, proposed)) {
+                    return 0;
+                }
+            }
         }
-
-        if (action.execute()) {
-            InfinityBucketItem.setFluids(container, fluids);
-        }
-
         return fillAmount;
     }
 
@@ -85,11 +114,28 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
         if (container.getCount() != 1 || resource.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        FluidStack firstContained = InfinityBucketItem.getFluids(container).stream().findFirst().orElse(FluidStack.EMPTY);
-        if (!resource.isFluidEqual(firstContained)) {
-            return FluidStack.EMPTY;
+        List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
+        for (int i = 0; i < fluids.size(); i++) {
+            FluidStack contained = fluids.get(i);
+            if (!resource.isFluidEqual(contained)) {
+                continue;
+            }
+            int drainAmount = Math.min(contained.getAmount(), resource.getAmount());
+            if (drainAmount <= 0) {
+                return FluidStack.EMPTY;
+            }
+            FluidStack drained = contained.copy();
+            drained.setAmount(drainAmount);
+            if (action.execute()) {
+                contained.shrink(drainAmount);
+                if (contained.isEmpty()) {
+                    fluids.remove(i);
+                }
+                InfinityBucketItem.setFluids(container, fluids);
+            }
+            return drained;
         }
-        return drain(resource.getAmount(), action);
+        return FluidStack.EMPTY;
     }
 
     @Override
@@ -97,26 +143,17 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
         if (container.getCount() != 1 || maxDrain <= 0) {
             return FluidStack.EMPTY;
         }
-
-        List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
-        FluidStack firstContained = fluids.stream().findFirst().orElse(FluidStack.EMPTY);
-        if (firstContained.isEmpty()) {
+        FluidStack selected = InfinityBucketItem.getSelectedFluid(container);
+        if (selected.isEmpty()) {
+            List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
+            selected = fluids.isEmpty() ? FluidStack.EMPTY : fluids.get(0);
+        }
+        if (selected.isEmpty()) {
             return FluidStack.EMPTY;
         }
-
-        int drainAmount = Math.min(firstContained.getAmount(), maxDrain);
-        FluidStack drained = firstContained.copy();
-        drained.setAmount(drainAmount);
-        firstContained.shrink(drainAmount);
-        if (firstContained.isEmpty()) {
-            fluids.remove(firstContained);
-        }
-
-        if (action.execute()) {
-            InfinityBucketItem.setFluids(container, fluids);
-        }
-
-        return drained;
+        FluidStack request = selected.copy();
+        request.setAmount(Math.min(selected.getAmount(), maxDrain));
+        return drain(request, action);
     }
 
     @Override

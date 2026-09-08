@@ -36,5 +36,7 @@ public class ModTags {
     public static final TagKey<Block> NEEDS_INFINITY_TOOL = BlockTags.create(Const.rl("needs_infinity_tool"));
 
     public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", "neutral_creatures"));
+    public static final TagKey<EntityType<?>> AQUATIC_CAPTURABLE = TagKey.create(Registries.ENTITY_TYPE, Const.rl("aquatic_capturable"));
+    public static final TagKey<EntityType<?>> CAPTURING_NOT_SUPPORTED = TagKey.create(Registries.ENTITY_TYPE, Const.rl("capturing_not_supported"));
 
 }

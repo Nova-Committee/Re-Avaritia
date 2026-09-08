@@ -73,9 +73,7 @@
   "advancements.avaritia.singularity.title": "Запаси закінчуються",
   "advancements.avaritia.star_fuel.desc": "Отримайте зоряне паливо",
   "advancements.avaritia.star_fuel.title": "Зоряна енергія",
-
   "attribute.name.generic.walking_speed": "ШВИДКОСТИ ХОДІННЯ",
-
   "block.avaritia.blaze_cube_block": "Блок пломеневих кубів",
   "block.avaritia.compressed_chest": "Стиснута скриня",
   "block.avaritia.compressed_crafting_table": "Стиснений верстак",
@@ -105,7 +103,6 @@
   "block.avaritia.soul_farmland": "Рілля душ",
   "block.avaritia.star_fuel_block": "Блок зоряного палива",
   "block.avaritia.tesseract": "Тесеракт",
-
   "button.avaritia.side_config_button_1": "Налаштувати вхід та вихід",
   "button.avaritia.side_config_button_2": "Клацніть, щоб відкрити інтерфейс налаштування шести сторін",
   "button.avaritia.lock_button_1": "Рецепт заблокований",
@@ -114,7 +111,6 @@
   "button.avaritia.lock_button_4": "Можна заблокувати, коли є рецепт",
   "button.avaritia.eject_button_1": "Вивести матеріал",
   "button.avaritia.eject_button_2": "Натисніть, щоб забрати всі матеріали в інвентар",
-
   "config.avaritia.axe_chain_count": "Значення ланцюгування сокири",
   "config.avaritia.axe_chain_count.tooltip": "Кількість одночасно зрубуваних дерев сокирою нескінченності",
   "config.avaritia.blade_slash_damage": "Шкода змаху леза",
@@ -221,13 +217,11 @@
   "config.jade.plugin_avaritia.compressor": "Компресор",
   "config.jade.plugin_avaritia.crafting_table": "Майстрування Avaritia",
   "config.jade.plugin_avaritia.extreme_smithing": "Екстремальне кування",
-
   "container.end_crafting_table": "Майстрування Енду",
   "container.extreme_crafting_table": "Екстремальне майстрування",
   "container.nether_crafting_table": "Незерське майстрування",
   "container.sculk_crafting_table": "Скалкове майстрування",
   "container.extreme_smithing": "Екстремальне кування",
-
   "death.attack.infinity": "%2$s стер %1$s із реальності",
   "death.attack.infinity.0": "%1$s було пошматовано",
   "death.attack.infinity.1": "%1$s розрізався на скибочки",
@@ -240,17 +234,14 @@
   "death.attack.infinity.player.2": "%2$s викреслив %1$s з існування",
   "death.attack.infinity.player.3": "%2$s перевбив %1$s",
   "death.attack.infinity.player.4": "%2$s анігілював %1$s",
-
   "direction.avaritia.down": "вниз",
   "direction.avaritia.east": "схід",
   "direction.avaritia.north": "північ",
   "direction.avaritia.south": "південь",
   "direction.avaritia.up": "вгорі",
   "direction.avaritia.west": "захід",
-
   "effect.avaritia.burning": "Горіння",
   "effect.avaritia.burning.description": "Кожні 20 тактів (1 секунда) завдає шкоди від вогню, що дорівнює 5% від максимального запасу здоров’я.\n\nЦей дебаф змушує істоту втрачати здоров’я, і його дію можна послабити лише водою або сипким снігом.\n\nЕфект втрати здоров’я схожий на дію ефектів Висушення або Отруєння.",
-
   "emi.category.avaritia.compressor": "Нейтронієвий компресор",
   "emi.category.avaritia.end_crafting_table": "Майстрування Енду",
   "emi.category.avaritia.extreme_crafting_table": "Екстремальне майстрування",
@@ -260,7 +251,6 @@
   "emi.tooltip.avaritia.neutron_collector": "Збирає купки нейтронів",
   "emi.tooltip.avaritia.neutron_pile": "Зі збирачем нейтронів ви зможете отримати купку нейтронів за деякий час",
   "emi.tooltip.shapeless.recipe": "Безформний рецепт",
-
   "gui.avaritia.addChannel.tip1": "Додати \"%d\"",
   "gui.avaritia.addChannel.tip2": "§aЛКМ§r: Додати до себе",
   "gui.avaritia.addChannel.tip3": "§dShift§r + §aЛКМ§r: Додати до публічних",
@@ -328,7 +318,6 @@
   "gui.avaritia.view.all": "§aУсе",
   "gui.avaritia.view.fluid": "§aРідини",
   "gui.avaritia.view.item": "§aПредмети",
-
   "info.avaritia.channel.add_success": "Успішно додано канал: %s %s %s",
   "info.avaritia.channel.load_error": "Помилка завантаження каналу!",
   "info.avaritia.channel.load_finish": "Завантаження каналу завершене!",
@@ -339,7 +328,6 @@
   "info.avaritia.infinity_chest.load_finish": "Завантаження скрині нескінченності завершене!",
   "info.avaritia.infinity_chest.load_success": "Успішно завантажено скриню нескінченності: %s %s %s",
   "info.avaritia.infinity_chest.save_success": "Успішно збережено скриню нескінченності: %s %s %s",
-
   "item.avaritia.blaze_axe": "Сокира буйного полум'я",
   "item.avaritia.blaze_bow": "Пломеневий сяйний лук",
   "item.avaritia.blaze_cube": "Пломеневий куб",
@@ -375,7 +363,7 @@
   "item.avaritia.infinity_nugget": "Самородок нескінченності",
   "item.avaritia.infinity_pants": "Штани нескінченності",
   "item.avaritia.infinity_pickaxe": "Світоруйнівник",
-  "item.avaritia.infinity_ring": "Кільце нескінченності (WIP)",
+  "item.avaritia.infinity_ring": "Кільце нескінченності",
   "item.avaritia.infinity_shield": "Щит ядра Землі",
   "item.avaritia.infinity_shovel": "Пожирач планет",
   "item.avaritia.infinity_sword": "Меч Космосу",
@@ -397,10 +385,8 @@
   "item.avaritia.star_fuel": "Зоряне паливо",
   "item.avaritia.ultimate_stew": "Ультимативне рагу",
   "item.avaritia.upgrade_smithing_template": "Ковальський шаблон покращення",
-
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "itemGroup.tab.Singularity": "Avaritia: Сингулярності",
-
   "jei.category.avaritia.compressor": "Нейтронієвий компресор",
   "jei.category.avaritia.end_crafting_table": "Майстрування Енду",
   "jei.category.avaritia.extreme_crafting_table": "Екстремальне майстрування",
@@ -415,17 +401,13 @@
   "jei.tooltip.avaritia.neutron_pile": "Зі збирачем нейтронів ви зможете отримати купку нейтронів за деякий час",
   "jei.tooltip.avaritia.refined_coal": "Можна отримати, рублячи колоди сокирою буйного полум'я",
   "jei.tooltip.shapeless.recipe": "Безформний рецепт",
-
   "key.avaritia.categories": "Прив'язки клавіш Avaritia",
   "key.avaritia.config": "Відкрити конфігурацію Avaritia",
   "key.avaritia.filter": "Відкрити екран фільтра",
   "key.avaritia.neutron_ring": "Відкрити нейтронне кільце",
-
   "rarity.cosmic.name": "Космічний",
   "rarity.legend.name": "Легендарний",
-
   "screen.avaritia.side_config.title": "Налаштування логістики",
-
   "singularity.avaritia.aluminum": "Алюмінієва",
   "singularity.avaritia.amethyst_shard": "Аметистова",
   "singularity.avaritia.blue_ice": "Синя льодяна",
@@ -455,10 +437,8 @@
   "singularity.avaritia.titanium": "Тинанова",
   "singularity.avaritia.uranium": "Уранова",
   "singularity.avaritia.zinc": "Цинкова",
-
   "title.avaritia.config.title": "Re: Avaritia",
   "title.avaritia.resourcepack": "Старі текстури Avaritia",
-
   "tooltip.armor.desc": "Обладунки",
   "tooltip.armor_toughness.desc": "Твердість обладунків",
   "tooltip.avaritia.active": "Режим %s активний!",
@@ -488,6 +468,44 @@
   "tooltip.avaritia.inactive": "Режим %s неактивний!",
   "tooltip.avaritia.infinity_bucket.desc": "Поглинути усе...",
   "tooltip.avaritia.infinity_bucket.message": "Поточна рідина: %s | Кількість: %s мВ",
+  "tooltip.avaritia.infinity_bucket.creatures": "Збережені істоти: %s",
+  "tooltip.avaritia.infinity_bucket.force.on": "Примусове розміщення: УВІМК.",
+  "tooltip.avaritia.infinity_bucket.creature_message": "Поточна істота: %s",
+  "container.avaritia.infinity_bucket": "Відро нескінченності",
+  "gui.avaritia.infinity_bucket.search": "Пошук",
+  "gui.avaritia.infinity_bucket.tab.fluids": "Рідини",
+  "gui.avaritia.infinity_bucket.tab.creatures": "Істоти",
+  "gui.avaritia.infinity_bucket.delete": "Видалити",
+  "gui.avaritia.infinity_bucket.clear": "Очистити",
+  "gui.avaritia.infinity_bucket.confirm": "Підтвердити?",
+  "gui.avaritia.infinity_bucket.transfer_in": "Налити в відро",
+  "gui.avaritia.infinity_bucket.transfer_out": "Налити в предмет",
+  "gui.avaritia.infinity_bucket.force.on": "Примус УВІМК.",
+  "gui.avaritia.infinity_bucket.force.off": "Примус ВИМК.",
+  "gui.avaritia.infinity_bucket.selected.empty": "Обрано: немає",
+  "gui.avaritia.infinity_bucket.selected.fluid": "Обрано: %s (%s мВ)",
+  "gui.avaritia.infinity_bucket.selected.creature": "Обрано: %s",
+  "gui.avaritia.infinity_bucket.amount": "Кількість: %s мВ",
+  "tooltip.avaritia.infinity_bucket.storage_full": "Досягнуто межу сховища Відра нескінченності",
+  "gui.avaritia.infinity_bucket.clear.confirm": "Підтвердити очищення",
+  "gui.avaritia.infinity_bucket.delete.confirm": "Підтвердити видалення",
+  "gui.avaritia.infinity_bucket.empty": "Порожньо",
+  "gui.avaritia.infinity_bucket.over_capacity": "Досягнуто межу сховища Відра нескінченності",
+  "gui.avaritia.infinity_bucket.selected": "Обрано",
+  "tooltip.avaritia.infinity_bucket.creature": "%s (%s)",
+  "tooltip.avaritia.infinity_bucket.message_creature": "Поточна істота: %s",
+  "tooltip.avaritia.infinity_bucket.selected": "[Обрано]",
+  "gui.avaritia.infinity_bucket.no_results": "Немає відповідних записів",
+  "gui.avaritia.infinity_bucket.select": "Обрати як вихід",
+  "gui.avaritia.infinity_bucket.output": "Вихід",
+  "gui.avaritia.infinity_bucket.output.fluid": "Рідина",
+  "gui.avaritia.infinity_bucket.output.creature": "Істота",
+  "gui.avaritia.infinity_bucket.delete.confirm.message": "Видалити %s з Відра нескінченності? Цю дію не можна скасувати.",
+  "gui.avaritia.infinity_bucket.clear.confirm.message": "Очистити всі рідини та істоти з Відра нескінченності? Цю дію не можна скасувати.",
+  "gui.avaritia.infinity_bucket.delete.unavailable": "Немає вибраного для видалення",
+  "gui.avaritia.infinity_bucket.clear.unavailable": "Відро вже порожнє",
+  "gui.avaritia.infinity_bucket.clear_filter": "Очистити фільтр",
+  "gui.avaritia.infinity_bucket.list_hint": "Тримайте відро з істотою і клацніть ПКМ по списку, щоб зберегти. ПКМ по істоті з порожнім відром виймає її. Інші контейнери переносять рідини на вкладці Рідини.",
   "tooltip.avaritia.infinity_catalyst.desc": "Одне — це все, і все — одне.",
   "tooltip.avaritia.infinity_clock.desc": "Контролюйте свій час...",
   "tooltip.avaritia.infinity_ingot.desc": "Гнів всесвіту у вашій долоні.",
@@ -579,5 +597,7 @@
   "tooltip.avaritia.compressor_eject.message_3": "§c[Нейтронний компресор]§f Немає матеріалів для виведення",
   "tooltip.avaritia.compressor_lock.message_1": "§a[Нейтронний компресор]§f Рецепт заблоковано",
   "tooltip.avaritia.compressor_lock.message_2": "§e[Нейтронний компресор]§f Рецепт розблоковано",
-  "tooltip.avaritia.compressor_lock.message_3": "§c[Нейтронний компресор]§f Будь ласка спочатку додайте складники рецепта"
+  "tooltip.avaritia.compressor_lock.message_3": "§c[Нейтронний компресор]§f Будь ласка спочатку додайте складники рецепта",
+  "message.avaritia.neutron_ring.legacy_recovered": "Recovered stored items from the old Neutron Ring inventory.",
+  "message.avaritia.neutron_ring.legacy_pending": "Could not fit %s recovered Neutron Ring item stacks. They remain stored until you have inventory space."
 }
