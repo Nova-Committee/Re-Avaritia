@@ -1,13 +1,14 @@
 #version 330
+#extension GL_ARB_separate_shader_objects : require
 
 #define M_PI 3.1415926535897932384626433832795
 
-#moj_import <minecraft:fog.glsl>
-#moj_import <minecraft:dynamictransforms.glsl>
+#include <minecraft:fog.glsl>
+#include <minecraft:dynamictransforms.glsl>
 
 const int cosmiccount = 10;
 const int cosmicoutof = 101;
-const float lightmix = 0.2f;
+const float lightmix = 0.2;
 
 uniform sampler2D Sampler0;
 
@@ -23,14 +24,14 @@ layout(std140) uniform AvaritiaCosmic {
 #define externalScale CosmicParams0.w
 #define opacity CosmicParams1.x
 
-in float sphericalVertexDistance;
-in float cylindricalVertexDistance;
-in vec4 vertexColor;
-in vec2 texCoord0;
-in vec4 normal;
-in vec3 fPos;
+layout(location = 0) in float sphericalVertexDistance;
+layout(location = 1) in float cylindricalVertexDistance;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 texCoord0;
+layout(location = 4) in vec4 normal;
+layout(location = 5) in vec3 fPos;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 mat4 rotationMatrix(vec3 axis, float angle)
 {
@@ -87,9 +88,9 @@ void main (void)
 
         // get semi-random stuff
         int j = i + 7;
-        float rand1 = (j * j * 4321 + j * 8) * 2.0F;
+        float rand1 = (j * j * 4321 + j * 8) * 2.0;
         int k = j + 1;
-        float rand2 = (k * k * k * 239 + k * 37) * 3.6F;
+        float rand2 = (k * k * k * 239 + k * 37) * 3.6;
         float rand3 = rand1 * 347.4 + rand2 * 63.4;
 
         // random rotation matrix by random rotation around random axis

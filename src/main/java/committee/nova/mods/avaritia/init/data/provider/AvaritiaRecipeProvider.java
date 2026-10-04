@@ -6,15 +6,15 @@ import committee.nova.mods.avaritia.common.crafting.input.ExtremeSmithingRecipeI
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
@@ -37,44 +37,36 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Avaritia 配方数据生成入口。
  * <p>
- * Minecraft 26.1.2 的 {@link RecipeProvider} 使用 Runner 接收异步注册表查找；
- * 本类负责注册内部 Provider，并通过 Builder API / 自定义 Recipe 实例输出
+ * Minecraft 26.3 的配方与解锁进度均为数据包注册表对象，{@link RecipeProvider}
+ * 通过 {@link RecipeProvider#asBootstrap} 接收 {@link BootstrapContext}；
+ * 本类负责暴露内部 Provider，并通过 Builder API / 自定义 Recipe 实例输出
  * 标准合成、极限合成和压缩机配方，避免维护手写 JSON。
  * </p>
  */
-public class AvaritiaRecipeProvider extends RecipeProvider.Runner {
+public class AvaritiaRecipeProvider {
+
+    private AvaritiaRecipeProvider() {
+    }
 
     /**
-     * 创建 Avaritia 配方数据生成器。
+     * 创建 Avaritia 配方数据生成引导器。
      *
-     * @param output     数据生成输出目录
-     * @param registries 注册表查找 Future
+     * @return 配方注册表（与进度注册表）的 MultiRegistryBootstrap
      */
-    public AvaritiaRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries);
-    }
-
-    @Override
-    public String getName() {
-        return "Avaritia Recipes";
-    }
-
-    @Override
-    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-        return new Provider(registries, output);
+    public static MultiRegistryBootstrap asBootstrap() {
+        return RecipeProvider.asBootstrap(Provider::new);
     }
 
     /**
      * 实际写出配方的 Provider。
      */
     private static class Provider extends RecipeProvider {
-        protected Provider(HolderLookup.Provider registries, RecipeOutput output) {
-            super(registries, output);
+        protected Provider(BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
+            super(recipes, advancements);
         }
 
         @Override

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:bedrock_from_deepslate"
+        "recipes": "avaritia:bedrock_from_deepslate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

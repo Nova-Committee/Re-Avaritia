@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:enhancement_core"
+        "recipes": "avaritia:enhancement_core"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

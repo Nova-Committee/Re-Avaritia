@@ -37,8 +37,8 @@ public class BurningBallRender extends EntityRenderer<BurningBallEntity, EntityR
     public void submit(@NotNull EntityRenderState pState, @NotNull PoseStack pPoseStack, @NotNull SubmitNodeCollector pOutput, @NotNull CameraRenderState pCameraState) {
         pPoseStack.pushPose();
         pPoseStack.scale(2.0F, 2.0F, 2.0F);
-        pPoseStack.mulPose(pCameraState.orientation);
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        pPoseStack.rotate(pCameraState.orientation);
+        pPoseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         pOutput.submitCustomGeometry(pPoseStack, RENDER_TYPE, (pose, vertexconsumer) -> {
             vertex(vertexconsumer, pose, pState.lightCoords, 0.0F, 0, 0, 1);
             vertex(vertexconsumer, pose, pState.lightCoords, 1.0F, 0, 1, 1);

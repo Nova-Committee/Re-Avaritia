@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.client.shader;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.utils.RenderUtils;

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:neutron_pile_from_ingots"
+        "recipes": "minecraft:neutron_pile_from_ingots"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:double_compressed_crafting_table"
+        "recipes": "minecraft:double_compressed_crafting_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

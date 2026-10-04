@@ -18,6 +18,7 @@ import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -25,14 +26,17 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ResolvableFloat;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
@@ -123,7 +127,7 @@ public class ModBlocks {
                     .noCollision()
                     .lightLevel(state -> 15)
                     .strength(400F, 3600000.0F)
-                    .pushReaction(PushReaction.BLOCK)), false);
+                    .pushReaction(PushReaction.IMMOVEABLE)), false);
 
     /**
      * 注册基础方块，不自动创建对应方块物品。
@@ -227,7 +231,8 @@ public class ModBlocks {
     }
 
     /**
-     * 注册可作为燃料的方块，并为对应方块物品覆写燃烧时间。
+     * 注册可作为燃料的方块，并为对应方块物品设置燃烧时间。
+     * 26.3 起燃料由物品组件 COOKING_FUEL 驱动（原 NeoForge getBurnTime 扩展已移除）。
      *
      * @param name       方块与方块物品注册名
      * @param block      方块工厂
@@ -237,12 +242,10 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
-        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), blockItemProperties(id, properties)) {
-            @Override
-            public int getBurnTime(@NonNull ItemStack itemStack, @Nullable RecipeType<?> recipeType, @NonNull FuelValues fuelValues) {
-                return burnTime;
-            }
-        });
+        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), blockItemProperties(id, properties)
+                .component(DataComponents.COOKING_FUEL,
+                        new CookingFuel(new ResolvableInt.Constant(burnTime),
+                                ResolvableFloat.fromKey(ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER)))));
     }
 
     private static Item.Properties blockItemProperties(Identifier id) {

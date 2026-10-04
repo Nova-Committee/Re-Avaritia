@@ -10,7 +10,7 @@ issueTrackerURL = "${issue_tracker}"
     modId = "${mod_id}"
     version = "${mod_version}"
     displayName = "${mod_name}"
-    logoFile = "logo.png"
+    iconFile = "logo.png"
     credits = "Cnlimiter & Nova Committee"
     authors = "${mod_authors}"
     description = '''${mod_description}'''
@@ -44,7 +44,7 @@ config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId = "jei"
     type = "optional"
-    versionRange = "[29.6.2.31,)"
+    versionRange = "[31,)"
     ordering = "NONE"
     side = "CLIENT"
 

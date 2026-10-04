@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:netherite_singularity"
+        "recipes": "avaritia:netherite_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:densest_neutron_collector"
+        "recipes": "avaritia:densest_neutron_collector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

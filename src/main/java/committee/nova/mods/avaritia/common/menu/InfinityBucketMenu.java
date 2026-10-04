@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerInput;
@@ -285,7 +286,7 @@ public class InfinityBucketMenu extends BaseMenu {
         } else {
             setCarried(carried);
             if (!result.isEmpty()) {
-                player.getInventory().placeItemBackInInventory(result);
+                player.getInventory().placeItemBackInInventory(result, Prediction.PREDICTED);
             }
         }
     }

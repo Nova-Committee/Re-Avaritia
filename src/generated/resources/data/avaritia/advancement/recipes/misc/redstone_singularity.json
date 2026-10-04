@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:redstone_singularity"
+        "recipes": "avaritia:redstone_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

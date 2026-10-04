@@ -24,9 +24,11 @@ class BlockInteractionRegressionTest {
     void soulFarmlandUsesFarmlandTemplate() throws Exception {
         JsonObject model = JsonParser.parseString(Files.readString(SOUL_FARMLAND_MODEL)).getAsJsonObject();
         JsonObject textures = model.getAsJsonObject("textures");
+        // 26.3 移除了 template_farmland（耕地改为数据驱动碰撞），模型使用
+        // template_cube_bottom_top_indented，纹理槽位为 bottom/side/top。
         assertAll(
-                () -> assertEquals("minecraft:block/template_farmland", model.get("parent").getAsString()),
-                () -> assertEquals("minecraft:block/soul_soil", textures.get("dirt").getAsString()),
+                () -> assertEquals("minecraft:block/template_cube_bottom_top_indented", model.get("parent").getAsString()),
+                () -> assertEquals("minecraft:block/soul_soil", textures.get("side").getAsString()),
                 () -> assertEquals("avaritia:block/resource/soul_farmland", textures.get("top").getAsString())
         );
     }

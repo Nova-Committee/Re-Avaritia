@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_clock"
+        "recipes": "avaritia:infinity_clock"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

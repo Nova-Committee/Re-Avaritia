@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:music_disc_ward"
+        "recipes": "minecraft:music_disc_ward"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

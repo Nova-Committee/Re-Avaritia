@@ -1,8 +1,9 @@
 package committee.nova.mods.avaritia.common.entity.arrow;
 
+import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
@@ -124,7 +125,7 @@ public class TraceArrowEntity extends Arrow {
         }
 
         DamageSource damageSource = getArrowDamageSource(owner, entity);
-        boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
+        boolean isEnderman = entity.getType() == EntityTypes.ENDERMAN;
         int oldFireTicks = entity.getRemainingFireTicks();
         if (this.isOnFire() && !isEnderman) {
             entity.setRemainingFireTicks(5);

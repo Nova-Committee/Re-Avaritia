@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:torchflower_seeds"
+        "recipes": "minecraft:torchflower_seeds"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

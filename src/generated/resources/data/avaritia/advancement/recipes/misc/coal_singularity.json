@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:coal_singularity"
+        "recipes": "avaritia:coal_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

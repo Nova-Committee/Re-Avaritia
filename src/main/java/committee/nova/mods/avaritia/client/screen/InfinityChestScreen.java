@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPacke
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPacket;
 import committee.nova.mods.avaritia.common.net.chest.ChannelAction;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
@@ -25,7 +26,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,13 +125,13 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (isVirtual(hoveredSlot) && (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT
-                || event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT
-                || event.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE)) {
+        if (isVirtual(hoveredSlot) && (event.button() == InputConstants.MOUSE_BUTTON_LEFT
+                || event.button() == InputConstants.MOUSE_BUTTON_RIGHT
+                || event.button() == InputConstants.MOUSE_BUTTON_MIDDLE)) {
             ChannelAction action;
-            if (event.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_MIDDLE) {
                 action = ChannelAction.CLONE;
-            } else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            } else if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
                 action = isShiftDown() ? ChannelAction.LEFT_SHIFT : ChannelAction.LEFT_CLICK;
             } else {
                 action = isShiftDown() ? ChannelAction.RIGHT_SHIFT : ChannelAction.RIGHT_CLICK;
@@ -139,13 +139,13 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
             sendAction(action, hoveredSlot);
             return true;
         }
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && insideScrollbar(event.x(), event.y())
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && insideScrollbar(event.x(), event.y())
                 && menu.getChestContainer().canScroll()) {
             draggingScrollbar = true;
             updateScrollFromMouse(event.y());
             return true;
         }
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && searchBox.isMouseOver(event.x(), event.y())) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && searchBox.isMouseOver(event.x(), event.y())) {
             searchBox.setValue("");
             searchBox.setFocused(true);
             return true;
@@ -163,9 +163,9 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
             ItemResource resource = menu.getChestContainer().resource(menu.virtualIndex(hoveredSlot));
             if (!resource.isEmpty() && !resource.equals(lastDragged)) {
                 ChannelAction action = switch (event.button()) {
-                    case GLFW.GLFW_MOUSE_BUTTON_LEFT -> ChannelAction.LEFT_DRAG;
-                    case GLFW.GLFW_MOUSE_BUTTON_RIGHT -> ChannelAction.RIGHT_DRAG;
-                    case GLFW.GLFW_MOUSE_BUTTON_MIDDLE -> ChannelAction.DRAG_CLONE;
+                    case InputConstants.MOUSE_BUTTON_LEFT -> ChannelAction.LEFT_DRAG;
+                    case InputConstants.MOUSE_BUTTON_RIGHT -> ChannelAction.RIGHT_DRAG;
+                    case InputConstants.MOUSE_BUTTON_MIDDLE -> ChannelAction.DRAG_CLONE;
                     default -> null;
                 };
                 if (action != null) {
@@ -285,18 +285,14 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
     private boolean isShiftDown() {
         var window = minecraft.getWindow();
-        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
-                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
     }
 
     private boolean isControlDown() {
         var window = minecraft.getWindow();
-        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
-                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
     }
 
     private final class LegacyLockButton extends ImageButton {

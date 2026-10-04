@@ -10,7 +10,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.phys.Vec3;
@@ -22,14 +22,14 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalAxeItem extends AxeItem implements ITooltip {
+public class CrystalAxeItem extends Item implements ITooltip {
 
     public CrystalAxeItem() {
-        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
-                ModItems.properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
+                        .axe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
         );
     }
 

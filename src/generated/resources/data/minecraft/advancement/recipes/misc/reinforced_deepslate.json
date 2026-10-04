@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:reinforced_deepslate"
+        "recipes": "minecraft:reinforced_deepslate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

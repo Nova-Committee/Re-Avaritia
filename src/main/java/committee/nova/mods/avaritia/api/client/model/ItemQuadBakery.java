@@ -56,13 +56,18 @@ public class ItemQuadBakery {
         List<BakedQuad> quads = new LinkedList<>();
         for (int i = 0; i < sprites.length; i++) {
             TextureAtlasSprite sprite = sprites[i];
+            // 26.3 的 MaterialInfo 新增两个附魔 RenderType 与 shadeDirectionOverride/ambientOcclusion：
+            // 旧 shade=true 等价于 override=null(按实际朝向着色)，附魔类型与默认 itemTranslucent 同图集配套。
             BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
                     sprite,
                     ChunkSectionLayer.TRANSLUCENT,
                     renderType != null ? renderType : RenderTypes.itemTranslucent(sprite.atlasLocation()),
+                    RenderTypes.itemTranslucentGlint(sprite.atlasLocation()),
+                    RenderTypes.itemTranslucentGlintSpecial(sprite.atlasLocation()),
                     i,
-                    true,
-                    0
+                    null,
+                    0,
+                    true
             );
             quads.add(frontFace(state, materialInfo, depthOffset));
             quads.add(backFace(state, materialInfo, depthOffset));

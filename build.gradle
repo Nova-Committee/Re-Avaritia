@@ -61,6 +61,7 @@ repositories {
         }
         filter {
             includeGroup "mezz.jei"
+            includeGroup "net.mezzdev.config"
         }
     }
     exclusiveContent {
@@ -172,8 +173,9 @@ dependencies {
     // Jade
     implementation libs.jade
 
-    // Curios API
-    implementation libs.curios.neoforge
+    // Curios API（compileOnly：17.0.0-beta.2 引用了 FML 26.3 已移除的 ModConfig.Type.COMMON，
+    // 与 NeoForge 26.3.0.45-beta 运行时不兼容；模组对 curios 本就是可选集成）
+    compileOnly libs.curios.neoforge
 
     // KubeJS integration (compile only, optional at runtime)
     compileOnly libs.kubejs.neoforge

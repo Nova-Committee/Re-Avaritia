@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:iron_singularity"
+        "recipes": "avaritia:iron_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

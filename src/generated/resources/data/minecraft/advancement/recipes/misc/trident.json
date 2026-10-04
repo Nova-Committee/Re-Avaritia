@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:trident"
+        "recipes": "minecraft:trident"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

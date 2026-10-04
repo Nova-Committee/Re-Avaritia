@@ -22,7 +22,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:platinum_singularity"
+        "recipes": "avaritia:platinum_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

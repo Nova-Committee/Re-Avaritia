@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -12,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -176,8 +176,8 @@ public final class PortableItemGrid extends AbstractWidget {
         if (!isFocused() || !active || !visible) {
             return false;
         }
-        if (event.key() == GLFW.GLFW_KEY_PAGE_DOWN || event.key() == GLFW.GLFW_KEY_PAGE_UP) {
-            setScrollOffset(scrollOffset + (event.key() == GLFW.GLFW_KEY_PAGE_DOWN ? rows : -rows));
+        if (event.key() == InputConstants.KEY_PAGEDOWN || event.key() == InputConstants.KEY_PAGEUP) {
+            setScrollOffset(scrollOffset + (event.key() == InputConstants.KEY_PAGEDOWN ? rows : -rows));
             return true;
         }
         return super.keyPressed(event);

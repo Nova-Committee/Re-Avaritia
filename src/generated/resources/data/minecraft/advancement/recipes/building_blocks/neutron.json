@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:neutron"
+        "recipes": "minecraft:neutron"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

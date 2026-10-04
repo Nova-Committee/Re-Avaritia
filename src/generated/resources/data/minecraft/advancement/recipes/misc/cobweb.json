@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:cobweb"
+        "recipes": "minecraft:cobweb"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

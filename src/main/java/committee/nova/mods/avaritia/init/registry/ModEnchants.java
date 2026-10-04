@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import net.minecraft.advancements.criterion.DamageSourcePredicate;
-import net.minecraft.advancements.criterion.EntityFlagsPredicate;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.TagPredicate;
+import net.minecraft.advancements.predicates.DamageSourcePredicate;
+import net.minecraft.advancements.predicates.entity.EntityFlagsPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.advancements.predicates.TagPredicate;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
@@ -14,6 +14,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -43,6 +44,7 @@ public class ModEnchants {
     public static void bootstrap(BootstrapContext<Enchantment> context) {
         HolderGetter<Enchantment> holdergetter1 = context.lookup(Registries.ENCHANTMENT);
         HolderGetter<Item> holdergetter2 = context.lookup(Registries.ITEM);
+        HolderGetter<DamageType> damageTypes = context.lookup(Registries.DAMAGE_TYPE);
         register(
                 context,
                 FROST_WALKER,
@@ -63,8 +65,8 @@ public class ModEnchants {
                                 DamageImmunity.INSTANCE,
                                 DamageSourceCondition.hasDamageSource(
                                         DamageSourcePredicate.Builder.damageType()
-                                                .tag(TagPredicate.is(DamageTypeTags.BURN_FROM_STEPPING))
-                                                .tag(TagPredicate.isNot(DamageTypeTags.BYPASSES_INVULNERABILITY))
+                                                .tag(TagPredicate.is(damageTypes, DamageTypeTags.BURN_FROM_STEPPING))
+                                                .tag(TagPredicate.isNot(damageTypes, DamageTypeTags.BYPASSES_INVULNERABILITY))
                                 )
                         )
                         .withEffect(
@@ -81,7 +83,7 @@ public class ModEnchants {
                                                         BlockPredicate.unobstructed()
                                                 )
                                         ),
-                                        BlockStateProvider.simple(Blocks.FROSTED_ICE),
+                                        BlockStateProvider.holderOf(Blocks.FROSTED_ICE),
                                         Optional.of(GameEvent.BLOCK_PLACE)
                                 ),
                                 LootItemEntityPropertyCondition.hasProperties(

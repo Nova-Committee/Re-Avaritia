@@ -1,12 +1,12 @@
 [versions]
-minecraft = "26.1.2"
-neoforge = "26.1.2.73"
-moddevgradle = "2.0.141"
+minecraft = "26.3"
+neoforge = "26.3.0.45-beta"
+moddevgradle = "2.0.148"
 mixinextras = "0.5.4"
 lombok = "1.18.38"
-jei = "29.6.2.31"
-jade = "26.1.1+neoforge"
-curios = "15.0.0-beta.2+26.1.2"
+jei = "31.9.0.56"
+jade = "26.3.5+neoforge"
+curios = "17.0.0-beta.2+26.3"
 kubejs = "26.1.2-8.0.1+neoforge"
 rhino = "2101.2.7-build.85+Rhino-1.21"
 junit = "5.11.0"
@@ -14,8 +14,8 @@ junit = "5.11.0"
 [libraries]
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 mixinextras = { group = "io.github.llamalad7", name = "mixinextras-neoforge", version.ref = "mixinextras" }
-jei-api = { group = "mezz.jei", name = "jei-26.1.2-neoforge-api", version.ref = "jei" }
-jei-runtime = { group = "mezz.jei", name = "jei-26.1.2-neoforge", version.ref = "jei" }
+jei-api = { group = "mezz.jei", name = "jei-26.3-neoforge-api", version.ref = "jei" }
+jei-runtime = { group = "mezz.jei", name = "jei-26.3-neoforge", version.ref = "jei" }
 jade = { group = "maven.modrinth", name = "jade", version.ref = "jade" }
 curios-neoforge = { group = "top.theillusivec4.curios", name = "curios-neoforge", version.ref = "curios" }
 kubejs-neoforge = { group = "maven.modrinth", name = "kubejs", version.ref = "kubejs" }

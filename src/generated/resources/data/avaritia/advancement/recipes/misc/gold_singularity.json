@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:gold_singularity"
+        "recipes": "avaritia:gold_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -24,7 +24,8 @@ public final class TesseractRender implements BlockEntityRenderer<TesseractTile,
         poseStack.pushPose();
         poseStack.translate(0.25F, 0.25F, 0.25F);
         poseStack.scale(0.5F, 0.5F, 0.5F);
-        AbstractEndPortalRenderer.submitSpecial(RenderTypes.endGateway(), poseStack, output);
+        // 26.3 的 submitSpecial 新增 outlineColor 参数，传 0 表示不渲染描边（与旧版行为一致）。
+        AbstractEndPortalRenderer.submitSpecial(RenderTypes.endGateway(), poseStack, output, 0);
         poseStack.popPose();
     }
 

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:neutron_harness"
+        "recipes": "avaritia:neutron_harness"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

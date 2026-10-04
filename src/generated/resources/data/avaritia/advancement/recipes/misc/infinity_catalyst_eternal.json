@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_catalyst_eternal"
+        "recipes": "avaritia:infinity_catalyst_eternal"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

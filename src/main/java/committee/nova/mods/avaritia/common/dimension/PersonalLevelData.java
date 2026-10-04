@@ -46,16 +46,16 @@ public final class PersonalLevelData extends DerivedLevelData {
         Holder<WorldClock> clock = personalClock.get();
         switch (settings.time) {
             case FOLLOW -> overworld.dimensionTypeRegistration().value().defaultClock().ifPresent(overworldClock -> {
-                long overworldTicks = clocks.getTotalTicks(overworldClock);
-                long personalTicks = clocks.getTotalTicks(clock);
+                long overworldTicks = clocks.getInstance(overworldClock).totalTicks();
+                long personalTicks = clocks.getInstance(clock).totalTicks();
                 boolean drifted = Math.abs(overworldTicks - personalTicks) > 2L;
                 if (appliedTime != InfinityRingSettings.TimeMode.FOLLOW || drifted || appliedPaused) {
                     applyClockState(clocks, clock, settings.time, overworldTicks, false, 1.0F, true);
                 }
             });
-            case DAY -> applyClockState(clocks, clock, settings.time, aligned(clocks.getTotalTicks(clock), DAY_TIME), true, 1.0F, true);
-            case NIGHT -> applyClockState(clocks, clock, settings.time, aligned(clocks.getTotalTicks(clock), NIGHT_TIME), true, 1.0F, true);
-            case CYCLE -> applyClockState(clocks, clock, settings.time, clocks.getTotalTicks(clock), false, 1.0F, false);
+            case DAY -> applyClockState(clocks, clock, settings.time, aligned(clocks.getInstance(clock).totalTicks(), DAY_TIME), true, 1.0F, true);
+            case NIGHT -> applyClockState(clocks, clock, settings.time, aligned(clocks.getInstance(clock).totalTicks(), NIGHT_TIME), true, 1.0F, true);
+            case CYCLE -> applyClockState(clocks, clock, settings.time, clocks.getInstance(clock).totalTicks(), false, 1.0F, false);
         }
     }
 

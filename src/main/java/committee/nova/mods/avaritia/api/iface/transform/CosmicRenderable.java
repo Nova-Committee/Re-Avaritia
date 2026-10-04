@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.iface.transform;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,7 +12,7 @@ public interface CosmicRenderable {
             ItemStack stack,
             ItemDisplayContext context,
             PoseStack poseStack,
-            MultiBufferSource source,
+            SubmitNodeCollector source,
             int light,
             int overlay
     );

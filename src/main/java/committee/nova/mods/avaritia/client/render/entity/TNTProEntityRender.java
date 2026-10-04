@@ -40,9 +40,9 @@ public class TNTProEntityRender extends EntityRenderer<TNTProEntity, TntRenderSt
             poseStack.scale(finalScale, finalScale, finalScale);
         }
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+        poseStack.rotate(Axis.YP.rotationDegrees(-90.0F));
         poseStack.translate(-0.5F, -0.5F, 0.5F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+        poseStack.rotate(Axis.YP.rotationDegrees(90.0F));
         TntMinecartRenderer.submitWhiteSolidBlock(state.blockState, poseStack, output, state.lightCoords, (int) fuse / 5 % 2 == 0, state.outlineColor);
         poseStack.popPose();
         super.submit(state, poseStack, output, cameraState);

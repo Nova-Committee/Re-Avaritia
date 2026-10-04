@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:eternal_singularity"
+        "recipes": "avaritia:eternal_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -64,8 +64,8 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
 
         stack.pushPose();
         stack.scale(scale, scale, scale);
-        stack.mulPose(cameraState.orientation);
-        stack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        stack.rotate(cameraState.orientation);
+        stack.rotate(Axis.YP.rotationDegrees(180.0F));
 
         AvaritiaShaderUniforms.set(AvaritiaRenderTypes.BLACK_HOLE, AvaritiaShaderUniforms.Effect.BLACK_HOLE,
                 age, yaw, pitch, absorption, evaporation, null);

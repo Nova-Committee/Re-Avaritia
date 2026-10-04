@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:blaze_sword"
+        "recipes": "avaritia:blaze_sword"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
