@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 参照 Forge 项目补齐 `.github` 构建/发布工作流和双语 Bug、功能请求、问答及 PR 模板；CI 面向 `fabric/*`，共用属性元数据 action 读取 Java/版本/准确发布文件名，发布采用 Fabric 标记及原项目平台 ID，并在上传前检查标签与 Secrets。修正旧仓库链接与误复制的机器人配置字段，补充 Loader、联动模组与实际验证信息。
 * 两个 workflow 通过 actionlint，共用 action、三个 Issue 表单与选择器通过 JSON Schema 校验；实际执行元数据、匹配/错误标签、缺失/存在 Secrets 预检，以及 Java 17 下工作流的 Gradle 命令，构建产物与属性输出一致。Gradle Wrapper JAR 哈希匹配官方 8.12；未推送、未执行任何远端发布。
 * 维护分支统一为 `fabric/1.20.1`，同步 PR 模板目标分支、Issue 文档链接和 Actions 分支过滤链接；构建工作流的 `fabric/*` 触发规则继续适用，Minecraft 与模组版本不变。
+* 补充主模组 `fabric.mod.json` 的 `icon: "logo.png"`，引用已有根目录 Logo；构建发布 JAR 后核对元数据引用与图片资源均已入包，图片内容与源文件一致。
 
 
 ### Runtime fixes
