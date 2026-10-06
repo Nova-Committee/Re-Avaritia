@@ -54,11 +54,11 @@ public class AvaritiaLanguageProvider implements DataProvider {
 
     private static void addProjectETranslations(JsonObject language, String locale) {
         String[] values = switch (locale) {
-            case "zh_cn" -> new String[]{"启用 ProjectE 奇点数量增强", "安装 ProjectE 时，将奇点配方需求提升到至少 10,000 个物品"};
-            case "zh_tw" -> new String[]{"啟用 ProjectE 奇點數量增強", "安裝 ProjectE 時，將奇點配方需求提升到至少 10,000 個物品"};
-            case "ja_jp" -> new String[]{"ProjectE 特異点数ブーストを有効化", "ProjectE 導入時、特異点レシピの必要数を最低 10,000 個にします"};
-            case "uk_ua" -> new String[]{"Увімкнути збільшення кількості сингулярності ProjectE", "За наявності ProjectE підвищує вимогу рецепта сингулярності щонайменше до 10 000 предметів"};
-            default -> new String[]{"Enable ProjectE Singularity Count Boost", "When ProjectE is installed, raises singularity recipe requirements to at least 10,000 items"};
+            case "zh_cn" -> new String[]{"启用 ProjectE / Equivox 奇点数量增强", "安装 ProjectE 或 Equivox 时，将奇点配方需求提升到至少 10,000 个物品；重载配方后生效"};
+            case "zh_tw" -> new String[]{"啟用 ProjectE / Equivox 奇點數量增強", "安裝 ProjectE 或 Equivox 時，將奇點配方需求提升到至少 10,000 個物品；重新載入配方後生效"};
+            case "ja_jp" -> new String[]{"ProjectE / Equivox 特異点数ブーストを有効化", "ProjectE または Equivox 導入時、特異点レシピの必要数を最低 10,000 個にします。レシピ再読み込み後に反映されます"};
+            case "uk_ua" -> new String[]{"Увімкнути збільшення кількості сингулярності ProjectE / Equivox", "За наявності ProjectE або Equivox підвищує вимогу рецепта сингулярності щонайменше до 10 000 предметів; потрібне перезавантаження рецептів"};
+            default -> new String[]{"Enable ProjectE / Equivox Singularity Count Boost", "When ProjectE or Equivox is installed, raises singularity recipe requirements to at least 10,000 items; requires a recipe reload"};
         };
         language.addProperty("config.avaritia.enable_projecte_singularity_count_boost", values[0]);
         language.addProperty("config.avaritia.enable_projecte_singularity_count_boost.tooltip", values[1]);

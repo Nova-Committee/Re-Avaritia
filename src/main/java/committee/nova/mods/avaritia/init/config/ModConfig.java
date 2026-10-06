@@ -78,7 +78,7 @@ public class ModConfig {
         blazeCubeEmc = buildInt(common, "blaze_cube_emc", 30568, 0, Integer.MAX_VALUE, "EMC value of a Blaze Cube");
         vanillaTotemEmc = buildInt(common, "vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "EMC value of a Totem of Undying");
         enableProjectESingularityCountBoost = buildBoolean(common, "enable_projecte_singularity_count_boost", true,
-                "Whether ProjectE raises singularity recipe counts to at least 10000 items");
+                "Whether ProjectE or Equivox raises singularity recipe counts to at least 10000 items");
         common.pop();
 
         common.push("channel");

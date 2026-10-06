@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -16,12 +17,40 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Handles the terminal damage contract shared by Infinity Sword attacks.
  */
+@EventBusSubscriber(modid = Const.MOD_ID)
 public final class InfinityDamageUtils {
+    private static final ThreadLocal<DeathAttempt> DEATH_ATTEMPT = new ThreadLocal<>();
+
+    private static final class DeathAttempt {
+        private final LivingEntity victim;
+        private final DeathAttempt parent;
+        private boolean notified;
+
+        private DeathAttempt(LivingEntity victim, DeathAttempt parent) {
+            this.victim = victim;
+            this.parent = parent;
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void observeDeath(LivingDeathEvent event) {
+        for (DeathAttempt attempt = DEATH_ATTEMPT.get(); attempt != null; attempt = attempt.parent) {
+            if (attempt.victim == event.getEntity()) {
+                attempt.notified = true;
+            }
+        }
+    }
+
     private InfinityDamageUtils() {
     }
 
@@ -52,17 +81,37 @@ public final class InfinityDamageUtils {
             wither.setInvulnerableTicks(0);
         }
 
-        if (victim instanceof EnderDragon dragon) {
-            dragon.hurt(level, dragon.head, source, Float.MAX_VALUE);
-        } else {
-            victim.hurtServer(level, source, Float.MAX_VALUE);
-        }
+        DeathAttempt previous = DEATH_ATTEMPT.get();
+        DeathAttempt attempt = new DeathAttempt(victim, previous);
+        DEATH_ATTEMPT.set(attempt);
+        try {
+            if (victim instanceof EnderDragon dragon) {
+                dragon.hurt(level, dragon.head, source, Float.MAX_VALUE);
+            } else {
+                victim.hurtServer(level, source, Float.MAX_VALUE);
+            }
 
-        if (!victim.isRemoved() && !victim.dead) {
-            victim.setHealth(0.0F);
-            forceDie(victim, source);
+            if (!victim.isRemoved() && !victim.dead) {
+                if (source.getEntity() instanceof Player player) {
+                    victim.setLastHurtByPlayer(player, 100);
+                }
+                victim.getCombatTracker().recordDamage(source, victim.getHealth());
+                victim.setHealth(0.0F);
+                // A canceled native death has already notified observers. Do not fire it twice.
+                if (!attempt.notified) {
+                    CommonHooks.onLivingDeath(victim, source);
+                }
+                victim.setHealth(0.0F);
+                forceDie(victim, source);
+            }
+            return victim.isRemoved() || victim.dead || victim.isDeadOrDying();
+        } finally {
+            if (previous == null) {
+                DEATH_ATTEMPT.remove();
+            } else {
+                DEATH_ATTEMPT.set(previous);
+            }
         }
-        return victim.isRemoved() || victim.dead || victim.isDeadOrDying();
     }
 
     private static void forceDie(LivingEntity victim, DamageSource source) {

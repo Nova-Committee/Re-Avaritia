@@ -1,0 +1,10 @@
+{
+  "type": "avaritia:shapeless_table",
+  "tier": 4,
+  "ingredients": [
+    "#avaritia_gametest:emc_choices"
+  ],
+  "result": {
+    "id": "avaritia_gametest:equivox_alternatives"
+  }
+}

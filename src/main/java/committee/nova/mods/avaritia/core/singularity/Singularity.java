@@ -226,7 +226,7 @@ public class Singularity {
         int configuredCount = this.count == -1 ? 1000 : this.count;
         return SingularityCountResolver.resolve(configuredCount,
                 ModConfig.COMMON.isLoaded() && ModConfig.enableProjectESingularityCountBoost.get(),
-                ModList.get().isLoaded("projecte"));
+                ModList.get().isLoaded("projecte") || ModList.get().isLoaded("equivox"));
     }
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {

@@ -178,6 +178,8 @@ dependencies {
     // KubeJS integration (compile only, optional at runtime)
     compileOnly libs.kubejs.neoforge
     compileOnly libs.rhino
+    // Equivox API: optional integration, never bundled or added to runtime.
+    compileOnly("curse.maven:equivox-1597601:9035756") { transitive = false }
 
     // Lombok
     compileOnly libs.lombok

@@ -75,3 +75,10 @@ config = "${mod_id}.mixins.json"
     versionRange = "[2101.2.7-build.85,)"
     ordering = "NONE"
     side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "equivox"
+    type = "optional"
+    versionRange = "[1.4.0,)"
+    ordering = "AFTER"
+    side = "BOTH"

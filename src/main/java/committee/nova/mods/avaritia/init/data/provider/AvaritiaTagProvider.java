@@ -17,6 +17,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -161,6 +162,10 @@ public class AvaritiaTagProvider implements DataProvider {
                 tag(ModTags.NEUTRON_BLOCK_ITEM).add(
                         ModBlocks.neutron.get().asItem()
                 );
+                tag(Tags.Items.NUGGETS).add(ModItems.neutron_nugget.get(), ModItems.infinity_nugget.get());
+                tag(Tags.Items.INGOTS).add(ModItems.neutron_ingot.get(), ModItems.infinity_ingot.get(), ModItems.crystal_matrix_ingot.get());
+                tag(Tags.Items.STORAGE_BLOCKS).add(ModBlocks.neutron.get().asItem(), ModBlocks.crystal_matrix.get().asItem(), ModBlocks.infinity.get().asItem());
+                tag(Tags.Items.GEMS).add(ModBlocks.crystal_matrix.get().asItem());
 
                 tag(ModTags.REPAIRS_BLAZE_TOOLS).add(
                         ModItems.blaze_cube.get()
@@ -242,6 +247,7 @@ public class AvaritiaTagProvider implements DataProvider {
                 tag(ModTags.NEUTRON_BLOCK).add(
                         ModBlocks.neutron.get()
                 );
+                tag(Tags.Blocks.STORAGE_BLOCKS).add(ModBlocks.neutron.get(), ModBlocks.crystal_matrix.get(), ModBlocks.infinity.get());
 
                 // --- avaritia:extreme_anvil_unbreak —— 极压砧不可破坏的方块 ---
                 // 这些方块硬度极高，极压砧下落时无法将其破坏

@@ -1,0 +1,9 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "avaritia:neutron_pile",
+  "inputCount": 1000,
+  "timeCost": 1440,
+  "result": {
+    "id": "avaritia_gametest:equivox_compressor"
+  }
+}

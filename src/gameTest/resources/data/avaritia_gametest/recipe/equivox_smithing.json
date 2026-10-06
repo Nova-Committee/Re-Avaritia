@@ -1,0 +1,9 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "template": "avaritia:neutron_pile",
+  "base": "avaritia:blaze_cube",
+  "addition": "avaritia:neutron_pile",
+  "result": {
+    "id": "avaritia_gametest:equivox_smithing"
+  }
+}
