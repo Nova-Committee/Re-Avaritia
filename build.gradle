@@ -1,11 +1,11 @@
 plugins {
-    id 'fabric-loom' version '1.10.5'
+    id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
-group = 'committee.nova.mods'
-version = '1.20.1-1.4.2-fabric'
-base { archivesName = 'Re-Avaritia-fabric' }
+group = mod_group_id
+version = "${mc_version}-${mod_version}-${mod_version_tag}"
+base { archivesName = "${mod_name}-${mod_platform}" }
 
 repositories {
     mavenCentral()
@@ -18,48 +18,48 @@ repositories {
 }
 
 dependencies {
-    minecraft 'com.mojang:minecraft:1.20.1'
+    minecraft "com.mojang:minecraft:${mc_version}"
     mappings loom.officialMojangMappings()
-    modImplementation 'net.fabricmc:fabric-loader:0.17.2'
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    compileOnly 'org.jetbrains:annotations:24.1.0'
-    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-    compileOnly 'org.openzen.zencode:JavaAnnotations:0.3.8'
-    testImplementation platform('org.junit:junit-bom:5.10.3')
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    compileOnly "org.projectlombok:lombok:${lombok_version}"
+    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+    compileOnly "org.jetbrains:annotations:${annotations_version}"
+    compileOnly "com.google.code.findbugs:jsr305:${jsr305_version}"
+    compileOnly "org.openzen.zencode:JavaAnnotations:${zencode_version}"
+    testImplementation platform("org.junit:junit-bom:${junit_version}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Optional APIs are compile-only and never bundled into the release JAR.
     // Optional API implementations inherit Fabric API interfaces; Loom needs that hierarchy even in default builds.
-    modCompileOnly 'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1'
-    modCompileOnly('dev.emi:emi-fabric:1.1.20+1.20.1') { transitive = false }
-    compileOnly('mezz.jei:jei-1.20.1-common-api:15.20.0.112') { transitive = false }
-    modCompileOnly('mezz.jei:jei-1.20.1-fabric-api:15.20.0.112') { transitive = false }
-    modCompileOnly('dev.latvian.mods:kubejs-fabric:2001.6.5-build.20') { transitive = false }
-    modCompileOnly('dev.latvian.mods:rhino-fabric:2001.2.2-build.17') { transitive = false }
-    modCompileOnly('com.blamejared.crafttweaker:CraftTweaker-fabric-1.20.1:14.0.12') { transitive = false }
-    modCompileOnly('maven.modrinth:jade:11.13.1+fabric') { transitive = false }
-    modCompileOnly('maven.modrinth:trinkets:3.7.2') { transitive = false }
-    modCompileOnly('dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0') { transitive = false }
+    modCompileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    modCompileOnly("dev.emi:emi-fabric:${emi_version}") { transitive = false }
+    compileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}") { transitive = false }
+    modCompileOnly("mezz.jei:jei-${mc_version}-fabric-api:${jei_version}") { transitive = false }
+    modCompileOnly("dev.latvian.mods:kubejs-fabric:${kubejs_version}") { transitive = false }
+    modCompileOnly("dev.latvian.mods:rhino-fabric:${rhino_version}") { transitive = false }
+    modCompileOnly("com.blamejared.crafttweaker:CraftTweaker-fabric-${mc_version}:${crafttweaker_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:jade:${jade_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:trinkets:${trinkets_version}") { transitive = false }
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cardinal_components_version}") { transitive = false }
     if (project.hasProperty('withTrinkets')) {
         // Use the official release: the dev.emi Maven artifact retains Yarn-only widget shadows.
-        modRuntimeOnly 'maven.modrinth:trinkets:3.7.2'
-        modRuntimeOnly 'net.fabricmc.fabric-api:fabric-api:0.91.0+1.20.1'
-        modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0'
-        modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.0'
+        modRuntimeOnly "maven.modrinth:trinkets:${trinkets_version}"
+        modRuntimeOnly "net.fabricmc.fabric-api:fabric-api:${trinkets_fabric_api_version}"
+        modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cardinal_components_version}"
+        modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cardinal_components_version}"
     }
     if (project.hasProperty('withClientIntegrations')) {
         // Local development only: no published or bundled prerequisite mods.
         [
-                'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1',
-                'com.blamejared.crafttweaker:CraftTweaker-fabric-1.20.1:14.0.12',
-                'dev.latvian.mods:kubejs-fabric:2001.6.5-build.20'
+                "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}",
+                "com.blamejared.crafttweaker:CraftTweaker-fabric-${mc_version}:${crafttweaker_version}",
+                "dev.latvian.mods:kubejs-fabric:${kubejs_version}"
         ].each { coordinate ->
             modLocalRuntime coordinate
         }
-        modLocalRuntime('mezz.jei:jei-1.20.1-fabric:15.20.0.112') { transitive = false }
-        modLocalRuntime('com.terraformersmc:modmenu:7.2.2') { transitive = false }
+        modLocalRuntime("mezz.jei:jei-${mc_version}-fabric:${jei_version}") { transitive = false }
+        modLocalRuntime("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
     }
 }
 
@@ -99,7 +99,7 @@ sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
 sourceSets.test.runtimeClasspath += sourceSets.main.compileClasspath
 test { useJUnitPlatform() }
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
     withSourcesJar()
 }
 if (project.hasProperty('gameTests')) {
@@ -109,12 +109,24 @@ if (project.hasProperty('gameTests')) {
 }
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.release = 17
+    options.release = java_version.toInteger()
     options.compilerArgs += ['-Xmaxerrs', '2000']
 }
-processResources {
-    inputs.property 'version', project.version
-    filesMatching('fabric.mod.json') { expand version: project.version }
+Map<String, Object> expansionVariables = [
+        version: project.version,
+        mod_id: project.mod_id,
+        mod_name: project.mod_name,
+        mc_version: project.mc_version,
+        loader_version: project.loader_version,
+        java_version: project.java_version,
+        game_test_version: project.game_test_version
+]
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties expansionVariables
+    filesMatching('fabric.mod.json') { expand expansionVariables }
+}
+tasks.named('wrapper').configure {
+    gradleVersion = project.gradle_version
 }
 jar {
     from('LICENSE') { rename { "${it}_Re-Avaritia" } }

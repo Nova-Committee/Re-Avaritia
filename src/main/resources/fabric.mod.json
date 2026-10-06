@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "avaritia",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Re-Avaritia",
-  "description": "Re-Avaritia for Minecraft 1.20.1, native Fabric Loader port.",
+  "name": "${mod_name}",
+  "description": "${mod_name} for Minecraft ${mc_version}, native Fabric Loader port.",
   "authors": ["cnlimiter", "cu6", "MHanHanBing", "IAFEnvoy", "Asek3", "MikhailTapio"],
   "license": ["MIT", "CC-BY-NC-SA-4.0"],
   "environment": "*",
@@ -17,9 +17,9 @@
   "mixins": ["avaritia.mixins.json"],
   "accessWidener": "avaritia.accesswidener",
   "depends": {
-    "fabricloader": ">=0.17.2",
-    "minecraft": "1.20.1",
-    "java": ">=17"
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${mc_version}",
+    "java": ">=${java_version}"
   },
   "suggests": {
     "jei": "*",

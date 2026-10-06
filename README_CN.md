@@ -3,11 +3,9 @@
 </p>
 <hr>
 <p align="center">
-    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Minecraft-1.20.1%20Fabric-c70039" alt="支持版本">
-    </a>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
+    <img src="https://img.shields.io/badge/Minecraft-1.20.1%20Fabric-c70039" alt="支持版本">
+    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia" title="原上游项目，不是本 Fabric 移植版的下载列表">
+        <img src="https://cf.way2muchnoise.eu/623969.svg" alt="原上游 CurseForge 下载统计">
     </a>
     <img src="https://img.shields.io/badge/license-MIT%2FCC%20BY--NC--SA%204.0-green" alt="License">
 </p>
@@ -22,12 +20,12 @@
 
 
 ## **📕介绍:**
-* 此模组是[无尽贪婪](https://www.mcmod.cn/class/505.html)的重铸版
+* 此模组是[无尽贪婪](https://www.mcmod.cn/class/505.html)重铸版 **Re-Avaritia 的 Minecraft 1.20.1 Fabric 移植版**，提供无尽贪婪的物品、方块和配方。
 * 此模组是非官方版本!
 
-## Fabric 1.20.1
+以本地 `Avaritia-1.20` 的 **1.4.2** 为迁移源，保留 `committee.nova.mods.avaritia` Java 包层级；本项目不是 Forge 模组。
 
-以本地 `Avaritia-1.20` 的 1.4.2 为迁移源，保留 `committee.nova.mods.avaritia` 包层级。
+### 运行要求与可选联动
 
 - 运行要求：Minecraft **1.20.1**、Java **17+**、Fabric Loader **0.17.2+**。
 - **无前置模组**：不要求或内嵌 Fabric API、Porting Lib、Cardinal Components、Trinkets。
@@ -35,6 +33,36 @@
 - Trinkets、EMI、JEI、Jade、KubeJS、CraftTweaker 为可选联动；安装这些模组时才需满足它们自身的依赖。
 - 可选 Trinkets 槽位：两手 `ring` 槽支持戒指，`chest/back` 支持无尽鞘翅，`chest/back` 或 `charm/charm` 支持水晶矩阵锹，`charm/charm` 支持无尽图腾。
 - 参考上游 [fabric/1.20.1 固定提交](https://github.com/Nova-Committee/Re-Avaritia/tree/4ec454e0847cefcd08434722ec7c6704e7564fd5)，不继承其前置依赖。
+
+### 安装
+
+为 Minecraft 1.20.1 安装 Java 17+ 和 Fabric Loader 0.17.2+。按下文构建本项目后，将 **`build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`** 放入游戏实例的 `mods/` 目录；多人游戏时客户端和服务端都要安装。应使用重映射后的发布 JAR，而不是 `-sources` 或开发 JAR；Forge/NeoForge 产物不能替代该文件。
+
+默认安装**仅要求 Fabric Loader**，不需要 Fabric API 或任何联动模组。如需 Trinkets、EMI、JEI、Jade、KubeJS 或 CraftTweaker，请另行安装其 **Fabric 1.20.1** 版本及各自所需依赖。下文可选开发配置还提供 Mod Menu。本页的上游链接与下载徽章仅用于历史参考，不代表本地 Fabric 移植版已在这些页面发布。
+
+### 版本配置
+
+请修改本项目的 **`gradle.properties`**，不要在 `build.gradle` 中硬编码版本。核心属性如下：
+
+```properties
+gradle_version=8.12
+mc_version=1.20.1
+loader_version=0.17.2
+loom_version=1.10.5
+java_version=17
+mod_version=1.4.2
+mod_version_tag=fabric
+mod_platform=fabric
+mod_group_id=committee.nova.mods
+mod_name=Re-Avaritia
+mod_id=avaritia
+```
+
+上述值组成的项目/元数据版本为 **`1.20.1-1.4.2-fabric`**（`mc_version-mod_version-mod_version_tag`），归档基础名称为 **`Re-Avaritia-fabric`**（`mod_name-mod_platform`），发布文件名保持 **`Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`**。`mod_group_id` 设置 Gradle 分组，不会重命名 Java 包，也不表示存在可用的 Maven 发布产物。构建插件与依赖版本（包括可选联动的固定版本）也统一在本项目属性文件中维护；修改版本不会将可选模组变成默认运行时前置。
+
+已提交的 Gradle Wrapper 从 `gradle/wrapper/gradle-wrapper.properties` 启动。修改 `gradle_version` 后执行 `gradlew.bat wrapper`，重新生成其下载地址；再用新 Gradle 执行一次以更新 Wrapper 脚本/JAR。仅修改项目属性不会自动升级 Wrapper。
+
+### 构建与开发环境
 
 Windows 构建与运行：
 
@@ -52,7 +80,7 @@ gradlew.bat -PwithClientIntegrations runClient
 
 该可选配置固定 JEI **15.20.0.112**、Mod Menu **7.2.2**、CraftTweaker **14.0.12**、KubeJS **2001.6.5-build.20**，并加入它们自身所需的开发运行时；不内嵌或发布为前置模组。编译时提供 Fabric API 以保证 Loom 正确映射可选 API 的继承关系，默认运行时仍不加载它。编译阶段关闭依赖接口注入，安装联动模组后由其真实运行时 Mixin 提供这些接口。
 
-产物位于 `build/libs/`。原生回归夹具不打入发布 JAR：
+重映射后的发布 JAR 为 `build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`。原生回归夹具不打入该 JAR，需单独运行：
 
 ```bat
 gradlew.bat -PgameTests runGameTestServer --args=nogui
@@ -62,9 +90,9 @@ gradlew.bat -PgameTests runGameTestServer --args=nogui
 
 Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可尝试 `Ctrl+Space` 或临时英文键盘布局，再用 `/` 打开命令栏并输入 `/time set day`。窗口重新激活后须再次检查布局；测试结束恢复原布局，不必永久更改系统语言。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。后台自动化若丢失组合键修饰符（如 `Shift+2` 输入 `2` 而非 `@`），应在已确认的游戏窗口前台重试，不应因此修改模组输入处理。
 
-已验证：完整构建、53 项 JUnit、默认环境 50 项原生 GameTest，以及独立服务端启动/重载/保存。此前安装 Trinkets 环境通过 45 项原生 GameTest，另覆盖无尽鞘翅、水晶矩阵锹和无尽图腾。真实 Fabric 客户端覆盖个人维度存档重入与天气隔离、无尽箱搜索及 GUI 缩放恢复、Trinkets 饰品界面佩戴戒指、EMI 中绿宝石/萤石的不同压缩配方，以及独立 JEI 的中子素压缩分类及 16 页配方。光晕保留烘焙顶点 RGB/Alpha，另经真实顶点缓冲区回归及背包/快捷栏实测黑色光晕和中子物品半透明效果。四模组开发客户端也已启动并完成入世及 CraftTweaker/KubeJS 脚本加载。超立方体标题、普通/合成完整面板、无尽盔甲、四种盾牌模式及炽阳弓普通射击通过用户手动验收；Jade 未进行原生客户端验证。
+本次构建属性与 README 对齐前的历史验证记录：完整构建、53 项 JUnit、默认环境 50 项原生 GameTest，以及独立服务端启动/重载/保存。此前安装 Trinkets 环境通过 45 项原生 GameTest，另覆盖无尽鞘翅、水晶矩阵锹和无尽图腾。真实 Fabric 客户端覆盖个人维度存档重入与天气隔离、无尽箱搜索及 GUI 缩放恢复、Trinkets 饰品界面佩戴戒指、EMI 中绿宝石/萤石的不同压缩配方，以及独立 JEI 的中子素压缩分类及 16 页配方。光晕保留烘焙顶点 RGB/Alpha，另经真实顶点缓冲区回归及背包/快捷栏实测黑色光晕和中子物品半透明效果。四模组开发客户端也已启动并完成入世及 CraftTweaker/KubeJS 脚本加载。超立方体标题、普通/合成完整面板、无尽盔甲、四种盾牌模式及炽阳弓普通射击通过用户手动验收；Jade 未进行原生客户端验证。这些记录不代表本次构建配置改动已重新运行验证。
 
-CraftTweaker 14.0.12、KubeJS 2001.6.5-build.20 魔改已在隔离服务端通过真实脚本引擎实测：16 条 CT、14 条 KJS 直接配方及奇点生成配方，覆盖等级/3×3–9×9 材料、实际匹配/合成/剩余物、删除、元数据与 KJS 覆盖 CT 的优先级；启动及 `/reload` 后各通过 324 项断言。单独撤掉任一来源脚本后，旧定义/配方被移除并恢复另一来源；全部撤回后恢复基础配方及定义。未修改原客户端脚本及存档。
+历史脚本引擎验证记录：CraftTweaker 14.0.12、KubeJS 2001.6.5-build.20 魔改已在隔离服务端通过真实脚本引擎实测：16 条 CT、14 条 KJS 直接配方及奇点生成配方，覆盖等级/3×3–9×9 材料、实际匹配/合成/剩余物、删除、元数据与 KJS 覆盖 CT 的优先级；启动及 `/reload` 后各通过 324 项断言。单独撤掉任一来源脚本后，旧定义/配方被移除并恢复另一来源；全部撤回后恢复基础配方及定义。未修改原客户端脚本及存档。
 
 
 ## **无尽盾牌:**
@@ -88,22 +116,29 @@ CraftTweaker 14.0.12、KubeJS 2001.6.5-build.20 魔改已在隔离服务端通�
 - 代码: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - 材质: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-## **📌其他下载:**
+## **📌原始项目与历史下载:**
 * [Avaritia (1.1x)](https://www.curseforge.com/minecraft/mc-mods/avaritia-1-10)
 * [Avaritia (official)](https://www.curseforge.com/minecraft/mc-mods/avaritia)
 * [AvaritiaLite](https://www.curseforge.com/minecraft/mc-mods/avaritia-lite)
 
-## **❗Attention:**
-* 你**可以**将本模组添加到你制作的整合包.
-* JEI查看无尽工作台和中子态素压缩机配方.
-* 可以利用CraftTweaker和KubeJs自定义并修改奇点!
-* 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
-* 使用KubeJs修改无尽工作台和中子态素压缩机配方!
+以上链接属于原始 Avaritia 项目，不是本仓库 Fabric JAR 的下载来源；本移植版请参阅[安装](#安装)。
+
+## **❗使用说明:**
+* 你**可以**将本模组添加到你制作的整合包。
+* 可选安装 Fabric 版 EMI 或 JEI 查看无尽工作台和中子态素压缩机配方。
+* 可选安装 Fabric 版 CraftTweaker 或 KubeJS 自定义并修改奇点。
+* 使用 CraftTweaker 修改无尽工作台和中子态素压缩机配方。
+* 使用 KubeJS 修改无尽工作台和中子态素压缩机配方。
 
 ## **🔎文档:**
 * [Wiki](wiki)
 
+## Discord
+* [Discord](https://discord.gg/u5GN2Wqsbx)
+
 ## **⚙️开发:**
+数据包教程不需要脚本模组。下方脚本教程需要安装对应的可选 **Fabric 1.20.1** CraftTweaker 或 KubeJS 及其依赖；Re-Avaritia 本身并不要求这些模组。
+
 ### **Singularities**
 * [奇点Wiki](wiki/KUBEJS_SINGULARITY_GUIDE_CN.md)
 
@@ -191,7 +226,7 @@ ServerEvents.recipes(
         );
         //compressor
         avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
+            .compressor("minecraft:copper_ingot", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
             .timeCost(240)//所需时间
             .inputCount(2000);//所需数量
         //需要先删除对应奇点配方
@@ -251,19 +286,28 @@ ServerEvents.recipes(event => {
 
 无序材料必须为**一维数组**，等级 4 支持最多 81 槽。有序构造仍为 `(tier, result, pattern, key)`；压缩构造为 `(ingredient, result[, inputCount[, timeCost]])`。催化剂为 `(group, ingredients[, count])`，`"default"` 组自动加入有效奇点，自定义组仅使用指定材料；永恒奇点为 `(additionalIngredients[, count])`，自动加入有效奇点。这两类产品固定为催化剂和永恒奇点物品。锻造为 `(result, template, base, addition)`，也可用 `(result, base, addition)` 自动采用 Avaritia 升级模板。固定 Rhino 版本中，生成循环里每轮重建的数组和尺寸使用 `var`；循环内重复声明 `const` 的行为与现代浏览器 JavaScript 不同。
 
-### **Dependencies:**
-avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
-```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/releases"
-    }
-}
+### **Fabric 附属模组依赖:**
 
+本仓库目前没有配置 Maven 发布或上传仓库。Fabric 附属模组不要使用历史 `avaritia-forge` 坐标或 ForgeGradle 依赖配置。
+
+1. 在本仓库执行 `gradlew.bat build`，得到重映射后的发布 JAR **`build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`**，模组版本为 **`1.20.1-1.4.2-fabric`**。
+2. 将该 JAR 复制到 Fabric 附属模组的 `libs/` 目录，在附属模组的 Fabric Loom `build.gradle` 中配置：
+
+```groovy
 dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
+    modImplementation files('libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar')
 }
 ```
+
+Loom 会将此模组依赖映射到附属模组的开发映射，并加入开发运行时。这**不会**将 Re-Avaritia 内嵌到附属模组中；玩家仍需单独安装 Fabric 发布 JAR。参考 [Fabric Loom 依赖文档](https://wiki.fabricmc.net/documentation:fabric_loom)。
+
+3. 若附属模组必须依赖 Re-Avaritia，在其 `fabric.mod.json` 已有的 `depends` 对象中加入模组 ID：
+
+```json
+"avaritia": "1.20.1-1.4.2-fabric"
+```
+
+保留附属模组自己的 Minecraft 1.20.1 与 Fabric Loader 要求。上述本地 JAR 教程不表示已经发布了 Fabric Maven 产物。
 
 
 

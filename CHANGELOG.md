@@ -10,6 +10,14 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 移除 Forge、Curios、Porting Lib 等必需运行时；默认只需要 Fabric Loader，Trinkets 等联动按安装情况启用。
 * 采用原生注册、必选内置资源包、网络菜单、物品/流体/能量存储、漏斗桥接、个人维度和客户端渲染入口。
 
+### Build and documentation
+
+* 参照 Forge 项目的属性分组与版本组合，将 Minecraft、Fabric Loader、Loom、Java、可选联动及编译/测试依赖版本统一放入项目级 `gradle.properties`，继续使用 Fabric Loom 与 Mojang 官方映射，不引入 Forge 插件或前置。默认版本与发布文件名保持 `1.20.1-1.4.2-fabric` / `Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`。
+* 主模组与原生回归夹具的 Fabric 元数据从属性展开，并登记资源任务输入；Gradle Wrapper 的生成版本同样读取属性，现有启动分发地址仍通过 `wrapper` 任务更新。默认只加载 Fabric Loader，可选开发配置的固定依赖与启用方式不变。
+* 重写双语 README 的 Fabric 介绍、安装、版本配置与附属模组依赖说明，保留奇点 JSON、CraftTweaker、KubeJS、盾牌及构建/验证教程和作者许可信息；历史上游下载不再作为本地 Fabric 发布证明。附属模组使用 Loom 的本地发布 JAR 依赖，已实际构建引用 `ModApi` 与原版 `ItemStack` 的独立附属项目，确认依赖映射正确且不内嵌本模组。
+* 本轮完整构建与 53 项 JUnit 通过；版本/后缀/夹具/Wrapper 属性覆盖和默认、四联动、Trinkets 配置烟测通过，移除命令行覆盖后恢复原值。实际无前置服务端加载属性生成的两个模组版本，并通过 50 项不同原生 GameTest；发布 JAR 元数据、无夹具/无内嵌依赖与默认内容哈希均已核对。
+
+
 ### Runtime fixes
 
 * 增加 `-PwithClientIntegrations runClient` 可选开发配置，同时启动 JEI、Mod Menu、CraftTweaker、KubeJS 及其自身依赖，默认无前置运行方式与发布 JAR 不变。编译期补齐 Fabric API 继承关系并关闭依赖接口注入，避免可选 API 缓存映射留下 intermediary 重载方法名，或要求原版 Level 子类实现仅由运行时 Mixin 添加的 KubeJS 方法；实际客户端已验证模组菜单版本及入世、脚本资源加载。

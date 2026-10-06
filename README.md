@@ -3,11 +3,9 @@
 </p>
 <hr>
 <p align="center">
-    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Minecraft-1.20.1%20Fabric-c70039" alt="Supported Version">
-    </a>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
+    <img src="https://img.shields.io/badge/Minecraft-1.20.1%20Fabric-c70039" alt="Supported Version">
+    <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia" title="Original upstream project, not a download listing for this Fabric port">
+        <img src="https://cf.way2muchnoise.eu/623969.svg" alt="Original upstream CurseForge downloads">
     </a>
     <img src="https://img.shields.io/badge/license-MIT%2FCC%20BY--NC--SA%204.0-green" alt="License">
 </p>
@@ -22,12 +20,12 @@
 
 
 ## **📕Introduction:**
-* <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
+* This is the <span style="color: #ff0000;">Minecraft 1.20.1 Fabric port of Re-Avaritia</span>, bringing Avaritia's items, blocks, and recipes to Fabric.
 * This mod is <span style="color: #ff6600;">unofficial</span>!
 
-## Fabric 1.20.1
+The migration source is the local `Avaritia-1.20` **1.4.2** codebase. This port retains the `committee.nova.mods.avaritia` Java package hierarchy; it is not a Forge mod.
 
-This repository ports the local `Avaritia-1.20` 1.4.2 codebase to Fabric while retaining the `committee.nova.mods.avaritia` package hierarchy.
+### Requirements and optional integrations
 
 - Requires Minecraft **1.20.1**, Java **17+**, and Fabric Loader **0.17.2+**.
 - No prerequisite mods: Fabric API, Porting Lib, Cardinal Components, and Trinkets are not required or bundled.
@@ -35,6 +33,36 @@ This repository ports the local `Avaritia-1.20` 1.4.2 codebase to Fabric while r
 - Optional integrations: Trinkets, EMI, JEI, Jade, KubeJS, and CraftTweaker. Their own dependencies are needed only when installing those integrations.
 - Optional Trinkets slots: rings in `hand/ring` and `offhand/ring`, infinity elytra in `chest/back`, crystal shovel in `chest/back` or `charm/charm`, and infinity totem in `charm/charm`.
 - The upstream [fabric/1.20.1 reference](https://github.com/Nova-Committee/Re-Avaritia/tree/4ec454e0847cefcd08434722ec7c6704e7564fd5) is not used as a dependency baseline.
+
+### Installation
+
+Install Java 17+ and Fabric Loader 0.17.2+ for Minecraft 1.20.1. Build this repository as described below, then place **`build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`** in the instance's `mods/` directory, on both the client and the server when playing multiplayer. Use the remapped release JAR, not a `-sources` or development JAR; Forge/NeoForge builds are not interchangeable with it.
+
+The default installation requires **only Fabric Loader**, not Fabric API or any integration mod. If you want Trinkets, EMI, JEI, Jade, KubeJS, or CraftTweaker, install their **Fabric 1.20.1** releases and their own required dependencies separately. Mod Menu is also available in the opt-in development profile below. The upstream links and download badge on this page are historical references, not proof that this local Fabric port is distributed there.
+
+### Version configuration
+
+Edit this repository's **`gradle.properties`**, rather than hard-coding versions in `build.gradle`. Core properties are:
+
+```properties
+gradle_version=8.12
+mc_version=1.20.1
+loader_version=0.17.2
+loom_version=1.10.5
+java_version=17
+mod_version=1.4.2
+mod_version_tag=fabric
+mod_platform=fabric
+mod_group_id=committee.nova.mods
+mod_name=Re-Avaritia
+mod_id=avaritia
+```
+
+With these values, the composed project/metadata version is **`1.20.1-1.4.2-fabric`** (`mc_version-mod_version-mod_version_tag`), the archive base is **`Re-Avaritia-fabric`** (`mod_name-mod_platform`), and the release filename remains **`Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`**. `mod_group_id` configures the Gradle group, not a Java package rename or an available Maven publication. Build plugin and dependency versions, including the optional integration pins, are also managed in this project properties file; changing them does not turn optional mods into default runtime prerequisites.
+
+The checked-in Gradle Wrapper starts from `gradle/wrapper/gradle-wrapper.properties`. After changing `gradle_version`, run `gradlew.bat wrapper` to regenerate its distribution URL; run it again with the new Gradle version to refresh the wrapper scripts/JAR. It is not upgraded merely by editing the project property.
+
+### Building and development
 
 Build on Windows:
 
@@ -52,7 +80,7 @@ gradlew.bat -PwithClientIntegrations runClient
 
 This opt-in profile pins JEI **15.20.0.112**, Mod Menu **7.2.2**, CraftTweaker **14.0.12**, and KubeJS **2001.6.5-build.20**, with their required development runtimes. They are not bundled or published as prerequisite mods. Fabric API is also available compile-only so Loom can correctly remap optional APIs; the default runtime still does not load it. Dependency interface injection is disabled for compilation: installed integrations supply those interfaces through their actual runtime mixins.
 
-Artifacts are under `build/libs/`. Native regression fixtures are excluded from the release JAR:
+The remapped release JAR is `build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`. Native regression fixtures are excluded from that JAR; to run them separately:
 
 ```bat
 gradlew.bat -PgameTests runGameTestServer --args=nogui
@@ -62,9 +90,9 @@ In the test server console, run `execute positioned 0 80 0 run test runall`, the
 
 For native Windows client checks, confirm keyboard focus and check the Chinese input-method mode if chat or ASCII commands do not respond. Try `Ctrl+Space` or a temporary English keyboard layout, then open command chat with `/` and enter `/time set day`. Recheck the layout after reactivating the window and restore it after testing; permanent system-language changes are unnecessary. Require actual command feedback rather than automation key-delivery acknowledgement. If background automation loses modifiers (for example, `Shift+2` enters `2` instead of `@`), retry with the verified game window in the foreground rather than changing mod input handlers.
 
-Verified: full build, 53 JUnit tests, 50 native GameTests without prerequisite mods, and dedicated-server startup/reload/save. The earlier installed-Trinkets pass covered 45 native GameTests, including infinity elytra, crystal shovel, and infinity totem. Actual Fabric client checks cover personal-dimension reentry/weather isolation, infinity-chest search and GUI-scale restoration, wearing a ring in the Trinkets screen, distinct emerald/glowstone compression recipes in EMI, and the 16-page neutron-compression category in standalone JEI. Halo rendering preserves baked vertex RGB/alpha, with native inventory/hotbar checks for black halos and translucent neutron effects plus real vertex-buffer regressions. The four-mod development client also boots and loads a world with CraftTweaker/KubeJS scripts. Tesseract labels, complete normal/crafting panels, infinity armor, all shield modes, and ordinary blaze-bow shots passed user-led manual acceptance. Jade has not received native client verification.
+Historical verification before this build/property and README alignment: full build, 53 JUnit tests, 50 native GameTests without prerequisite mods, and dedicated-server startup/reload/save. The earlier installed-Trinkets pass covered 45 native GameTests, including infinity elytra, crystal shovel, and infinity totem. Actual Fabric client checks cover personal-dimension reentry/weather isolation, infinity-chest search and GUI-scale restoration, wearing a ring in the Trinkets screen, distinct emerald/glowstone compression recipes in EMI, and the 16-page neutron-compression category in standalone JEI. Halo rendering preserves baked vertex RGB/alpha, with native inventory/hotbar checks for black halos and translucent neutron effects plus real vertex-buffer regressions. The four-mod development client also boots and loads a world with CraftTweaker/KubeJS scripts. Tesseract labels, complete normal/crafting panels, infinity armor, all shield modes, and ordinary blaze-bow shots passed user-led manual acceptance. Jade has not received native client verification. These records do not claim a new verification run for the current build-configuration changes.
 
-CraftTweaker 14.0.12 and KubeJS 2001.6.5-build.20 customization was exercised through the real script engines in an isolated dedicated server: 16 CT and 14 KJS direct recipes, generated singularity recipes, tiers/3×3–9×9 grids, actual ingredient matching/assembly/remainders, deletion, metadata, and KJS-over-CT precedence passed 324 assertions on startup and again after `/reload`. Withdrawing only one script source restored the surviving layer and removed its obsolete definitions/recipes; withdrawing both restored the baseline recipes and definitions. Original client scripts and worlds were not modified.
+Historical script-engine verification: CraftTweaker 14.0.12 and KubeJS 2001.6.5-build.20 customization was exercised through the real script engines in an isolated dedicated server: 16 CT and 14 KJS direct recipes, generated singularity recipes, tiers/3×3–9×9 grids, actual ingredient matching/assembly/remainders, deletion, metadata, and KJS-over-CT precedence passed 324 assertions on startup and again after `/reload`. Withdrawing only one script source restored the surviving layer and removed its obsolete definitions/recipes; withdrawing both restored the baseline recipes and definitions. Original client scripts and worlds were not modified.
 
 
 ## **Infinity Shield:**
@@ -88,17 +116,19 @@ Active blocking is immediate and omnidirectional, does not slow movement, and pe
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-## **📌Download official:**
+## **📌Original projects and historical downloads:**
 * [Avaritia (1.1x)](https://www.curseforge.com/minecraft/mc-mods/avaritia-1-10)
 * [Avaritia (official)](https://www.curseforge.com/minecraft/mc-mods/avaritia)
 * [AvaritiaLite](https://www.curseforge.com/minecraft/mc-mods/avaritia-lite)
 
+These are the original Avaritia projects, not download sources for this repository's Fabric JAR. See [Installation](#installation) for this port.
+
 ## **❗Attention:**
 * You&nbsp;<span style="color: #00ff00;"> **DEFINITELY CAN** </span>&nbsp;add the mod to your modpack.
-* Recipe viewing is supported via JEI.
-* You can add&nbsp;singularity by using CraftTweaker and KubeJs!
-* You can add recipes by CraftTweaker!
-* You can add recipes by KubeJs!
+* Recipe viewing is supported via the optional Fabric versions of EMI or JEI.
+* You can customize singularities using the optional Fabric versions of CraftTweaker and KubeJS.
+* You can add recipes using CraftTweaker.
+* You can add recipes using KubeJS.
 
 ## **🔎Wiki:**
 * [Wiki](wiki)
@@ -107,6 +137,8 @@ Active blocking is immediate and omnidirectional, does not slow movement, and pe
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
 ## **⚙️Develop:**
+The datapack tutorial requires no script mod. The following script tutorials require the corresponding optional **Fabric 1.20.1** CraftTweaker or KubeJS installation and its dependencies; neither is required by Re-Avaritia itself.
+
 ### **Singularities:**
 Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
 ```json
@@ -192,7 +224,7 @@ ServerEvents.recipes(
         );
         //compressor
         avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
+            .compressor("minecraft:copper_ingot", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
             .timeCost(240)
             .inputCount(2000);
         avaritia.compressor(Item.of("minecraft:coal"), Item.of("avaritia:singularity", '{Id:"avaritia:coal"}'))
@@ -252,19 +284,28 @@ ServerEvents.recipes(event => {
 Shapeless materials are a **flat array**, supporting up to 81 slots on tier 4. Shaped constructors remain `(tier, result, pattern, key)`. Compressor constructors accept `(ingredient, result[, inputCount[, timeCost]])`. Catalyst constructors accept `(group, ingredients[, count])`; group `"default"` adds effective singularities, while a custom group uses only the supplied ingredients. Eternal constructors accept `(additionalIngredients[, count])` and automatically add effective singularities. These two outputs are fixed to the catalyst and eternal-singularity items. Smithing is `(result, template, base, addition)` or `(result, base, addition)` with the Avaritia upgrade template. In this pinned Rhino version, use `var` for arrays/dimensions recreated inside generation loops; repeated block-local `const` declarations do not behave like modern browser JavaScript.
 
 
-### **Dependencies:**
-avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
-```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/releases"
-    }
-}
+### **Dependencies for Fabric addons:**
 
+This repository does not currently configure a Maven publication or upload repository. Do not use the historical `avaritia-forge` coordinate or ForgeGradle's dependency setup for a Fabric addon.
+
+1. Run `gradlew.bat build` in this repository. The remapped release JAR is **`build/libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar`**, with mod version **`1.20.1-1.4.2-fabric`**.
+2. Copy that JAR into the Fabric addon's `libs/` directory. In the addon's Fabric Loom `build.gradle`, use:
+
+```groovy
 dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
+    modImplementation files('libs/Re-Avaritia-fabric-1.20.1-1.4.2-fabric.jar')
 }
 ```
+
+Loom remaps this mod dependency to the addon's development mappings and adds it to its development runtime. This does **not** bundle Re-Avaritia into your addon; players still install the Fabric release JAR separately. See the [Fabric Loom dependency documentation](https://wiki.fabricmc.net/documentation:fabric_loom).
+
+3. If the addon requires Re-Avaritia, add its mod ID to the existing `depends` object in the addon's `fabric.mod.json`:
+
+```json
+"avaritia": "1.20.1-1.4.2-fabric"
+```
+
+Keep the addon's own Minecraft 1.20.1 and Fabric Loader requirements. The local JAR tutorial is not a claim that a Fabric Maven artifact has been published.
 
 
 
