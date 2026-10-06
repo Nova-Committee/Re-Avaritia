@@ -50,11 +50,11 @@ gradlew.bat runServer --args=nogui
 gradlew.bat -PgameTests runGameTestServer --args=nogui
 ```
 
-测试服务端控制台执行 `execute positioned 0 80 0 run test runall`，等原生测试全部报告后执行 `stop`。开发环境安装 Trinkets 时，在启动命令加 `-PwithTrinkets`；仅该可选配置引入 Trinkets 自身的传递运行时依赖。
+测试服务端控制台执行 `execute positioned 0 80 0 run test runall`，等原生测试全部报告后执行 `stop`。开发环境安装 Trinkets 时，在启动命令加 `-PwithTrinkets`；仅该可选配置加入 Trinkets 正式发布产物及其自身所需的 Fabric API / Cardinal Components 运行时，默认配置不变。
 
-Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可用 `Ctrl+Space` 切换后输入 `/time set day`。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。
+Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可尝试 `Ctrl+Space` 或临时英文键盘布局，再用 `/` 打开命令栏并输入 `/time set day`。窗口重新激活后须再次检查布局；测试结束恢复原布局，不必永久更改系统语言。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。
 
-已验证独立运行基线：完整构建、42 项 JUnit、39 项原生 GameTest、独立服务端启动/重载/保存，以及真实 Fabric 客户端启动。可选联动和具体界面验收与该基线分开验证。
+已验证：完整构建、43 项 JUnit、默认环境 39 项原生 GameTest、安装 Trinkets 环境 43 项原生 GameTest，以及独立服务端启动/重载/保存和真实 Fabric 客户端启动。Trinkets 回归覆盖佩戴戒指、无尽鞘翅、水晶矩阵锹和无尽图腾；具体界面及可选配方浏览器的运行验证独立于这些服务端测试。
 
 
 ## **无尽盾牌:**

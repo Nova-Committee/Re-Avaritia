@@ -50,11 +50,11 @@ Artifacts are under `build/libs/`. Native regression fixtures are excluded from 
 gradlew.bat -PgameTests runGameTestServer --args=nogui
 ```
 
-In the test server console, run `execute positioned 0 80 0 run test runall`, then `stop` after all native test results. To exercise installed Trinkets in development, add `-PwithTrinkets` to the launch command; this opt-in profile alone adds its transitive runtime dependencies.
+In the test server console, run `execute positioned 0 80 0 run test runall`, then `stop` after all native test results. Add `-PwithTrinkets` to exercise installed Trinkets in development; only this opt-in profile adds the official Trinkets release and its required Fabric API / Cardinal Components runtimes. The default profile is unchanged.
 
-For native Windows client checks, confirm the game has keyboard focus. If the chat shortcut or ASCII commands do not respond, check the Chinese input-method mode; try `Ctrl+Space` before entering `/time set day`. Require visible command feedback rather than treating automation key-delivery acknowledgement as proof.
+For native Windows client checks, confirm keyboard focus and check the Chinese input-method mode if chat or ASCII commands do not respond. Try `Ctrl+Space` or a temporary English keyboard layout, then open command chat with `/` and enter `/time set day`. Recheck the layout after reactivating the window and restore it after testing; permanent system-language changes are unnecessary. Require actual command feedback rather than automation key-delivery acknowledgement.
 
-Verified standalone baseline: full build, 42 JUnit tests, 39 native GameTests, dedicated-server startup/reload/save, and actual Fabric client startup. Optional-integration and detailed GUI checks are separate from this baseline.
+Verified: full build, 43 JUnit tests, 39 native GameTests without prerequisite mods, 43 native GameTests with installed Trinkets, dedicated-server startup/reload/save, and actual Fabric client startup. Trinkets regression exercises worn rings, infinity elytra, crystal shovel, and infinity totem; GUI and optional recipe-viewer runtime checks are separate from these server tests.
 
 
 ## **Infinity Shield:**

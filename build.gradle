@@ -37,10 +37,14 @@ dependencies {
     modCompileOnly('dev.latvian.mods:rhino-fabric:2001.2.2-build.17') { transitive = false }
     modCompileOnly('com.blamejared.crafttweaker:CraftTweaker-fabric-1.20.1:14.0.12') { transitive = false }
     modCompileOnly('maven.modrinth:jade:11.13.1+fabric') { transitive = false }
-    modCompileOnly('dev.emi:trinkets:3.7.2') { transitive = false }
+    modCompileOnly('maven.modrinth:trinkets:3.7.2') { transitive = false }
     modCompileOnly('dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0') { transitive = false }
     if (project.hasProperty('withTrinkets')) {
-        modRuntimeOnly 'dev.emi:trinkets:3.7.2'
+        // Use the official release: the dev.emi Maven artifact retains Yarn-only widget shadows.
+        modRuntimeOnly 'maven.modrinth:trinkets:3.7.2'
+        modRuntimeOnly 'net.fabricmc.fabric-api:fabric-api:0.91.0+1.20.1'
+        modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0'
+        modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.0'
     }
 }
 

@@ -91,6 +91,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             originalGuiScale = minecraft.options.guiScale().get();
         }
         minecraft.options.guiScale().set(targetScale);
+        minecraft.resizeDisplay();
         return true;
     }
 
@@ -281,9 +282,11 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         }
         int scale = originalGuiScale;
         originalGuiScale = null;
-        minecraft.execute(() -> {
+        // Wait until the removed screen is replaced; resizing it synchronously would shrink the GUI again.
+        minecraft.tell(() -> {
             if (minecraft.options.guiScale().get() != scale) {
                 minecraft.options.guiScale().set(scale);
+                minecraft.resizeDisplay();
             }
         });
     }
