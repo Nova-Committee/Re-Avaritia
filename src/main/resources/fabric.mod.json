@@ -11,6 +11,7 @@
     "main": ["committee.nova.mods.avaritia.Avaritia"],
     "client": ["committee.nova.mods.avaritia.client.AvaritiaModClient"],
     "emi": ["committee.nova.mods.avaritia.init.compat.emi.AvaritiaEmiPlugin"],
+    "jei_mod_plugin": ["committee.nova.mods.avaritia.init.compat.jei.AvaritiaJeiPlugin"],
     "jade": ["committee.nova.mods.avaritia.init.compat.JadeCompat"]
   },
   "mixins": ["avaritia.mixins.json"],
