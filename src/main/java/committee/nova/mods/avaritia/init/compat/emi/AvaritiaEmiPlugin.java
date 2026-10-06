@@ -15,7 +15,6 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import committee.nova.mods.avaritia.util.SingularityUtils;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -34,9 +33,12 @@ import java.util.List;
 public class AvaritiaEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) ->
-                net.minecraft.world.item.ItemStack.isSameItemSameTags(stack1.getItemStack(), stack2.getItemStack()))
-        );
+        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) -> {
+            var first = stack1.getNbt();
+            var second = stack2.getNbt();
+            return (first == null ? "" : first.getString("Id"))
+                    .equals(second == null ? "" : second.getString("Id"));
+        }));
 
         registry.addWorkstation(VanillaEmiRecipeCategories.ANVIL_REPAIRING, EmiStack.of(ModBlocks.extreme_anvil.get()));
 

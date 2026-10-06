@@ -15,15 +15,16 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
 * 注册方块物品时同步原版 Block → Item 映射，修复克隆/选取方块返回空气及自定义燃料加载异常；新增克隆物品与四类燃料真实熔炉烧炼回归，默认原生用例增至 41 项。
 * 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
-* 网络菜单发送改用可组合的原版调用前注入，避免与 Fabric API 包发送重定向冲突；默认环境 39 项、安装 Trinkets 环境 43 项原生 GameTest 均通过，可选环境另完成重载与保存。
+* 网络菜单发送改用可组合的原版调用前注入，避免与 Fabric API 包发送重定向冲突；默认环境 41 项、安装 Trinkets 环境 45 项原生 GameTest 均通过，可选环境另完成重载与保存。
 * 修复真实客户端打开无尽箱时菜单补充数据二次入队被原版打开界面包超越的问题；游戏线程上的嵌套包工作即时完成，事件循环顺序回归及真实箱子界面均验证通过。
 * 迁回 Forge 按维度广播天气的原版补丁；真实客户端验证主世界雨天切换不会污染个人晴天维度，并从重启后的存档重新进入既有个人维度及箱子。
 * 无尽箱缩小 GUI 时立即重建控件，关闭时将原缩放恢复延后到屏幕替换之后；真实客户端验证搜索框可用、全部背包槽可见并恢复原 GUI 缩放。
 * 可选 Trinkets 开发配置采用正式发布包，避免旧 Maven 包残留 Yarn 字段名导致客户端 widget mixin 崩溃；补齐开发运行时所需的 Fabric API/CCA，验证真实饰品栏装备戒指及 43 项原生测试。
+* EMI 奇点比较改为直接比较 NBT Id，避免奇点查询返回副本时实例比较永远失败，并避免为比较复制整个奇点；真实客户端分别打开绿宝石与萤石的正确压缩配方。
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。
-* 通过独立构建、43 项 JUnit、默认 39 项原生 GameTest、可选 Trinkets 43 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
+* 通过独立构建、43 项 JUnit、默认 41 项原生 GameTest、可选 Trinkets 45 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
 
 
 ## [v1.4.2-release-forge](http://github.com/Nova-Committee/Re-Avaritia/compare/v1.4.1-release-forge...v1.4.2-release-forge)
