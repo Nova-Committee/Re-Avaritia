@@ -52,9 +52,9 @@ gradlew.bat -PgameTests runGameTestServer --args=nogui
 
 测试服务端控制台执行 `execute positioned 0 80 0 run test runall`，等原生测试全部报告后执行 `stop`。开发环境安装 Trinkets 时，在启动命令加 `-PwithTrinkets`；仅该可选配置加入 Trinkets 正式发布产物及其自身所需的 Fabric API / Cardinal Components 运行时，默认配置不变。
 
-Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可尝试 `Ctrl+Space` 或临时英文键盘布局，再用 `/` 打开命令栏并输入 `/time set day`。窗口重新激活后须再次检查布局；测试结束恢复原布局，不必永久更改系统语言。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。
+Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可尝试 `Ctrl+Space` 或临时英文键盘布局，再用 `/` 打开命令栏并输入 `/time set day`。窗口重新激活后须再次检查布局；测试结束恢复原布局，不必永久更改系统语言。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。后台自动化若丢失组合键修饰符（如 `Shift+2` 输入 `2` 而非 `@`），应在已确认的游戏窗口前台重试，不应因此修改模组输入处理。
 
-已验证：完整构建、43 项 JUnit、默认环境 39 项原生 GameTest、安装 Trinkets 环境 43 项原生 GameTest，以及独立服务端启动/重载/保存和真实 Fabric 客户端启动。Trinkets 回归覆盖佩戴戒指、无尽鞘翅、水晶矩阵锹和无尽图腾；具体界面及可选配方浏览器的运行验证独立于这些服务端测试。
+已验证：完整构建、43 项 JUnit、默认环境 41 项原生 GameTest、安装 Trinkets 环境 45 项原生 GameTest，以及独立服务端启动/重载/保存。真实 Fabric 客户端覆盖个人维度存档重入与天气隔离、无尽箱搜索及 GUI 缩放恢复、Trinkets 饰品界面佩戴戒指、EMI 中绿宝石/萤石的不同压缩配方，以及独立 JEI 的中子素压缩分类及 16 页配方。Trinkets 服务端回归另覆盖无尽鞘翅、水晶矩阵锹和无尽图腾；Jade、KubeJS、CraftTweaker 未单独进行客户端界面验证。
 
 
 ## **无尽盾牌:**
