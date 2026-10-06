@@ -45,6 +45,10 @@ public class BurningArrowEntity extends Arrow {
     }
     @Override
     protected void onHit(@NotNull HitResult result) {
+        // Vanilla AbstractArrow dispatches MISS too; Forge filtered it before calling onHit.
+        if (result.getType() == HitResult.Type.MISS) {
+            return;
+        }
         super.onHit(result);
         this.discard();
     }
