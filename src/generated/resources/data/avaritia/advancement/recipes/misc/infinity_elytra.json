@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_elytra"
+        "recipe": "avaritia:infinity_elytra"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

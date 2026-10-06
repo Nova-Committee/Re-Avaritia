@@ -20,22 +20,21 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.triggers.Criterion;
-import net.minecraft.advancements.triggers.RecipeUnlockedTrigger;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -46,13 +45,14 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.WeatheringCopper;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Avaritia 配方数据生成器。
@@ -63,17 +63,8 @@ import java.util.List;
  */
 public class AvaritiaRecipeProvider extends RecipeProvider {
 
-    protected AvaritiaRecipeProvider(BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
-        super(recipes, advancements);
-    }
-
-    /**
-     * 26.3 数据生成入口。配方与解锁进度均为数据包注册表对象，
-     * 通过 {@link RecipeProvider#asBootstrap} 接入 RegistrySetBuilder，
-     * 由 {@code AvaritiaRegistriesProvider} 统一注册。
-     */
-    public static MultiRegistryBootstrap asBootstrap() {
-        return RecipeProvider.asBootstrap(AvaritiaRecipeProvider::new);
+    protected AvaritiaRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
+        super(registries, output);
     }
 
     @Override
@@ -82,7 +73,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     /**
-     * 使用 26.3 的 {@link RecipeOutput} 生成 Avaritia 配方。
+     * 使用 26.1.2 的 {@link RecipeOutput} 生成 Avaritia 配方。
      *
      * @param output 配方输出
      */
@@ -257,27 +248,25 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('f', Items.END_CRYSTAL)
                         .put('g', ModItems.neutron_pile.get()),
                 "has_neutron_pile", has(ModItems.neutron_pile.get()));
-        // 26.3 起染料为 ColorCollection，按颜色取对应染料物品
-        musicDisc(output, Items.MUSIC_DISC_13, Items.DYE.pick(DyeColor.YELLOW), "music_disc_13");
-        musicDisc(output, Items.MUSIC_DISC_CAT, Items.DYE.pick(DyeColor.GREEN), "music_disc_cat");
-        musicDisc(output, Items.MUSIC_DISC_BLOCKS, Items.DYE.pick(DyeColor.ORANGE), "music_disc_blocks");
-        musicDisc(output, Items.MUSIC_DISC_CHIRP, Items.DYE.pick(DyeColor.RED), "music_disc_chirp");
-        musicDisc(output, Items.MUSIC_DISC_FAR, Items.DYE.pick(DyeColor.LIME), "music_disc_far");
-        musicDisc(output, Items.MUSIC_DISC_MALL, Items.DYE.pick(DyeColor.PURPLE), "music_disc_mall");
-        musicDisc(output, Items.MUSIC_DISC_MELLOHI, Items.DYE.pick(DyeColor.MAGENTA), "music_disc_mellohi");
-        musicDisc(output, Items.MUSIC_DISC_STAL, Items.DYE.pick(DyeColor.BLACK), "music_disc_stal");
-        musicDisc(output, Items.MUSIC_DISC_STRAD, Items.DYE.pick(DyeColor.WHITE), "music_disc_strad");
-        musicDisc(output, Items.MUSIC_DISC_WARD, Items.DYE.pick(DyeColor.CYAN), "music_disc_ward");
+        musicDisc(output, Items.MUSIC_DISC_13, Items.YELLOW_DYE, "music_disc_13");
+        musicDisc(output, Items.MUSIC_DISC_CAT, Items.GREEN_DYE, "music_disc_cat");
+        musicDisc(output, Items.MUSIC_DISC_BLOCKS, Items.ORANGE_DYE, "music_disc_blocks");
+        musicDisc(output, Items.MUSIC_DISC_CHIRP, Items.RED_DYE, "music_disc_chirp");
+        musicDisc(output, Items.MUSIC_DISC_FAR, Items.LIME_DYE, "music_disc_far");
+        musicDisc(output, Items.MUSIC_DISC_MALL, Items.PURPLE_DYE, "music_disc_mall");
+        musicDisc(output, Items.MUSIC_DISC_MELLOHI, Items.MAGENTA_DYE, "music_disc_mellohi");
+        musicDisc(output, Items.MUSIC_DISC_STAL, Items.BLACK_DYE, "music_disc_stal");
+        musicDisc(output, Items.MUSIC_DISC_STRAD, Items.WHITE_DYE, "music_disc_strad");
+        musicDisc(output, Items.MUSIC_DISC_WARD, Items.CYAN_DYE, "music_disc_ward");
         extremeShaped(output, minecraftKey("music_disc_11"), RecipeCategory.MISC, Items.MUSIC_DISC_11, 1,
                 new String[]{"a a", " a ", "a a"},
                 keyMap().put('a', ModItems.record_fragment.get()),
                 "has_record_fragment", has(ModItems.record_fragment.get()));
-        musicDisc(output, Items.MUSIC_DISC_WAIT, Items.DYE.pick(DyeColor.LIGHT_BLUE), "music_disc_wait");
+        musicDisc(output, Items.MUSIC_DISC_WAIT, Items.LIGHT_BLUE_DYE, "music_disc_wait");
         musicDisc(output, Items.MUSIC_DISC_PIGSTEP, Items.NETHER_GOLD_ORE, "music_disc_pigstep");
         musicDisc(output, Items.MUSIC_DISC_OTHERSIDE, Items.GRASS_BLOCK, "music_disc_otherside");
         musicDisc(output, Items.MUSIC_DISC_5, Items.ECHO_SHARD, "music_disc_5");
-        // 26.3 起铜块为 WeatheringCopperCollection，涂蜡 weathered 状态通过 waxed().pick() 取得
-        musicDisc(output, Items.MUSIC_DISC_RELIC, Blocks.COPPER_BLOCK.waxed().pick(WeatheringCopper.WeatherState.WEATHERED), "music_disc_relic");
+        musicDisc(output, Items.MUSIC_DISC_RELIC, Blocks.WAXED_WEATHERED_COPPER, "music_disc_relic");
     }
 
     private void craftingTableRecipes(RecipeOutput output) {
@@ -946,8 +935,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     private void saveWithConditions(RecipeOutput output, ResourceKey<Recipe<?>> key, Recipe<?> recipe, RecipeCategory category,
                                     String criterionName, Criterion<?> criterion, ICondition... conditions) {
         Advancement.Builder advancementBuilder = output.advancement()
-                // 26.3 起 RecipeUnlockedTrigger 只接受 Holder/HolderSet，从配方注册表查找对应 Holder
-                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(output.lookup(Registries.RECIPE).getOrThrow(key)))
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
                 .rewards(AdvancementRewards.Builder.recipe(key))
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .addCriterion(criterionName, criterion);
@@ -1102,6 +1090,26 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         private RecipeKeyMap put(char key, Ingredient ingredient) {
             this.ingredients.put(key, ingredient);
             return this;
+        }
+    }
+
+    /**
+     * 26.1.2 数据生成入口。原版 {@link RecipeProvider} 不再直接实现 {@code DataProvider}，
+     * 需要通过 Runner 延迟拿到注册表与 {@link RecipeOutput} 后创建实际 provider。
+     */
+    public static class Runner extends RecipeProvider.Runner {
+        public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+            super(output, registries);
+        }
+
+        @Override
+        protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
+            return new AvaritiaRecipeProvider(registries, output);
+        }
+
+        @Override
+        public @NotNull String getName() {
+            return "Avaritia Recipes";
         }
     }
 }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:sniffer_egg"
+        "recipe": "minecraft:sniffer_egg"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:lapis_lazuli_singularity"
+        "recipe": "avaritia:lapis_lazuli_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

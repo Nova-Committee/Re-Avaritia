@@ -46,17 +46,17 @@ public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayE
             case UP -> {
                 // 在顶部面显示，文字面向上方的玩家
                 poseStack.translate(0, 0.51, 0);
-                poseStack.rotate(Axis.XP.rotationDegrees(-90));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
             }
             case DOWN -> {
                 // 在底部面显示，文字面向下方的玩家
                 poseStack.translate(0, -0.51, 0);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
             }
             case NORTH -> {
                 // 在北面显示，文字面向北方的玩家
                 poseStack.translate(0, 0, -0.51);
-                poseStack.rotate(Axis.YP.rotationDegrees(180));
+                poseStack.mulPose(Axis.YP.rotationDegrees(180));
             }
             case SOUTH -> {
                 // 在南面显示，文字面向南方的玩家
@@ -65,12 +65,12 @@ public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayE
             case WEST -> {
                 // 在西面显示，文字面向西方的玩家
                 poseStack.translate(-0.51, 0, 0);
-                poseStack.rotate(Axis.YP.rotationDegrees(-90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
             }
             case EAST -> {
                 // 在东面显示，文字面向东方的玩家
                 poseStack.translate(0.51, 0, 0);
-                poseStack.rotate(Axis.YP.rotationDegrees(90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(90));
             }
         }
 

@@ -81,12 +81,7 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
         f1 = 1.0F - f1;
         f1 = 1.0F - f1 * f1 * f1;
         // 26.x 的箱子模型通过 ChestModel 统一驱动开合动画和部件提交，不能再拆成三个 ModelPart 手动提交。
-        output.submitModel(this.model, f1, pPoseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, INFINITY_CHEST_SPRITE, this.sprites, 0);
-        // 26.3 起破坏进度不再作为 submitModel 参数，改为单独提交 CrumblingOverlay（同原版 ChestRenderer）。
-        if (state.breakProgress != null) {
-            output.order(1).submitCrumblingOverlay(this.model, f1, pPoseStack, INFINITY_CHEST_SPRITE.renderType(this.model.renderType()),
-                    state.lightCoords, OverlayTexture.NO_OVERLAY, -1, state.breakProgress);
-        }
+        output.submitModel(this.model, f1, pPoseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, INFINITY_CHEST_SPRITE, this.sprites, 0, state.breakProgress);
         pPoseStack.popPose();
     }
 

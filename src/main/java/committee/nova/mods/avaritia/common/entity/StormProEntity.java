@@ -1,12 +1,10 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -40,9 +38,9 @@ public class StormProEntity extends ThrowableItemProjectile {
             }
 
             if (pos != null) {
-                LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(this.level(), EntitySpawnReason.EVENT);
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(this.level(), EntitySpawnReason.EVENT);
                 if (lightning != null) {
-                    lightning.moveOrInterpolateTo(PositionPath.of(new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
+                    lightning.moveOrInterpolateTo(new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5));
 
                     if (this.getOwner() instanceof ServerPlayer player) {
                         lightning.setCause(player);

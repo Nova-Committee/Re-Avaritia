@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_pants"
+        "recipe": "avaritia:infinity_pants"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:side_config_card"
+        "recipe": "avaritia:side_config_card"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

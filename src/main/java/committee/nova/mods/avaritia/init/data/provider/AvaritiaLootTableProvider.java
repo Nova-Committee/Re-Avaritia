@@ -1,18 +1,18 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import net.minecraft.core.registries.SingleRegistryBootstrap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.loot.LootTableSubProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -20,27 +20,16 @@ import java.util.stream.Collectors;
  * <p>
  * 为所有已注册的拥有对应方块物品的方块生成自爆（self-drop）战利品表，
  * 使方块被破坏时掉落自身对应的物品。
- * 26.3 起战利品表为数据包注册表对象，通过 {@link SingleRegistryBootstrap}
- * 接入 RegistrySetBuilder，由 {@code AvaritiaRegistriesProvider} 统一注册。
  */
 public class AvaritiaLootTableProvider extends LootTableProvider {
 
-    public AvaritiaLootTableProvider() {
-        super(Set.of(), List.of(
+    public AvaritiaLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(
                         AvaritiaBlockLootSubProvider::new,
                         LootContextParamSets.BLOCK
                 )
-        ));
-    }
-
-    /**
-     * 创建 Avaritia 战利品表数据生成引导器。
-     *
-     * @return 战利品表注册表的 SingleRegistryBootstrap
-     */
-    public static SingleRegistryBootstrap<LootTable> create() {
-        return new AvaritiaLootTableProvider();
+        ), registries);
     }
 
     /**
@@ -51,8 +40,8 @@ public class AvaritiaLootTableProvider extends LootTableProvider {
      */
     private static class AvaritiaBlockLootSubProvider extends BlockLootSubProvider {
 
-        protected AvaritiaBlockLootSubProvider(LootTableSubProvider.Context output) {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), output);
+        protected AvaritiaBlockLootSubProvider(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override

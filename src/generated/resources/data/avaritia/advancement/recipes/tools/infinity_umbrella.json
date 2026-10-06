@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_umbrella"
+        "recipe": "avaritia:infinity_umbrella"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

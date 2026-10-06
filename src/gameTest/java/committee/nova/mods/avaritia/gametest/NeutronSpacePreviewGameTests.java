@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.component.NeutronRingContents;
 import committee.nova.mods.avaritia.common.item.misc.NeutronRingItem;
@@ -132,11 +131,7 @@ public final class NeutronSpacePreviewGameTests {
         helper.setBlock(signRel.below(), Blocks.STONE);
         helper.setBlock(signRel, Blocks.OAK_SIGN);
         SignBlockEntity sign = helper.getBlockEntity(signRel, SignBlockEntity.class);
-        sign.updateText(t -> {
-            java.util.List<Component> lines = new java.util.ArrayList<>(t.getMessages(false));
-            lines.set(0, Component.literal("Preview sign"));
-            return new net.minecraft.world.level.block.entity.SignText(lines, lines, t.getColor(), t.hasGlowingText());
-        }, net.minecraft.world.level.block.entity.SignTextSlot.FRONT);
+        sign.setText(sign.getFrontText().setMessage(0, Component.literal("Preview sign")), true);
 
         BlockState stone = helper.getBlockState(minRel);
         BlockState grass = helper.getBlockState(minRel.offset(1, 0, 0));
@@ -185,7 +180,7 @@ public final class NeutronSpacePreviewGameTests {
             NeutronSpacePreviewLevel decoded = new NeutronSpacePreviewLevel(
                     helper.getLevel(), helper.absolutePos(minRel), assembled);
             helper.assertTrue(decoded.getBlockEntity(new BlockPos(1, 0, 2)) instanceof SignBlockEntity decodedSign
-                            && decodedSign.getText(net.minecraft.world.level.block.entity.SignTextSlot.FRONT).getMessages(false).getFirst().getString().equals("Preview sign"),
+                            && decodedSign.getFrontText().getMessage(0, false).getString().equals("Preview sign"),
                     "sign text must survive capture and preview reconstruction");
             helper.assertTrue(assembled.stateAt(0, 2, 0).is(Blocks.GLASS)
                             && assembled.stateAt(0, 1, 0).isAir(),
@@ -352,7 +347,7 @@ public final class NeutronSpacePreviewGameTests {
         helper.assertTrue(store.list(library).size() == 1, "second capture click must store exactly one space");
         String id = store.list(library).getFirst().id();
         helper.assertTrue(NeutronRingItem.contents(ring).captureBase().isEmpty(), "stored capture must clear the base");
-        helper.assertEntityNotPresent(EntityTypes.ITEM);
+        helper.assertEntityNotPresent(EntityType.ITEM);
 
         handleRing(helper, player, new C2SNeutronRingPack(
                 C2SNeutronRingPack.SELECT, id, "", 0, library, NeutronRingContents.Size.DEFAULT));
@@ -385,7 +380,7 @@ public final class NeutronSpacePreviewGameTests {
         helper.assertTrue(NeutronRingItem.contents(ring).selectedId().isEmpty(), "place must deselect");
         helper.assertTrue(NeutronRingItem.contents(ring).size().equals(NeutronRingContents.Size.DEFAULT),
                 "place must restore the default capture size");
-        helper.assertEntityNotPresent(EntityTypes.ITEM);
+        helper.assertEntityNotPresent(EntityType.ITEM);
         helper.succeed();
     }
 

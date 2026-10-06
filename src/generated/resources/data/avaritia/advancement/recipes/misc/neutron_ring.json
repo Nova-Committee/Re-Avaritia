@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:neutron_ring"
+        "recipe": "avaritia:neutron_ring"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

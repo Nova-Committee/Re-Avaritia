@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -33,6 +32,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -181,7 +181,7 @@ public final class UiInspector {
         }
 
         private void finish() {
-            boolean background = screen != Minecraft.getInstance().gui.screen();
+            boolean background = screen != Minecraft.getInstance().screen;
             for (int i = 0; i < entries.size(); i++) {
                 Stamp stamp = entries.get(i);
                 Element element = stamp.element;
@@ -221,7 +221,7 @@ public final class UiInspector {
         if (!ENABLED) {
             return;
         }
-        if (Minecraft.getInstance().gui.screen() == null) {
+        if (Minecraft.getInstance().screen == null) {
             State.screens.clear();
             State.requested = false;
             State.pending = null;
@@ -266,7 +266,7 @@ public final class UiInspector {
         }
         layer.finish();
         State.current = null;
-        if (layer.screen != Minecraft.getInstance().gui.screen()) {
+        if (layer.screen != Minecraft.getInstance().screen) {
             return;
         }
         Set<Screen> live = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -315,9 +315,9 @@ public final class UiInspector {
                 Minecraft minecraft = Minecraft.getInstance();
                 State.writing = true;
                 job = new CaptureJob(pending);
-                Screenshot.takeScreenshot(minecraft.gameRenderer.mainRenderTarget(), job::acceptPlain);
+                Screenshot.takeScreenshot(minecraft.getMainRenderTarget(), job::acceptPlain);
                 renderAnnotationPass(minecraft, pending.elements, pending.issues);
-                Screenshot.takeScreenshot(minecraft.gameRenderer.mainRenderTarget(), job::acceptAnnotated);
+                Screenshot.takeScreenshot(minecraft.getMainRenderTarget(), job::acceptAnnotated);
             }
         } catch (Exception error) {
             if (job != null) {
@@ -330,7 +330,7 @@ public final class UiInspector {
             State.extractOpen = false;
             State.current = null;
             State.layers.clear();
-            if (Minecraft.getInstance().gui.screen() == null) {
+            if (Minecraft.getInstance().screen == null) {
                 State.screens.clear();
                 State.requested = false;
                 State.pending = null;
@@ -368,17 +368,17 @@ public final class UiInspector {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onKey(ScreenEvent.KeyPressed.Pre event) {
-        if (!ENABLED || event.getScreen() != Minecraft.getInstance().gui.screen()) {
+        if (!ENABLED || event.getScreen() != Minecraft.getInstance().screen) {
             return;
         }
-        int modifiers = event.getModifiers() & (InputConstants.MOD_CONTROL | InputConstants.MOD_ALT | InputConstants.MOD_SHIFT | InputConstants.MOD_SUPER);
-        if (modifiers != (InputConstants.MOD_CONTROL | InputConstants.MOD_ALT)) {
+        int modifiers = event.getModifiers() & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT | GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_SUPER);
+        if (modifiers != (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT)) {
             return;
         }
-        if (event.getKey() == InputConstants.KEY_F8) {
+        if (event.getKeyCode() == GLFW.GLFW_KEY_F8) {
             State.overlay = !State.overlay;
             event.setCanceled(true);
-        } else if (event.getKey() == InputConstants.KEY_F9) {
+        } else if (event.getKeyCode() == GLFW.GLFW_KEY_F9) {
             if (State.writing || State.requested || State.pending != null) {
                 notifyUser("UI inspection export in progress");
             } else {
@@ -442,16 +442,15 @@ public final class UiInspector {
         Window window = minecraft.getWindow();
         int mouseX = (int) minecraft.mouseHandler.getScaledXPos(window);
         int mouseY = (int) minecraft.mouseHandler.getScaledYPos(window);
-        GuiRenderState state = minecraft.gameRenderer.gameRenderState().guiRenderState;
+        GuiRenderState state = minecraft.gameRenderer.getGameRenderState().guiRenderState;
         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(minecraft, state, mouseX, mouseY);
         graphics.nextStratum();
         annotate(graphics, elements, issues);
-        var target = minecraft.gameRenderer.mainRenderTarget();
+        var target = minecraft.getMainRenderTarget();
         if (target.getDepthTexture() != null) {
             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(target.getDepthTexture(), 1.0);
         }
-        RenderSystem.setShaderFog(minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
-        minecraft.gameRenderer.guiRenderer.render();
+        minecraft.gameRenderer.guiRenderer.render(minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
     }
 
     private static String describe(@Nullable ScreenRectangle bounds) {
@@ -588,7 +587,7 @@ public final class UiInspector {
     }
 
     private static void notifyUser(String message) {
-        Minecraft.getInstance().gui.hud.setOverlayMessage(Component.literal(message), false);
+        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(message), false);
         Const.LOGGER.info(message);
     }
 

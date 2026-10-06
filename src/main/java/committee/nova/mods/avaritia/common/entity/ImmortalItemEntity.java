@@ -24,7 +24,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.setPermanentlyInvulnerable(true);
+        this.setInvulnerable(true);
         this.applyImmortalLifetime();
     }
 

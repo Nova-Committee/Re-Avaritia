@@ -9,7 +9,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +47,6 @@ public interface IInfinityClockSwitchable extends ISwitchable {
                                 }
                         )
         );
-        player.swing(hand, SwingAnimation.DEFAULT, false);
+        player.swing(hand);
     }
 }

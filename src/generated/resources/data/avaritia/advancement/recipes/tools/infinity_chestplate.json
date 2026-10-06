@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_chestplate"
+        "recipe": "avaritia:infinity_chestplate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

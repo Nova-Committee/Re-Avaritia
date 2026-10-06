@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:pitcher_pod"
+        "recipe": "minecraft:pitcher_pod"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

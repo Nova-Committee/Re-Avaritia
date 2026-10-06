@@ -80,7 +80,7 @@ public final class InfinityShieldHandler {
             return;
         }
 
-        target.setInvulnerableTime(0);
+        target.invulnerableTime = 0;
         serverLevel.getServer().execute(() -> {
             if (target.isAlive()) {
                 target.hurtServer(serverLevel, ModDamageTypes.source(player), event.getBlockedDamage());

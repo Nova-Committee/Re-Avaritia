@@ -22,7 +22,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -45,16 +45,16 @@ import java.util.function.Consumer;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeHoeItem extends Item implements ITooltip, ISwitchable, InitEnchantItem {
+public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeHoeItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed(),
+                ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .hoe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
         );
     }
 
@@ -103,11 +103,11 @@ public class BlazeHoeItem extends Item implements ITooltip, ISwitchable, InitEnc
         if (isActive(stack, "smelt")) {
             if (blockstate.is(Blocks.SOUL_SAND)) {
                 level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
-                level.playSound(player, blockpos, SoundEvents.HOE_TILL.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return InteractionResult.SUCCESS;
             } else if (blockstate.is(Blocks.SOUL_SOIL)) {
                 level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
-                level.playSound(player, blockpos, SoundEvents.HOE_TILL.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return InteractionResult.SUCCESS;
             } else if (blockstate.is(ModBlocks.soul_farmland.get())) {
                 return InteractionResult.PASS;

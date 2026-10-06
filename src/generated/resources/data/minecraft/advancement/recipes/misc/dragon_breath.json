@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:dragon_breath"
+        "recipe": "minecraft:dragon_breath"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

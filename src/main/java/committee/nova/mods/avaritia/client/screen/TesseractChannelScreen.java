@@ -176,8 +176,8 @@ public final class TesseractChannelScreen extends BaseContainerScreen<TesseractC
 
     private boolean isShiftDown() {
         var window = minecraft.getWindow();
-        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
-                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
+        return InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
     }
 
     private static void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {

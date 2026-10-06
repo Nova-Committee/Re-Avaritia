@@ -14,12 +14,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.GrassBlock;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -31,14 +30,14 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalHoeItem extends Item implements ITooltip {
+public class CrystalHoeItem extends HoeItem implements ITooltip {
 
     public CrystalHoeItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .hoe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
         );
     }
 
@@ -76,15 +75,15 @@ public class CrystalHoeItem extends Item implements ITooltip {
                     }
                 }
             }
-            world.playSound(player, blockpos, SoundEvents.HOE_TILL.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.SUCCESS;
         }
 
         // Handle bonemeal functionality
         var targetState = world.getBlockState(blockpos);
         if (world instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable) {
-            if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState, BonemealSource.INTERACTION) && CommonHooks.canCropGrow(serverLevel, blockpos, targetState, true)) {
-                growable.performBonemeal(serverLevel, world.getRandom(), blockpos, targetState, BonemealSource.INTERACTION);
+            if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState) && CommonHooks.canCropGrow(serverLevel, blockpos, targetState, true)) {
+                growable.performBonemeal(serverLevel, world.getRandom(), blockpos, targetState);
                 serverLevel.levelEvent(2005, blockpos, 0);
                 CommonHooks.fireCropGrowPost(serverLevel, blockpos, targetState);
                 return InteractionResult.CONSUME;

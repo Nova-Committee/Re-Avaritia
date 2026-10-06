@@ -256,7 +256,7 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                         ModToolTiers.INFINITY.attackDamageBonus()
                                 * SpearThrustUtils.remoteDamageMultiplier(player, target));
             } else {
-                target.setInvulnerableTime(0);
+                target.invulnerableTime = 0;
                 target.hurtServer(serverLevel, damageSource,
                         ModToolTiers.INFINITY.attackDamageBonus()
                                 * SpearThrustUtils.remoteDamageMultiplier(player, target));

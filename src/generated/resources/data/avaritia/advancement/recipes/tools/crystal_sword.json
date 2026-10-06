@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:crystal_sword"
+        "recipe": "avaritia:crystal_sword"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

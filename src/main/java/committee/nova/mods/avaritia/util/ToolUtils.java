@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.util;
 
-import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,7 +42,6 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -375,8 +373,7 @@ public class ToolUtils {
             for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
                 double entityReachSq = Mth.square(player.entityInteractionRange()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                 if (!player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && player.distanceToSqr(livingentity) < entityReachSq) {
-                    livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)),
-                            player.damageSources().playerAttack(player), 0.0F);
+                    livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
                 }
             }
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
@@ -494,9 +491,9 @@ public class ToolUtils {
         if (level instanceof ServerLevel serverLevel){
             boolean hasAction = false;
             for (int i = 0; i < bolts; i++) {
-                LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.EVENT);
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.EVENT);
                 if (lightning != null) {
-                    lightning.moveOrInterpolateTo(PositionPath.of(Vec3.atBottomCenterOf(hitPos)));
+                    lightning.moveOrInterpolateTo(Vec3.atBottomCenterOf(hitPos));
                     lightning.setCause(thrower);
                     serverLevel.addFreshEntity(lightning);
                 }
@@ -573,11 +570,11 @@ public class ToolUtils {
             BlockState state = serverLevel.getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
-                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state, BonemealSource.INTERACTION)
+                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state)
 
             ) {
                 for (int i = 0; i < cost; i++) {
-                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.getRandom(), pos, state, BonemealSource.INTERACTION);
+                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.getRandom(), pos, state);
                     serverLevel.levelEvent(2005, pos, 0);
                 }
             }
@@ -776,7 +773,7 @@ public class ToolUtils {
         BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getTagEnchantmentLevel(sweeping_edge, stack));
         world.addFreshEntity(projectile);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-        player.swing(player.getUsedItemHand(), SwingAnimation.DEFAULT, false);
+        player.swing(player.getUsedItemHand());
     }
 
     private static class BlockPosList extends ArrayList<BlockPos> {

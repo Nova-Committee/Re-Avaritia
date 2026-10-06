@@ -50,9 +50,7 @@ public record S2CTotemPacket(ItemStack stack, int entityId) implements CustomPac
                     if (entity != null) {
                         instance.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
                         world.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1.0F, 1.0F, false);
-                        if (entity == instance.player) {
-                            instance.player.displayItemActivation(packet.stack);
-                        }
+                        instance.gameRenderer.displayItemActivation(packet.stack);
                     }
                 }
             });

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:obsidian_singularity"
+        "recipe": "avaritia:obsidian_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

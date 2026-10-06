@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
@@ -39,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,7 +106,7 @@ public class ItemSelectScreen extends Screen {
     @Override
     protected void init() {
         if (this.shouldClose != null && Boolean.TRUE.equals(this.shouldClose.get())) {
-            Minecraft.getInstance().gui.setScreen(previousScreen);
+            Minecraft.getInstance().setScreen(previousScreen);
             return;
         }
         if (this.inputField != null) {
@@ -153,7 +153,7 @@ public class ItemSelectScreen extends Screen {
 
         int buttonWidth = Math.max(0, (footer.width() - GAP) / 2);
         this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.left(), footer.top(), buttonWidth, footer.height(),
-                CommonComponents.GUI_CANCEL, button -> Minecraft.getInstance().gui.setScreen(previousScreen)), "selector.cancel"));
+                CommonComponents.GUI_CANCEL, button -> Minecraft.getInstance().setScreen(previousScreen)), "selector.cancel"));
         this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.right() - buttonWidth, footer.top(), buttonWidth, footer.height(),
                 Component.translatable("gui.avaritia.confirm"), button -> submit()), "selector.submit"));
         this.refreshActionButtons();
@@ -185,8 +185,8 @@ public class ItemSelectScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == InputConstants.MOUSE_BUTTON_4) {
-            Minecraft.getInstance().gui.setScreen(previousScreen);
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_4) {
+            Minecraft.getInstance().setScreen(previousScreen);
             return true;
         }
         return super.mouseClicked(event, doubleClick);
@@ -194,10 +194,10 @@ public class ItemSelectScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == InputConstants.KEY_ESCAPE || (event.key() == InputConstants.KEY_BACKSPACE && (this.inputField == null || !this.inputField.isFocused()))) {
-            Minecraft.getInstance().gui.setScreen(previousScreen);
+        if (event.key() == GLFW.GLFW_KEY_ESCAPE || (event.key() == GLFW.GLFW_KEY_BACKSPACE && (this.inputField == null || !this.inputField.isFocused()))) {
+            Minecraft.getInstance().setScreen(previousScreen);
             return true;
-        } else if ((event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER) && this.inputField != null && this.inputField.isFocused()) {
+        } else if ((event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) && this.inputField != null && this.inputField.isFocused()) {
             this.updateSearchResults();
             return true;
         }
@@ -216,10 +216,10 @@ public class ItemSelectScreen extends Screen {
 
     private void submit() {
         if (this.currentItem == null || this.currentItem.isEmpty()) {
-            Minecraft.getInstance().gui.setScreen(previousScreen);
+            Minecraft.getInstance().setScreen(previousScreen);
         } else if (onDataReceived1 != null) {
             onDataReceived1.accept(this.currentItem);
-            Minecraft.getInstance().gui.setScreen(previousScreen);
+            Minecraft.getInstance().setScreen(previousScreen);
         }
     }
 
@@ -367,7 +367,7 @@ public class ItemSelectScreen extends Screen {
 
     private void openJsonEditor() {
         String json = ItemUtils.serialize(this.currentItem).toString();
-        Minecraft.getInstance().gui.setScreen(new StringInputScreen(this,
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
                 Component.literal("请输入物品Json"), Component.literal("请输入"), "", json, input -> {
             String result = "";
             if (StringUtils.isNotNullOrEmpty(input)) {
@@ -390,7 +390,7 @@ public class ItemSelectScreen extends Screen {
     }
 
     private void openCountEditor() {
-        Minecraft.getInstance().gui.setScreen(new StringInputScreen(this,
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
                 Component.literal("请输入物品数量"), Component.literal("请输入"), "\\d{0,4}",
                 String.valueOf(this.currentItem.getCount()), input -> {
             String result = "";
@@ -408,7 +408,7 @@ public class ItemSelectScreen extends Screen {
 
     private void openNbtEditor() {
         String nbt = ItemUtils.getNbtString(this.currentItem);
-        Minecraft.getInstance().gui.setScreen(new StringInputScreen(this,
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
                 Component.literal("请输入物品NBT"), Component.literal("请输入"), "", nbt, input -> {
             String result = "";
             if (StringUtils.isNotNullOrEmpty(input)) {

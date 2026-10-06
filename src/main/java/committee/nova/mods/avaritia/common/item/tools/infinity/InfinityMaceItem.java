@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
@@ -99,7 +98,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
         ItemStack itemStack = player.getItemInHand(hand);
 
         for (int i = 0; i < 3; i++) {
-            WindCharge windProjectile = EntityTypes.WIND_CHARGE.create(level, EntitySpawnReason.EVENT);
+            WindCharge windProjectile = EntityType.WIND_CHARGE.create(level, EntitySpawnReason.EVENT);
             if (windProjectile != null) {
                 Vec3 lookVec = player.getLookAngle();
                 windProjectile.setPos(player.getX(), player.getEyeY(), player.getZ());

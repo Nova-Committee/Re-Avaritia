@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:end_portal_frame"
+        "recipe": "minecraft:end_portal_frame"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

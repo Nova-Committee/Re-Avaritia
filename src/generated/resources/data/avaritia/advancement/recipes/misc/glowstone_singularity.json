@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:glowstone_singularity"
+        "recipe": "avaritia:glowstone_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

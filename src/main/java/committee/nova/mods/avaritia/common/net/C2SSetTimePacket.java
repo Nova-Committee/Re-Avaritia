@@ -48,7 +48,7 @@ public record C2SSetTimePacket(int time) implements CustomPacketPayload {
                         Holder<DimensionType> dimensionType = level.dimensionTypeRegistration();
                         dimensionType.value().defaultClock().ifPresent(clockHolder -> {
                             if (updatedClocks.add(clockHolder)) {
-                                long currentTicks = clockManager.getInstance(clockHolder).totalTicks();
+                                long currentTicks = clockManager.getTotalTicks(clockHolder);
                                 clockManager.setTotalTicks(clockHolder, InfinityClockTimes.resolveSelectedDayTime(currentTicks, packet.time()));
                             }
                         });

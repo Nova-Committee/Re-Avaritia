@@ -1,17 +1,14 @@
 package committee.nova.mods.avaritia.client.shader;
 
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import committee.nova.mods.avaritia.Const;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
-import net.minecraft.client.renderer.BindGroupLayouts;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
@@ -38,45 +35,41 @@ public class AvaritiaShaders {
     public static RenderPipeline BLACK_HOLE_SHADER;
 
     public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
-        COSMIC_SHADER = registerItemPipeline(event, "cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", "cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        HELL_SHADER = registerItemPipeline(event, "hell", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        ETERNAL_SHADER = registerItemPipeline(event, "eternal", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        UNSTABLE_SHADER = registerItemPipeline(event, "unstable", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        BLACK_HOLE_SHADER = registerPipeline(event, "black_hole", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        COSMIC_SHADER = registerItemPipeline(event, "cosmic", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", "cosmic", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        HELL_SHADER = registerItemPipeline(event, "hell", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        ETERNAL_SHADER = registerItemPipeline(event, "eternal", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        UNSTABLE_SHADER = registerItemPipeline(event, "unstable", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        BLACK_HOLE_SHADER = registerPipeline(event, "black_hole", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         AvaritiaRenderTypes.reloadEffectTypes();
     }
 
-    private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, PrimitiveTopology mode) {
+    private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, VertexFormat.Mode mode) {
         return registerPipeline(event, name, name, vertexFormat, mode, TRANSLUCENT_EFFECT_DEPTH);
     }
 
-    private static RenderPipeline registerItemPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, PrimitiveTopology mode) {
+    private static RenderPipeline registerItemPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, VertexFormat.Mode mode) {
         return registerPipeline(event, name, name, vertexFormat, mode, ITEM_EFFECT_OVERLAY_DEPTH);
     }
 
-    private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, String shaderName, VertexFormat vertexFormat, PrimitiveTopology mode) {
+    private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, String shaderName, VertexFormat vertexFormat, VertexFormat.Mode mode) {
         return registerPipeline(event, name, shaderName, vertexFormat, mode, TRANSLUCENT_EFFECT_DEPTH);
     }
 
     private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, String shaderName,
-                                                   VertexFormat vertexFormat, PrimitiveTopology mode,
+                                                   VertexFormat vertexFormat, VertexFormat.Mode mode,
                                                    DepthStencilState depthStencilState) {
         var shader = Const.rl("core/" + shaderName);
         RenderPipeline pipeline = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
                 .withLocation(Const.rl(name))
                 .withVertexShader(shader)
                 .withFragmentShader(shader)
-                // 26.3 起采样器与自定义 uniform 通过 BindGroupLayout 声明（ENTITY_SNIPPET 已含 Sampler0/Sampler2，这里显式补齐以免依赖父片段）。
-                .withBindGroupLayout(BindGroupLayouts.SAMPLER2)
-                .withBindGroupLayout(BindGroupLayout.builder()
-                        .withUniform(AvaritiaShaderUniforms.UNIFORM_NAME, UniformType.UNIFORM_BUFFER)
-                        .build())
+                .withSampler("Sampler2")
+                .withUniform(AvaritiaShaderUniforms.UNIFORM_NAME, UniformType.UNIFORM_BUFFER)
                 .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                 .withDepthStencilState(depthStencilState)
                 .withCull(false)
-                .withVertexBinding(0, vertexFormat)
-                .withPrimitiveTopology(mode)
+                .withVertexFormat(vertexFormat, mode)
                 .build();
         event.registerPipeline(pipeline);
         return pipeline;

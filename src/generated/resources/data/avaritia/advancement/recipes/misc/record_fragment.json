@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:record_fragment"
+        "recipe": "avaritia:record_fragment"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

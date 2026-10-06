@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:star_fuel"
+        "recipe": "avaritia:star_fuel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

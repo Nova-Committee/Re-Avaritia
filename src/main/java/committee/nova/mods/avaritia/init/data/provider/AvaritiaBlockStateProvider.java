@@ -294,11 +294,8 @@ public class AvaritiaBlockStateProvider implements DataProvider {
 
     private Identifier soulFarmlandModel(Identifier id) {
         Identifier modelId = id.withPrefix("block/");
-        // 26.3 起 ModelTemplates.FARMLAND 被移除，原版耕地改用 CUBE_BOTTOM_TOP_INDENTED
-        // （顶部 = 耕地纹理，侧面/底部 = 泥土纹理），保持原有视觉效果。
-        ModelTemplates.CUBE_BOTTOM_TOP_INDENTED.create(modelId, new TextureMapping()
-                .put(TextureSlot.SIDE, texture(vanilla("block/soul_soil")))
-                .put(TextureSlot.BOTTOM, texture(vanilla("block/soul_soil")))
+        ModelTemplates.FARMLAND.create(modelId, new TextureMapping()
+                .put(TextureSlot.DIRT, texture(vanilla("block/soul_soil")))
                 .put(TextureSlot.TOP, texture(mod("block/resource/soul_farmland"))), this.generatedModels::put);
         return modelId;
     }

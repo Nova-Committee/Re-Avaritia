@@ -46,8 +46,8 @@ public class BillboardProjectileRender<T extends Entity> extends EntityRenderer<
     public void submit(@NotNull EntityRenderState state, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, @NotNull CameraRenderState cameraState) {
         poseStack.pushPose();
         poseStack.scale(this.scale, this.scale, this.scale);
-        poseStack.rotate(cameraState.orientation);
-        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
+        poseStack.mulPose(cameraState.orientation);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         output.submitCustomGeometry(poseStack, this.renderType, (pose, vertexConsumer) -> {
             vertex(vertexConsumer, pose, state.lightCoords, 0.0F, 0, 0, 1);
             vertex(vertexConsumer, pose, state.lightCoords, 1.0F, 0, 1, 1);

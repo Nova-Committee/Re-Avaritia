@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
-import net.minecraft.world.item.Item.TooltipContext;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
@@ -89,7 +88,7 @@ public class BlazeSpearItem extends Item implements ITooltip, InitEnchantItem, I
     @Override
     public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         if (attacker instanceof Player player && target.level() instanceof ServerLevel serverLevel && target.isAlive()) {
-            target.setPermanentlyInvulnerable(false);
+            target.setInvulnerable(false);
 
             // 基础伤害 = 武器攻击伤害（ATTACK_DAMAGE 属性）
             float baseDamage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -98,7 +97,7 @@ public class BlazeSpearItem extends Item implements ITooltip, InitEnchantItem, I
             float finalDamage = baseDamage * (1.0F + 0.5F * burningCount);
 
             DamageSource source = ModDamageTypes.source(player);
-            target.setInvulnerableTime(0); // 重置无敌帧，防止伤害丢失
+            target.invulnerableTime = 0; // 重置无敌帧，防止伤害丢失
             target.hurtServer(serverLevel, source, finalDamage);
             serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.SPEAR_HIT, SoundSource.PLAYERS, 1.0F, 1.2F);
 

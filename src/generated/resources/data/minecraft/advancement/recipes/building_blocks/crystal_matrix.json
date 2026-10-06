@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:crystal_matrix"
+        "recipe": "minecraft:crystal_matrix"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

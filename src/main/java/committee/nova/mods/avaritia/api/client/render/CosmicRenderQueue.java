@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.api.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,16 @@ public class CosmicRenderQueue {
         QUEUE.add(call);
     }
 
-    public static void renderAll(SubmitNodeCollector source) {
+    public static void renderAll() {
 
         if (QUEUE.isEmpty()) {
             return;
         }
+
+        Minecraft mc = Minecraft.getInstance();
+
+        MultiBufferSource.BufferSource source =
+                mc.renderBuffers().bufferSource();
 
         for (CosmicRenderCall call : QUEUE) {
 
@@ -36,6 +42,8 @@ public class CosmicRenderQueue {
                     call.overlay
             );
         }
+
+        source.endBatch();
 
         QUEUE.clear();
     }

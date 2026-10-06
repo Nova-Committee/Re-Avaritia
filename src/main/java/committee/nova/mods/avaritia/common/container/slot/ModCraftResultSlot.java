@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -98,7 +97,7 @@ public class ModCraftResultSlot extends Slot {
                         remainingStack.grow(slotStack.getCount());
                         this.craftContainer.setItem(index, remainingStack);
                     } else if (!player.getInventory().add(remainingStack)) {
-                        player.drop(remainingStack, false, Prediction.PREDICTED);
+                        player.drop(remainingStack, false);
                     }
                 }
             }

@@ -20,7 +20,6 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /*
@@ -213,7 +212,7 @@ public class AvaritiaConfigScreen extends Screen {
         }).bounds(width / 2 - 102, height - 30, 100, 20).build(), "config.reset"));
         backButton = addRenderableWidget(UiInspector.name(Button.builder(Component.translatable("gui.back"), btn -> {
             ModConfig.save();
-            minecraft.gui.setScreen(parent);
+            minecraft.setScreen(parent);
         }).bounds(width / 2 + 2, height - 30, 100, 20).build(), "config.back"));
         for (ConfigEntry<?> entry : configEntries) {
             entry.initWidgets(this, MARGIN, START_Y, width - 2 * MARGIN);
@@ -344,7 +343,7 @@ public class AvaritiaConfigScreen extends Screen {
     @Override
     public void onClose() {
         ModConfig.save();
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     private abstract static class ConfigEntry<T> {
@@ -522,33 +521,11 @@ public class AvaritiaConfigScreen extends Screen {
     private static class RangedEditBox extends EditBox {
         private final double min;
         private final double max;
-        private Predicate<String> filter;
 
         public RangedEditBox(Font font, int x, int y, int width, int height, Component component, double min, double max) {
             super(font, x, y, width, height, component);
             this.min = min;
             this.max = max;
-        }
-
-        // 26.3 移除了 EditBox#setFilter，这里通过拦截 insertText 复现输入过滤
-        void setFilter(Predicate<String> filter) {
-            this.filter = filter;
-        }
-
-        @Override
-        public void insertText(String input) {
-            if (filter == null) {
-                super.insertText(input);
-                return;
-            }
-            String previous = getValue();
-            int cursor = getCursorPosition();
-            super.insertText(input);
-            if (!filter.test(getValue())) {
-                setValue(previous);
-                setCursorPosition(cursor);
-                setHighlightPos(cursor);
-            }
         }
 
         @Override

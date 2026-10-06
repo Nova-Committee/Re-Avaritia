@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:end_crafting_table"
+        "recipe": "avaritia:end_crafting_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

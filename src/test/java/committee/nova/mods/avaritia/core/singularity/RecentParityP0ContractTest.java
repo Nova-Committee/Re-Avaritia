@@ -60,10 +60,8 @@ class RecentParityP0ContractTest {
                 () -> assertTrue(listener.contains("this.snapshotTransaction.commit(candidate,()->")),
                 () -> assertTrue(mixin.contains("finalizeScriptTransaction(()->NeoForge.EVENT_BUS.post(")),
                 () -> assertTrue(mixin.contains("recipes.clear();recipes.addAll(originalRecipes);")),
-                () -> assertFalse(reloadHandler.contains("addDependency(RELOAD_LISTENER_ID,VanillaServerListeners.RECIPES)"),
-                        "26.3 起配方不再是重载监听器，注册顺序由 RecipeManager#finalizeRecipeLoading 注入点保证"),
-                () -> assertTrue(mixin.contains("finalizeRecipeLoading"),
-                        "配方扩展事件必须在配方加载收尾时触发"),
+                () -> assertTrue(reloadHandler.contains(
+                        "event.addDependency(RELOAD_LISTENER_ID,VanillaServerListeners.RECIPES);")),
                 () -> assertTrue(kubePlugin.contains(
                         "SingularityReloadListener.INSTANCE.beginScriptTransaction();"))
         );

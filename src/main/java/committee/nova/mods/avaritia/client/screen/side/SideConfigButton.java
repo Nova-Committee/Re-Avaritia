@@ -32,7 +32,7 @@ public class SideConfigButton extends ImageButton implements GuiElementAccess {
                         var sideConfig = tileIO.getSideConfiguration();
                         var blockPos = menu.getBlockPos();
                         var configScreen = new SideConfigScreen(parentScreen, sideConfig, blockPos, tileIO);
-                        parentScreen.getMinecraft().gui.pushScreenLayer(configScreen);
+                        parentScreen.getMinecraft().pushGuiLayer(configScreen);
                     }
                 }
             }

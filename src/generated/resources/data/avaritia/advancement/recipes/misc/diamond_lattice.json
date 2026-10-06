@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:diamond_lattice"
+        "recipe": "avaritia:diamond_lattice"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

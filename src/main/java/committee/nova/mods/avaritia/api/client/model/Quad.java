@@ -19,7 +19,7 @@
 package committee.nova.mods.avaritia.api.client.model;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.api.client.util.TextureUtils;
 import committee.nova.mods.avaritia.api.utils.math.InterpHelper;
 import committee.nova.mods.avaritia.api.utils.math.MathUtils;
@@ -295,18 +295,13 @@ public class Quad implements IVertexProducer, IVertexConsumer {
             throw new IllegalStateException("Unable to bake this quad to the specified format. " + format.format);
         }
         TextureAtlasSprite quadSprite = sprite != null ? sprite : TextureUtils.getMissingSprite();
-        // 26.3 的 MaterialInfo 用 shadeDirectionOverride(Direction) 取代旧 shade 布尔：
-        // diffuseLighting=true → override=null(按实际朝向着色)，false → Direction.UP(恒定最亮，等价旧 cardinalLighting.up())。
         BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
                 quadSprite,
                 ChunkSectionLayer.TRANSLUCENT,
                 RenderTypes.itemTranslucent(quadSprite.atlasLocation()),
-                RenderTypes.itemTranslucentGlint(quadSprite.atlasLocation()),
-                RenderTypes.itemTranslucentGlintSpecial(quadSprite.atlasLocation()),
                 tintIndex,
-                diffuseLighting ? null : Direction.UP,
-                0,
-                true
+                diffuseLighting,
+                0
         );
         return new BakedQuad(
                 position(vertices[0]),

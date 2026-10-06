@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:refined_coal"
+        "recipe": "avaritia:refined_coal"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

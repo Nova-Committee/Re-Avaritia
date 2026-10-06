@@ -22,7 +22,6 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.WeatherData;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +119,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
 
                     break;
             }
-            player.swing(hand, SwingAnimation.DEFAULT, true);
+            player.swing(hand, true);
         }
     }
 

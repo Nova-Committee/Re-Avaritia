@@ -185,7 +185,7 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
 
             DamageSource voidDamage = target.level().damageSources().fellOutOfWorld();
 
-            target.setInvulnerableTime(0); // 重置无敌帧，防止伤害丢失
+            target.invulnerableTime = 0; // 重置无敌帧，防止伤害丢失
             float remoteMultiplier = SpearThrustUtils.remoteDamageMultiplier(player, target);
             target.hurtServer(serverLevel, voidDamage,
                     calculateBonusDamage(baseDamage, target) * remoteMultiplier);
@@ -202,7 +202,7 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
                         LivingEntity.class, aoeBox,
                         e -> e != target && e != player && e.isAlive());
                 for (LivingEntity e : nearby) {
-                    e.setInvulnerableTime(0);
+                    e.invulnerableTime = 0;
                     e.hurtServer(serverLevel, voidDamage, calculateBonusDamage(baseDamage * 0.5F, e));
                 }
             }

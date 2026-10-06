@@ -14,9 +14,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeShovelItem extends Item implements ITooltip, ISwitchable, InitEnchantItem {
+public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable, InitEnchantItem {
     public static Map<Block, Block> TRANS_MAP = Map.ofEntries(
             Map.entry(Blocks.DIRT, Blocks.SOUL_SOIL),
             Map.entry(Blocks.SAND, Blocks.SOUL_SAND),
@@ -61,11 +61,11 @@ public class BlazeShovelItem extends Item implements ITooltip, ISwitchable, Init
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeShovelItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.BLAZE,0, ModToolTiers.BLAZE.speed(),
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .shovel(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
 
         );
 

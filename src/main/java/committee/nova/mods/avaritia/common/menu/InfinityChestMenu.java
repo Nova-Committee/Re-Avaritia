@@ -12,7 +12,6 @@ import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -318,7 +317,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
             int extracted = chest.extract(resource, amount, transaction);
             if (extracted <= 0) return;
             transaction.commit();
-            player.drop(resource.toStack(extracted), false, Prediction.PREDICTED);
+            player.drop(resource.toStack(extracted), false);
         }
     }
 

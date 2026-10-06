@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.render.util;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Res;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -29,11 +29,11 @@ public class ArcRender {
     private static final double EPSILON = 1e-6;
     private static final int ARC_COLOR = 0xFFFFFFFF;
 
-    public static void renderArc(PoseStack ps, SubmitNodeCollector collector, long seed,
+    public static void renderArc(PoseStack ps, MultiBufferSource mbs, long seed,
                                  float sx, float sy, float sz, float ex, float ey, float ez,
                                  float thickness, int segments) {
-        collector.submitCustomGeometry(ps, ARC_RENDER_TYPE,
-                (pose, vc) -> renderArc(pose, vc, seed, sx, sy, sz, ex, ey, ez, thickness, segments));
+        var vc = mbs.getBuffer(ARC_RENDER_TYPE);
+        renderArc(ps.last(), vc, seed, sx, sy, sz, ex, ey, ez, thickness, segments);
     }
 
     public static void renderArc(PoseStack.Pose pose, VertexConsumer vc, long seed,

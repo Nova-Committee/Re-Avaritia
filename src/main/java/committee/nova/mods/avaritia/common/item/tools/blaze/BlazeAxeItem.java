@@ -20,7 +20,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -42,16 +42,16 @@ import java.util.function.Consumer;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeAxeItem extends Item implements ITooltip, ISwitchable, InitEnchantItem {
+public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeAxeItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed(),
+                ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .axe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
         );
     }
 

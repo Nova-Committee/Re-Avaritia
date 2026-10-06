@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.common.block.chest;
 
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -44,6 +46,8 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
 
     public static final Component TITLE = Component.translatable("block.avaritia.infinity_chest");
 
+    public static final MapCodec<InfinityChestBlock> CODEC = simpleCodec(properties -> new InfinityChestBlock(properties));
+
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -68,6 +72,11 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new InfinityChestTile(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override

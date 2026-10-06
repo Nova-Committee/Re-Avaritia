@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -76,10 +75,10 @@ public class InfinityClockHandler {
             if (block instanceof BonemealableBlock growable) {
                 RandomSource random = level.getRandom();
                 for (int i = 0; i < times; i++) {
-                    if (!growable.isValidBonemealTarget(level, pos, state, BonemealSource.MOB)) break;
-                    if (growable.isBonemealSuccess(level, random, pos, state, BonemealSource.MOB)) {
+                    if (!growable.isValidBonemealTarget(level, pos, state)) break;
+                    if (growable.isBonemealSuccess(level, random, pos, state)) {
                         try {
-                            growable.performBonemeal(level, random, pos, state, BonemealSource.MOB);
+                            growable.performBonemeal(level, random, pos, state);
                         } catch (Exception e) {
                             e.printStackTrace();
                             break;

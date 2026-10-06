@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:infinity_ingot_from_infinity_nugget"
+        "recipe": "minecraft:infinity_ingot_from_infinity_nugget"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
