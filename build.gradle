@@ -117,6 +117,15 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'io.github.llamalad7:mixinextras-common:0.5.4'
+    annotationProcessor 'io.github.llamalad7:mixinextras-common:0.5.4'
+    jarJar(implementation('io.github.llamalad7:mixinextras-forge:0.5.4')) {
+        version {
+            strictly '[0.5.4,0.6)'
+            prefer '0.5.4'
+        }
+    }
+
 
     // compile against provided APIs
     modImplementation "com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}"

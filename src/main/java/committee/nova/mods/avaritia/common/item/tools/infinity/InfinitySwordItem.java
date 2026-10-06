@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,8 +88,6 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                 if (victim.isDeadOrDying()) {
                     victim.setHealth(0);//设置血量为零
                     this.die(victim, damageSource);//修正设置死亡
-                    player.killedEntity(serverLevel, victim);//添加至信息统计
-                    //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());//添加至伤害记录
                 }
             }
             return true;
@@ -145,17 +144,17 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                 }
 
                 if (entity1 instanceof Player player1) {
-                    victim.lastHurtByPlayerTime = 100;
                     victim.setLastHurtByPlayer(player1);
+                    victim.lastHurtByPlayerTime = 100;
                 } else if (entity1 instanceof net.minecraft.world.entity.TamableAnimal tamableEntity) {
                     if (tamableEntity.isTame()) {
-                        victim.lastHurtByPlayerTime = 100;
                         LivingEntity livingentity2 = tamableEntity.getOwner();
                         if (livingentity2 instanceof Player player2) {
                             victim.setLastHurtByPlayer(player2);
                         } else {
                             victim.setLastHurtByPlayer(null);
                         }
+                        victim.lastHurtByPlayerTime = 100;
                     }
                 }
             }
@@ -205,6 +204,12 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
         if (!victim.isRemoved() && !victim.dead) {
+            // Infinity damage remains terminal, but death observers must still see the attributed kill.
+            ForgeHooks.onLivingDeath(victim, pDamageSource);
+            if (victim.isRemoved() || victim.dead) {
+                return;
+            }
+            victim.setHealth(0.0F);
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
             if (victim.deathScore >= 0 && livingentity != null) {

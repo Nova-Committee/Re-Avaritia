@@ -175,7 +175,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     if (!chest.storageItems.containsKey(id)) return;
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots; i++) {
-                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
+                        ItemStack tryInsertItem = chest.getItemStack(id);
                         if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
                             continue;
                         int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
@@ -240,10 +240,10 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
             if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
+            ItemStack itemStack = chest.getItemStack(id);
             itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
             int i = itemStack.getCount();
-            moveItemStackTo(itemStack, 41, 50, false);
+            moveItemStackTo(itemStack, 0, CONTAINER_SLOT_START, false);
             i = i - itemStack.getCount();
             if (i > 0) {
                 itemStack.setCount(i);
@@ -264,7 +264,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     transmitAmount = Math.max(transmitAmount, 64000);
                     transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
                     int markAmount = transmitAmount;
-                    ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
+                    ItemStack tryInsertItem = chest.getItemStack(id).copyWithCount(transmitAmount);
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots && transmitAmount > 0; i++) {
                         for (int j = 0; j < 64; j++) {
@@ -292,8 +292,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (carried.isEmpty()) {
             if (id.equals("minecraft:air")) return;
             if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-            moveItemStackTo(itemStack, 41, 50, false);
+            ItemStack itemStack = chest.getItemStack(id);
+            moveItemStackTo(itemStack, 0, CONTAINER_SLOT_START, false);
             if (itemStack.isEmpty()) chest.takeItem(id, 1);
         } else {
             if (carried.getCount() > 1) {

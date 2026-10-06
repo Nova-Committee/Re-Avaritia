@@ -69,7 +69,7 @@ public class StorageUtils {
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getBaseItemId(id)));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
-            ITEM_ID_MAP.put(item, id);
+            ITEM_ID_MAP.put(item, getBaseItemId(id));
             return item;
         }
     }

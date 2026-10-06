@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.core.chest;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +36,7 @@ public class InfinityChestContainer extends SimpleContainer {
     }
 
     public void onScrollTo(double scrollTo) {
-        this.scrollTo = scrollTo;
+        this.scrollTo = Math.max(0.0D, Math.min(1.0D, scrollTo));
         scrollOffset(0);
     }
 
@@ -51,7 +49,7 @@ public class InfinityChestContainer extends SimpleContainer {
             viewingObject.clear();
             viewingObject.addAll(sortedObject);
         } else {
-            int i = (int) Math.ceil(sortedObject.size() / WIDTH);
+            int i = (int) Math.ceil((double) sortedObject.size() / WIDTH);
             i -= HEIGHT;
             int j = Math.round(i * (float) scrollTo);
             if (offset != 0) {
@@ -146,28 +144,13 @@ public class InfinityChestContainer extends SimpleContainer {
             if (j < viewingObject.size() && viewingObject.get(j) != null) {
                 String id = viewingObject.get(j);
 
-                //????1?????????
-                if (fullUpdate) {
-                    // ??chest.getStackInSlot?????ItemStack???NBT?
-                    // chest.getStackInSlot?slot???IItemHandler?slot
-                    // ??j + 27?????slot
-                    if (j < this.menu.chest.getSlots()) {
-                        ItemStack stack = this.menu.chest.getStackInSlot(j + 27);
-                        this.setItem(j, stack);
-                    } else {
-                        // ?????????????
-                        ItemStack stack = new ItemStack(StorageUtils.getItem(id));
-                        this.setItem(j, stack);
-                    }
-                }
-
-                long count;
-                if (this.menu.chest.storageItems.containsKey(id)) {
-                    count = this.menu.chest.storageItems.get(id);
-                } else {
-                    formatCount.add(j, "?c0");
+                Long count = this.menu.chest.storageItems.get(id);
+                if (count == null || count <= 0L) {
+                    this.setItem(j, ItemStack.EMPTY);
+                    formatCount.add(j, "0");
                     continue;
                 }
+                if (fullUpdate) this.setItem(j, getItem(j).copyWithCount(1));
                 if (count < 1000L) formatCount.add(j, String.valueOf(count));
                 else if (count < Long.MAX_VALUE) {
                     String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
@@ -196,9 +179,8 @@ public class InfinityChestContainer extends SimpleContainer {
         if (itemId == null || itemId.isEmpty()) return ItemStack.EMPTY;
 
         long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
-        Tag tag = this.menu.chest.nbtDataCache.get(itemId);
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), (int) Math.min(Integer.MAX_VALUE, count));
-        if (tag instanceof CompoundTag cTag) itemStack.setTag(cTag);
+        ItemStack itemStack = this.menu.chest.getItemStack(itemId);
+        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, count));
         return itemStack;
     }
 

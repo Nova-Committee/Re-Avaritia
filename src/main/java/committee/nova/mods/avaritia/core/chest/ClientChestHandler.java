@@ -24,6 +24,7 @@ public class ClientChestHandler extends ChestHandler {
         this.container = null;
         storageItems.clear();
         nbtDataCache.clear();
+        updateItemKeys();
     }
 
     @Override
@@ -72,8 +73,8 @@ public class ClientChestHandler extends ChestHandler {
             });
         }
 
+        if (fullUpdate.get()) updateItemKeys();
         if (needRefreshContainer.get()) container.refreshContainer(fullUpdate.get());
-        if (fullUpdate.get()) {updateItemKeys();}
     }
 
     public void fullUpdate(CompoundTag tag) {
