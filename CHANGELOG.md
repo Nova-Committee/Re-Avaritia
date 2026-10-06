@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 移除错误取消无尽盔甲原版渲染层的客户端 Mixin，恢复原有不透明盔甲底层并保留宇宙/辉光附加层；实际玩家模型验证四个单件与整套盔甲，用户手动验收通过。
 * 修正原生 OBJ 盾牌烘焙时继承解析器反向顶点绕序的问题，保持 UV、作者法线及原有模型变换，恢复三种非普通模式的正确内外面；实际 OBJ 几何回归、三模式持盾/举盾检查与用户手动验收通过，普通模式渲染路径不变。
 * 炽阳弓普通箭忽略原版派发的 MISS 碰撞结果，避免第一帧飞行就被移除；保留实际命中时的原行为。新增五项原生回归覆盖完整/部分蓄力、附魔、燃烧球冷却、过短蓄力及实体命中，默认原生用例增至 46 项，用户手动射击验收通过。
+* 修复永恒奇点忽略产出数量和附加材料、首次物品处理器匹配未加载动态材料的问题，复用带严格 NBT 的无序匹配；极限锻造三个添加槽保留完整材料及其所有备选物，不再按材料展示数组下标拆分。四项原生回归修复前全部失败、修复后通过，默认原生用例增至 50 项。
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
 * 注册方块物品时同步原版 Block → Item 映射，修复克隆/选取方块返回空气及自定义燃料加载异常；新增克隆物品与四类燃料真实熔炉烧炼回归，默认原生用例增至 41 项。
 * 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
@@ -32,7 +33,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。
-* 通过独立构建、53 项 JUnit、默认 46 项原生 GameTest及本轮用户手动客户端验收；此前可选 Trinkets 环境通过 45 项原生 GameTest。测试夹具不随发布 JAR 分发。
+* 通过独立构建、53 项 JUnit、默认 50 项原生 GameTest 及本轮用户手动客户端验收；此前可选 Trinkets 环境通过 45 项原生 GameTest。测试夹具不随发布 JAR 分发。
 
 
 ## [v1.4.2-release-forge](http://github.com/Nova-Committee/Re-Avaritia/compare/v1.4.1-release-forge...v1.4.2-release-forge)

@@ -10,11 +10,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,56 +28,9 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     private final int count;
 
     public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> originalInputs, int count) {
-        super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
+        super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get(), count), 4);
         this.originalInputs = originalInputs;
         this.count = count;
-    }
-
-    @Override
-    public boolean matches(@NotNull Container input, @NotNull Level level) {
-        var ingredients = this.getIngredients();
-        if (ingredients.isEmpty()) return false;
-
-        int singularityCount = SingularityReloadListener.INSTANCE.getAllSingularities().values()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .mapToInt(singularity -> 1)
-                .sum();
-
-        boolean[] found = new boolean[singularityCount];
-        int validItems = 0;
-
-        for (int i = 0; i < input.getContainerSize(); i++) {
-            ItemStack stack = input.getItem(i);
-            if (!stack.isEmpty()) {
-                validItems++;
-                boolean matched = false;
-                int index = 0;
-                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
-                    if (singularity.getIngredient() != Ingredient.EMPTY) {
-                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                        if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                            if (!found[index]) {
-                                found[index] = true;
-                                matched = true;
-                                break;
-                            }
-                        }
-                        index++;
-                    }
-                }
-                if (!matched) {
-                    return false;
-                }
-            }
-        }
-
-        for (boolean b : found) {
-            if (!b) return false;
-        }
-
-
-        return validItems == singularityCount;
     }
 
     @Override

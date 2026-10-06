@@ -99,6 +99,8 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     public boolean matches(ItemHandler inventory) {
         if (this.tier != 0 && this.tier != getTierFromSize(inventory.getSlots()))
             return false;
+        var ingredients = this.getIngredients();
+        if (ingredients.isEmpty()) return false;
         List<ItemStack> inputs = new ArrayList<>();
         int matched = 0;
 
@@ -112,7 +114,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
             }
         }
 
-        return matched == this.inputs.size() && RecipeIngredients.matches(inputs, this.inputs);
+        return matched == ingredients.size() && RecipeIngredients.matches(inputs, ingredients);
     }
 
     @Override

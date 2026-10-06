@@ -34,6 +34,7 @@ public final class AvaritiaGameTestMod implements ModInitializer {
         NativeTestRegistry.register(NativeStorageGameTests.class);
         NativeTestRegistry.register(NativeGameplayGameTests.class);
         NativeTestRegistry.register(NativeBlazeBowGameTests.class);
+        NativeTestRegistry.register(NativeRecipeGameTests.class);
         NativeTestRegistry.register(NativeBlockStateGameTests.class);
         if (TrinketsIntegration.available()) NativeTestRegistry.register(NativeTrinketsGameTests.class);
     }

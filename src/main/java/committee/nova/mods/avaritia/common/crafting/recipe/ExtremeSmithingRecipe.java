@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -80,13 +79,8 @@ public class ExtremeSmithingRecipe implements SmithingRecipe {
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        NonNullList<Ingredient> ingredients = NonNullList.create();
-        ingredients.add(this.template);
-        ingredients.add(this.base);
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(0)));
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(1)));
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(2)));
-        return ingredients;
+        return NonNullList.of(Ingredient.EMPTY, this.template, this.base,
+                this.additions, this.additions, this.additions);
     }
 
     @Override
