@@ -52,6 +52,8 @@ gradlew.bat -PgameTests runGameTestServer --args=nogui
 
 测试服务端控制台执行 `execute positioned 0 80 0 run test runall`，等原生测试全部报告后执行 `stop`。开发环境安装 Trinkets 时，在启动命令加 `-PwithTrinkets`；仅该可选配置引入 Trinkets 自身的传递运行时依赖。
 
+Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可用 `Ctrl+Space` 切换后输入 `/time set day`。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。
+
 已验证独立运行基线：完整构建、42 项 JUnit、39 项原生 GameTest、独立服务端启动/重载/保存，以及真实 Fabric 客户端启动。可选联动和具体界面验收与该基线分开验证。
 
 
