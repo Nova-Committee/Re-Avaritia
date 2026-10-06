@@ -19,6 +19,6 @@ public interface CompressRecipeSchema {
     RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
     RecipeKey<OutputItem> OUTPUT = ItemComponents.OUTPUT.key("result");
     RecipeKey<Integer> INPUT_COUNT = NumberComponent.INT.key("inputCount").optional(1000);
-    RecipeKey<Integer> TIME_COST = NumberComponent.INT.key("timeCost").optional(240);
+    RecipeKey<Integer> TIME_COST = NumberComponent.INT.key("timeCost").optional(240).alwaysWrite();
     RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENT, OUTPUT, INPUT_COUNT, TIME_COST);
 }

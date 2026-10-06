@@ -62,7 +62,9 @@ gradlew.bat -PgameTests runGameTestServer --args=nogui
 
 Windows 原生客户端测试时，先确认游戏窗口焦点；如果聊天快捷键或英文命令无响应，检查中文输入法模式，可尝试 `Ctrl+Space` 或临时英文键盘布局，再用 `/` 打开命令栏并输入 `/time set day`。窗口重新激活后须再次检查布局；测试结束恢复原布局，不必永久更改系统语言。必须观察命令反馈，而不是仅以自动化工具报告按键已发送判断成功。后台自动化若丢失组合键修饰符（如 `Shift+2` 输入 `2` 而非 `@`），应在已确认的游戏窗口前台重试，不应因此修改模组输入处理。
 
-已验证：完整构建、53 项 JUnit、默认环境 46 项原生 GameTest，以及独立服务端启动/重载/保存。此前安装 Trinkets 环境通过 45 项原生 GameTest，另覆盖无尽鞘翅、水晶矩阵锹和无尽图腾。真实 Fabric 客户端覆盖个人维度存档重入与天气隔离、无尽箱搜索及 GUI 缩放恢复、Trinkets 饰品界面佩戴戒指、EMI 中绿宝石/萤石的不同压缩配方，以及独立 JEI 的中子素压缩分类及 16 页配方。光晕保留烘焙顶点 RGB/Alpha，另经真实顶点缓冲区回归及背包/快捷栏实测黑色光晕和中子物品半透明效果。四模组开发客户端也已启动并完成入世及 CraftTweaker/KubeJS 脚本加载。超立方体标题、普通/合成完整面板、无尽盔甲、四种盾牌模式及炽阳弓普通射击通过用户手动验收；Jade 未进行原生客户端验证。
+已验证：完整构建、53 项 JUnit、默认环境 50 项原生 GameTest，以及独立服务端启动/重载/保存。此前安装 Trinkets 环境通过 45 项原生 GameTest，另覆盖无尽鞘翅、水晶矩阵锹和无尽图腾。真实 Fabric 客户端覆盖个人维度存档重入与天气隔离、无尽箱搜索及 GUI 缩放恢复、Trinkets 饰品界面佩戴戒指、EMI 中绿宝石/萤石的不同压缩配方，以及独立 JEI 的中子素压缩分类及 16 页配方。光晕保留烘焙顶点 RGB/Alpha，另经真实顶点缓冲区回归及背包/快捷栏实测黑色光晕和中子物品半透明效果。四模组开发客户端也已启动并完成入世及 CraftTweaker/KubeJS 脚本加载。超立方体标题、普通/合成完整面板、无尽盔甲、四种盾牌模式及炽阳弓普通射击通过用户手动验收；Jade 未进行原生客户端验证。
+
+CraftTweaker 14.0.12、KubeJS 2001.6.5-build.20 魔改已在隔离服务端通过真实脚本引擎实测：16 条 CT、14 条 KJS 直接配方及奇点生成配方，覆盖等级/3×3–9×9 材料、实际匹配/合成/剩余物、删除、元数据与 KJS 覆盖 CT 的优先级；启动及 `/reload` 后各通过 324 项断言。单独撤掉任一来源脚本后，旧定义/配方被移除并恢复另一来源；全部撤回后恢复基础配方及定义。未修改原客户端脚本及存档。
 
 
 ## **无尽盾牌:**
@@ -136,10 +138,13 @@ mods.avaritia.Singularity.removeAll();//删除所有奇点
 mods.avaritia.Singularity.removeRecipe("key");//删除指定奇点配方
 mods.avaritia.Singularity.removeAllRecipe();//删除所有奇点配方
 
-mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)//添加无尽催化剂配方
-mods.avaritia.CraftingTable.addEternal("name", ingredients)//添加永恒奇点配方
+mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount);//添加无尽催化剂配方
+mods.avaritia.CraftingTable.addEnternal("name", ingredients);//添加永恒奇点配方，产出1个
+mods.avaritia.CraftingTable.addEnternal("name", ingredients, eternalCount);//指定永恒奇点产出数量
 ```
-`mods.avaritia.Singularity.register` 为静态调用。非法 ID、非正数 `count` 或 `timeCost` 会记录错误并只跳过当前定义；与奇点校验无关的脚本异常仍交给脚本引擎报告。奇点操作会暂存到本轮资源重载的脚本阶段结束，再统一提交一次；冲突优先级为“数据包 < Java API < CraftTweaker < KubeJS”，同一来源内后操作覆盖前操作。脚本变更仅在执行 `/reload` 后生效。
+ZenScript 文件放在 `scripts/`，开发客户端对应 `run/client/scripts/`。配方名称固定使用 `crafttweaker` 命名空间，应传入 `"my_pack/recipe"` 这样的独立路径，不传带冒号的 ID。有序材料为二维矩阵，无序材料为一维数组；等级 `0` 不限制工作台，`1`–`4` 分别要求 3×3、5×5、7×7、9×9。现有公开方法拼写为 **`addEnternal`**；不带数量时产出一个，数量重载控制实际合成产出。催化剂/永恒奇点可附加材料，并自动加入当前有材料的有效奇点，产品固定为对应的 Avaritia 物品。极限锻造需要模板、基底以及三个添加材料槽。特种配方的附加材料仍支持 CraftTweaker 剩余物变换。
+
+`mods.avaritia.Singularity.register` 为静态调用。非法 ID、非正数 `count` 或 `timeCost` 会记录错误并只跳过当前定义；与奇点校验无关的脚本异常仍交给脚本引擎报告。奇点操作暂存至**整个服务端资源重载及可选脚本监听器全部完成**，再统一提交一次；冲突优先级为“数据包 < Java API < CraftTweaker < KubeJS”，同一来源内后操作覆盖前操作。修改脚本后执行 `/reload`。`removeRecipe` 保留奇点定义但禁用生成的压缩配方；`remove` 同时删除定义和配方。
 
 ### **KubeJs:**
 ```javascript
@@ -224,6 +229,28 @@ ServerEvents.recipes(
     }
 )
 ```
+
+服务端脚本放在 `kubejs/server_scripts/`，开发客户端对应 `run/client/kubejs/server_scripts/`；修改后重载。Avaritia 配方构造方法示例：
+
+```javascript
+ServerEvents.recipes(event => {
+    var avaritia = event.recipes.avaritia;
+    avaritia.shapeless_table(2, Item.of("minecraft:blue_dye", 4),
+        ["minecraft:redstone", "minecraft:coal"]).id("my_pack:shapeless");
+    avaritia.compressor("minecraft:sugar_cane", Item.of("minecraft:sugar", 2))
+        .id("my_pack:compressor"); // 默认消耗1000，耗时240
+    avaritia.infinity_catalyst("my_pack", ["minecraft:clay_ball", "minecraft:redstone"], 6)
+        .id("my_pack:catalyst");
+    avaritia.eternal_singularity(["minecraft:gold_ingot"], 3)
+        .id("my_pack:eternal");
+    avaritia.extreme_smithing(Item.of("minecraft:rabbit_foot", 2),
+        "minecraft:netherite_upgrade_smithing_template", "minecraft:iron_ingot", "minecraft:gold_ingot")
+        .id("my_pack:smithing");
+});
+```
+
+无序材料必须为**一维数组**，等级 4 支持最多 81 槽。有序构造仍为 `(tier, result, pattern, key)`；压缩构造为 `(ingredient, result[, inputCount[, timeCost]])`。催化剂为 `(group, ingredients[, count])`，`"default"` 组自动加入有效奇点，自定义组仅使用指定材料；永恒奇点为 `(additionalIngredients[, count])`，自动加入有效奇点。这两类产品固定为催化剂和永恒奇点物品。锻造为 `(result, template, base, addition)`，也可用 `(result, base, addition)` 自动采用 Avaritia 升级模板。固定 Rhino 版本中，生成循环里每轮重建的数组和尺寸使用 `var`；循环内重复声明 `const` 的行为与现代浏览器 JavaScript 不同。
+
 ### **Dependencies:**
 avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
 ```groovy

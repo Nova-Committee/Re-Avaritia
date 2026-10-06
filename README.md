@@ -62,7 +62,9 @@ In the test server console, run `execute positioned 0 80 0 run test runall`, the
 
 For native Windows client checks, confirm keyboard focus and check the Chinese input-method mode if chat or ASCII commands do not respond. Try `Ctrl+Space` or a temporary English keyboard layout, then open command chat with `/` and enter `/time set day`. Recheck the layout after reactivating the window and restore it after testing; permanent system-language changes are unnecessary. Require actual command feedback rather than automation key-delivery acknowledgement. If background automation loses modifiers (for example, `Shift+2` enters `2` instead of `@`), retry with the verified game window in the foreground rather than changing mod input handlers.
 
-Verified: full build, 53 JUnit tests, 46 native GameTests without prerequisite mods, and dedicated-server startup/reload/save. The earlier installed-Trinkets pass covered 45 native GameTests, including infinity elytra, crystal shovel, and infinity totem. Actual Fabric client checks cover personal-dimension reentry/weather isolation, infinity-chest search and GUI-scale restoration, wearing a ring in the Trinkets screen, distinct emerald/glowstone compression recipes in EMI, and the 16-page neutron-compression category in standalone JEI. Halo rendering preserves baked vertex RGB/alpha, with native inventory/hotbar checks for black halos and translucent neutron effects plus real vertex-buffer regressions. The four-mod development client also boots and loads a world with CraftTweaker/KubeJS scripts. Tesseract labels, complete normal/crafting panels, infinity armor, all shield modes, and ordinary blaze-bow shots passed user-led manual acceptance. Jade has not received native client verification.
+Verified: full build, 53 JUnit tests, 50 native GameTests without prerequisite mods, and dedicated-server startup/reload/save. The earlier installed-Trinkets pass covered 45 native GameTests, including infinity elytra, crystal shovel, and infinity totem. Actual Fabric client checks cover personal-dimension reentry/weather isolation, infinity-chest search and GUI-scale restoration, wearing a ring in the Trinkets screen, distinct emerald/glowstone compression recipes in EMI, and the 16-page neutron-compression category in standalone JEI. Halo rendering preserves baked vertex RGB/alpha, with native inventory/hotbar checks for black halos and translucent neutron effects plus real vertex-buffer regressions. The four-mod development client also boots and loads a world with CraftTweaker/KubeJS scripts. Tesseract labels, complete normal/crafting panels, infinity armor, all shield modes, and ordinary blaze-bow shots passed user-led manual acceptance. Jade has not received native client verification.
+
+CraftTweaker 14.0.12 and KubeJS 2001.6.5-build.20 customization was exercised through the real script engines in an isolated dedicated server: 16 CT and 14 KJS direct recipes, generated singularity recipes, tiers/3×3–9×9 grids, actual ingredient matching/assembly/remainders, deletion, metadata, and KJS-over-CT precedence passed 324 assertions on startup and again after `/reload`. Withdrawing only one script source restored the surviving layer and removed its obsolete definitions/recipes; withdrawing both restored the baseline recipes and definitions. Original client scripts and worlds were not modified.
 
 
 ## **Infinity Shield:**
@@ -137,10 +139,13 @@ mods.avaritia.Singularity.removeAll();
 mods.avaritia.Singularity.removeRecipe("key");
 mods.avaritia.Singularity.removeAllRecipe();
 
-mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)
-mods.avaritia.CraftingTable.addEternal("name", ingredients)
+mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount);
+mods.avaritia.CraftingTable.addEnternal("name", ingredients);
+mods.avaritia.CraftingTable.addEnternal("name", ingredients, eternalCount);
 ```
-`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged until the current resource reload finishes its script phase and then committed once. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. Script changes take effect only after `/reload`.
+Put ZenScript files in `scripts/` (`run/client/scripts/` for the development client). Recipe names use the `crafttweaker` namespace; use a unique path such as `"my_pack/recipe"`, not a colon-prefixed ID. Shaped ingredients are a matrix; shapeless ingredients are a flat array. Tier `0` is unrestricted, and tiers `1`–`4` require 3×3, 5×5, 7×7, or 9×9 tables. The existing public spelling is **`addEnternal`**; its two-argument ingredients overload produces one eternal singularity, while the count overload controls the actual crafted quantity. Catalyst/eternal recipes accept additional materials and automatically include effective material-bearing singularities; their outputs are fixed Avaritia items. Extreme smithing requires a template, base, and three copies of the addition ingredient. CraftTweaker ingredient remainder transformations remain supported for additional special-recipe materials.
+
+`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged and committed once **after the entire server resource reload, including optional script listeners, completes**. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. After editing a script, run `/reload`. `removeRecipe` retains the singularity definition while disabling its generated compressor recipe; `remove` deletes both.
 
 ### **KubeJs:**
 ```javascript
@@ -224,6 +229,28 @@ ServerEvents.recipes(
     }
 )
 ```
+
+Server scripts go in `kubejs/server_scripts/` (`run/client/kubejs/server_scripts/` for the development client). Reload after editing. The Avaritia recipe constructors are:
+
+```javascript
+ServerEvents.recipes(event => {
+    var avaritia = event.recipes.avaritia;
+    avaritia.shapeless_table(2, Item.of("minecraft:blue_dye", 4),
+        ["minecraft:redstone", "minecraft:coal"]).id("my_pack:shapeless");
+    avaritia.compressor("minecraft:sugar_cane", Item.of("minecraft:sugar", 2))
+        .id("my_pack:compressor"); // default inputCount=1000, timeCost=240
+    avaritia.infinity_catalyst("my_pack", ["minecraft:clay_ball", "minecraft:redstone"], 6)
+        .id("my_pack:catalyst");
+    avaritia.eternal_singularity(["minecraft:gold_ingot"], 3)
+        .id("my_pack:eternal");
+    avaritia.extreme_smithing(Item.of("minecraft:rabbit_foot", 2),
+        "minecraft:netherite_upgrade_smithing_template", "minecraft:iron_ingot", "minecraft:gold_ingot")
+        .id("my_pack:smithing");
+});
+```
+
+Shapeless materials are a **flat array**, supporting up to 81 slots on tier 4. Shaped constructors remain `(tier, result, pattern, key)`. Compressor constructors accept `(ingredient, result[, inputCount[, timeCost]])`. Catalyst constructors accept `(group, ingredients[, count])`; group `"default"` adds effective singularities, while a custom group uses only the supplied ingredients. Eternal constructors accept `(additionalIngredients[, count])` and automatically add effective singularities. These two outputs are fixed to the catalyst and eternal-singularity items. Smithing is `(result, template, base, addition)` or `(result, base, addition)` with the Avaritia upgrade template. In this pinned Rhino version, use `var` for arrays/dimensions recreated inside generation loops; repeated block-local `const` declarations do not behave like modern browser JavaScript.
+
 
 ### **Dependencies:**
 avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
