@@ -3,7 +3,11 @@ package committee.nova.mods.avaritia.client.screen;
 /** 1.20.1 超立方体主界面的布局与材质坐标契约。 */
 final class TesseractScreenLayout {
     static final int WIDTH = 218;
-    static final int HEIGHT = 265;
+    static final int HEIGHT = 283;
+    static final int TITLE_X = 8;
+    static final int TITLE_Y = 5;
+    static final int INVENTORY_TITLE_X = 23;
+    static final int INVENTORY_TITLE_Y = 184;
 
     static final int SEARCH_X = 104;
     static final int SEARCH_Y = 4;
@@ -29,31 +33,31 @@ final class TesseractScreenLayout {
     static final int CRAFT_BUTTON_X = 179;
     static final int CRAFT_BUTTON_WIDTH = 16;
     static final int CRAFT_BUTTON_HEIGHT = 9;
-    static final int CRAFT_TO_CHANNEL_Y = 143;
-    static final int CRAFT_TO_INVENTORY_Y = 156;
-    static final int CRAFT_AND_DROP_Y = 169;
+    static final int CRAFT_TO_CHANNEL_Y = 146;
+    static final int CRAFT_TO_INVENTORY_Y = 159;
+    static final int CRAFT_AND_DROP_Y = 172;
     static final int CRAFT_TO_CHANNEL_TEXTURE_Y = 0;
     static final int CRAFT_AND_DROP_TEXTURE_Y = 9;
     static final int CRAFT_TO_INVENTORY_TEXTURE_Y = 18;
 
+    // The inventory atlas uses a +67 Y offset, matching the menu's rows at 195 and hotbar at 258.
+    // Keep the separator and complete lower panel: shortening them detaches slots from their frames.
     private static final BackgroundSlice[] STORAGE_BACKGROUND = {
             new BackgroundSlice(0, 0, 68),
             new BackgroundSlice(68, 17, 51),
             new BackgroundSlice(119, 17, 51),
             new BackgroundSlice(170, 122, 6),
             new BackgroundSlice(176, 122, 6),
-            new BackgroundSlice(182, 122, 3),
-            new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 26)
+            new BackgroundSlice(182, 122, 6),
+            new BackgroundSlice(188, 122, 4),
+            new BackgroundSlice(192, 125, 91)
     };
 
     private static final BackgroundSlice[] CRAFTING_BACKGROUND = {
             new BackgroundSlice(0, 0, 68),
             new BackgroundSlice(68, 17, 51),
             new BackgroundSlice(119, 17, 17),
-            new BackgroundSlice(133, 69, 52),
-            new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 26)
+            new BackgroundSlice(136, 69, 147)
     };
 
     private TesseractScreenLayout() {

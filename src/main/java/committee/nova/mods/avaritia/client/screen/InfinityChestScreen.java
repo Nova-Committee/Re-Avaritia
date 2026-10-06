@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.ScreenGuiScale;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
@@ -55,7 +56,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private SortButton sortButton;
     private ItemScrollBar scrollBar;
     private EditBox searchBox;
-    private Integer originalGuiScale;
+    private final ScreenGuiScale guiScale = new ScreenGuiScale();
     private ScreenRectangle storageViewport;
 
     public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
@@ -65,34 +66,9 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     protected void init() {
-        if (!resizeGuiToFit()) {
+        if (!guiScale.resizeToFit(minecraft, width, height, imageWidth, imageHeight, SCREEN_MARGIN)) {
             super.init();
         }
-    }
-
-    private boolean resizeGuiToFit() {
-        if (minecraft == null
-                || (width >= imageWidth + SCREEN_MARGIN * 2 && height >= imageHeight + SCREEN_MARGIN * 2)) {
-            return false;
-        }
-        double currentScale = minecraft.getWindow().getGuiScale();
-        int targetScale = Math.max(1, (int) Math.floor(currentScale));
-        double framebufferWidth = width * currentScale;
-        double framebufferHeight = height * currentScale;
-        while (targetScale > 1
-                && (framebufferWidth / targetScale < imageWidth + SCREEN_MARGIN * 2
-                || framebufferHeight / targetScale < imageHeight + SCREEN_MARGIN * 2)) {
-            targetScale--;
-        }
-        if (targetScale >= currentScale || minecraft.options.guiScale().get() == targetScale) {
-            return false;
-        }
-        if (originalGuiScale == null) {
-            originalGuiScale = minecraft.options.guiScale().get();
-        }
-        minecraft.options.guiScale().set(targetScale);
-        minecraft.resizeDisplay();
-        return true;
     }
 
     @Override
@@ -273,22 +249,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @Override
     public void removed() {
         super.removed();
-        restoreGuiScale();
-    }
-
-    private void restoreGuiScale() {
-        if (originalGuiScale == null || minecraft == null) {
-            return;
-        }
-        int scale = originalGuiScale;
-        originalGuiScale = null;
-        // Wait until the removed screen is replaced; resizing it synchronously would shrink the GUI again.
-        minecraft.tell(() -> {
-            if (minecraft.options.guiScale().get() != scale) {
-                minecraft.options.guiScale().set(scale);
-                minecraft.resizeDisplay();
-            }
-        });
+        guiScale.restore(minecraft);
     }
 
     @Override

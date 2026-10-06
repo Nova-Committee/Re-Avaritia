@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.ScreenGuiScale;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
@@ -37,6 +38,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     private static final int CHANNEL_SLOT_START = 51;
 
     private final List<Button> craftingButtons = new ArrayList<>();
+    private final ScreenGuiScale guiScale = new ScreenGuiScale();
     private EditBox searchBox;
     private Button craftToChannelButton;
     private Button craftToInventoryButton;
@@ -49,14 +51,17 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         super(menu, inventory, title);
         imageWidth = WIDTH;
         imageHeight = HEIGHT;
-        titleLabelX = 8;
-        titleLabelY = 5;
-        inventoryLabelX = 23;
-        inventoryLabelY = 177;
+        titleLabelX = TITLE_X;
+        titleLabelY = TITLE_Y;
+        inventoryLabelX = INVENTORY_TITLE_X;
+        inventoryLabelY = INVENTORY_TITLE_Y;
     }
 
     @Override
     protected void init() {
+        if (guiScale.resizeToFit(minecraft, width, height, imageWidth, imageHeight, 4)) {
+            return;
+        }
         super.init();
         leftPos = (width - imageWidth + 4) / 2;
         topPos = Math.max(0, (height - imageHeight) / 2);
@@ -283,6 +288,12 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
             channel.removeListener();
         }
         super.onClose();
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        guiScale.restore(minecraft);
     }
 
     private final class LegacyButton extends ImageButton {

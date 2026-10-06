@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 
 * 增加 `-PwithClientIntegrations runClient` 可选开发配置，同时启动 JEI、Mod Menu、CraftTweaker、KubeJS 及其自身依赖，默认无前置运行方式与发布 JAR 不变。编译期补齐 Fabric API 继承关系并关闭依赖接口注入，避免可选 API 缓存映射留下 intermediary 重载方法名，或要求原版 Level 子类实现仅由运行时 Mixin 添加的 KubeJS 方法；实际客户端已验证模组菜单版本及入世、脚本资源加载。
 * 修正超立方体方块及菜单提供者的翻译标题，移除空标题与错误的无尽箱标题；实际客户端创建并选择频道后，主界面正确显示“超立方体”。
+* 恢复超立方体普通/合成模式完整背包、快捷栏与合成模块纹理，并显示物品栏标题；固定面板高度补齐至 283，超立方体与无尽箱复用临时 GUI 缩放及关闭后恢复机制。通过实际小窗口两种模式检查、贴图拼接/缩放边界回归及用户手动验收。
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
 * 注册方块物品时同步原版 Block → Item 映射，修复克隆/选取方块返回空气及自定义燃料加载异常；新增克隆物品与四类燃料真实熔炉烧炼回归，默认原生用例增至 41 项。
 * 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
