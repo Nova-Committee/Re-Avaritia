@@ -86,7 +86,6 @@
     "ClientScreenMixin",
     "ClientKeyboardMixin",
     "ClientItemTooltipMixin",
-    "ClientArmorLayerMixin",
     "ClientCreativeInventoryMixin",
     "ClientBlockModelMixin"
   ],
