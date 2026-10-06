@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。
-* 通过独立构建、45 项 JUnit、默认 41 项原生 GameTest、可选 Trinkets 45 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
+* 通过独立构建、53 项 JUnit、默认 46 项原生 GameTest及本轮用户手动客户端验收；此前可选 Trinkets 环境通过 45 项原生 GameTest。测试夹具不随发布 JAR 分发。
 
 
 ## [v1.4.2-release-forge](http://github.com/Nova-Committee/Re-Avaritia/compare/v1.4.1-release-forge...v1.4.2-release-forge)
