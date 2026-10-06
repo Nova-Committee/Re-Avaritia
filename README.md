@@ -44,6 +44,14 @@ gradlew.bat runClient
 gradlew.bat runServer --args=nogui
 ```
 
+Launch JEI, Mod Menu, CraftTweaker, and KubeJS together in the development client:
+
+```bat
+gradlew.bat -PwithClientIntegrations runClient
+```
+
+This opt-in profile pins JEI **15.20.0.112**, Mod Menu **7.2.2**, CraftTweaker **14.0.12**, and KubeJS **2001.6.5-build.20**, with their required development runtimes. They are not bundled or published as prerequisite mods. Fabric API is also available compile-only so Loom can correctly remap optional APIs; the default runtime still does not load it. Dependency interface injection is disabled for compilation: installed integrations supply those interfaces through their actual runtime mixins.
+
 Artifacts are under `build/libs/`. Native regression fixtures are excluded from the release JAR:
 
 ```bat

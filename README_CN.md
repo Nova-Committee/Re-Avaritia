@@ -44,6 +44,14 @@ gradlew.bat runClient
 gradlew.bat runServer --args=nogui
 ```
 
+开发客户端同时启动 JEI、Mod Menu、CraftTweaker、KubeJS：
+
+```bat
+gradlew.bat -PwithClientIntegrations runClient
+```
+
+该可选配置固定 JEI **15.20.0.112**、Mod Menu **7.2.2**、CraftTweaker **14.0.12**、KubeJS **2001.6.5-build.20**，并加入它们自身所需的开发运行时；不内嵌或发布为前置模组。编译时提供 Fabric API 以保证 Loom 正确映射可选 API 的继承关系，默认运行时仍不加载它。编译阶段关闭依赖接口注入，安装联动模组后由其真实运行时 Mixin 提供这些接口。
+
 产物位于 `build/libs/`。原生回归夹具不打入发布 JAR：
 
 ```bat

@@ -12,6 +12,7 @@ repositories {
     maven { url = 'https://maven.blamejared.com/' }
     maven { url = 'https://maven.terraformersmc.com/releases/' }
     maven { url = 'https://maven.latvian.dev/releases/' }
+    maven { url = 'https://maven.architectury.dev/' }
     maven { url = 'https://api.modrinth.com/maven' }
     maven { url = 'https://maven.ladysnake.org/releases' }
 }
@@ -30,6 +31,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Optional APIs are compile-only and never bundled into the release JAR.
+    // Optional API implementations inherit Fabric API interfaces; Loom needs that hierarchy even in default builds.
+    modCompileOnly 'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1'
     modCompileOnly('dev.emi:emi-fabric:1.1.20+1.20.1') { transitive = false }
     compileOnly('mezz.jei:jei-1.20.1-common-api:15.20.0.112') { transitive = false }
     modCompileOnly('mezz.jei:jei-1.20.1-fabric-api:15.20.0.112') { transitive = false }
@@ -46,6 +49,18 @@ dependencies {
         modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0'
         modRuntimeOnly 'dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.0'
     }
+    if (project.hasProperty('withClientIntegrations')) {
+        // Local development only: no published or bundled prerequisite mods.
+        [
+                'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1',
+                'com.blamejared.crafttweaker:CraftTweaker-fabric-1.20.1:14.0.12',
+                'dev.latvian.mods:kubejs-fabric:2001.6.5-build.20'
+        ].each { coordinate ->
+            modLocalRuntime coordinate
+        }
+        modLocalRuntime('mezz.jei:jei-1.20.1-fabric:15.20.0.112') { transitive = false }
+        modLocalRuntime('com.terraformersmc:modmenu:7.2.2') { transitive = false }
+    }
 }
 
 sourceSets {
@@ -58,6 +73,8 @@ sourceSets {
 loom {
     accessWidenerPath = file('src/main/resources/avaritia.accesswidener')
     mixin { defaultRefmapName = 'avaritia.refmap.json' }
+    // Compile against vanilla classes; installed integrations add their interfaces through runtime mixins.
+    interfaceInjection { enableDependencyInterfaceInjection = false }
     mods {
         avaritia { sourceSet sourceSets.main }
         if (project.hasProperty('gameTests')) {
