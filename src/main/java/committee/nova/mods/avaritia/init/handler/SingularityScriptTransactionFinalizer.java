@@ -4,9 +4,6 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
@@ -14,29 +11,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/** Final reload barrier that commits script operations and regenerates internal recipes. */
-public final class SingularityScriptTransactionFinalizer extends SimplePreparableReloadListener<Void> {
+/** Commits script operations after every resource reload listener has completed. */
+public final class SingularityScriptTransactionFinalizer {
     private static Map<ResourceLocation, Recipe<?>> generatedRecipes = Map.of();
 
-    private final RecipeManager recipeManager;
+    private SingularityScriptTransactionFinalizer() {}
 
-    public SingularityScriptTransactionFinalizer(RecipeManager recipeManager) {
-        this.recipeManager = recipeManager;
-    }
-
-    @Override
-    protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        return null;
-    }
-
-    @Override
-    protected void apply(Void prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
+    public static void finalizeReload(RecipeManager recipeManager) {
         CopyOnWriteArrayList<Recipe<?>> recipes = new CopyOnWriteArrayList<>();
         if (!SingularityReloadListener.INSTANCE.finalizeScriptTransaction(() -> {
-            RegisterRecipesEvent event = new RegisterRecipesEvent(this.recipeManager, recipes);
+            RegisterRecipesEvent event = new RegisterRecipesEvent(recipeManager, recipes);
             InternalRecipeHandler.onRegisterRecipes(event);
             RegisterRecipesEvent.post(event);
-            replaceGeneratedRecipes(recipes);
+            replaceGeneratedRecipes(recipeManager, recipes);
         })) {
             return;
         }
@@ -44,9 +31,9 @@ public final class SingularityScriptTransactionFinalizer extends SimplePreparabl
                 recipes.size());
     }
 
-    private void replaceGeneratedRecipes(Iterable<Recipe<?>> replacements) {
+    private static void replaceGeneratedRecipes(RecipeManager recipeManager, Iterable<Recipe<?>> replacements) {
         Map<ResourceLocation, Recipe<?>> byName = new LinkedHashMap<>();
-        this.recipeManager.getRecipes().forEach(recipe -> byName.put(recipe.getId(), recipe));
+        recipeManager.getRecipes().forEach(recipe -> byName.put(recipe.getId(), recipe));
 
         generatedRecipes.forEach((id, generatedRecipe) -> {
             if (byName.get(id) == generatedRecipe) {
@@ -61,7 +48,7 @@ public final class SingularityScriptTransactionFinalizer extends SimplePreparabl
             nextGeneratedRecipes.put(id, replacement);
         }
 
-        this.recipeManager.replaceRecipes(byName.values());
+        recipeManager.replaceRecipes(byName.values());
         generatedRecipes = Map.copyOf(nextGeneratedRecipes);
     }
 }

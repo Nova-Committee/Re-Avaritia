@@ -14,6 +14,7 @@ import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -87,7 +88,10 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
         var recipe = new InfinityCatalystCraftRecipe(id, "default", toIngredientsList(inputs), count);
 
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
+        // Script inputs precede the automatically appended singularities.
+        recipe.setTransformers((slot, stack) -> slot < inputs.length
+                ? inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal()
+                : ItemStack.EMPTY);
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
     }
@@ -97,19 +101,27 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
         var recipe = new InfinityCatalystCraftRecipe(id, group, toIngredientsList(inputs), count);
 
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
+        // Script inputs precede singularities in the default group; other groups have no automatic inputs.
+        recipe.setTransformers((slot, stack) -> slot < inputs.length
+                ? inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal()
+                : ItemStack.EMPTY);
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
     }
 
     @ZenCodeType.Method
-    public void addEnternal(String name, IIngredient[] inputs, int count) {
-        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
+    public static void addEnternal(String name, IIngredient[] inputs, int count) {
+        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
         var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), count);
 
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
+        recipe.setTransformers((slot, stack) -> {
+            // Eternal ingredients put automatically consumed singularities before script inputs.
+            int scriptSlot = slot - (recipe.getIngredients().size() - inputs.length);
+            return scriptSlot < 0 ? ItemStack.EMPTY
+                    : inputs[scriptSlot].getRemainingItem(new MCItemStack(stack)).getInternal();
+        });
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
     }
 
     @ZenCodeType.Method
@@ -117,7 +129,11 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
         var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), 1);
 
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
+        recipe.setTransformers((slot, stack) -> {
+            int scriptSlot = slot - (recipe.getIngredients().size() - inputs.length);
+            return scriptSlot < 0 ? ItemStack.EMPTY
+                    : inputs[scriptSlot].getRemainingItem(new MCItemStack(stack)).getInternal();
+        });
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
     }

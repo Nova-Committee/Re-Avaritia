@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Orders definitions after tag preparation and commits after optional script reload listeners. */
+/** Orders definitions after tag preparation; script commits follow the complete reload future. */
 public final class ResourceReloadHandler {
     private ResourceReloadHandler() {}
 
@@ -18,7 +18,6 @@ public final class ResourceReloadHandler {
         ResourceConditions.setTagManager(tags);
         List<PreparableReloadListener> listeners = new ArrayList<>(vanilla);
         listeners.add(listeners.indexOf(recipes), SingularityReloadListener.INSTANCE);
-        listeners.add(new SingularityScriptTransactionFinalizer(recipes));
         return listeners;
     }
 }
