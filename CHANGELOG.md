@@ -15,10 +15,12 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
 * 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
 * 网络菜单发送改用可组合的原版调用前注入，避免与 Fabric API 包发送重定向冲突；默认环境 39 项、安装 Trinkets 环境 43 项原生 GameTest 均通过，可选环境另完成重载与保存。
+* 修复真实客户端打开无尽箱时菜单补充数据二次入队被原版打开界面包超越的问题；游戏线程上的嵌套包工作即时完成，事件循环顺序回归及真实箱子界面均验证通过。
+* 迁回 Forge 按维度广播天气的原版补丁；真实客户端验证主世界雨天切换不会污染个人晴天维度，并从重启后的存档重新进入既有个人维度及箱子。
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。
-* 通过独立构建、42 项 JUnit、39 项原生 GameTest 及真实客户端启动验证；测试夹具不随发布 JAR 分发。
+* 通过独立构建、43 项 JUnit、默认 39 项原生 GameTest、可选 Trinkets 43 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
 
 
 ## [v1.4.2-release-forge](http://github.com/Nova-Committee/Re-Avaritia/compare/v1.4.1-release-forge...v1.4.2-release-forge)
