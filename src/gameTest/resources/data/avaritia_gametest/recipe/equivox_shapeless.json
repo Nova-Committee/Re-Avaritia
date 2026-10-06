@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:shapeless_table",
+  "tier": 4,
+  "ingredients": [
+    "avaritia:neutron_pile",
+    "avaritia:blaze_cube"
+  ],
+  "result": {
+    "id": "avaritia_gametest:equivox_shapeless"
+  }
+}
