@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.api.init.registry;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,7 +41,11 @@ public final class RegistryEntries<T> {
     public void registerAll() {
         if (registered) return;
         for (RegistryEntry<? extends T> entry : entries.values()) {
-            Registry.register(registry, entry.getId(), entry.get());
+            T value = entry.get();
+            if (value instanceof BlockItem blockItem) {
+                blockItem.registerBlocks(Item.BY_BLOCK, blockItem);
+            }
+            Registry.register(registry, entry.getId(), value);
         }
         registered = true;
     }

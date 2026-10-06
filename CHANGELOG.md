@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 ### Runtime fixes
 
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
+* 注册方块物品时同步原版 Block → Item 映射，修复克隆/选取方块返回空气及自定义燃料加载异常；新增克隆物品与四类燃料真实熔炉烧炼回归，默认原生用例增至 41 项。
 * 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
 * 网络菜单发送改用可组合的原版调用前注入，避免与 Fabric API 包发送重定向冲突；默认环境 39 项、安装 Trinkets 环境 43 项原生 GameTest 均通过，可选环境另完成重载与保存。
 * 修复真实客户端打开无尽箱时菜单补充数据二次入队被原版打开界面包超越的问题；游戏线程上的嵌套包工作即时完成，事件循环顺序回归及真实箱子界面均验证通过。

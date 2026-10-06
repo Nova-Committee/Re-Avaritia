@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.gametest;
 
 import com.mojang.authlib.GameProfile;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -18,11 +19,13 @@ import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -34,6 +37,32 @@ public final class NativeGameplayGameTests {
     private static final Vec3 INCOMING = new Vec3(0.0, 0.0, -2.0);
 
     private NativeGameplayGameTests() {}
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 300)
+    public static void customFuelsSmeltThroughVanillaFurnaces(GameTestHelper helper) {
+        Item[] fuels = {
+                ModItems.star_fuel.get(), ModItems.refined_coal.get(),
+                ModBlocks.star_fuel_block.get().asItem(), ModBlocks.refined_coal_block.get().asItem()
+        };
+        FurnaceBlockEntity[] furnaces = new FurnaceBlockEntity[fuels.length];
+        for (int i = 0; i < fuels.length; i++) {
+            BlockPos pos = new BlockPos(2 + i * 2, 2, 2);
+            helper.setBlock(pos, Blocks.FURNACE);
+            furnaces[i] = (FurnaceBlockEntity) helper.getBlockEntity(pos);
+            furnaces[i].setItem(0, new ItemStack(Items.IRON_ORE));
+            furnaces[i].setItem(1, new ItemStack(fuels[i]));
+        }
+        helper.runAfterDelay(210, () -> {
+            for (int i = 0; i < furnaces.length; i++) {
+                helper.assertTrue(furnaces[i].getItem(2).is(Items.IRON_INGOT)
+                                && furnaces[i].getItem(2).getCount() == 1,
+                        "native furnace must actually smelt one iron ore using " + fuels[i]);
+                helper.assertTrue(furnaces[i].getItem(0).isEmpty() && furnaces[i].getItem(1).isEmpty(),
+                        "smelting must consume the ore and exactly one fuel item");
+            }
+            helper.succeed();
+        });
+    }
 
     @GameTest(template = TEMPLATE)
     public static void infinityArmorCancelsRealLivingDamage(GameTestHelper helper) {
