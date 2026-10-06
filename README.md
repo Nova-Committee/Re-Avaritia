@@ -62,6 +62,13 @@ With these values, the composed project/metadata version is **`1.20.1-1.4.2-fabr
 
 The checked-in Gradle Wrapper starts from `gradle/wrapper/gradle-wrapper.properties`. After changing `gradle_version`, run `gradlew.bat wrapper` to regenerate its distribution URL; run it again with the new Gradle version to refresh the wrapper scripts/JAR. It is not upgraded merely by editing the project property.
 
+### GitHub automation
+
+- [Fabric Action](.github/workflows/gradle.yml) builds pushes and pull requests targeting `fabric/*` with `./gradlew build --no-daemon`, validates the Gradle Wrapper, and uploads only the exact remapped release JAR.
+- [Fabric Release](.github/workflows/release.yml) follows the reference project's Modrinth, CurseForge, and GitHub release flow. A pushed `v*` tag must equal `v` plus the version in `gradle.properties`; the current tag is **`v1.20.1-1.4.2-fabric`**. Java, Minecraft, version/channel, and artifact names come from the shared [metadata action](.github/actions/read-metadata/action.yml).
+- Publishing requires repository secrets **`MODRINTH_TOKEN`** and **`CURSEFORGE_TOKEN`**, plus the workflow's `GITHUB_TOKEN`. The destinations mirror the reference project: Modrinth **`QeB3NRC5`**, CurseForge **`623969`**. Confirm project ownership, Fabric support, and token permissions before triggering a release; a fork targeting different projects must update these IDs. Configuring the workflow is not evidence that a release has been uploaded.
+- The [issue forms](.github/ISSUE_TEMPLATE) and [PR template](.github/PULL_REQUEST_TEMPLATE.md) retain bilingual reporting and contribution checks. GitHub's [issue chooser requires the templates on the repository's default branch](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository); merely pushing them to a non-default Fabric branch does not activate it. Template links target the original upstream project and should be adjusted when maintaining a separate fork.
+
 ### Building and development
 
 Build on Windows:

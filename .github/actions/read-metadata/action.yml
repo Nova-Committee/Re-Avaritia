@@ -1,0 +1,58 @@
+name: Read Fabric metadata
+description: Read build and release metadata from gradle.properties.
+outputs:
+  java_version:
+    description: Java toolchain version
+    value: ${{ steps.properties.outputs.java_version }}
+  game_version:
+    description: Minecraft version
+    value: ${{ steps.properties.outputs.game_version }}
+  version:
+    description: Composed Gradle and Fabric mod version
+    value: ${{ steps.properties.outputs.version }}
+  version_type:
+    description: Publication release channel
+    value: ${{ steps.properties.outputs.version_type }}
+  jar_name:
+    description: Exact remapped release JAR filename
+    value: ${{ steps.properties.outputs.jar_name }}
+runs:
+  using: composite
+  steps:
+    - name: Read properties
+      id: properties
+      shell: bash
+      run: |
+        set -euo pipefail
+        declare -A properties
+        while IFS='=' read -r key value || [[ -n "$key" ]]; do
+          case "$key" in
+            ''|'#'*) continue ;;
+          esac
+          properties["$key"]="${value%$'\r'}"
+        done < gradle.properties
+
+        for key in java_version mc_version mod_version mod_version_tag mod_name mod_platform; do
+          if [[ -z "${properties[$key]:-}" ]]; then
+            echo "::error::Missing $key in gradle.properties"
+            exit 1
+          fi
+        done
+        if [[ "${properties[mod_platform]}" != fabric ]]; then
+          echo "::error::This workflow requires mod_platform=fabric"
+          exit 1
+        fi
+
+        version="${properties[mc_version]}-${properties[mod_version]}-${properties[mod_version_tag]}"
+        case "${properties[mod_version_tag]}" in
+          alpha*) version_type=alpha ;;
+          beta*|rc*) version_type=beta ;;
+          *) version_type=release ;;
+        esac
+        {
+          echo "java_version=${properties[java_version]}"
+          echo "game_version=${properties[mc_version]}"
+          echo "version=$version"
+          echo "version_type=$version_type"
+          echo "jar_name=${properties[mod_name]}-${properties[mod_platform]}-${version}.jar"
+        } >> "$GITHUB_OUTPUT"

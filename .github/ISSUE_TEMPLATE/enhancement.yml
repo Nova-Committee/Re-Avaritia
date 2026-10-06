@@ -1,0 +1,24 @@
+name: Feature Request / 功能请求
+description: Suggest an idea for Re-Avaritia Fabric. / 为 Re-Avaritia Fabric 提出建议。
+title: "[Enhancement/功能请求] "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks / 检查
+      description: |
+        Please complete these checks before submitting an issue. / 请在提交问题之前完成以下检查。
+      options:
+        - label: I have [searched existing issues and pull requests](https://github.com/Nova-Committee/Re-Avaritia/issues?q=) to avoid duplicate requests. / 我已[搜索现有问题和拉取请求](https://github.com/Nova-Committee/Re-Avaritia/issues?q=)，以避免重复请求。
+          required: true
+        - label: I understand that requests not following these instructions may be closed. / 我理解未按说明填写的请求可能会被关闭。
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description / 描述
+      description: |
+        What new feature or change do you want for Re-Avaritia Fabric? What would it improve? Provide a clear, detailed description and screenshots if helpful. Remove private information before posting publicly. / 您希望 Re-Avaritia Fabric 增加什么功能或改进？它能改善什么？请提供清晰详细的描述，可附上有助于解释的截图。公开提交前请移除私人信息。
+    validations:
+      required: true

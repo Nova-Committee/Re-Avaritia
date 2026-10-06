@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 主模组与原生回归夹具的 Fabric 元数据从属性展开，并登记资源任务输入；Gradle Wrapper 的生成版本同样读取属性，现有启动分发地址仍通过 `wrapper` 任务更新。默认只加载 Fabric Loader，可选开发配置的固定依赖与启用方式不变。
 * 重写双语 README 的 Fabric 介绍、安装、版本配置与附属模组依赖说明，保留奇点 JSON、CraftTweaker、KubeJS、盾牌及构建/验证教程和作者许可信息；历史上游下载不再作为本地 Fabric 发布证明。附属模组使用 Loom 的本地发布 JAR 依赖，已实际构建引用 `ModApi` 与原版 `ItemStack` 的独立附属项目，确认依赖映射正确且不内嵌本模组。
 * 本轮完整构建与 53 项 JUnit 通过；版本/后缀/夹具/Wrapper 属性覆盖和默认、四联动、Trinkets 配置烟测通过，移除命令行覆盖后恢复原值。实际无前置服务端加载属性生成的两个模组版本，并通过 50 项不同原生 GameTest；发布 JAR 元数据、无夹具/无内嵌依赖与默认内容哈希均已核对。
+* 参照 Forge 项目补齐 `.github` 构建/发布工作流和双语 Bug、功能请求、问答及 PR 模板；CI 面向 `fabric/*`，共用属性元数据 action 读取 Java/版本/准确发布文件名，发布采用 Fabric 标记及原项目平台 ID，并在上传前检查标签与 Secrets。修正旧仓库链接与误复制的机器人配置字段，补充 Loader、联动模组与实际验证信息。
+* 两个 workflow 通过 actionlint，共用 action、三个 Issue 表单与选择器通过 JSON Schema 校验；实际执行元数据、匹配/错误标签、缺失/存在 Secrets 预检，以及 Java 17 下工作流的 Gradle 命令，构建产物与属性输出一致。Gradle Wrapper JAR 哈希匹配官方 8.12；未推送、未执行任何远端发布。
 
 
 ### Runtime fixes

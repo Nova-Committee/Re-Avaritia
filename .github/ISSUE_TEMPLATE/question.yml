@@ -1,0 +1,24 @@
+name: Question / 询问
+description: Ask a question about Re-Avaritia Fabric. / 询问有关 Re-Avaritia Fabric 的问题。
+title: "[Question/询问] "
+labels: ["question"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks / 检查
+      description: |
+        Please complete these checks before submitting an issue. / 请在提交问题之前完成以下检查。
+      options:
+        - label: I have [searched existing issues and pull requests](https://github.com/Nova-Committee/Re-Avaritia/issues?q=) to avoid duplicate questions. / 我已[搜索现有问题和拉取请求](https://github.com/Nova-Committee/Re-Avaritia/issues?q=)，以避免重复提问。
+          required: true
+        - label: I understand that questions not following these instructions may be closed. / 我理解未按说明填写的问题可能会被关闭。
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description / 描述
+      description: |
+        Describe your question clearly and in detail. Include relevant Minecraft, Fabric Loader, and Re-Avaritia Fabric versions, and screenshots if helpful. Remove secrets and personal information before posting publicly. / 请清晰详细地描述您的问题，附上相关的 Minecraft、Fabric Loader 和 Re-Avaritia Fabric 版本，可附上有助于解释的截图。公开提交前请移除秘密凭据和个人信息。
+    validations:
+      required: true

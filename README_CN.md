@@ -62,6 +62,13 @@ mod_id=avaritia
 
 已提交的 Gradle Wrapper 从 `gradle/wrapper/gradle-wrapper.properties` 启动。修改 `gradle_version` 后执行 `gradlew.bat wrapper`，重新生成其下载地址；再用新 Gradle 执行一次以更新 Wrapper 脚本/JAR。仅修改项目属性不会自动升级 Wrapper。
 
+### GitHub 自动化
+
+- [Fabric Action](.github/workflows/gradle.yml) 在向 `fabric/*` 分支推送或提交 PR 时执行 `./gradlew build --no-daemon`，校验 Gradle Wrapper，并仅上传准确匹配的重映射发布 JAR。
+- [Fabric Release](.github/workflows/release.yml) 参照原项目发布到 Modrinth、CurseForge 和 GitHub。推送的 `v*` 标签必须等于 `v` 加 `gradle.properties` 中组成的版本号，当前为 **`v1.20.1-1.4.2-fabric`**。Java、Minecraft、版本/发布类型及文件名由共用的[元数据 action](.github/actions/read-metadata/action.yml)读取。
+- 发布需要仓库 Secrets **`MODRINTH_TOKEN`**、**`CURSEFORGE_TOKEN`**，以及工作流的 `GITHUB_TOKEN`。发布目标沿用参考项目：Modrinth **`QeB3NRC5`**、CurseForge **`623969`**。触发发布前确认项目归属、Fabric 支持及令牌权限；若 fork 发布到其他项目，应修改这些 ID。配置工作流不代表已经上传发布版本。
+- [Issue 表单](.github/ISSUE_TEMPLATE)和 [PR 模板](.github/PULL_REQUEST_TEMPLATE.md)保留双语报告与贡献检查。GitHub [仅在模板进入仓库默认分支后启用 Issue 选择器](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)，只推送到非默认 Fabric 分支不会启用。模板链接指向原上游项目，独立维护 fork 时应调整链接。
+
 ### 构建与开发环境
 
 Windows 构建与运行：

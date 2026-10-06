@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Fabric README and Branch / Fabric 说明文档与分支
+    url: https://github.com/Nova-Committee/Re-Avaritia/blob/fabric/1.20/README.md
+    about: Read the Fabric branch README when available upstream; otherwise use the README in your source checkout. / 若上游已发布 Fabric 分支，请阅读其 README；否则请阅读源码副本中的 README。
+  - name: Fabric Actions / Fabric 工作流
+    url: https://github.com/Nova-Committee/Re-Avaritia/actions?query=branch%3Afabric%2F1.20
+    about: View workflow runs for fabric/1.20 when available upstream. Artifacts are available only if the branch is published and a run uploads them; this link does not imply an existing Fabric release. / 查看上游已发布的 fabric/1.20 工作流运行记录。仅在分支已发布且运行上传产物时才有构建文件；此链接不代表已有 Fabric 发布版本。

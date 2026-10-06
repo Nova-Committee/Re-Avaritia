@@ -1,0 +1,85 @@
+name: Fabric Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+          persist-credentials: false
+
+      - name: Read release metadata
+        id: metadata
+        uses: ./.github/actions/read-metadata
+
+      - name: Validate release tag
+        shell: bash
+        env:
+          EXPECTED_TAG: v${{ steps.metadata.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_NAME" != "$EXPECTED_TAG" ]]; then
+            echo "::error::Release tag must match gradle.properties: $EXPECTED_TAG"
+            exit 1
+          fi
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ steps.metadata.outputs.java_version }}
+          distribution: zulu
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle Wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Validate publishing secrets
+        shell: bash
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$MODRINTH_TOKEN" || -z "$CURSEFORGE_TOKEN" ]]; then
+            echo "::error::MODRINTH_TOKEN and CURSEFORGE_TOKEN repository secrets are required"
+            exit 1
+          fi
+
+      - name: Build project
+        run: ./gradlew build --no-daemon
+
+      - name: Publish release
+        uses: Kira-NT/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3.1
+        with:
+          modrinth-id: QeB3NRC5
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: 623969
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          files: build/libs/${{ steps.metadata.outputs.jar_name }}
+          name: "Re:Avaritia ${{ steps.metadata.outputs.version }}"
+          version: ${{ steps.metadata.outputs.version }}
+          version-type: ${{ steps.metadata.outputs.version_type }}
+          loaders: fabric
+          game-versions: ${{ steps.metadata.outputs.game_version }}
+          game-version-filter: none
+          github-generate-changelog: true
+          retry-attempts: 2
+          fail-mode: fail
