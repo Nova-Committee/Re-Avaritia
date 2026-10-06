@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import net.minecraft.world.level.block.Block;
 
-/** Called once after vanilla contents creation, before vanilla registry freeze. */
+/** Called after vanilla contents creation; repeated bootstrap calls register nothing twice. */
 public final class ModRegistries {
     private static boolean initialized;
 

@@ -1,19 +1,24 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.OptionalInt;
 
 @Mixin(ServerPlayer.class)
 public abstract class NetworkServerPlayerMixin {
-    @Redirect(method = "openMenu", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V"))
-    private void avaritia$openingData(ServerGamePacketListenerImpl connection, Packet<?> packet) {
-        if (packet instanceof ClientboundOpenScreenPacket open) NetworkHandler.sendOpeningData((ServerPlayer) (Object) this, open.getContainerId(), open.getType());
-        connection.send(packet);
+    @Inject(method = "openMenu", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;getType()Lnet/minecraft/world/inventory/MenuType;"),
+            locals = LocalCapture.CAPTURE_FAILHARD)
+    private void avaritia$openingData(MenuProvider provider, CallbackInfoReturnable<OptionalInt> cir,
+                                      AbstractContainerMenu menu) {
+        NetworkHandler.sendOpeningData((ServerPlayer) (Object) this, menu.containerId, menu.getType());
     }
 }

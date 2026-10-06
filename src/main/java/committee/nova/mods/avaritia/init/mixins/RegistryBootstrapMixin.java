@@ -8,11 +8,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Loader's main entrypoint runs after freeze when Fabric API is absent. */
+/**
+ * Registers after vanilla contents exist, before Loader entrypoints and registry freeze.
+ * Fabric API redirects the initial bootstrap to createContents and delays bootStrap
+ * until server setup, which is already too late for WorldLoader's registry freeze.
+ */
 @Mixin(BuiltInRegistries.class)
 public abstract class RegistryBootstrapMixin {
-    @Inject(method = "bootStrap", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"))
-    private static void avaritia$registerBeforeFreeze(CallbackInfo ci) {
+    @Inject(method = "createContents", at = @At("RETURN"))
+    private static void avaritia$registerAfterVanillaContents(CallbackInfo ci) {
         ModConfig.register();
         ModRegistries.initialize();
     }

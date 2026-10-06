@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file，ChangeLog 
 ### Runtime fixes
 
 * 在原版注册表冻结前注册内容，补齐方块状态的原版网络/调色板 ID 与形状缓存。
+* 将注册入口挂到原版内容创建完成时，兼容 Fabric API 延后 bootstrap 的生命周期；确保 Trinkets/发射器初始化引用的物品在 WorldLoader 冻结前完成真实注册。
+* 网络菜单发送改用可组合的原版调用前注入，避免与 Fabric API 包发送重定向冲突；默认环境 39 项、安装 Trinkets 环境 43 项原生 GameTest 均通过，可选环境另完成重载与保存。
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。

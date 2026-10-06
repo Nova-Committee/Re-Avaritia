@@ -39,16 +39,17 @@ public final class NativeTrinketsGameTests {
                 "a worn ring must authorize actual personal-dimension creation");
         helper.assertTrue(InfinityRingKeys.ownerOf(player.level().dimension()).filter(player.getUUID()::equals).isPresent(),
                 "worn-ring creation must transport the player to their own dimension");
-        InfinityRingDimensions.deleteOwn(player).whenComplete((deleted, failure) -> {
-            remove(player);
-            if (failure != null) helper.fail(failure.toString());
-            else {
-                helper.assertTrue(Boolean.TRUE.equals(deleted), "a worn ring must authorize deletion and return travel");
-                helper.assertTrue(player.server.getLevel(InfinityRingKeys.levelKey(player.getUUID())) == null,
-                        "deleted personal dimension must no longer be live");
-                helper.succeed();
-            }
-        });
+        InfinityRingDimensions.deleteOwn(player).whenComplete((deleted, failure) ->
+                helper.runAfterDelay(1, () -> {
+                    remove(player);
+                    if (failure != null) helper.fail(failure.toString());
+                    else {
+                        helper.assertTrue(Boolean.TRUE.equals(deleted), "a worn ring must authorize deletion and return travel");
+                        helper.assertTrue(player.server.getLevel(InfinityRingKeys.levelKey(player.getUUID())) == null,
+                                "deleted personal dimension must no longer be live");
+                        helper.succeed();
+                    }
+                }));
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 100)
@@ -63,7 +64,7 @@ public final class NativeTrinketsGameTests {
             player.setOnGround(false);
             player.setDeltaMovement(0, -0.1, 0.2);
             helper.assertTrue(player.tryToStartFallFlying(), "native glide takeoff must use the worn back elytra");
-            player.doTick();
+            for (int tick = 0; tick < 12; tick++) player.doTick();
             helper.assertTrue(player.isFallFlying(), "native living-entity update must retain accessory glide flight");
             helper.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST) == armor,
                     "accessory gliding must not temporarily replace or discard chest armor");
@@ -82,7 +83,14 @@ public final class NativeTrinketsGameTests {
             ItemStack totem = new ItemStack(ModItems.infinity_totem.get());
             equip(helper, player, "charm", "charm", totem);
             player.setOnGround(true);
-            player.hurt(player.damageSources().generic(), 1000);
+            // Newly joined players have 60 ticks of vanilla damage immunity.
+            for (int tick = 0; tick < 60; tick++) player.tick();
+            player.removeAllEffects();
+            player.setAbsorptionAmount(0);
+            player.invulnerableTime = 0;
+            player.setHealth(2);
+            helper.assertTrue(player.hurt(player.damageSources().generic(), 1000),
+                    "lethal damage must enter the actual native death-protection path");
             helper.assertTrue(player.isAlive() && player.getHealth() == player.getMaxHealth(),
                     "a worn totem must prevent native lethal damage");
             helper.assertTrue(totem.getDamageValue() == 1 && totem.getCount() == 1,
