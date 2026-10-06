@@ -22,7 +22,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:nickel_singularity"
+        "recipes": "avaritia:nickel_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

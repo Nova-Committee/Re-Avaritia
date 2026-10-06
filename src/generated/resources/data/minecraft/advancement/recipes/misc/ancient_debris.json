@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:ancient_debris"
+        "recipes": "minecraft:ancient_debris"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

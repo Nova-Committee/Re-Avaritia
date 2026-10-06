@@ -3,7 +3,13 @@
     "description": {
       "text": "Re:Avaritia Vanilla Resources"
     },
-    "min_format": 84,
-    "max_format": 84
+    "min_format": [
+      97,
+      1
+    ],
+    "max_format": [
+      97,
+      1
+    ]
   }
 }

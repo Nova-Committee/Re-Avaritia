@@ -132,7 +132,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         pPoseStack.pushPose();
         float f = state.facing.toYRot();
         pPoseStack.translate(0.5F, 0.5F, 0.5F);
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(-f));
+        pPoseStack.rotate(Axis.YP.rotationDegrees(-f));
         pPoseStack.translate(-0.5F, -0.5F, -0.5F);
         float f1 = state.open;
         f1 = 1.0F - f1;
@@ -155,9 +155,16 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         pLockPart.xRot = pLidPart.xRot;
         var texture = this.sprites.get(sprite);
         var renderType = sprite.renderType(RenderTypes::entityCutout);
-        output.submitModelPart(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
-        output.submitModelPart(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
-        output.submitModelPart(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+        // 26.3 的 submitModelPart 尾参数为 (tintedColor, outlineColor)；-1 为不染色、0 为无描边。
+        // 破坏进度不再是 submitModelPart 参数，改为单独提交 CrumblingOverlay（同原版箱子渲染）。
+        output.submitModelPart(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, -1, 0);
+        output.submitModelPart(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, -1, 0);
+        output.submitModelPart(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, -1, 0);
+        if (breakProgress != null) {
+            output.order(1).submitCrumblingOverlay(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, -1, breakProgress);
+            output.order(1).submitCrumblingOverlay(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, -1, breakProgress);
+            output.order(1).submitCrumblingOverlay(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, -1, breakProgress);
+        }
     }
 
     protected SpriteId getSprite(T blockEntity, ChestType chestType) {

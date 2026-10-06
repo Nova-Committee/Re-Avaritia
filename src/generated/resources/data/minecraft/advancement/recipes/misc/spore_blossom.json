@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:spore_blossom"
+        "recipes": "minecraft:spore_blossom"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

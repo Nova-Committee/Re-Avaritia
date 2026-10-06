@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_pickaxe"
+        "recipes": "avaritia:infinity_pickaxe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "group": "infinity_ingot",
   "key": {
     "#": "avaritia:infinity_nugget"

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_shovel"
+        "recipes": "avaritia:infinity_shovel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

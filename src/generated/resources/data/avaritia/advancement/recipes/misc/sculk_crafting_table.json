@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:sculk_crafting_table"
+        "recipes": "avaritia:sculk_crafting_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

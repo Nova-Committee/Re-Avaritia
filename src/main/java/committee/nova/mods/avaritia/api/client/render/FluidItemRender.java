@@ -1,17 +1,15 @@
 package committee.nova.mods.avaritia.api.client.render;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
@@ -101,7 +99,7 @@ public final class FluidItemRender {
         return color(r, g, b);
     }
 
-    public void blit(PoseStack poseStack, int zIndex) {
+    public void blit(PoseStack poseStack, SubmitNodeCollector source, int zIndex) {
         // With no source rectangle, we'll use the entirety of the texture. This happens rarely though.
         float minU, minV, maxU, maxV;
         if (srcRect == null) {
@@ -116,31 +114,32 @@ public final class FluidItemRender {
 
         // It's possible to not set a destination rectangle size, in which case the
         // source rectangle size will be used
+        float width = 0, height = 0;
+        if (destRect.getWidth() != 0 && destRect.getHeight() != 0) {
+            width = destRect.getWidth();
+            height = destRect.getHeight();
+        } else if (srcRect != null) {
+            width = srcRect.getWidth();
+            height = srcRect.getHeight();
+        }
         float x1 = destRect.getX();
         float y1 = destRect.getY();
-        float x2 = x1, y2 = y1;
-        if (destRect.getWidth() != 0 && destRect.getHeight() != 0) {
-            x2 += destRect.getWidth();
-            y2 += destRect.getHeight();
-        } else if (srcRect != null) {
-            x2 += srcRect.getWidth();
-            y2 += srcRect.getHeight();
-        }
+        float x2 = x1 + width;
+        float y2 = y1 + height;
 
-        try (ByteBufferBuilder builder = new ByteBufferBuilder(DefaultVertexFormat.POSITION_TEX_COLOR.getVertexSize() * 4)) {
-            BufferBuilder buffer = new BufferBuilder(builder, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        // 26.3 移除了 MeshData/RenderType#draw 立即绘制，改走提交节点几何路径。
+        // 顶点仍写入位置/UV/颜色；itemTranslucent 的顶点格式额外要求光照/覆盖层/法线，
+        // 用全亮(FULL_BRIGHT)、无覆盖层(NO_OVERLAY)与朝向观察者的法线补齐，保持图标始终可见。
+        source.submitCustomGeometry(poseStack, RenderTypes.itemTranslucent(sprite.atlasLocation()), (pose, buffer) -> {
             VertexConsumer consumer = sprite.wrap(buffer);
-            consumer.addVertex(poseStack.last(), x1, y2, zIndex).setUv(minU, maxV).setColor(r, g, b, blending ? a : 255);
-            consumer.addVertex(poseStack.last(), x2, y2, zIndex).setUv(maxU, maxV).setColor(r, g, b, blending ? a : 255);
-            consumer.addVertex(poseStack.last(), x2, y1, zIndex).setUv(maxU, minV).setColor(r, g, b, blending ? a : 255);
-            consumer.addVertex(poseStack.last(), x1, y1, zIndex).setUv(minU, minV).setColor(r, g, b, blending ? a : 255);
-
-            MeshData mesh = buffer.buildOrThrow();
-            RenderTypes.itemTranslucent(sprite.atlasLocation()).draw(mesh);
-        }
+            consumer.addVertex(pose, x1, y2, zIndex).setUv(minU, maxV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x2, y2, zIndex).setUv(maxU, maxV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x2, y1, zIndex).setUv(maxU, minV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x1, y1, zIndex).setUv(minU, minV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        });
     }
 
-    public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, int x, int y, int z) {
+    public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, SubmitNodeCollector source, int x, int y, int z) {
         FluidState fluidState = fluidStack.getFluid().defaultFluidState();
         FluidModel fluidModel = Minecraft.getInstance()
                 .getModelManager()
@@ -153,7 +152,7 @@ public final class FluidItemRender {
                 .colorRgb(color)
                 .blending(false)
                 .dest(x, y, 16, 16)
-                .blit(poseStack, z);
+                .blit(poseStack, source, z);
     }
 
 }

@@ -34,7 +34,8 @@ public class InfinityShieldRender implements NoDataSpecialModelRenderer {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);
             modelPose.scale(1.0F, -1.0F, -1.0F);
-            this.model.renderToBuffer(modelPose, vertexConsumer, packedLight, packedOverlay);
+            // 26.3 的 renderToBuffer 新增 color 参数，-1 表示不叠加染色（与旧版无染色行为一致）。
+            this.model.renderToBuffer(modelPose, vertexConsumer, packedLight, packedOverlay, -1);
         });
     }
 

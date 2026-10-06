@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -101,7 +102,7 @@ public record C2SCompressorEjectPacket(BlockPos pos) implements CustomPacketPayl
 
                                         // 如果物品栏装不下，弹出到地上
                                         if (!addedToInventory && !cluster.isEmpty()) {
-                                            player.drop(cluster, false);
+                                            player.drop(cluster, false, Prediction.SERVER_ONLY);
                                         }
                                     }
 

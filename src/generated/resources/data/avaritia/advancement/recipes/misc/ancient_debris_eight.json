@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:ancient_debris_eight"
+        "recipes": "avaritia:ancient_debris_eight"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

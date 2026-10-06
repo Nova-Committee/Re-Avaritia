@@ -28,7 +28,7 @@ public class RegisterRecipesEvent extends Event {
     }
 
     public final ConditionalOps<JsonElement> makeConditionalOps() {
-        return new ConditionalOps<>(registries.createSerializationContext(JsonOps.INSTANCE), getContext());
+        return new ConditionalOps<>(registries.createSerializationContext(JsonOps.INSTANCE), this.context);
     }
 
     public RecipeManager getRecipeManager() {

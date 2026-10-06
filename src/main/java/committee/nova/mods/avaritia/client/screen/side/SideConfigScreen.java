@@ -164,8 +164,8 @@ public class SideConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        if (this.minecraft != null && this.minecraft.screen == this) {
-            this.minecraft.popGuiLayer();
+        if (this.minecraft != null && this.minecraft.gui.screen() == this) {
+            this.minecraft.gui.popScreenLayer();
         }
     }
 

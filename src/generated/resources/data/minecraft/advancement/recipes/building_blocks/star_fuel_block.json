@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:star_fuel_block"
+        "recipes": "minecraft:star_fuel_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

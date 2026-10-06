@@ -45,7 +45,7 @@ public record NbtDataPacket(CompoundTag tag) implements CustomPacketPayload {
                 });
             } else if(context.flow() == PacketFlow.SERVERBOUND) {
                 context.enqueueWork(() -> {
-                    if(Minecraft.getInstance().screen instanceof IDataReceiver dataReceiver) {
+                    if(Minecraft.getInstance().gui.screen() instanceof IDataReceiver dataReceiver) {
                         dataReceiver.receive(packet.tag());
                     }
                 });

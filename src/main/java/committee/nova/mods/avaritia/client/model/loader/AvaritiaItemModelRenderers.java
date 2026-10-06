@@ -12,10 +12,10 @@ import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
@@ -23,7 +23,6 @@ import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
@@ -112,7 +111,9 @@ public final class AvaritiaItemModelRenderers {
             // halo 使用圆形自定义几何，避免旧式单张方形透明贴图在 JEI/创造栏中露出方边。
             TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
                     .get(new SpriteId(Const.HALO_ATLAS_LOCATION, argument.texture()));
-            RenderType renderType = NeoForgeRenderTypes.getItemLayeredTranslucent(sprite.atlasLocation());
+            // 26.3 移除了 NeoForgeRenderTypes.getItemLayeredTranslucent；itemTranslucent 是其等价替代
+            //（物品分层半透明：半透明混合 + 光照/覆盖层 + Sampler0 贴图）。
+            RenderType renderType = RenderTypes.itemTranslucent(sprite.atlasLocation());
             submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER).submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
                 renderCircularHalo(pose, buffer, sprite, argument.setting(), lightCoords, overlayCoords);
             });
@@ -225,16 +226,16 @@ public final class AvaritiaItemModelRenderers {
         private static void transformTrident(ItemDisplayContext displayContext, PoseStack poseStack) {
             switch (displayContext) {
                 case FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> {
-                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.rotate(Axis.XP.rotationDegrees(90.0F));
+                    poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
                     poseStack.translate(0.2D, -0.2D, -1.3D);
                 }
                 case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
-                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.rotate(Axis.XP.rotationDegrees(90.0F));
+                    poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
                     poseStack.translate(0.0D, 0.0D, -1.5D);
                 }
-                default -> poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                default -> poseStack.rotate(Axis.XP.rotationDegrees(90.0F));
             }
         }
 
@@ -258,7 +259,7 @@ public final class AvaritiaItemModelRenderers {
 
             poseStack.pushPose();
             try {
-                poseStack.mulPose(Axis.YP.rotationDegrees((argument.time() * 8L) % 360L));
+                poseStack.rotate(Axis.YP.rotationDegrees((argument.time() * 8L) % 360L));
                 submitNodeCollector.submitCustomGeometry(poseStack, ArcRender.ARC_RENDER_TYPE, (pose, buffer) ->
                         ArcRender.renderArc(pose, buffer, argument.time(),
                                 -0.5F, 0.0F, -0.5F,
@@ -304,14 +305,7 @@ public final class AvaritiaItemModelRenderers {
         }
 
         private static void flushBaseLayers(List<RenderType> baseRenderTypes, boolean hasFoil) {
-            // 26.1 会晚于动态共享缓冲区刷新固定物品缓冲区，因此必须在写入覆盖层前定向结束基础层。
-            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-            for (RenderType baseRenderType : baseRenderTypes) {
-                bufferSource.endBatch(baseRenderType);
-                if (hasFoil) {
-                    bufferSource.endBatch(ItemFeatureRenderer.getFoilRenderType(baseRenderType, true));
-                }
-            }
+            // 26.3 的提交节点按 order() 显式排序，不再需要手动刷新基础层缓冲区。
         }
 
         @Override

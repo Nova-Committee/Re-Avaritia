@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:music_disc_11"
+        "recipes": "minecraft:music_disc_11"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

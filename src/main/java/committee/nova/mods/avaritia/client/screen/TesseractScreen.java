@@ -121,18 +121,14 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
 
     private boolean isShiftDown() {
         var window = minecraft.getWindow();
-        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
-                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
     }
 
     private boolean isControlDown() {
         var window = minecraft.getWindow();
-        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
-                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
-                com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
     }
 
     @Override

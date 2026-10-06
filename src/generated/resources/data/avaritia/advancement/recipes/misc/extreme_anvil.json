@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:extreme_anvil"
+        "recipes": "avaritia:extreme_anvil"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

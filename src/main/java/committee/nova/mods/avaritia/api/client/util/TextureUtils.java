@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.util;
 
 import committee.nova.mods.avaritia.Const;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import committee.nova.mods.avaritia.api.client.util.color.Color;
 import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;

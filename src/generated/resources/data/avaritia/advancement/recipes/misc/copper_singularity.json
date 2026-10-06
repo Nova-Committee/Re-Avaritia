@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:copper_singularity"
+        "recipes": "avaritia:copper_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

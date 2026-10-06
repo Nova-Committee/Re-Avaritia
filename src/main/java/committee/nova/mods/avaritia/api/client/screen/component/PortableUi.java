@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,8 +99,8 @@ public final class PortableUi {
 
     public static void confirm(Screen parent, Component title, Component message, Runnable confirmed) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.screen == parent) {
-            minecraft.pushGuiLayer(new Confirmation(parent, title, message, confirmed));
+        if (minecraft.gui.screen() == parent) {
+            minecraft.gui.pushScreenLayer(new Confirmation(parent, title, message, confirmed));
         }
     }
 
@@ -112,8 +112,8 @@ public final class PortableUi {
     public static void prompt(Screen parent, Component title, String initial, int maxLength,
                               boolean allowBlank, List<String> suggestions, Consumer<String> confirmed) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.screen == parent) {
-            minecraft.pushGuiLayer(new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
+        if (minecraft.gui.screen() == parent) {
+            minecraft.gui.pushScreenLayer(new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
         }
     }
 
@@ -141,11 +141,11 @@ public final class PortableUi {
 
         protected final boolean finish() {
             Minecraft minecraft = Minecraft.getInstance();
-            if (finished || minecraft.screen != this) {
+            if (finished || minecraft.gui.screen() != this) {
                 return false;
             }
             finished = true;
-            minecraft.popGuiLayer();
+            minecraft.gui.popScreenLayer();
             return true;
         }
 
@@ -313,7 +313,7 @@ public final class PortableUi {
 
         @Override
         public boolean keyPressed(KeyEvent event) {
-            boolean enter = event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER;
+            boolean enter = event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER;
             if (input.isFocused()) {
                 if (enter && !suggestions.hasSelection()) {
                     submit();
@@ -323,7 +323,7 @@ public final class PortableUi {
                     return true;
                 }
             }
-            if (event.key() == GLFW.GLFW_KEY_TAB) {
+            if (event.key() == InputConstants.KEY_TAB) {
                 suggestions.close();
             }
             return super.keyPressed(event);

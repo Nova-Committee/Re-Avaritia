@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.client.shader;
 
 import committee.nova.mods.avaritia.Const;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
@@ -14,7 +14,9 @@ import org.jspecify.annotations.Nullable;
  * 26.1.2 渲染管线兼容工具。
  */
 public class AvaritiaRenderTypeHelper {
-    static final RenderPipeline ARMOR_GLOW_PIPELINE = RenderPipelines.ARMOR_TRANSLUCENT;
+    // 26.3 移除了 ARMOR_TRANSLUCENT；WOLF_ARMOR_CRACKS 即原 pipeline/armor_translucent 管线
+    //（ENTITY_SNIPPET + ALPHA_CUTOUT + NO_OVERLAY + PER_FACE_LIGHTING + 半透明混合 + 无剔除），配置完全一致。
+    static final RenderPipeline ARMOR_GLOW_PIPELINE = RenderPipelines.WOLF_ARMOR_CRACKS;
 
     public static RenderType textured(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay, boolean sortOnUpload, boolean viewOffset) {
         return textured(name, pipeline, texture, lightmap, overlay, sortOnUpload,
@@ -44,11 +46,11 @@ public class AvaritiaRenderTypeHelper {
     }
 
     public static RenderType entityTranslucentNoCull(String name, Identifier texture) {
-        return textured(name, RenderPipelines.ARMOR_TRANSLUCENT, texture, true, true, true, false);
+        return textured(name, RenderPipelines.WOLF_ARMOR_CRACKS, texture, true, true, true, false);
     }
 
     public static RenderType entityTranslucentNoCullViewOffset(String name, Identifier texture) {
-        return textured(name, RenderPipelines.ARMOR_TRANSLUCENT, texture, true, true, true, true);
+        return textured(name, RenderPipelines.WOLF_ARMOR_CRACKS, texture, true, true, true, true);
     }
 
     public static RenderType armorGlow(String name, Identifier texture) {

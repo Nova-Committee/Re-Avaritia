@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:crying_obsidian"
+        "recipes": "minecraft:crying_obsidian"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.gametest;
 
+import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.component.InfinityBucketBudget;
 import committee.nova.mods.avaritia.common.component.InfinityBucketCreature;
@@ -24,6 +25,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
@@ -117,7 +119,7 @@ public final class InfinityBucketGameTests {
         helper.assertTrue(fixture.menu.getCarried().is(Items.BUCKET) && fixture.menu.getCarried().getCount() == 1,
                 "deposit should return exactly one empty bucket");
         helper.assertTrue(emptyBuckets(fixture.player) == 0, "empty bucket should stay on the cursor");
-        helper.assertEntityNotPresent(EntityType.TROPICAL_FISH);
+        helper.assertEntityNotPresent(EntityTypes.TROPICAL_FISH);
         assertStoredWater(helper, fixture.bucket, FluidType.BUCKET_VOLUME);
         List<InfinityBucketCreature> creatures = InfinityBucketItem.getCreatures(fixture.bucket);
         helper.assertTrue(creatures.size() == 1, "one tropical fish should be stored");
@@ -130,7 +132,7 @@ public final class InfinityBucketGameTests {
                 "using the bucket on source water should release the selected fish");
         helper.assertBlockPresent(Blocks.WATER, water);
 
-        List<TropicalFish> fish = helper.getEntities(EntityType.TROPICAL_FISH, water, 1.0);
+        List<TropicalFish> fish = helper.getEntities(EntityTypes.TROPICAL_FISH, water, 1.0);
         helper.assertTrue(fish.size() == 1, "exactly one live tropical fish should spawn");
         TropicalFish spawned = fish.getFirst();
         helper.assertTrue(spawned.getCustomName() != null && "Harbor fish".equals(spawned.getCustomName().getString()),
@@ -163,7 +165,7 @@ public final class InfinityBucketGameTests {
         helper.assertTrue(ItemStack.matches(remaining, fixture.menu.getCarried()),
                 "cursor should retain the other byte-equivalent axolotl bucket");
         helper.assertTrue(emptyBuckets(fixture.player) == 1, "exactly one empty bucket should enter inventory");
-        helper.assertEntityNotPresent(EntityType.AXOLOTL);
+        helper.assertEntityNotPresent(EntityTypes.AXOLOTL);
         assertStoredWater(helper, fixture.bucket, FluidType.BUCKET_VOLUME);
 
         List<InfinityBucketCreature> creatures = InfinityBucketItem.getCreatures(fixture.bucket);
@@ -174,7 +176,7 @@ public final class InfinityBucketGameTests {
         CompoundTag tag = creatures.getFirst().entityData().copy();
         tag.putString("id", creatures.getFirst().typeId().toString());
         Entity restored = EntityType.create(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), tag),
-                helper.getLevel(), EntitySpawnReason.LOAD).orElse(null);
+                helper.getLevel(), new EntitySpawnRequest(EntitySpawnReason.LOAD, true)).orElse(null);
         helper.assertTrue(restored instanceof Axolotl axolotl
                         && axolotl.getVariant() == Axolotl.Variant.BLUE
                         && axolotl.getAge() == -1200
@@ -255,7 +257,7 @@ public final class InfinityBucketGameTests {
                 "failed release must preserve the creature, stored fluid and selection");
         helper.assertTrue(helper.getBlockState(target).equals(blockedWater),
                 "failed release must leave the target waterlogged");
-        helper.assertEntityNotPresent(EntityType.TROPICAL_FISH);
+        helper.assertEntityNotPresent(EntityTypes.TROPICAL_FISH);
         helper.succeed();
     }
 
@@ -293,7 +295,7 @@ public final class InfinityBucketGameTests {
                 "extracted creature should leave the list");
         helper.assertTrue(InfinityBucketItem.getFluids(fixture.bucket).isEmpty(),
                 "extracting a fish bucket should consume one bucket of water");
-        helper.assertEntityNotPresent(EntityType.TROPICAL_FISH);
+        helper.assertEntityNotPresent(EntityTypes.TROPICAL_FISH);
         helper.succeed();
     }
 

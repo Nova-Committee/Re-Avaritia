@@ -16,8 +16,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -29,14 +29,14 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:33
  * Version: 1.0
  */
-public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUndamageable {
+public class InfinityShovelItem extends Item implements ISwitchable, IUndamageable {
 
     public InfinityShovelItem() {
-        super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
-                ModItems.properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
+                        .shovel(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.speed())
         );
     }
 

@@ -52,7 +52,7 @@ public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
 
             serverPlayer.resetAttackStrengthTicker();
         }
-        entity.setInvulnerable(false);
+        entity.setPermanentlyInvulnerable(false);
 
         return super.onLeftClickEntity(stack, player, entity);
     }

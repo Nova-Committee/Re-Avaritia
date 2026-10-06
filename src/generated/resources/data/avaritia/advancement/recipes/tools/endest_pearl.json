@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:endest_pearl"
+        "recipes": "avaritia:endest_pearl"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

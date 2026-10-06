@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:soul_sand"
+        "recipes": "minecraft:soul_sand"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

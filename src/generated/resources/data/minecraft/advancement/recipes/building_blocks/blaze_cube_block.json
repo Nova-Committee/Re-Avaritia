@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:blaze_cube_block"
+        "recipes": "minecraft:blaze_cube_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

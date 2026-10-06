@@ -22,7 +22,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:refined_obsidian_singularity"
+        "recipes": "avaritia:refined_obsidian_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

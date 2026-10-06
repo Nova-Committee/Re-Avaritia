@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:neutron_wolf_armor"
+        "recipes": "avaritia:neutron_wolf_armor"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

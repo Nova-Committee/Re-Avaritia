@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:blue_ice_singularity"
+        "recipes": "avaritia:blue_ice_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

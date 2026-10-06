@@ -17,7 +17,7 @@ public class BurningEffect extends MobEffect {
     @Override
     public boolean applyEffectTick(@NonNull ServerLevel serverLevel, LivingEntity livingEntity, int amplifier) {
         livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.05f);
-        livingEntity.invulnerableTime = 10;
+        livingEntity.setInvulnerableTime(10);
         return true;
     }
 

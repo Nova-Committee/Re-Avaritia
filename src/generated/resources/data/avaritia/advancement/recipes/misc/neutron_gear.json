@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:neutron_gear"
+        "recipes": "avaritia:neutron_gear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -42,13 +42,13 @@ public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity, ArrowRen
     @Override
     public void submit(@NotNull ArrowRenderState state, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, @NotNull CameraRenderState cameraState) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot));
         float shake = state.shake;
         if (shake > 0.0F) {
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-Mth.sin(shake * 3.0F) * shake));
+            poseStack.rotate(Axis.ZP.rotationDegrees(-Mth.sin(shake * 3.0F) * shake));
         }
-        poseStack.mulPose(Axis.XP.rotationDegrees(45.0F));
+        poseStack.rotate(Axis.XP.rotationDegrees(45.0F));
         poseStack.scale(0.05625F, 0.05625F, 0.05625F);
         poseStack.translate(-4.0, 0.0, 0.0);
         RenderType renderType = RenderTypes.entityCutout(this.getTextureLocation(state));
