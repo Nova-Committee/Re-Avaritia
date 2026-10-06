@@ -6,8 +6,8 @@
 
   Insert "[Enhancement] " or "[Bug] " before the first word in the title.
     在标题的第一个词前插入「[Enhancement] 」或「[Bug] 」。
-  Target the fabric/1.20 branch, not a branch for another mod loader.
-    请以 fabric/1.20 分支为目标，不要提交到其他模组加载器的分支。
+  Target the fabric/1.20.1 branch, not a branch for another mod loader.
+    请以 fabric/1.20.1 分支为目标，不要提交到其他模组加载器的分支。
   The PR may be closed if you do not follow the instructions.
     如果不按说明操作，拉取请求可能会被关闭。
 -->
@@ -21,8 +21,8 @@
 
 - [ ] I have [searched existing issues and pull requests](https://github.com/Nova-Committee/Re-Avaritia/issues?q=) to avoid duplicate work.  
       我已[搜索现有问题和拉取请求](https://github.com/Nova-Committee/Re-Avaritia/issues?q=)，以避免重复工作。
-- [ ] This PR targets `fabric/1.20` and changes Re-Avaritia Fabric for Minecraft 1.20.1.  
-      此拉取请求以 `fabric/1.20` 为目标，修改的是 Minecraft 1.20.1 的 Re-Avaritia Fabric。
+- [ ] This PR targets `fabric/1.20.1` and changes Re-Avaritia Fabric for Minecraft 1.20.1.
+      此拉取请求以 `fabric/1.20.1` 为目标，修改的是 Minecraft 1.20.1 的 Re-Avaritia Fabric。
 - [ ] I have documented the applicable build, test, and client checks below, including anything not run and why.  
       我已在下方记录适用的构建、测试和客户端检查，并说明未执行的检查及原因。
 - [ ] I understand that PRs not following these instructions may be closed.  
