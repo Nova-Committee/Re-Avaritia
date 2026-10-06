@@ -19,7 +19,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,7 +53,7 @@ public class ExplosionsArrowEntity extends Arrow {
         if (getOwner() != null) {
             this.level().explode(this, this.getX(), this.getY(0.0625D), this.getZ(), 8.0F, Level.ExplosionInteraction.MOB);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(Vec3.atCenterOf(pos), 10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
+            level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(pos.getCenter(), 10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
                     .forEach(entityx -> entityx.addEffect(new MobEffectInstance((Holder<MobEffect>) ModMobEffects.BURNING, -1)));
         }
         this.remove(RemovalReason.KILLED);

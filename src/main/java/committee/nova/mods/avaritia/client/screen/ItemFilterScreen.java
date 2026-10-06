@@ -126,7 +126,7 @@ public class ItemFilterScreen extends Screen {
     }
 
     private void openSelector() {
-        Minecraft.getInstance().gui.setScreen(new ItemSelectScreen(this, this::addItem, Items.DIRT.getDefaultInstance()));
+        Minecraft.getInstance().setScreen(new ItemSelectScreen(this, this::addItem, Items.DIRT.getDefaultInstance()));
     }
 
     private void addItem(ItemStack input) {

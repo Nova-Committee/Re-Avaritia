@@ -34,9 +34,9 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity, BladeSlas
     @Override
     public void submit(@NotNull BladeSlashRenderState state, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, @NotNull CameraRenderState cameraState) {
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot + 10.0F));
-        poseStack.rotate(Axis.XP.rotationDegrees(state.zRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot + 10.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(state.zRot));
         poseStack.scale(0.6F, 0.6F, 1.8F);
 
         int alpha = calculateAlpha(state);

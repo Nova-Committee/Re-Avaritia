@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:music_disc_far"
+        "recipe": "minecraft:music_disc_far"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

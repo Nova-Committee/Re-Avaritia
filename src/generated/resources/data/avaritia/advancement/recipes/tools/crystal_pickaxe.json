@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:crystal_pickaxe"
+        "recipe": "avaritia:crystal_pickaxe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

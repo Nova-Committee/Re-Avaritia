@@ -22,7 +22,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:lead_singularity"
+        "recipe": "avaritia:lead_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

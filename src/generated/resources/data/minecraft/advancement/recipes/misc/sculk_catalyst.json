@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:sculk_catalyst"
+        "recipe": "minecraft:sculk_catalyst"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

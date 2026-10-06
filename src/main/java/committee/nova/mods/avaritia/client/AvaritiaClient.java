@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client;
 
-import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
@@ -102,7 +101,6 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
-import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
@@ -112,6 +110,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
 
@@ -121,9 +120,9 @@ import java.util.Set;
 @EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaClient {
     public static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(id("categories"));
-    public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.Type.KEYBOARD, InputConstants.KEY_O, KEY_CATEGORY);
-    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, KEY_CATEGORY);
-    public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYBOARD, InputConstants.KEY_N, KEY_CATEGORY);
+    public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, KEY_CATEGORY);
+    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, KEY_CATEGORY);
+    public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, KEY_CATEGORY);
     public static final ContextKey<Boolean> INFINITY_ARMOR_FLYING = new ContextKey<>(id("infinity_armor_flying"));
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(id("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(id("compressed_chest_left"), "main");
@@ -156,7 +155,7 @@ public class AvaritiaClient {
     private static final IClientItemExtensions INFINITY_CROSSBOW_EXTENSIONS = new IClientItemExtensions() {
         @Override
         public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
-            if (entity instanceof Player player && !player.isSwinging() && CrossbowItem.isCharged(stack)) {
+            if (entity instanceof Player player && !player.swinging && CrossbowItem.isCharged(stack)) {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
             return null;
@@ -314,15 +313,15 @@ public class AvaritiaClient {
         Minecraft minecraft = Minecraft.getInstance();
 
         while (CONFIG_KEY.consumeClick()) {
-            minecraft.gui.setScreen(new AvaritiaConfigScreen(minecraft.gui.screen()));
+            minecraft.setScreen(new AvaritiaConfigScreen(minecraft.screen));
         }
 
         while (FILTER_KEY.consumeClick()) {
             if (minecraft.player == null) continue;
-            if (minecraft.gui.screen() instanceof ItemFilterScreen) {
-                minecraft.gui.setScreen(null);
+            if (minecraft.screen instanceof ItemFilterScreen) {
+                minecraft.setScreen(null);
             } else if (minecraft.player.getMainHandItem().getItem() instanceof IFilterItem) {
-                minecraft.gui.setScreen(new ItemFilterScreen());
+                minecraft.setScreen(new ItemFilterScreen());
             }
         }
 
@@ -366,8 +365,8 @@ public class AvaritiaClient {
     }
 
     @SubscribeEvent
-    public static void onRenderLevel(SubmitCustomGeometryEvent event) {
-        CosmicRenderQueue.renderAll(event.getSubmitNodeCollector());
+    public static void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+        CosmicRenderQueue.renderAll();
     }
 
     private static void renderDarknessOverlay(GuiGraphicsExtractor guiGraphics, net.minecraft.client.DeltaTracker deltaTracker) {

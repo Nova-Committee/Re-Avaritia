@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.FogType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ExtractBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
@@ -31,12 +31,12 @@ public final class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onRenderOverlay(ExtractBlockScreenEffectEvent event) {
+    public static void onRenderOverlay(RenderBlockScreenEffectEvent event) {
         Player player = Minecraft.getInstance().player;
         if (player != null && ToolUtils.isInfinite(player)
-                && (event.getOverlayType() == ExtractBlockScreenEffectEvent.OverlayType.FIRE
-                || event.getOverlayType() == ExtractBlockScreenEffectEvent.OverlayType.BLOCK
-                || event.getOverlayType() == ExtractBlockScreenEffectEvent.OverlayType.WATER)) {
+                && (event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.FIRE
+                || event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK
+                || event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER)) {
             event.setCanceled(true);
         }
     }

@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
@@ -25,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,8 +64,6 @@ public final class NeutronRingManageScreen extends Screen {
     private static final float ZOOM_MIN = 0.4F;
     private static final float ZOOM_MAX = 2.5F;
     private static final float ZOOM_STEP = 1.15F;
-    /** SDL 扫描码 key.keyboard.menu（原 GLFW_KEY_MENU），InputConstants 未提供该常量 */
-    private static final int KEY_MENU = 118;
     private float yaw = DEFAULT_YAW;
     private float pitch = DEFAULT_PITCH;
     private float zoom = DEFAULT_ZOOM;
@@ -84,16 +82,16 @@ public final class NeutronRingManageScreen extends Screen {
 
     public static void open(S2CNeutronRingOpenPack packet) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (PortableUi.root(minecraft.gui.screen()) instanceof NeutronRingManageScreen current
+        if (PortableUi.root(minecraft.screen) instanceof NeutronRingManageScreen current
                 && current.storageId.equals(packet.storageId())) {
             current.accept(packet);
         } else {
-            minecraft.gui.setScreen(new NeutronRingManageScreen(packet));
+            minecraft.setScreen(new NeutronRingManageScreen(packet));
         }
     }
 
     public static void acceptPreview(S2CNeutronRingPreviewPack packet) {
-        if (PortableUi.root(Minecraft.getInstance().gui.screen()) instanceof NeutronRingManageScreen screen) {
+        if (PortableUi.root(Minecraft.getInstance().screen) instanceof NeutronRingManageScreen screen) {
             screen.handlePreview(packet);
         }
     }
@@ -237,7 +235,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public void tick() {
-        if (drag != Drag.NONE && !mouseHeld(InputConstants.MOUSE_BUTTON_LEFT) && !mouseHeld(InputConstants.MOUSE_BUTTON_RIGHT)) {
+        if (drag != Drag.NONE && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_LEFT) && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
             finishDrag();
         }
     }
@@ -321,11 +319,11 @@ public final class NeutronRingManageScreen extends Screen {
             return true;
         }
         if (previewEntry != null && insidePreviewChrome(event.x(), event.y())) {
-            if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+            if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 startDrag(minecraft.hasShiftDown() ? Drag.PAN : Drag.ORBIT);
                 return true;
             }
-            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+            if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 startDrag(Drag.PAN);
                 return true;
             }
@@ -333,7 +331,7 @@ public final class NeutronRingManageScreen extends Screen {
         if (super.mouseClicked(event, doubleClick)) {
             return true;
         }
-        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && insidePanel(event.x(), event.y())) {
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && insidePanel(event.x(), event.y())) {
             stopDrag();
             openBlankMenu(event.x(), event.y());
             return true;
@@ -343,7 +341,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (drag != Drag.NONE && (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT)) {
+        if (drag != Drag.NONE && (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT || event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
             finishDrag();
             return true;
         }
@@ -355,11 +353,11 @@ public final class NeutronRingManageScreen extends Screen {
         if (menu.isOpen()) {
             return true;
         }
-        if (drag == Drag.ORBIT && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (drag == Drag.ORBIT && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             orbitPreview(dragX, dragY);
             return true;
         }
-        if (drag == Drag.PAN && (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT)) {
+        if (drag == Drag.PAN && (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT || event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
             panPreview(dragX, dragY);
             return true;
         }
@@ -386,7 +384,7 @@ public final class NeutronRingManageScreen extends Screen {
         if (event.isConfirmation()) {
             return true;
         }
-        if (event.key() == KEY_MENU || (event.key() == InputConstants.KEY_F10 && event.hasShiftDown())) {
+        if (event.key() == GLFW.GLFW_KEY_MENU || (event.key() == GLFW.GLFW_KEY_F10 && event.hasShiftDown())) {
             openKeyboardMenu();
             return true;
         }
@@ -400,7 +398,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(null);
+        minecraft.setScreen(null);
     }
 
     private boolean insidePreviewChrome(double mouseX, double mouseY) {
@@ -434,13 +432,7 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     private boolean mouseHeld(int button) {
-        // SDL3 下 GLFW 轮询不可用，改用 MouseHandler 的按键状态
-        return switch (button) {
-            case InputConstants.MOUSE_BUTTON_LEFT -> minecraft.mouseHandler.isLeftPressed();
-            case InputConstants.MOUSE_BUTTON_MIDDLE -> minecraft.mouseHandler.isMiddlePressed();
-            case InputConstants.MOUSE_BUTTON_RIGHT -> minecraft.mouseHandler.isRightPressed();
-            default -> false;
-        };
+        return GLFW.glfwGetMouseButton(minecraft.getWindow().handle(), button) == GLFW.GLFW_PRESS;
     }
 
     private void orbitPreview(double dragX, double dragY) {
@@ -589,7 +581,7 @@ public final class NeutronRingManageScreen extends Screen {
 
         @Override
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && isMouseOver(event.x(), event.y())
+            if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && isMouseOver(event.x(), event.y())
                     && getEntryAtPosition(event.x(), event.y()) == null) {
                 openBlankMenu(event.x(), event.y());
                 return true;
@@ -633,7 +625,7 @@ public final class NeutronRingManageScreen extends Screen {
             public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 focus(space);
                 SpaceList.this.setSelected(this);
-                if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     openSpaceMenu(space, event.x(), event.y());
                 }
                 return true;

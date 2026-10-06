@@ -1,11 +1,9 @@
 package committee.nova.mods.avaritia.client.shader;
 
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import net.minecraft.client.renderer.DynamicGpuDataStorage;
-import net.minecraft.client.renderer.DynamicGpuDataStorageMapped;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderPass;
+import net.minecraft.client.renderer.DynamicUniformStorage;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +22,7 @@ public final class AvaritiaShaderUniforms {
     private static final Map<Effect, GpuBufferSlice> CURRENT_SLICES = new EnumMap<>(Effect.class);
     private static final Map<RenderType, GpuBufferSlice> RENDER_TYPE_SLICES = new IdentityHashMap<>();
 
-    private static @Nullable DynamicGpuDataStorageMapped<CosmicUniform> storage;
+    private static @Nullable DynamicUniformStorage<CosmicUniform> storage;
     private static @Nullable RenderPipeline activePipeline;
     private static @Nullable RenderType activeRenderType;
 
@@ -32,13 +30,13 @@ public final class AvaritiaShaderUniforms {
     }
 
     public static void set(Effect effect, float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs) {
-        CURRENT_SLICES.put(effect, storage().writeData(new CosmicUniform(
+        CURRENT_SLICES.put(effect, storage().writeUniform(new CosmicUniform(
                 time, yaw, pitch, externalScale, opacity, effect.substrateAlpha(), copyUvs(uvs)
         )));
     }
 
     public static void set(RenderType renderType, Effect effect, float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs) {
-        GpuBufferSlice slice = storage().writeData(new CosmicUniform(
+        GpuBufferSlice slice = storage().writeUniform(new CosmicUniform(
                 time, yaw, pitch, externalScale, opacity, effect.substrateAlpha(), copyUvs(uvs)
         ));
         CURRENT_SLICES.put(effect, slice);
@@ -84,9 +82,9 @@ public final class AvaritiaShaderUniforms {
         }
     }
 
-    private static DynamicGpuDataStorageMapped<CosmicUniform> storage() {
+    private static DynamicUniformStorage<CosmicUniform> storage() {
         if (storage == null) {
-            storage = new DynamicGpuDataStorageMapped<>("Avaritia cosmic uniforms", UBO_SIZE, GpuBuffer.USAGE_UNIFORM, 32);
+            storage = new DynamicUniformStorage<>("Avaritia cosmic uniforms", UBO_SIZE, 32);
         }
         return storage;
     }
@@ -142,7 +140,7 @@ public final class AvaritiaShaderUniforms {
 
     private record CosmicUniform(float time, float yaw, float pitch, float externalScale, float opacity,
                                  float substrateAlpha, float[] uvs)
-            implements DynamicGpuDataStorage.DynamicGpuData {
+            implements DynamicUniformStorage.DynamicUniform {
         @Override
         public void write(ByteBuffer buffer) {
             buffer.putFloat(this.time);

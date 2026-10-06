@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import net.minecraft.world.entity.EntityTypeIds;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModTags;
@@ -9,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,14 +21,13 @@ public class AvaritiaEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        // 26.3 起 TagAppender 只接受 ResourceKey，实体类型改用 EntityTypeIds 常量
-        tag(ModTags.INFINITY_BUCKET_AQUATIC).add(EntityTypeIds.SQUID, EntityTypeIds.GLOW_SQUID, EntityTypeIds.DOLPHIN);
-        tag(ModTags.INFINITY_BUCKET_BOSSES).add(EntityTypeIds.ENDER_DRAGON, EntityTypeIds.WITHER, EntityTypeIds.WARDEN, EntityTypeIds.ELDER_GUARDIAN);
+        tag(ModTags.INFINITY_BUCKET_AQUATIC).add(EntityType.SQUID, EntityType.GLOW_SQUID, EntityType.DOLPHIN);
+        tag(ModTags.INFINITY_BUCKET_BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER, EntityType.WARDEN, EntityType.ELDER_GUARDIAN);
         tag(ModTags.INFINITY_BUCKET_CAPTURING_NOT_SUPPORTED);
-        tag(EntityTypeTags.IMPACT_PROJECTILES).add(ModEntityTypes.ENDER_PEARL.key());
+        tag(EntityTypeTags.IMPACT_PROJECTILES).add(ModEntityTypes.ENDER_PEARL.get());
         BuiltInRegistries.ENTITY_TYPE.forEach(entityType -> {
             if (entityType.getCategory() == MobCategory.CREATURE) {
-                tag(ModTags.NEUTRAL_CREATURES).add(entityType.builtInRegistryHolder().key());
+                tag(ModTags.NEUTRAL_CREATURES).add(entityType);
             }
         });
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:blaze_pickaxe"
+        "recipe": "avaritia:blaze_pickaxe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

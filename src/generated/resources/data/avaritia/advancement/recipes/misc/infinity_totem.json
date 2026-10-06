@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_totem"
+        "recipe": "avaritia:infinity_totem"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

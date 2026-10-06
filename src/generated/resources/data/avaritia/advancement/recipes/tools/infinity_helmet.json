@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_helmet"
+        "recipe": "avaritia:infinity_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

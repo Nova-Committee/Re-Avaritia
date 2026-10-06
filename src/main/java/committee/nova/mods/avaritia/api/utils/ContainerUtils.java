@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.api.utils;
 
 import committee.nova.mods.avaritia.api.common.container.FaceContainer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -123,7 +122,7 @@ public class ContainerUtils {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.removeItemNoUpdate(i);
             if (!stack.isEmpty()) {
-                player.drop(stack, false, Prediction.SERVER_ONLY);
+                player.drop(stack, false);
             }
         }
     }

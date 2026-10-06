@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:refined_coal_block"
+        "recipe": "minecraft:refined_coal_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

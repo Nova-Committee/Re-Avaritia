@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,9 +59,14 @@ public class SoulFarmLandBlock extends BaseBlock {
         return SHAPE;
     }
 
-    // 26.3 起锄头开垦由数据驱动（BlockTransformers.HOE / neoforge:transformable 数据映射），
-    // ItemAbilities.HOE_TILL 与 getToolModifiedState 锄头分支已移除。
-    // 如需保留"开垦保持为 soul_farmland"的行为，请通过 Transformable 数据映射表达。
+    @Override
+    @Nullable
+    public BlockState getToolModifiedState(@NotNull BlockState state, @NotNull UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        if (itemAbility.equals(ItemAbilities.HOE_TILL) && context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
+            return ModBlocks.soul_farmland.get().defaultBlockState();
+        }
+        return null;
+    }
 
 
     @Override
@@ -94,8 +102,8 @@ public class SoulFarmLandBlock extends BaseBlock {
             if (aboveBlock instanceof BonemealableBlock growable
                     && rand.nextFloat() <= ModConfig.growthSoulFarmland.get()
             ) {
-                if (growable.isValidBonemealTarget(level, pos.above(), aboveState, BonemealSource.MOB)) {
-                    growable.performBonemeal(level, rand, pos.above(), aboveState, BonemealSource.MOB);
+                if (growable.isValidBonemealTarget(level, pos.above(), aboveState)) {
+                    growable.performBonemeal(level, rand, pos.above(), aboveState);
                     level.levelEvent(2005, pos.above(), 0);
                 }
             }

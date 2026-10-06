@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.misc.NeutronRingLegacyItems;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
@@ -86,7 +85,7 @@ public final class NeutronRingLegacyGameTests {
         helper.assertTrue(afterRetry.size() == 1 && matchesLegacy(afterRetry.getFirst(), 64),
                 "retry against a still-full creative inventory must not duplicate or consume escrow");
         helper.assertTrue(countNamed(player) == 0, "retry must not insert into a full creative inventory");
-        helper.assertEntityNotPresent(EntityTypes.ITEM);
+        helper.assertEntityNotPresent(EntityType.ITEM);
         helper.succeed();
     }
 
@@ -104,7 +103,7 @@ public final class NeutronRingLegacyGameTests {
         helper.assertTrue(escrow.size() == 1 && matchesLegacy(escrow.getFirst(), 32),
                 "creative overflow after a partial merge must stay in escrow");
         helper.assertTrue(count(player, Items.COBBLESTONE) == 35 * 64, "filler stacks must be untouched");
-        helper.assertEntityNotPresent(EntityTypes.ITEM);
+        helper.assertEntityNotPresent(EntityType.ITEM);
         helper.succeed();
     }
 
@@ -140,7 +139,7 @@ public final class NeutronRingLegacyGameTests {
         helper.assertTrue(countNamed(player) == 96, "retry into a free slot must restore the remaining named items once");
         helper.assertTrue(escrow.peek(player.getUUID()).isEmpty(), "successful retry must clear escrow");
         helper.assertTrue(namedSlots(player) == 2, "restored remainder must occupy the freed slot without extra copies");
-        helper.assertEntityNotPresent(EntityTypes.ITEM);
+        helper.assertEntityNotPresent(EntityType.ITEM);
         helper.succeed();
     }
 

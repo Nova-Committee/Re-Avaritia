@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_boots"
+        "recipe": "avaritia:infinity_boots"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

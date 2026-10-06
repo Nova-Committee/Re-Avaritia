@@ -107,8 +107,7 @@ public class ModConfig {
     }
 
     public static void register(ModContainer modContainer) {
-        // 26.3 起 ModConfig.Type 为 LOCAL/CLIENT/SYNCED/STARTUP；原 COMMON 语义（两侧各自加载、不网络同步）对应 LOCAL
-        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.LOCAL, ModConfig.COMMON);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, ModConfig.COMMON);
     }
 
     private static ModConfigSpec.BooleanValue buildBoolean(ModConfigSpec.Builder builder, String path, boolean defaultValue, String comment) {

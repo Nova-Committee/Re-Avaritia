@@ -12,8 +12,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,13 +25,13 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalShovelItem extends Item implements ITooltip {
+public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public CrystalShovelItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .shovel(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
         );
     }
 

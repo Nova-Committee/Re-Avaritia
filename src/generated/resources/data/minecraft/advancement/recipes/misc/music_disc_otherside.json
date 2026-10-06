@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:music_disc_otherside"
+        "recipe": "minecraft:music_disc_otherside"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -38,12 +38,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Bucketable;
+import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -427,7 +426,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             ItemAccess access = heldBucketAccess(player, hand);
             ResourceHandler<FluidResource> bucket = access.getCapability(Capabilities.Fluid.ITEM);
             if (bucket != null && level.getBlockState(hitPos).getBlock() instanceof BucketPickup
-                    && !FluidUtil.tryPickupFluid(bucket, player, level, hitPos, side, null).isEmpty()) {
+                    && !FluidUtil.tryPickupFluid(bucket, player, level, hitPos, side).isEmpty()) {
                 syncHeldBucket(player, hand, stack);
                 return InteractionResult.SUCCESS;
             }
@@ -587,7 +586,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             return false;
         }
         try {
-            EntityType.createDefaultStackConfig(level, source, player).apply(entity);
+            EntityType.createDefaultStackConfig(level, source, player).accept(entity);
             CustomData bucketData = source.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
             bucketable.loadFromBucketTag(bucketData.copyTag());
             bucketable.setFromBucket(true);
@@ -681,7 +680,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         CompoundTag tag = creature.entityData().copy();
         tag.putString("id", creature.typeId().toString());
         Entity entity = EntityType.create(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag),
-                level, new EntitySpawnRequest(EntitySpawnReason.BUCKET, false)).orElseGet(() -> type.create(level, EntitySpawnReason.BUCKET));
+                level, EntitySpawnReason.BUCKET).orElseGet(() -> type.create(level, EntitySpawnReason.BUCKET));
         try {
             if (!(entity instanceof LivingEntity) || !(entity instanceof Bucketable bucketable)) {
                 return ItemStack.EMPTY;
@@ -797,7 +796,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         tag.remove("Motion");
         tag.remove("Dimension");
         Optional<Entity> created = EntityType.create(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag),
-                level, new EntitySpawnRequest(EntitySpawnReason.BUCKET, false));
+                level, EntitySpawnReason.BUCKET);
         if (created.isEmpty()) {
             return false;
         }

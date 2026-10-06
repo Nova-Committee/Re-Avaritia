@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.data;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.data.provider.*;
+import committee.nova.mods.avaritia.init.data.provider.recipe.AvaritiaRecipeProvider;
 import net.minecraft.DetectedVersion;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -26,13 +27,12 @@ public class AvaritiaData {
     /**
      * 数据生成事件处理方法。
      * <p>
-     * 26.3 起配方、战利品表与进度均为数据包注册表对象，
-     * 通过 {@link AvaritiaRegistriesProvider} 以 RegistrySetBuilder 形式生成；
-     * 其余文件型 Provider 依次注册：
+     * 依次注册以下 6 个数据提供程序：
      * <ol>
      *   <li>{@link AvaritiaLanguageProvider} — 语言文件（本地化）</li>
      *   <li>{@link AvaritiaModelProvider} — 物品与方块模型</li>
-     *   <li>{@link AvaritiaCompatRecipeProvider} — 兼容配方</li>
+     *   <li>{@link AvaritiaRecipeProvider.Runner} — 合成配方</li>
+     *   <li>{@link AvaritiaLootTableProvider} — 方块战利品表</li>
      *   <li>{@link AvaritiaTagProvider} — 物品与方块标签</li>
      *   <li>{@link AvaritiaBlockStateProvider} — 方块状态</li>
      * </ol>
@@ -45,7 +45,7 @@ public class AvaritiaData {
         PackOutput packOutput = generator.getPackOutput();
         AvaritiaRegistriesProvider.register(event);
         // 动态注册表先写入事件 lookup，后续标签 Provider 才能解析 avaritia:infinity。
-        var lookupProvider = event.getReloadableLookupProvider();
+        var lookupProvider = event.getLookupProvider();
 
         // 1. 语言文件提供程序
         generator.addProvider(true, new AvaritiaLanguageProvider(packOutput));
@@ -53,19 +53,24 @@ public class AvaritiaData {
         // 2. 物品与方块模型提供程序
         generator.addProvider(true, new AvaritiaModelProvider(packOutput));
 
-        // 3. 合成配方提供程序（核心配方与战利品表/进度见 AvaritiaRegistriesProvider）
+        // 3. 合成配方提供程序
+        generator.addProvider(true, new AvaritiaRecipeProvider.Runner(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaCompatRecipeProvider(packOutput));
 
-        // 4. 物品与方块标签提供程序
+        // 4. 方块战利品表提供程序
+        generator.addProvider(true, new AvaritiaLootTableProvider(packOutput, lookupProvider));
+
+        // 5. 物品与方块标签提供程序
         generator.addProvider(true, new AvaritiaTagProvider(packOutput, lookupProvider));
 
-        // 5. 方块状态提供程序
+        // 6. 方块状态提供程序
         generator.addProvider(true, new AvaritiaBlockStateProvider(packOutput));
         generator.addProvider(true, new AvaritiaSpriteSourceProvider(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaSoundDefinitionsProvider(packOutput));
         generator.addProvider(true, new AvaritiaEquipmentAssetProvider(packOutput));
         generator.addProvider(true, new AvaritiaEntityTypeTagsProvider(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaDamageTypeTagsProvider(packOutput, lookupProvider));
+        generator.addProvider(true, AvaritiaAdvancementProvider.create(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaSingularityProvider(packOutput, lookupProvider));
         var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES);
         PackMetadataGenerator metadataProvider = new PackMetadataGenerator(packOutput).add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(

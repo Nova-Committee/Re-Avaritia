@@ -20,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -39,14 +39,14 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */
-public class InfinityAxeItem extends Item implements ISwitchable, IUndamageable {
+public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageable {
 
     public InfinityAxeItem() {
-        super(ModItems.properties()
+        super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
+                ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .axe(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.speed())
         );
 
     }

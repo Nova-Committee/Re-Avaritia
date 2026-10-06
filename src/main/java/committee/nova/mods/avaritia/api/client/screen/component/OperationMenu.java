@@ -1,12 +1,12 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -141,7 +141,7 @@ public final class OperationMenu {
             return false;
         }
         int row = rowAt(mouseX, mouseY);
-        if (button == InputConstants.MOUSE_BUTTON_LEFT && row >= 0) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && row >= 0) {
             activate(row);
         } else {
             close();
@@ -164,12 +164,12 @@ public final class OperationMenu {
             return false;
         }
         switch (keyCode) {
-            case InputConstants.KEY_ESCAPE -> close();
-            case InputConstants.KEY_UP -> selected = selected < 0 ? entries.size() - 1 : Math.floorMod(selected - 1, entries.size());
-            case InputConstants.KEY_DOWN -> selected = (selected + 1) % entries.size();
-            case InputConstants.KEY_HOME -> selected = 0;
-            case InputConstants.KEY_END -> selected = entries.size() - 1;
-            case InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER -> {
+            case GLFW.GLFW_KEY_ESCAPE -> close();
+            case GLFW.GLFW_KEY_UP -> selected = selected < 0 ? entries.size() - 1 : Math.floorMod(selected - 1, entries.size());
+            case GLFW.GLFW_KEY_DOWN -> selected = (selected + 1) % entries.size();
+            case GLFW.GLFW_KEY_HOME -> selected = 0;
+            case GLFW.GLFW_KEY_END -> selected = entries.size() - 1;
+            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> {
                 if (selected >= 0) {
                     activate(selected);
                 }

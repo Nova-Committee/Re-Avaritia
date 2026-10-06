@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:budding_amethyst"
+        "recipe": "minecraft:budding_amethyst"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

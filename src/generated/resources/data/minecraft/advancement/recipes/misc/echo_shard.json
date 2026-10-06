@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:echo_shard"
+        "recipe": "minecraft:echo_shard"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

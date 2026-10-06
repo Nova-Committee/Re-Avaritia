@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.mixin;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,13 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerMixin {
 
     @Inject(method = "blockUsingItem", at = @At("HEAD"), cancellable = true)
-    private void onBlockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource source, float damage, boolean fullyBlocked, CallbackInfo ci) {
+    private void onBlockUsingItem(ServerLevel level, LivingEntity entity, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         ItemStack useItem = player.getUseItem();
 
         if (useItem.getItem() instanceof InfinityShieldItem) {
 
-            if (attacker.getSecondsToDisableBlocking() > 0.0F) {
+            if (entity.getSecondsToDisableBlocking() > 0.0F) {
                 ci.cancel();
             }
         }

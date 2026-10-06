@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public interface PerspectiveModel {
     @Nullable
     PerspectiveModelState getModelState();
 
-    void renderItem(ItemStack stack, ItemDisplayContext ctx, PoseStack mStack, SubmitNodeCollector source, int packedLight, int packedOverlay);
+    void renderItem(ItemStack stack, ItemDisplayContext ctx, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay);
 
     default @NotNull PerspectiveModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
         PerspectiveModelState modelState = getModelState();
@@ -34,7 +34,7 @@ public interface PerspectiveModel {
             pStack.mulPose(transform.getMatrix());
 
             if (leftFlip) {
-                pStack.rotate(Axis.YN.rotationDegrees(180.0f));
+                pStack.mulPose(Axis.YN.rotationDegrees(180.0f));
                 //TransformUtils.applyLeftyFlip(pStack);
             }
             return this;

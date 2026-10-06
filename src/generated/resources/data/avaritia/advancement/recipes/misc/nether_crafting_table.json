@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:nether_crafting_table"
+        "recipe": "avaritia:nether_crafting_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

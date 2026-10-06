@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:dragon_egg"
+        "recipe": "minecraft:dragon_egg"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

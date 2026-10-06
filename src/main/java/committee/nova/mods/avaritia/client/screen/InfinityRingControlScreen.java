@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
@@ -30,6 +29,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,6 @@ public final class InfinityRingControlScreen extends Screen {
     private static final int FOOTER_H = 24;
     private static final int BTN_H = 20;
     private static final int GAP = 3;
-    /** SDL 扫描码 key.keyboard.menu（原 GLFW_KEY_MENU），InputConstants 未提供该常量 */
-    private static final int KEY_MENU = 118;
 
     private int time;
     private int weather;
@@ -87,16 +85,16 @@ public final class InfinityRingControlScreen extends Screen {
     public static void open(S2CInfinityRingOpenPack packet) {
         Minecraft minecraft = Minecraft.getInstance();
         if (packet.create()) {
-            minecraft.gui.setScreen(new InfinityRingCreateScreen(
+            minecraft.setScreen(new InfinityRingCreateScreen(
                     packet.terrain(), packet.time(), packet.weather(), packet.access()));
             return;
         }
-        Screen root = PortableUi.root(minecraft.gui.screen());
+        Screen root = PortableUi.root(minecraft.screen);
         if (root instanceof InfinityRingControlScreen screen && screen.owner.equals(packet.owner())) {
             screen.apply(packet);
             return;
         }
-        minecraft.gui.setScreen(new InfinityRingControlScreen(
+        minecraft.setScreen(new InfinityRingControlScreen(
                 packet.time(), packet.weather(), packet.access(), packet.friends(),
                 packet.owner(), packet.canDelete()));
     }
@@ -289,7 +287,7 @@ public final class InfinityRingControlScreen extends Screen {
             }
             return true;
         }
-        if (event.key() == KEY_MENU || (event.key() == InputConstants.KEY_F10 && event.hasShiftDown())) {
+        if (event.key() == GLFW.GLFW_KEY_MENU || (event.key() == GLFW.GLFW_KEY_F10 && event.hasShiftDown())) {
             PlayerList.PlayerEntry selected = playerList == null ? null : playerList.getSelected();
             if (selected != null) {
                 if (selected.addCandidate) {
@@ -524,17 +522,17 @@ public final class InfinityRingControlScreen extends Screen {
             @Override
             public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 if (addCandidate) {
-                    if (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                    if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT || event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                         addFriend(name);
                         return true;
                     }
                     return false;
                 }
-                if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     selectPlayer(this);
                     return true;
                 }
-                if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     selectPlayer(this);
                     openPlayerMenu(name, role, event.x(), event.y());
                     return true;

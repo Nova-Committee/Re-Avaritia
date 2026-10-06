@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:diamond_lattice"
+        "recipe": "minecraft:diamond_lattice"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

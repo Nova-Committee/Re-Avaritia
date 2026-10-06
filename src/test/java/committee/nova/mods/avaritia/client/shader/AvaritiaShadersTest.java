@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.shader;
 
-import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.blaze3d.platform.CompareOp;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class AvaritiaShadersTest {
     @Test
     @DisplayName("armor glow samples texture transparency")
     void armorGlowUsesTexturedTranslucentPipeline() {
-        assertSame(RenderPipelines.WOLF_ARMOR_CRACKS,
+        assertSame(RenderPipelines.ARMOR_TRANSLUCENT,
                 AvaritiaRenderTypeHelper.ARMOR_GLOW_PIPELINE);
     }
 }

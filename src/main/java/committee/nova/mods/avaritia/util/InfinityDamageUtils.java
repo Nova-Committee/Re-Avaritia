@@ -47,7 +47,7 @@ public final class InfinityDamageUtils {
             return false;
         }
 
-        victim.setInvulnerableTime(0);
+        victim.invulnerableTime = 0;
         if (victim instanceof WitherBoss wither) {
             wither.setInvulnerableTicks(0);
         }

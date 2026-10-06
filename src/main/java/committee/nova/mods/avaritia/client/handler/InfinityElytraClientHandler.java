@@ -26,7 +26,7 @@ public class InfinityElytraClientHandler {
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        if (player == null || minecraft.level == null || minecraft.gui.screen() != null) {
+        if (player == null || minecraft.level == null || minecraft.screen != null) {
             reset();
             return;
         }

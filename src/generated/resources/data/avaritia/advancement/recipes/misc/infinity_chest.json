@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_chest"
+        "recipe": "avaritia:infinity_chest"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

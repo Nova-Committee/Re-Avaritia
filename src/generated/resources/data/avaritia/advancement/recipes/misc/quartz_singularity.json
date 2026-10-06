@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:quartz_singularity"
+        "recipe": "avaritia:quartz_singularity"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

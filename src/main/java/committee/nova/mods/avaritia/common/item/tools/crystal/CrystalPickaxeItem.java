@@ -19,7 +19,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -87,7 +86,7 @@ private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments
                 if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                     serverPlayer.sendSystemMessage(Component.translatable("tooltip.crystal_pickaxe.enchant_2"), true);
             }
-            player.swing(hand, SwingAnimation.DEFAULT, false);
+            player.swing(hand);
             return InteractionResult.SUCCESS;
         }
         return super.use(world, player, hand);

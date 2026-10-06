@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:music_disc_blocks"
+        "recipe": "minecraft:music_disc_blocks"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

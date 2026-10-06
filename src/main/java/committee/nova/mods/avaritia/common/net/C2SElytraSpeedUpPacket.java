@@ -99,7 +99,7 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
                 currentVelocity.z + forward.z * forwardSpeed
         );
         player.resetFallDistance();
-        player.syncVelocity = true;
+        player.hurtMarked = true;
 
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(
@@ -123,7 +123,7 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
         Vec3 nextVelocity = player.getDeltaMovement().lerp(targetVelocity, 0.35D);
 
         player.setDeltaMovement(nextVelocity);
-        player.syncVelocity = true;
+        player.hurtMarked = true;
 
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(

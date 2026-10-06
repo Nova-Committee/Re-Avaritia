@@ -102,7 +102,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     @Override
     protected void subInit() {
         contextMenu.close();
-        panel = new ScreenRectangle(leftPos, topPos, imageWidth, imageHeight);
+        panel = new ScreenRectangle(getGuiLeft(), getGuiTop(), imageWidth, imageHeight);
         list = PortableLayout.translate(new ScreenRectangle(LIST_X, LIST_Y, LIST_WIDTH, LIST_HEIGHT), panel.left(), panel.top());
         listFrame = PortableLayout.inset(list, -1, -1, -1, -1);
         search = PortableLayout.translate(new ScreenRectangle(LIST_X, SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT), panel.left(), panel.top());
@@ -417,7 +417,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     }
 
     private boolean overlayOpen() {
-        return contextMenu.isOpen() || Minecraft.getInstance().gui.screen() != this;
+        return contextMenu.isOpen() || Minecraft.getInstance().screen != this;
     }
 
     @Override

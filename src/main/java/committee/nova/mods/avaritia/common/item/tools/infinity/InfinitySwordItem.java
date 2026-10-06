@@ -87,7 +87,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
             } else if (victim instanceof EnderDragon dragon) {
                 dragon.hurt(serverLevel, dragon.head, damageSource, ModToolTiers.INFINITY.attackDamageBonus());
             } else {
-                victim.setInvulnerableTime(0);
+                victim.invulnerableTime = 0;
                 victim.hurtServer(serverLevel, damageSource, ModToolTiers.INFINITY.attackDamageBonus());
             }
             return true;

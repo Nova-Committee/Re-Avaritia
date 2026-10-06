@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 /** Shared portable framing; selection, scrolling and keyboard navigation remain vanilla-owned. */
 public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<E>> extends ObjectSelectionList<E> {
@@ -55,7 +55,7 @@ public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<
     @Override
     public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
         int button = event.button();
-        if (button != InputConstants.MOUSE_BUTTON_LEFT && button != InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             return false;
         }
         return super.mouseClicked(event, doubleClick);

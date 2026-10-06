@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:heart_of_the_sea"
+        "recipe": "minecraft:heart_of_the_sea"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:full_matter_cluster"
+        "recipe": "avaritia:full_matter_cluster"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

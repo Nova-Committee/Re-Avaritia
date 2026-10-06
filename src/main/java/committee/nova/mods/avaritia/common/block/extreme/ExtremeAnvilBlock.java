@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.block.extreme;
 
+import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTags;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
  * @Description:
  */
 public class ExtremeAnvilBlock extends FallingBlock{
+    public static final MapCodec<ExtremeAnvilBlock> CODEC = simpleCodec(properties1 -> new ExtremeAnvilBlock());
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
     private static final VoxelShape X_LEG1 = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);
@@ -63,8 +65,13 @@ public class ExtremeAnvilBlock extends FallingBlock{
                 .mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops()
                 .strength(ModResourceBlocks.NEUTRON.hardness, ModResourceBlocks.NEUTRON.resistance)
-                .sound(SoundType.ANVIL).pushReaction(PushReaction.IMMOVEABLE));
+                .sound(SoundType.ANVIL).pushReaction(PushReaction.BLOCK));
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected @NotNull MapCodec<? extends FallingBlock> codec() {
+        return CODEC;
     }
 
     @Override

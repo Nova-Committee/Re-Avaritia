@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
@@ -93,8 +92,8 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void playerDestroy(@NotNull ServerLevel serverLevel, @NotNull ServerPlayer player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (blockEntity instanceof CompressedChestTile chestTile && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
             var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
             pStack.applyComponents(chestTile.collectComponents());
             popResource(serverLevel, pPos, pStack);

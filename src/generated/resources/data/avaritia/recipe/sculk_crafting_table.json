@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "a": "minecraft:echo_shard",
     "b": "minecraft:sculk_shrieker",

@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.resource.VanillaServerListeners;
 
 import static committee.nova.mods.avaritia.core.singularity.SingularityReloadListener.RELOAD_LISTENER_ID;
 
@@ -22,9 +23,8 @@ public class ResourceReloadHandler {
          * NeoForge 26.1.2 禁止通过 mixin 修改 ReloadableServerResources#listeners，必须走此事件注册服务端重载监听器。
          */
         event.addListener(RELOAD_LISTENER_ID, SingularityReloadListener.INSTANCE);
-        // 26.3 起配方不再是重载监听器（VanillaServerListeners.RECIPES 已移除），而是随数据包注册表加载；
-        // RegisterRecipesEvent 改由 RecipeManagerMixin 在 RecipeManager#finalizeRecipeLoading 时触发，
-        // 该方法在所有重载监听器应用完成后才执行，因此数据快照天然先于配方重建，无需再声明依赖顺序。
+        // 数据快照必须先应用，RecipeManager 的 apply 才能原子提交脚本操作并生成派生配方。
+        event.addDependency(RELOAD_LISTENER_ID, VanillaServerListeners.RECIPES);
 
     }
 }

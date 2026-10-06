@@ -7,11 +7,11 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
@@ -125,8 +125,7 @@ public class ShockwaveParticle extends SingleQuadParticle {
             return 15728880;
         }
         BlockPos blockpos = BlockPos.containing(this.x, this.y, this.z).above();
-        // 26.3 起光照打包由 LightCoordsUtil 提供（原 LevelRenderer.getLightCoords）。
-        return this.level.hasChunkAt(blockpos) ? LightCoordsUtil.getLightCoords(this.level, blockpos) : 15728640;
+        return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightCoords(this.level, blockpos) : 15728640;
     }
 
     public static class Provider implements ParticleProvider<ShockwaveParticleOptions> {

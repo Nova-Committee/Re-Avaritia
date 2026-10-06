@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "avaritia:infinity_axe"
+        "recipe": "avaritia:infinity_axe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

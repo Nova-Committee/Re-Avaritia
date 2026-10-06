@@ -34,9 +34,8 @@ public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
 
     @Override
     public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
-        // 26.3 的 submitModel 不再接收 CrumblingOverlay 参数（物品渲染恒为 null），破坏层由 submitCrumblingOverlay 单独提交。
         output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay,
-                RainbowTintSource.currentColor(), INFINITY_CHEST_SPRITE, this.sprites, outlineColor);
+                RainbowTintSource.currentColor(), INFINITY_CHEST_SPRITE, this.sprites, outlineColor, null);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
-import net.minecraft.world.item.Item.TooltipContext;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
@@ -107,7 +106,7 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
 
     @Override
     public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, Entity entity) {
-        entity.setPermanentlyInvulnerable(false);
+        entity.setInvulnerable(false);
         return super.onLeftClickEntity(stack, player, entity);
     }
 }

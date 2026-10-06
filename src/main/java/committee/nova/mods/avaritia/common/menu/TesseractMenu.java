@@ -13,7 +13,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -210,7 +209,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             }
             case 1 -> {
                 craftingMode = !craftingMode;
-                if (!craftingMode) returnCraftGrid(player, Prediction.PREDICTED);
+                if (!craftingMode) returnCraftGrid(player);
                 if (tile != null) tile.setCraftingMode(craftingMode);
             }
             case 2 -> sortType = (byte) ((sortType + 2) & 7);
@@ -278,7 +277,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             case QUICK_MOVE -> giveToInventory(resource, maxStack, serverPlayer);
             case THROW -> {
                 ItemStack extracted = channel().extract(resource, button == 0 ? 1 : maxStack);
-                if (!extracted.isEmpty()) serverPlayer.drop(extracted, false, Prediction.PREDICTED);
+                if (!extracted.isEmpty()) serverPlayer.drop(extracted, false);
             }
             case CLONE -> {
                 if (serverPlayer.getAbilities().instabuild) setCarried(resource.toStack(maxStack));
@@ -404,7 +403,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 serverPlayer.getInventory().add(result);
                 if (!result.isEmpty()) break;
             } else {
-                serverPlayer.drop(result, false, Prediction.PREDICTED);
+                serverPlayer.drop(result, false);
             }
             consumeRecipe(recipe, input, serverPlayer);
             if (!refillTemplates(templates, serverPlayer)) break;
@@ -455,7 +454,7 @@ public class TesseractMenu extends AbstractContainerMenu {
     private void routeStack(ItemStack stack, ServerPlayer serverPlayer) {
         channel().insert(stack);
         if (!stack.isEmpty()) serverPlayer.getInventory().add(stack);
-        if (!stack.isEmpty()) serverPlayer.drop(stack, false, Prediction.PREDICTED);
+        if (!stack.isEmpty()) serverPlayer.drop(stack, false);
     }
 
     private static ItemStack takeOneFromInventory(Inventory inventory, ItemStack template) {
@@ -482,13 +481,13 @@ public class TesseractMenu extends AbstractContainerMenu {
         return false;
     }
 
-    private void returnCraftGrid(Player player, Prediction prediction) {
+    private void returnCraftGrid(Player player) {
         for (int index = 0; index < craftSlots.getContainerSize(); index++) {
             ItemStack stack = craftSlots.removeItemNoUpdate(index);
             if (stack.isEmpty()) continue;
             if (player instanceof ServerPlayer) channel().insert(stack);
             if (!stack.isEmpty()) player.getInventory().add(stack);
-            if (!stack.isEmpty()) player.drop(stack, false, prediction);
+            if (!stack.isEmpty()) player.drop(stack, false);
         }
         resultSlots.clearContent();
     }
@@ -500,7 +499,7 @@ public class TesseractMenu extends AbstractContainerMenu {
 
     @Override
     public void removed(Player player) {
-        if (!player.level().isClientSide()) returnCraftGrid(player, Prediction.SERVER_ONLY);
+        if (!player.level().isClientSide()) returnCraftGrid(player);
         super.removed(player);
         if (player instanceof ServerPlayer serverPlayer) channel().removeListener(serverPlayer);
         else ClientChannelManager.getInstance().channel().clearListener();

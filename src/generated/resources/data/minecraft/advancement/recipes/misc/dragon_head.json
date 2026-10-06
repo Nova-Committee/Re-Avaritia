@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "minecraft:dragon_head"
+        "recipe": "minecraft:dragon_head"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

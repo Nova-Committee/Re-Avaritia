@@ -41,10 +41,10 @@ public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTr
     public void submit(ThrownTridentRenderState state, PoseStack poseStack, SubmitNodeCollector output, CameraRenderState cameraState) {
         poseStack.pushPose();
 
-        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot));
-        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
 
-        poseStack.rotate(Axis.XP.rotationDegrees(0));
+        poseStack.mulPose(Axis.XP.rotationDegrees(0));
         output.submitCustomGeometry(poseStack, AvaritiaRenderTypes.TRIDENT,
                 (poseState, vertexConsumer) -> this.tridentModel.values().forEach(model ->
                         model.render(poseState, vertexConsumer, 0xFFFFFFFF, 0, OverlayTexture.NO_OVERLAY)));
