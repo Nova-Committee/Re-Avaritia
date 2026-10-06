@@ -1,0 +1,27 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:neutron_pile"
+    },
+    "b": {
+      "tag": "minecraft:music_discs"
+    }
+  },
+  "pattern": [
+    "       ",
+    "       ",
+    "   a   ",
+    "  aba  ",
+    "   a   ",
+    "       ",
+    "       "
+  ],
+  "result": {
+    "count": 4,
+    "item": "avaritia:record_fragment"
+  },
+  "show_notification": true,
+  "tier": 3
+}

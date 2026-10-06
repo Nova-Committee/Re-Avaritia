@@ -1,0 +1,42 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:end_crystal"
+    },
+    "b": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "c": {
+      "item": "minecraft:end_stone"
+    },
+    "d": {
+      "item": "minecraft:end_stone_brick_wall"
+    },
+    "e": {
+      "item": "minecraft:emerald_block"
+    },
+    "f": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "g": {
+      "item": "minecraft:ender_eye"
+    },
+    "h": {
+      "item": "minecraft:sculk_shrieker"
+    }
+  },
+  "pattern": [
+    "     ",
+    "fghgf",
+    "ecace",
+    "dcccd",
+    "bbbbb"
+  ],
+  "result": {
+    "item": "minecraft:end_portal_frame"
+  },
+  "show_notification": true,
+  "tier": 2
+}

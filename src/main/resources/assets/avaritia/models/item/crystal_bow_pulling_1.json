@@ -1,0 +1,6 @@
+{
+  "parent": "avaritia:item/crystal_bow",
+  "textures": {
+    "layer0": "avaritia:item/tools/crystal_bow/crystal_bow_pulling_1"
+  }
+}

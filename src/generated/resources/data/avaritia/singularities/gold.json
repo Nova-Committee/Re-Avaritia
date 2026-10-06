@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.gold",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:gold_ingot"
+  },
+  "name": "avaritia:gold",
+  "overlayColor": "fdf55f",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "d98e04"
+}

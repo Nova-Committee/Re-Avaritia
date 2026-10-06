@@ -1,0 +1,53 @@
+package committee.nova.mods.avaritia.common.net.chest;
+
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import committee.nova.mods.avaritia.api.common.net.PacketContext;
+
+import java.util.function.Supplier;
+
+/**
+ * @author cnlimiter
+ */
+public class C2SInfinityChestActionPack {
+    private final int containerId;
+    private final int actionId;
+    private final String id;
+
+    public C2SInfinityChestActionPack(FriendlyByteBuf buf) {
+        this.containerId = buf.readInt();
+        this.actionId = buf.readInt();
+        this.id = buf.readUtf();
+    }
+
+    public C2SInfinityChestActionPack(int containerId, int actionId, String object) {
+        this.containerId = containerId;
+        this.actionId = actionId;
+        this.id = object;
+    }
+
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(containerId);
+        buf.writeInt(actionId);
+        buf.writeUtf(id);
+    }
+
+    public void run(Supplier<PacketContext> context) {
+        context.get().enqueueWork(() -> {
+            ServerPlayer player = context.get().getSender();
+            if (player == null) return;
+            if (!(player.containerMenu instanceof InfinityChestMenu menu) || menu.containerId != containerId) return;
+            if (actionId < 0 || actionId > 9
+                    || net.minecraft.resources.ResourceLocation.tryParse(committee.nova.mods.avaritia.util.StorageUtils.getBaseItemId(id)) == null) return;
+            if (!menu.stillValid(player)) {
+                Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, menu);
+            } else {
+                menu.action(actionId, id);
+                menu.broadcastChanges();
+            }
+        });
+        context.get().setPacketHandled(true);
+    }
+}

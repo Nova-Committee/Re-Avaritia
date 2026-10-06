@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:golden_carrot"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "minecraft:dragon_egg"
+    }
+  ],
+  "base": {
+    "item": "minecraft:cake"
+  },
+  "result": {
+    "item": "avaritia:endless_cake"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

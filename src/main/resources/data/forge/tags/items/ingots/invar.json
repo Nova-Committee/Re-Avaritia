@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:ingots/invar",
+      "required": false
+    },
+    {
+      "id": "#c:invar_ingots",
+      "required": false
+    }
+  ]
+}

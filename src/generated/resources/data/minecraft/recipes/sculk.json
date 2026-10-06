@@ -1,0 +1,18 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:echo_shard"
+    }
+  },
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "result": {
+    "item": "minecraft:sculk"
+  },
+  "show_notification": true,
+  "tier": 1
+}

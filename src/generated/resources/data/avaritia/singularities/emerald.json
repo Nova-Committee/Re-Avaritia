@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.emerald",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:emerald"
+  },
+  "name": "avaritia:emerald",
+  "overlayColor": "7df8ac",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "8e1a"
+}

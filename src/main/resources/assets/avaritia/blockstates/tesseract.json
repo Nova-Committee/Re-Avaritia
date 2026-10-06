@@ -1,0 +1,62 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover",
+        "y": 180
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover",
+        "y": 90
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover",
+        "y": 270
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover",
+        "x": 270
+      },
+      "when": {
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "avaritia:block/chest/tesseract/tesseract_cover",
+        "x": 90
+      },
+      "when": {
+        "down": "false"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "avaritia:refined_coal_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "avaritia:refined_coal"
+  }
+}

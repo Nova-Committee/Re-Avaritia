@@ -1,0 +1,14 @@
+{
+  "type": "avaritia:full_matter_cluster",
+  "category": "misc",
+  "count": 1,
+  "group": "matter_cluster",
+  "ingredients": [
+    {
+      "item": "avaritia:matter_cluster"
+    }
+  ],
+  "result": {
+    "item": "avaritia:full_matter_cluster"
+  }
+}

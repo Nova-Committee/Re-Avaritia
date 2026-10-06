@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.glowstone",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:glowstone_dust"
+  },
+  "name": "avaritia:glowstone",
+  "overlayColor": "ffd38f",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "a06135"
+}

@@ -1,0 +1,16 @@
+{
+	"parent": "minecraft:block/cube_all",
+	"textures": {
+		"all": "avaritia:block/chest/tesseract_cover"
+	},
+	"elements": [
+		{
+			"from": [3, 3, 0],
+			"to": [13, 13, 1],
+			"faces": {
+				"north": {"uv": [3, 3, 13, 13], "texture": "#all", "cullface": "north"},
+				"south": {"uv": [3, 3, 13, 13], "texture": "#all"}
+			}
+		}
+	]
+}

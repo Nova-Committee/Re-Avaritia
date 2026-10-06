@@ -1,0 +1,28 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:nautilus_shell"
+    },
+    "b": {
+      "item": "minecraft:prismarine_crystals"
+    },
+    "c": {
+      "item": "minecraft:heart_of_the_sea"
+    },
+    "d": {
+      "item": "minecraft:prismarine_shard"
+    }
+  },
+  "pattern": [
+    " ba",
+    " cb",
+    "d  "
+  ],
+  "result": {
+    "item": "minecraft:trident"
+  },
+  "show_notification": true,
+  "tier": 1
+}

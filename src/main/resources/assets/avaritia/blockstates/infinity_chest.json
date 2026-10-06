@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "avaritia:block/chest/infinity_chest" },
+    "facing=east": { "model": "avaritia:block/chest/infinity_chest" ,"y": 90},
+    "facing=south": { "model": "avaritia:block/chest/infinity_chest" ,"y": 180},
+    "facing=west": { "model": "avaritia:block/chest/infinity_chest" ,"y": 270}
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "avaritia:block/machine/collector/dense_neutron_collector" },
+    "facing=east": { "model": "avaritia:block/machine/collector/dense_neutron_collector" ,"y": 90},
+    "facing=south": { "model": "avaritia:block/machine/collector/dense_neutron_collector" ,"y": 180},
+    "facing=west": { "model": "avaritia:block/machine/collector/dense_neutron_collector" ,"y": 270}
+  }
+}

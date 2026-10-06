@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "b": {
+      "item": "minecraft:end_crystal"
+    },
+    "c": {
+      "item": "minecraft:dragon_egg"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " b "
+  ],
+  "result": {
+    "item": "minecraft:dragon_head"
+  },
+  "show_notification": true,
+  "tier": 1
+}

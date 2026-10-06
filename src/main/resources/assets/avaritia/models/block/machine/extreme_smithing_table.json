@@ -1,0 +1,13 @@
+{
+  "render_type": "cutout",
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "avaritia:block/machine/smithing/extreme_smithing_table_bottom",
+    "east": "avaritia:block/machine/smithing/extreme_smithing_table_front",
+    "north": "avaritia:block/machine/smithing/extreme_smithing_table_side",
+    "particle": "avaritia:block/machine/smithing/extreme_smithing_table_front",
+    "south": "avaritia:block/machine/smithing/extreme_smithing_table_side",
+    "up": "avaritia:block/machine/smithing/extreme_smithing_table_top",
+    "west": "avaritia:block/machine/smithing/extreme_smithing_table_front"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "avaritia",
+  "version": "${version}",
+  "name": "Re-Avaritia",
+  "description": "Re-Avaritia for Minecraft 1.20.1, native Fabric Loader port.",
+  "authors": ["cnlimiter", "cu6", "MHanHanBing", "IAFEnvoy", "Asek3", "MikhailTapio"],
+  "license": ["MIT", "CC-BY-NC-SA-4.0"],
+  "environment": "*",
+  "entrypoints": {
+    "main": ["committee.nova.mods.avaritia.Avaritia"],
+    "client": ["committee.nova.mods.avaritia.client.AvaritiaModClient"],
+    "emi": ["committee.nova.mods.avaritia.init.compat.emi.AvaritiaEmiPlugin"],
+    "jade": ["committee.nova.mods.avaritia.init.compat.JadeCompat"]
+  },
+  "mixins": ["avaritia.mixins.json"],
+  "accessWidener": "avaritia.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "minecraft": "1.20.1",
+    "java": ">=17"
+  },
+  "suggests": {
+    "jei": "*",
+    "emi": "*",
+    "jade": "*",
+    "kubejs": "*",
+    "crafttweaker": "*",
+    "trinkets": "*"
+  }
+}

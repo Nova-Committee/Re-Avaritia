@@ -1,0 +1,103 @@
+plugins {
+    id 'fabric-loom' version '1.10.5'
+    id 'maven-publish'
+}
+
+group = 'committee.nova.mods'
+version = '1.20.1-1.4.2-fabric'
+base { archivesName = 'Re-Avaritia-fabric' }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.blamejared.com/' }
+    maven { url = 'https://maven.terraformersmc.com/releases/' }
+    maven { url = 'https://maven.latvian.dev/releases/' }
+    maven { url = 'https://api.modrinth.com/maven' }
+    maven { url = 'https://maven.ladysnake.org/releases' }
+}
+
+dependencies {
+    minecraft 'com.mojang:minecraft:1.20.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.17.2'
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'org.openzen.zencode:JavaAnnotations:0.3.8'
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Optional APIs are compile-only and never bundled into the release JAR.
+    modCompileOnly('dev.emi:emi-fabric:1.1.20+1.20.1') { transitive = false }
+    compileOnly('mezz.jei:jei-1.20.1-common-api:15.20.0.112') { transitive = false }
+    modCompileOnly('mezz.jei:jei-1.20.1-fabric-api:15.20.0.112') { transitive = false }
+    modCompileOnly('dev.latvian.mods:kubejs-fabric:2001.6.5-build.20') { transitive = false }
+    modCompileOnly('dev.latvian.mods:rhino-fabric:2001.2.2-build.17') { transitive = false }
+    modCompileOnly('com.blamejared.crafttweaker:CraftTweaker-fabric-1.20.1:14.0.12') { transitive = false }
+    modCompileOnly('maven.modrinth:jade:11.13.1+fabric') { transitive = false }
+    modCompileOnly('dev.emi:trinkets:3.7.2') { transitive = false }
+    modCompileOnly('dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.0') { transitive = false }
+    if (project.hasProperty('withTrinkets')) {
+        modRuntimeOnly 'dev.emi:trinkets:3.7.2'
+    }
+}
+
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+loom {
+    accessWidenerPath = file('src/main/resources/avaritia.accesswidener')
+    mixin { defaultRefmapName = 'avaritia.refmap.json' }
+    mods {
+        avaritia { sourceSet sourceSets.main }
+        if (project.hasProperty('gameTests')) {
+            avaritia_gametest { sourceSet sourceSets.gameTest }
+        }
+    }
+    runs {
+        client { runDir 'run/client' }
+        server { runDir 'run/server' }
+        if (project.hasProperty('gameTests')) {
+            gameTestServer {
+                server()
+                source sourceSets.gameTest
+                runDir 'run/gametest'
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.compileClasspath
+test { useJUnitPlatform() }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
+}
+if (project.hasProperty('gameTests')) {
+    tasks.named('runGameTestServer').configure {
+        dependsOn tasks.named('gameTestClasses')
+    }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+    options.compilerArgs += ['-Xmaxerrs', '2000']
+}
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand version: project.version }
+}
+jar {
+    from('LICENSE') { rename { "${it}_Re-Avaritia" } }
+}
+tasks.withType(net.fabricmc.loom.task.RunGameTask).configureEach {
+    standardInput = System.in
+}

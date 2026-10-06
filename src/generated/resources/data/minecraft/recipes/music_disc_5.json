@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:record_fragment"
+    },
+    "b": {
+      "item": "minecraft:echo_shard"
+    }
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "item": "minecraft:music_disc_5"
+  },
+  "show_notification": true,
+  "tier": 1
+}

@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:bone_block"
+    },
+    "B": {
+      "item": "avaritia:blaze_cube"
+    },
+    "C": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "D": {
+      "item": "minecraft:blaze_powder"
+    },
+    "E": {
+      "item": "minecraft:soul_soil"
+    }
+  },
+  "pattern": [
+    " ABBA",
+    "ACDDC",
+    "BD E ",
+    "BDE  ",
+    "AC   "
+  ],
+  "result": {
+    "item": "avaritia:blaze_bow"
+  },
+  "show_notification": true,
+  "tier": 2
+}

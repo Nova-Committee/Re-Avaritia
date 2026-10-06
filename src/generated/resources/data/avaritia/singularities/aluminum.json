@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "avaritia:not",
+      "value": {
+        "type": "avaritia:tag_empty",
+        "tag": "forge:ingots/aluminum"
+      }
+    }
+  ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.aluminum",
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/aluminum"
+  },
+  "name": "avaritia:aluminum",
+  "overlayColor": "caccda",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "9a9ca6"
+}

@@ -1,0 +1,37 @@
+{
+  "parent": "avaritia:main/neutron_compressor",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "avaritia:singularity"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.singularity.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:singularity",
+      "nbt": "{Id:\"avaritia:redstone\"}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.singularity.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

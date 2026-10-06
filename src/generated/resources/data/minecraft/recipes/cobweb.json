@@ -1,0 +1,19 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    "a a",
+    " a ",
+    "a a"
+  ],
+  "result": {
+    "item": "minecraft:cobweb"
+  },
+  "show_notification": true,
+  "tier": 1
+}

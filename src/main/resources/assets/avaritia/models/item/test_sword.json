@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/test_sword"
+  },
+  "loader": "avaritia:hell",
+  "hell": {
+    "mask": "avaritia:mask/item/test_sword_mask"
+  }
+}

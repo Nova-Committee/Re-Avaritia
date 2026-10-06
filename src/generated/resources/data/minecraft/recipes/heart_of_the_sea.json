@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "c": {
+      "item": "minecraft:ender_eye"
+    },
+    "d": {
+      "item": "minecraft:nautilus_shell"
+    }
+  },
+  "pattern": [
+    "bdb",
+    "dcd",
+    "bdb"
+  ],
+  "result": {
+    "item": "minecraft:heart_of_the_sea"
+  },
+  "show_notification": true,
+  "tier": 1
+}

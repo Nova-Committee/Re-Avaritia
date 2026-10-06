@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "b": {
+      "item": "minecraft:gold_ingot"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "iii",
+    "iai",
+    " b "
+  ],
+  "result": {
+    "item": "avaritia:side_config_card"
+  },
+  "show_notification": true,
+  "tier": 1
+}

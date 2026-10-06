@@ -1,0 +1,35 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "b": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "c": {
+      "item": "avaritia:diamond_lattice_block"
+    },
+    "d": {
+      "item": "avaritia:endest_pearl"
+    },
+    "e": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "  aaa  ",
+    " cbbbc ",
+    "ab d ba",
+    "abdedba",
+    "ab d ba",
+    " cbbbc ",
+    "  aaa  "
+  ],
+  "result": {
+    "item": "avaritia:neutron_ring"
+  },
+  "show_notification": true,
+  "tier": 3
+}

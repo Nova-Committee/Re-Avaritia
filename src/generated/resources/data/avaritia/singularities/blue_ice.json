@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.blue_ice",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:blue_ice"
+  },
+  "name": "avaritia:blue_ice",
+  "overlayColor": "8eb8fe",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "6b9dfb"
+}

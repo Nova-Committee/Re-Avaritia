@@ -1,0 +1,21 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "x": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "y": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "xyx",
+    "xyx"
+  ],
+  "result": {
+    "item": "avaritia:crystal_matrix_ingot"
+  },
+  "show_notification": true,
+  "tier": 1
+}

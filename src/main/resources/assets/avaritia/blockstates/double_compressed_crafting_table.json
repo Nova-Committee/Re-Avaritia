@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "avaritia:block/craft/double_compressed_crafting_table"
+    }
+  }
+}

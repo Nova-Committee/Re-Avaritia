@@ -1,0 +1,19 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_sword/layer_0",
+    "layer1": "avaritia:item/tools/infinity_sword/layer_1"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:kill": 1
+      },
+      "model": "avaritia:item/infinity_sword_kill"
+    }
+  ],
+  "loader": "avaritia:eternal",
+  "eternal": {
+    "mask": "avaritia:mask/infinity_sword_mask"
+  }
+}

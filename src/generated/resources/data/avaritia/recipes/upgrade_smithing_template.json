@@ -1,0 +1,94 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "b": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "c": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "d": {
+      "item": "avaritia:neutron_pile"
+    },
+    "e": {
+      "item": "avaritia:infinity_nugget"
+    },
+    "f": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "g": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "h": {
+      "item": "minecraft:netherite_upgrade_smithing_template"
+    },
+    "i": {
+      "item": "minecraft:sentry_armor_trim_smithing_template"
+    },
+    "j": {
+      "item": "minecraft:dune_armor_trim_smithing_template"
+    },
+    "k": {
+      "item": "minecraft:coast_armor_trim_smithing_template"
+    },
+    "l": {
+      "item": "minecraft:wild_armor_trim_smithing_template"
+    },
+    "m": {
+      "item": "minecraft:ward_armor_trim_smithing_template"
+    },
+    "n": {
+      "item": "minecraft:eye_armor_trim_smithing_template"
+    },
+    "o": {
+      "item": "minecraft:vex_armor_trim_smithing_template"
+    },
+    "p": {
+      "item": "minecraft:tide_armor_trim_smithing_template"
+    },
+    "q": {
+      "item": "minecraft:snout_armor_trim_smithing_template"
+    },
+    "r": {
+      "item": "minecraft:rib_armor_trim_smithing_template"
+    },
+    "s": {
+      "item": "minecraft:spire_armor_trim_smithing_template"
+    },
+    "t": {
+      "item": "minecraft:wayfinder_armor_trim_smithing_template"
+    },
+    "u": {
+      "item": "minecraft:shaper_armor_trim_smithing_template"
+    },
+    "v": {
+      "item": "minecraft:silence_armor_trim_smithing_template"
+    },
+    "w": {
+      "item": "minecraft:raiser_armor_trim_smithing_template"
+    },
+    "x": {
+      "item": "minecraft:host_armor_trim_smithing_template"
+    }
+  },
+  "pattern": [
+    " aaabaaa ",
+    " accecca ",
+    " acefeca ",
+    "dijkelmnd",
+    "dogphqgrd",
+    "dstufvwxd",
+    " acdfdca ",
+    " accecca ",
+    " aaabaaa "
+  ],
+  "result": {
+    "item": "avaritia:upgrade_smithing_template"
+  },
+  "show_notification": true,
+  "tier": 4
+}

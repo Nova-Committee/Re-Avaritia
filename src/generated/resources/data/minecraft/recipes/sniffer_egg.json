@@ -1,0 +1,28 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:brick"
+    },
+    "b": {
+      "item": "minecraft:egg"
+    },
+    "c": {
+      "item": "minecraft:gravel"
+    },
+    "d": {
+      "item": "minecraft:sand"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "dbd",
+    "ccc"
+  ],
+  "result": {
+    "item": "minecraft:sniffer_egg"
+  },
+  "show_notification": true,
+  "tier": 1
+}
