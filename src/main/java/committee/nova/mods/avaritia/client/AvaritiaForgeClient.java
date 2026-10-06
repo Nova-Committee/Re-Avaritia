@@ -54,6 +54,16 @@ public class AvaritiaForgeClient {
     private static int infinityElytraPacketCooldown = 0;
 
     // region 定义按键绑定
+    static {
+        if (!KeyMapping.CATEGORY_SORT_ORDER.containsKey(CATEGORIES)) {
+            int lastOrder = 0;
+            for (int order : KeyMapping.CATEGORY_SORT_ORDER.values()) {
+                lastOrder = Math.max(lastOrder, order);
+            }
+            KeyMapping.CATEGORY_SORT_ORDER.put(CATEGORIES, lastOrder + 1);
+        }
+    }
+
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);

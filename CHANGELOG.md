@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file，ChangeLog 
 
 ### Runtime fixes
 
+* 修复打开原版“按键绑定”页面时自定义分类缺少排序值导致的空指针：在创建 H/N/O 按键前登记分类排序，沿用已有值或追加到当前最大排序值之后，不增加 Fabric API 必需依赖。新增真实 `KeyMapping` 混合排序回归，覆盖其他模组稀疏排序值并保留已有分类次序；完整构建与 54 项 JUnit 通过，Windows 默认 Loader-only 客户端实际打开按键绑定页面并显示全部三个模组按键。
 * 增加 `-PwithClientIntegrations runClient` 可选开发配置，同时启动 JEI、Mod Menu、CraftTweaker、KubeJS 及其自身依赖，默认无前置运行方式与发布 JAR 不变。编译期补齐 Fabric API 继承关系并关闭依赖接口注入，避免可选 API 缓存映射留下 intermediary 重载方法名，或要求原版 Level 子类实现仅由运行时 Mixin 添加的 KubeJS 方法；实际客户端已验证模组菜单版本及入世、脚本资源加载。
 * 修正超立方体方块及菜单提供者的翻译标题，移除空标题与错误的无尽箱标题；实际客户端创建并选择频道后，主界面正确显示“超立方体”。
 * 恢复超立方体普通/合成模式完整背包、快捷栏与合成模块纹理，并显示物品栏标题；固定面板高度补齐至 283，超立方体与无尽箱复用临时 GUI 缩放及关闭后恢复机制。通过实际小窗口两种模式检查、贴图拼接/缩放边界回归及用户手动验收。
