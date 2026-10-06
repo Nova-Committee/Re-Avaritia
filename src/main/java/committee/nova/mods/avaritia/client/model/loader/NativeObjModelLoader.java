@@ -24,6 +24,24 @@ public final class NativeObjModelLoader extends BaseModelLoader<NativeObjModelLo
                 new ResourceLocation(object.get("model").getAsString()),
                 !object.has("flip_v") || object.get("flip_v").getAsBoolean());
     }
+
+    static void preparePart(CCModel part) {
+        // OBJParser reverses OBJ faces for the CCModel pipeline. Vanilla baked quads
+        // need the original OBJ winding, with UVs and authored normals on their vertices.
+        Vector3[] normals = part.normals();
+        for (int face = 0; face < part.verts.length; face += 4) {
+            var vertex = part.verts[face + 1];
+            part.verts[face + 1] = part.verts[face + 3];
+            part.verts[face + 3] = vertex;
+            if (normals != null) {
+                Vector3 normal = normals[face + 1];
+                normals[face + 1] = normals[face + 3];
+                normals[face + 3] = normal;
+            }
+        }
+        if (normals == null) part.computeNormals();
+    }
+
     public static final class Geometry extends BaseGeometry<Geometry> {
         private final ResourceLocation object;
         private final boolean flipV;
@@ -32,7 +50,7 @@ public final class NativeObjModelLoader extends BaseModelLoader<NativeObjModelLo
                 ModelState state, ItemOverrides overrides, ResourceLocation location) {
             List<BakedQuad> quads = new ArrayList<>();
             for (CCModel part : OBJParser.parse(Minecraft.getInstance().getResourceManager(), object, VertexFormat.Mode.QUADS, null, false).values()) {
-                if (part.normals() == null) part.computeNormals();
+                preparePart(part);
                 var material = part.material();
                 TextureAtlasSprite sprite = material != null && material.diffuseColourMap != null
                         ? sprites.apply(new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(material.diffuseColourMap)))
