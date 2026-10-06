@@ -22,6 +22,7 @@ public class ClientChestHandler extends ChestHandler {
     public void removeListener() {
         this.container = null;
         storageItems.clear();
+        updateItemKeys();
     }
 
     @Override
@@ -56,8 +57,8 @@ public class ClientChestHandler extends ChestHandler {
             }
         });
 
+        if (fullUpdate.get()) updateItemKeys();
         if (needRefreshContainer.get()) container.refreshContainer(fullUpdate.get());
-        if (fullUpdate.get()) {updateItemKeys();}
     }
 
     public void fullUpdate(Collection<ItemSuper> tag) {

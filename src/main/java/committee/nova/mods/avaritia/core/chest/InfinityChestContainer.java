@@ -42,7 +42,7 @@ public class InfinityChestContainer extends SimpleContainer {
     }
 
     public void onScrollTo(double scrollTo) {
-        this.scrollTo = scrollTo;
+        this.scrollTo = Math.max(0.0D, Math.min(1.0D, scrollTo));
         scrollOffset(0);
     }
 
@@ -147,29 +147,13 @@ public class InfinityChestContainer extends SimpleContainer {
         for (int j = 0; j < SIZE; j++) {
             if (j < viewingObject.size() && viewingObject.get(j) != null) {
                 var id = viewingObject.get(j);
-
-                //叠堆数为1避开原版的数字渲染
-                if (fullUpdate) {
-                    // 使用chest.getStackInSlot获取正确的ItemStack（包括NBT）
-                    // chest.getStackInSlot的slot参数是IItemHandler的slot
-                    // 这里j + 27对应实际的slot
-                    if (j < this.menu.chest.getSlots()) {
-                        ItemStack stack = this.menu.chest.getStackInSlot(j + 27);
-                        this.setItem(j, stack);
-                    } else {
-                        // 如果超出范围，使用基础物品
-                        ItemStack stack = id.getStack();
-                        this.setItem(j, stack);
-                    }
-                }
-
-                long count;
-                if (this.menu.chest.storageItems.containsKey(id)) {
-                    count = this.menu.chest.storageItems.get(id);
-                } else {
-                    formatCount.add(j, "§c0");
+                Long count = this.menu.chest.storageItems.get(id);
+                if (count == null || count <= 0L) {
+                    this.setItem(j, ItemStack.EMPTY);
+                    formatCount.add(j, "0");
                     continue;
                 }
+                if (fullUpdate) this.setItem(j, id.getStack());
                 if (count < 1000L) formatCount.add(j, String.valueOf(count));
                 else if (count < Long.MAX_VALUE) {
                     String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);

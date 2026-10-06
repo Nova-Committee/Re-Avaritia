@@ -227,7 +227,6 @@ public abstract class ChestHandler implements IItemHandler {
         if (itemSuper == null || count <= 0 || !storageItems.containsKey(itemSuper)) return;
         long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
-            var actionItemSuper = itemSuper.copyWithCount(storageCount - count);
             storageItems.replace(itemSuper, storageCount - count);
             onItemChanged(itemSuper, false);
         } else {
@@ -247,10 +246,12 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public @NotNull ItemStack getStackInSlot(int slot) {
-        //System.out.println(slot);
-        if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
-        ItemStack itemStack = slotItemTemp[slot - 27].getStack().copy();
-        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(slotItemTemp[slot - 27])));
+        if (slot < 27 || slot - 27 >= slotItemTemp.length) return ItemStack.EMPTY;
+        ItemSuper item = slotItemTemp[slot - 27];
+        Long count = storageItems.get(item);
+        if (count == null || count <= 0L) return ItemStack.EMPTY;
+        ItemStack itemStack = item.getStack();
+        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, count));
         return itemStack;
     }
 

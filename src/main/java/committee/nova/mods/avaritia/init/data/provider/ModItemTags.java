@@ -10,6 +10,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +50,10 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
         tag(ModTags.NEUTRON_GEAR).add(ModItems.neutron_gear.get());
         tag(ModTags.NEUTRON_BLOCK_ITEM).add(Item.byBlock(ModBlocks.neutron.get()));
+        tag(Tags.Items.NUGGETS).add(ModItems.neutron_nugget.get(), ModItems.infinity_nugget.get());
+        tag(Tags.Items.INGOTS).add(ModItems.neutron_ingot.get(), ModItems.infinity_ingot.get(), ModItems.crystal_matrix_ingot.get());
+        tag(Tags.Items.STORAGE_BLOCKS).add(ModBlocks.neutron.get().asItem(), ModBlocks.crystal_matrix.get().asItem(), ModBlocks.infinity.get().asItem());
+        tag(Tags.Items.GEMS).add(ModBlocks.crystal_matrix.get().asItem());
         tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(ModItems.infinity_helmet.get());
         tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(ModItems.infinity_chestplate.get());
         tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(ModItems.infinity_pants.get());

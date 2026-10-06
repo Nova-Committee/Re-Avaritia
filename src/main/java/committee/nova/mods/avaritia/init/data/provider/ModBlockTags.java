@@ -10,6 +10,7 @@ import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,6 +63,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.neutron.get()
         );
         tag(ModTags.NEUTRON_BLOCK).add(ModBlocks.neutron.get());
+        tag(Tags.Blocks.STORAGE_BLOCKS).add(ModBlocks.neutron.get(), ModBlocks.crystal_matrix.get(), ModBlocks.infinity.get());
         tag(ModTags.EXTREME_ANVIL_UNBREAK).add(
                 ModBlocks.dense_neutron_collector.get(), ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
                 ModBlocks.extreme_crafting_table.get(), ModBlocks.extreme_smithing_table.get(), ModBlocks.neutron_compressor.get(),

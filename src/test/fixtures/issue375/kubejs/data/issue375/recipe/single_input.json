@@ -1,0 +1,7 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "template": { "item": "avaritia:upgrade_smithing_template" },
+  "base": { "item": "minecraft:diamond" },
+  "addition": { "item": "minecraft:stick" },
+  "result": { "id": "minecraft:iron_ingot" }
+}
