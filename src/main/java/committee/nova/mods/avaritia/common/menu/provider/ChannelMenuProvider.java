@@ -34,7 +34,7 @@ public class ChannelMenuProvider implements MenuProvider {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal("");
+        return Component.translatable("block.avaritia.tesseract");
     }
 
     @Override

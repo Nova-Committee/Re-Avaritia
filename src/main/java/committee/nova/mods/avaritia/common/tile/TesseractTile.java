@@ -131,7 +131,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("block.avaritia.infinity_chest").build();
+        return Localizable.of("block.avaritia.tesseract").build();
     }
 
     private void bindChannel() {
