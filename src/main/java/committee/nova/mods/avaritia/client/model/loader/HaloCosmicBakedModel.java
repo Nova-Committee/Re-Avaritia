@@ -62,8 +62,8 @@ public class HaloCosmicBakedModel extends WrappedItemModel {
 
         // 渲染Halo效果
         if (transformType == ItemDisplayContext.GUI) {
-            Minecraft.getInstance().getItemRenderer()
-                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
+            HaloUtils.renderHaloQuad(pStack.last(), source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)),
+                    this.haloQuad, packedLight, packedOverlay);
             if (this.setting.pulse()) {
                 pStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;

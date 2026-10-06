@@ -21,7 +21,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -65,8 +64,9 @@ public class HaloBakedModel extends WrappedItemModel {
             }
             if (itemDisplayContext == ItemDisplayContext.GUI) {
 
-                Minecraft.getInstance().getItemRenderer()
-                        .renderQuadList(pPoseStack, bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
+                HaloUtils.renderHaloQuad(pPoseStack.last(),
+                        bufferSource.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)),
+                        this.haloQuad, packedLight, packedOverlay);
                 if (this.setting.pulse()) {
                     pPoseStack.pushPose();
                     double scale = random.nextDouble() * 0.15D + 0.95D;

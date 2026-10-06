@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.client.model.loader.base;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
@@ -52,6 +54,37 @@ public class HaloUtils {
         }
         quad.calculateOrientation(true);
         return quad.bake();
+    }
+
+    public static void renderHaloQuad(PoseStack.Pose pose, VertexConsumer consumer, BakedQuad quad,
+                                      int packedLight, int packedOverlay) {
+        // Vanilla item bulk rendering discards baked RGB and always emits opaque alpha.
+        final int[] vertices = quad.getVertices();
+        final int stride = DefaultVertexFormat.BLOCK.getIntegerSize();
+        final var matrix = pose.pose();
+        final var normalMatrix = pose.normal();
+        final Direction direction = quad.getDirection();
+        final float nx = direction.getStepX();
+        final float ny = direction.getStepY();
+        final float nz = direction.getStepZ();
+        final float normalX = normalMatrix.m00() * nx + normalMatrix.m10() * ny + normalMatrix.m20() * nz;
+        final float normalY = normalMatrix.m01() * nx + normalMatrix.m11() * ny + normalMatrix.m21() * nz;
+        final float normalZ = normalMatrix.m02() * nx + normalMatrix.m12() * ny + normalMatrix.m22() * nz;
+        for (int offset = 0; offset < vertices.length; offset += stride) {
+            final float x = Float.intBitsToFloat(vertices[offset]);
+            final float y = Float.intBitsToFloat(vertices[offset + 1]);
+            final float z = Float.intBitsToFloat(vertices[offset + 2]);
+            final int color = vertices[offset + 3];
+            consumer.vertex(matrix.m00() * x + matrix.m10() * y + matrix.m20() * z + matrix.m30(),
+                            matrix.m01() * x + matrix.m11() * y + matrix.m21() * z + matrix.m31(),
+                            matrix.m02() * x + matrix.m12() * y + matrix.m22() * z + matrix.m32())
+                    .color(color & 255, color >>> 8 & 255, color >>> 16 & 255, color >>> 24 & 255)
+                    .uv(Float.intBitsToFloat(vertices[offset + 4]), Float.intBitsToFloat(vertices[offset + 5]))
+                    .overlayCoords(packedOverlay)
+                    .uv2(packedLight)
+                    .normal(normalX, normalY, normalZ)
+                    .endVertex();
+        }
     }
 
     public static void putVertex(final Quad.Vertex vx, final double x, final double y, final double z, final double u, final double v) {

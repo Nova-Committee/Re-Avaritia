@@ -22,10 +22,11 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * 可选 Trinkets 开发配置采用正式发布包，避免旧 Maven 包残留 Yarn 字段名导致客户端 widget mixin 崩溃；补齐开发运行时所需的 Fabric API/CCA，验证真实饰品栏装备戒指，最终可选环境 45 项原生测试通过。
 * EMI 奇点比较改为直接比较 NBT Id，避免奇点查询返回副本时实例比较永远失败，并避免为比较复制整个奇点；真实客户端分别打开绿宝石与萤石的正确压缩配方。
 * 补齐 Fabric JEI 插件发现入口；独立 JEI 客户端验证中子素压缩分类、16 页配方及青金石/铁锭的不同奇点输出，避免将 EMI 共存时的插件跳过误判为 JEI 发现失败。
+* 光晕改为直接提交烘焙顶点的 RGBA，替代原版物品批量渲染中丢弃 RGB、强制 Alpha=1 的路径；普通、Cosmic、Eternal 光晕共用无临时分配的绘制实现，保持贴图、大小、脉动和原有渲染层不变。新增真实顶点缓冲区颜色/透明度及变换回归，并在无前置客户端验证背包和快捷栏中的黑色光晕及中子物品不同透明度。
 * 动态 LEVEL_STEM 注册时绑定 holder 值，避免维度存档编码访问未绑定值。
 * 修复 NBT 变体键污染物品基础 ID 缓存及多变体库存量汇总溢出。
 * 保留无尽鞘翅不可损坏属性，同时接入服务端和客户端原版滑翔资格判断。
-* 通过独立构建、43 项 JUnit、默认 41 项原生 GameTest、可选 Trinkets 45 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
+* 通过独立构建、45 项 JUnit、默认 41 项原生 GameTest、可选 Trinkets 45 项原生 GameTest 及真实客户端验证；测试夹具不随发布 JAR 分发。
 
 
 ## [v1.4.2-release-forge](http://github.com/Nova-Committee/Re-Avaritia/compare/v1.4.1-release-forge...v1.4.2-release-forge)
