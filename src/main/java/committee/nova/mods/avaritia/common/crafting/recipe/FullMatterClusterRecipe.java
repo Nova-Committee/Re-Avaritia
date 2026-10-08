@@ -12,9 +12,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,7 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
     private final int count;
 
     public FullMatterClusterRecipe(String group, NonNullList<Ingredient> inputs, int count) {
-        super(inputs, new ItemStackTemplate(ModItems.full_matter_cluster.get(), count), 1);
+        super(inputs, new ItemStack(ModItems.full_matter_cluster.get(), count), 1);
         this.group = group;
         this.count = count;
     }
@@ -72,7 +72,7 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, FullMatterClusterRecipe> STREAM_CODEC = StreamCodec.of(
                 FullMatterClusterRecipe.Serializer::toNetwork, FullMatterClusterRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<FullMatterClusterRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<FullMatterClusterRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static FullMatterClusterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();

@@ -22,11 +22,24 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache")
 }
 
+// 1.21.11 backport: KubeJS has no 1.21.11 build, and Equivox's 1.21.11 API is unavailable,
+// so neither optional integration can compile here.
+sourceSets.main.java {
+    exclude 'committee/nova/mods/avaritia/compat/kubejs/**'
+    exclude 'committee/nova/mods/avaritia/init/compat/equivox/**'
+}
+
 sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
 sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
 
 sourceSets {
-    gameTest
+    gameTest {
+        java {
+            // Equivox's compat package is excluded from main, so the tests exercising it
+            // cannot compile either.
+            exclude 'committee/nova/mods/avaritia/gametest/Equivox*'
+        }
+    }
 }
 
 configurations {
@@ -98,7 +111,7 @@ repositories {
     }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     version = project.neo_version
@@ -175,11 +188,8 @@ dependencies {
     // Curios API
     implementation libs.curios.neoforge
 
-    // KubeJS integration (compile only, optional at runtime)
-    compileOnly libs.kubejs.neoforge
-    compileOnly libs.rhino
-    // Equivox API: optional integration, never bundled or added to runtime.
-    compileOnly("curse.maven:equivox-1597601:9035756") { transitive = false }
+    // KubeJS / Rhino / Equivox integrations are disabled for the 1.21.11 backport:
+    // none of them publish a 1.21.11 build.
 
     // Lombok
     compileOnly libs.lombok

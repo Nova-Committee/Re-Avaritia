@@ -162,7 +162,7 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
         }
 
         foundRecipe.ifPresentOrElse(recipe -> {
-            ItemStack result = recipe.value().assemble(input);
+            ItemStack result = recipe.value().assemble(input, this.level.registryAccess());
             this.resultSlots.setRecipeUsed((RecipeHolder<?>)recipe);
             this.resultSlots.setItem(0, result);
         }, () -> {

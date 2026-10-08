@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -37,7 +37,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         ScreenRectangle progress = progressBounds();
         UiInspector.region("collector.progress", progress, null, true);
         if (PortableLayout.contains(progress, pMouseX, pMouseY) && this.getProgress() > 0) {
@@ -47,14 +47,14 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
-        stack.text(font, title, (176 / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
-        stack.text(font, this.playerInventoryTitle, 8, 166 - 94, LABEL_COLOR, false);
+        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
+        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, LABEL_COLOR, false);
     }
 
     @Override
-    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         ScreenRectangle progress = progressBounds();
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(progress.height());

@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.utils.StringUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -164,21 +164,21 @@ public class StringInputScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        extractTransparentBackground(graphics);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderTransparentBackground(graphics);
         PortableUi.panel(graphics, panel);
         PortableUi.header(graphics, font, titleText, panel.left(), panel.top(), panel.width());
         UiInspector.region("input.panel", panel, null, false);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (errorText != null && errorBounds.width() > 0 && errorBounds.height() > 0) {
             graphics.enableScissor(errorBounds.left(), errorBounds.top(), errorBounds.right(), errorBounds.bottom());
             int rows = Math.min(errorLines.size(), errorBounds.height() / font.lineHeight);
             for (int i = 0; i < rows; i++) {
-                graphics.text(font, errorLines.get(i), errorBounds.left(), errorBounds.top() + i * font.lineHeight, PortableUi.DANGER, false);
+                graphics.drawString(font, errorLines.get(i), errorBounds.left(), errorBounds.top() + i * font.lineHeight, PortableUi.DANGER, false);
             }
             graphics.disableScissor();
             UiInspector.region("input.error", errorBounds, errorBounds, false);

@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -32,6 +31,8 @@ import java.util.Optional;
 import java.util.function.IntSupplier;
 
 import static committee.nova.mods.avaritia.client.screen.TesseractScreenLayout.*;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.textures.FluidSpriteCache;
 
 /** 11x9 Tesseract storage view with crafting controls and long-count overlays. */
 public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
@@ -136,8 +137,8 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
         updateCraftingButtons();
         for (BackgroundSlice slice : background(menu.isCraftingMode())) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + slice.destinationY(),
@@ -148,12 +149,12 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
 
 
     @Override
-    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        search.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        search.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, String itemCount) {
+    protected void renderSlotContents(GuiGraphics graphics, ItemStack itemStack, Slot slot, String itemCount) {
         int menuIndex = menu.slots.indexOf(slot);
         if (menuIndex >= TesseractMenu.CHANNEL_START) {
             long amount = menu.projected().amount(menuIndex - TesseractMenu.CHANNEL_START);
@@ -164,28 +165,27 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
     }
 
     @Override
-    protected void extractSlot(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY) {
+    protected void renderSlot(GuiGraphics graphics, Slot slot, int mouseX, int mouseY) {
         int menuIndex = menu.slots.indexOf(slot);
         if (menuIndex < TesseractMenu.CHANNEL_START) {
-            super.extractSlot(graphics, slot, mouseX, mouseY);
+            super.renderSlot(graphics, slot, mouseX, mouseY);
             return;
         }
         DummyChannelContainer.Entry entry = menu.projected().entry(menuIndex - TesseractMenu.CHANNEL_START);
         if (entry.kind() != DummyChannelContainer.Kind.FLUID || !slot.isActive()) {
-            super.extractSlot(graphics, slot, mouseX, mouseY);
+            super.renderSlot(graphics, slot, mouseX, mouseY);
             return;
         }
 
-        FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet()
-                .get(entry.fluid().getFluid().defaultFluidState());
-        TextureAtlasSprite sprite = model.stillMaterial().sprite();
+        TextureAtlasSprite sprite = FluidSpriteCache.getSprite(
+                IClientFluidTypeExtensions.of(entry.fluid().getFluid()).getStillTexture());
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, slot.x, slot.y, 16, 16);
-        graphics.itemDecorations(font, new ItemStack(committee.nova.mods.avaritia.init.registry.ModItems.forge_energy.get()),
+        graphics.renderItemDecorations(font, new ItemStack(committee.nova.mods.avaritia.init.registry.ModItems.forge_energy.get()),
                 slot.x, slot.y, formatAmount(entry.amount()));
     }
 
     @Override
-    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (menu.getCarried().isEmpty() && hoveredSlot != null) {
             int menuIndex = menu.slots.indexOf(hoveredSlot);
             if (menuIndex >= TesseractMenu.CHANNEL_START) {
@@ -205,7 +205,7 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
                 return;
             }
         }
-        super.extractTooltip(graphics, mouseX, mouseY);
+        super.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -245,7 +245,7 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
         }
 
         @Override
-        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(), textureX.getAsInt(),
                     textureY.getAsInt(), width, height, TEXTURE_SIZE, TEXTURE_SIZE);
         }

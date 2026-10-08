@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -61,7 +60,7 @@ private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments
     }
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -93,7 +92,7 @@ private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments
     }
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FORTUNE)) {
             return 3;
         }

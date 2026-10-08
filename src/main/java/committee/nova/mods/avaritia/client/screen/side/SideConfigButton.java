@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.client.screen.element.GuiElementAccess;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -49,7 +49,7 @@ public class SideConfigButton extends ImageButton implements GuiElementAccess {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderContents(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         var xTexStart = 156;
         var yTexStart = 0;
         if (this.isHovered) {

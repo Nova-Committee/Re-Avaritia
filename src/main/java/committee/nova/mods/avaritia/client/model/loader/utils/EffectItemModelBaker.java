@@ -11,18 +11,18 @@ import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.color.item.ItemTintSource;
-import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
-import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.resources.model.BlockModelRotation;
+import net.minecraft.client.renderer.item.BlockModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ResolvedModel;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.client.resources.model.sprite.MaterialBaker;
-import net.minecraft.client.resources.model.sprite.TextureSlots;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.SpriteGetter;
+import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
@@ -57,7 +57,7 @@ public final class EffectItemModelBaker {
         ResolvedModel resolvedModel = baker.getModel(model);
         TextureSlots textureSlots = resolvedModel.getTopTextureSlots();
         // wrapped 是最终必须先提交的基础模型；星空/永恒等效果只作为后续特殊层叠加。
-        ItemModel wrapped = new CuboidItemModelWrapper.Unbaked(model, Optional.empty(), tints).bake(context, transformation);
+        ItemModel wrapped = new BlockModelWrapper.Unbaked(model, tints).bake(context);
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
         // baseQuads 给 halo 脉冲层使用，effectQuads 则来自 mask 贴图，两者来源不同。
         List<BakedQuad> baseQuads = bakeBaseQuads(baker, resolvedModel, textureSlots);
@@ -78,10 +78,10 @@ public final class EffectItemModelBaker {
      * mask 贴图只烘焙覆盖层几何，不参与基础物品模型本身的烘焙。
      */
     private static List<BakedQuad> bakeEffectQuads(ModelBaker baker, ItemEffect effect, List<Identifier> masks) {
-        MaterialBaker materials = baker.materials();
+        SpriteGetter materials = baker.sprites();
         List<TextureAtlasSprite> sprites = new ArrayList<>(masks.size());
         for (Identifier mask : masks) {
-            sprites.add(materials.get(new Material(mask), DEBUG_NAME).sprite());
+            sprites.add(materials.get(new Material(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS, mask), DEBUG_NAME));
         }
         // Custom geometry writes packed UVs directly to the effect buffer. Use
         // the direct bakery so positions and atlas UVs are explicit and remain

@@ -21,7 +21,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -67,7 +66,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
     }
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -114,7 +113,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
         var blockpos = context.getClickedPos();
         var targetBlock = world.getBlockState(blockpos).getBlock();
         var player = context.getPlayer();
-        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmlandBlock.MOISTURE, 7);
+        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
         var soulFarmState = ModBlocks.soul_farmland.get().defaultBlockState();
         int rang = 5;
         var minPos = blockpos.offset(-rang, 0, -rang);
@@ -132,7 +131,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
 
 
                         if (world.isEmptyBlock(pos.above()) && (block instanceof GrassBlock || block.equals(Blocks.DIRT) || block.equals(
-                                Blocks.COARSE_DIRT) || block instanceof FarmlandBlock)) {
+                                Blocks.COARSE_DIRT) || block instanceof FarmBlock)) {
                             world.setBlock(pos, blockstate, 11);
                         }
                         if (world.isEmptyBlock(pos) && !world.isEmptyBlock(pos.below())) {

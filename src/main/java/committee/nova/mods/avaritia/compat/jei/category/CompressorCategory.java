@@ -16,7 +16,7 @@ import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +55,7 @@ public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompres
     }
 
     @Override
-    public void draw(@NotNull RecipeHolder<ICompressorRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+    public void draw(@NotNull RecipeHolder<ICompressorRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }
 

@@ -18,11 +18,10 @@ import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
-import net.minecraft.client.renderer.block.dispatch.Variant;
-import net.minecraft.client.renderer.block.dispatch.VariantMutator;
+import net.minecraft.client.renderer.block.model.BlockModelDefinition;
+import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.client.renderer.item.ClientItem;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
@@ -54,7 +53,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
     private final PackOutput.PathProvider blockStatePathProvider;
     private final PackOutput.PathProvider modelPathProvider;
     private final PackOutput.PathProvider itemInfoPathProvider;
-    private final Map<Identifier, BlockStateModelDispatcher> generatedBlockStates = new LinkedHashMap<>();
+    private final Map<Identifier, BlockModelDefinition> generatedBlockStates = new LinkedHashMap<>();
     private final Map<Identifier, ModelInstance> generatedModels = new LinkedHashMap<>();
     private final Map<Identifier, ClientItem> generatedClientItems = new LinkedHashMap<>();
 
@@ -68,7 +67,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
     public CompletableFuture<?> run(CachedOutput output) {
         registerStatesAndModels();
         return CompletableFuture.allOf(
-                DataProvider.saveAll(output, BlockStateModelDispatcher.CODEC, this.blockStatePathProvider, this.generatedBlockStates),
+                DataProvider.saveAll(output, BlockModelDefinition.CODEC, this.blockStatePathProvider, this.generatedBlockStates),
                 DataProvider.saveAll(output, ModelInstance::get, this.modelPathProvider::json, this.generatedModels),
                 DataProvider.saveAll(output, ClientItem.CODEC, this.itemInfoPathProvider, this.generatedClientItems)
         );
@@ -389,8 +388,8 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         return Identifier.withDefaultNamespace(path);
     }
 
-    private Material texture(Identifier id) {
-        return new Material(id);
+    private Identifier texture(Identifier id) {
+        return id;
     }
 
     private static final String COMPRESSED_CHEST_MODEL = """
@@ -574,9 +573,11 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             }
             """;
 
+    // 1.21.11 dropped the minecraft:builtin/entity parent entirely; a special item model's
+    // "base" only needs to carry the display transforms and particle texture, so the parent
+    // line is gone. Vanilla's own chest base model follows the same shape.
     private static final String INFINITY_CHEST_ITEM_MODEL = """
             {
-              "parent": "minecraft:builtin/entity",
               "textures": {
                 "particle": "avaritia:block/resource/infinity"
               },

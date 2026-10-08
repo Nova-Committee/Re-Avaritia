@@ -35,7 +35,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -955,22 +955,22 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         return item.asItem().builtInRegistryHolder().key().identifier().getPath();
     }
 
-    private static ItemStackTemplate template(ItemLike item) {
+    private static ItemStack template(ItemLike item) {
         return template(item, 1);
     }
 
-    private static ItemStackTemplate template(ItemLike item, int count) {
-        return new ItemStackTemplate(item.asItem(), count);
+    private static ItemStack template(ItemLike item, int count) {
+        return new ItemStack(item.asItem(), count);
     }
 
     /**
      * 直接写出带组件的物品模板，避免 datagen 阶段构造真实 ItemStack 时组件尚未绑定。
      */
-    private static ItemStackTemplate singularityTemplate(Singularity singularity) {
+    private static ItemStack singularityTemplate(Singularity singularity) {
         DataComponentPatch components = DataComponentPatch.builder()
                 .set(ModDataComponents.SINGULARITY_ID.get(), singularity.getRegistryName())
                 .build();
-        return new ItemStackTemplate(ModItems.singularity.get(), components);
+        return new ItemStack(ModItems.singularity.get().builtInRegistryHolder(), 1, components);
     }
 
     private static List<String> normalizedPattern(String[] pattern) {

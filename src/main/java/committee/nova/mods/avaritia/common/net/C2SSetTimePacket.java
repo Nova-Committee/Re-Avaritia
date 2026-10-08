@@ -2,21 +2,15 @@ package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockTimes;
-import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.clock.ServerClockManager;
-import net.minecraft.world.clock.WorldClock;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Applies Infinity Clock TimeUp selections on the server.
@@ -41,18 +35,10 @@ public record C2SSetTimePacket(int time) implements CustomPacketPayload {
             context.enqueueWork(() -> {
                 if (context.player() instanceof ServerPlayer player)  {
                     var server = player.level().getServer();
-                    ServerClockManager clockManager = server.clockManager();
-                    Set<Holder<WorldClock>> updatedClocks = new HashSet<>();
-
-                    server.getAllLevels().forEach(level -> {
-                        Holder<DimensionType> dimensionType = level.dimensionTypeRegistration();
-                        dimensionType.value().defaultClock().ifPresent(clockHolder -> {
-                            if (updatedClocks.add(clockHolder)) {
-                                long currentTicks = clockManager.getTotalTicks(clockHolder);
-                                clockManager.setTotalTicks(clockHolder, InfinityClockTimes.resolveSelectedDayTime(currentTicks, packet.time()));
-                            }
-                        });
-                    });
+                    // 1.21.11 keeps day time per level, so every level is aligned directly
+                    // (26.1 de-duplicated by the shared WorldClock instead).
+                    server.getAllLevels().forEach(level -> level.setDayTime(
+                            InfinityClockTimes.resolveSelectedDayTime(level.getDayTime(), packet.time())));
                 }
 
             });

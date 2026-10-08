@@ -99,8 +99,8 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                 stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
                 markedTarget = null;
             } else if (!markedTarget.dimension().equals(level.dimension().identifier())) {
-                player.sendOverlayMessage(Component.translatable(
-                        "message.avaritia.infinity_spear.target_unavailable"));
+                player.displayClientMessage(Component.translatable(
+                        "message.avaritia.infinity_spear.target_unavailable"), true);
                 return InteractionResult.SUCCESS_SERVER;
             }
         }
@@ -122,7 +122,7 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
         LivingEntity target = SpearThrustUtils.selectRandomTarget(
                 serverLevel, serverPlayer, AUTO_TARGET_RANGE, AUTO_TARGET_POOL_SIZE);
         if (target == null) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.infinity_spear.no_target"));
+            player.displayClientMessage(Component.translatable("message.avaritia.infinity_spear.no_target"), true);
             return InteractionResult.SUCCESS_SERVER;
         }
         tryAttackTarget(serverLevel, serverPlayer, hand, target);
@@ -132,13 +132,13 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
     private static void tryAttackTarget(ServerLevel level, ServerPlayer player, InteractionHand hand,
                                         LivingEntity target) {
         if (!SpearThrustUtils.isEligibleTarget(player, target) || target.level() != level) {
-            player.sendOverlayMessage(Component.translatable(
-                    "message.avaritia.infinity_spear.target_unavailable"));
+            player.displayClientMessage(Component.translatable(
+                    "message.avaritia.infinity_spear.target_unavailable"), true);
             return;
         }
         if (!SpearThrustUtils.movePlayerToTarget(level, player, target)) {
-            player.sendOverlayMessage(Component.translatable(
-                    "message.avaritia.infinity_spear.target_unavailable"));
+            player.displayClientMessage(Component.translatable(
+                    "message.avaritia.infinity_spear.target_unavailable"), true);
             return;
         }
 
@@ -164,8 +164,8 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                         return;
                     }
                     if (error != null) {
-                        player.sendOverlayMessage(Component.translatable(
-                                "message.avaritia.infinity_spear.target_unavailable"));
+                        player.displayClientMessage(Component.translatable(
+                                "message.avaritia.infinity_spear.target_unavailable"), true);
                         return;
                     }
 
@@ -174,8 +174,8 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                             || !SpearThrustUtils.isEligibleTarget(player, target)
                             || !SpearMarkUtils.isMarkedBy(target, player)) {
                         stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-                        player.sendOverlayMessage(Component.translatable(
-                                "message.avaritia.infinity_spear.target_unavailable"));
+                        player.displayClientMessage(Component.translatable(
+                                "message.avaritia.infinity_spear.target_unavailable"), true);
                         return;
                     }
                     tryAttackTarget(level, player, hand, target);
@@ -214,7 +214,7 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
 
     // ==================== Looting 10 常驻 + 突进模式才生效的原版 LUNGE ====================
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.LOOTING)) return 10;
         if (enchantmentHolder.is(Enchantments.LUNGE) && isActive((ItemStack) stack, MODE_LUNGE)) return LUNGE_LEVEL;
         return 0;
@@ -234,8 +234,8 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                 stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(),
                         SpearTargetReference.of(target, player.getUUID(), mark.expiresAt()));
                 if (newlyMarked) {
-                    player.sendOverlayMessage(Component.translatable(
-                            "message.avaritia.infinity_spear.marked", target.getDisplayName()));
+                    player.displayClientMessage(Component.translatable(
+                            "message.avaritia.infinity_spear.marked", target.getDisplayName()), true);
                 }
             }
             // 获取是否启用无限伤害的配置选项

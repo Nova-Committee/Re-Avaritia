@@ -19,9 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ChargedProjectiles;
@@ -101,7 +99,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         ItemStack ammo = findAmmo(player);
         ItemStack projectile = ammo.isEmpty() ? new ItemStack(Items.ARROW) : ProjectileItemUtils.copySingle(ammo);
         crossbow.set(DataComponents.CHARGED_PROJECTILES,
-                ChargedProjectiles.of(ItemStackTemplate.fromNonEmptyStack(projectile)));
+                ChargedProjectiles.of(committee.nova.mods.avaritia.api.common.crafting.RecipeCodecs.fromNonEmptyStack(projectile)));
     }
 
     private void performShooting(Level level, Player player, ItemStack crossbow) {
@@ -148,7 +146,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     }
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantment) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
         return this.initEnchantment.getLevel(enchantment);
     }
 }

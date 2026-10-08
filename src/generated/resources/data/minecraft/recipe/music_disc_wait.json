@@ -10,6 +10,7 @@
     "a a"
   ],
   "result": {
+    "count": 1,
     "id": "minecraft:music_disc_wait"
   },
   "tier": 1

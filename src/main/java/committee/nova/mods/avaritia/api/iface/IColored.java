@@ -3,10 +3,10 @@ package committee.nova.mods.avaritia.api.iface;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -59,14 +59,15 @@ public interface IColored {
         }
     }
 
-    class BlockColors implements BlockTintSource {
+    /**
+     * 1.21.11 exposes block tinting through {@code BlockColor#getColor(state, level, pos, tintIndex)}.
+     * The 26.1 {@code BlockTintSource} split this into {@code color(state)} and
+     * {@code colorInWorld(state, level, pos)}; both only ever used index 0, so the single
+     * 1.21.11 method keeps that behaviour.
+     */
+    class BlockColors implements BlockColor {
         @Override
-        public int color(BlockState state) {
-            return ((IColored) state.getBlock()).getColor(0);
-        }
-
-        @Override
-        public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+        public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex) {
             return ((IColored) state.getBlock()).getColor(0);
         }
     }

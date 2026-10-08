@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.client.screen;
 
 import committee.nova.mods.avaritia.api.iface.IDataReceiver;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +16,15 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+/**
+ * 1.21.11-compatible base screen for Avaritia container GUIs.
+ *
+ * <p>The 26.1 sources used the {@code GuiGraphicsExtractor} hook family
+ * ({@code renderBackground}/{@code renderContents}/{@code renderLabels}).
+ * Minecraft 1.21.11 still uses the classic {@code render*} hooks, restored here;
+ * the mod's own {@code renderBgs}/{@code renderFg} extension points are now
+ * invoked directly from those hooks.
+ */
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener, IDataReceiver {
     protected static final int LABEL_COLOR = 0xFF404040;
 
@@ -36,7 +45,11 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     public BaseContainerScreen(T container, Inventory inventory, Component title, Identifier bgTexture, int bgWidth, int bgHeight, int bgImgWidth, int bgImgHeight) {
-        super(container, inventory, title, bgWidth, bgHeight);
+        super(container, inventory, title);
+        // 1.21.11 has only the three-argument AbstractContainerScreen constructor; the
+        // image size is carried by the protected fields instead.
+        this.imageWidth = bgWidth;
+        this.imageHeight = bgHeight;
         this.bgTexture = bgTexture;
         this.bgImgWidth = bgImgWidth;
         this.bgImgHeight = bgImgHeight;
@@ -68,32 +81,33 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.extractContents(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void renderContents(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.renderContents(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderFg(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
-    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
-        this.renderLabels(pGuiGraphics, pMouseX, pMouseY);
-    }
-
-    protected void renderLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
-        pGuiGraphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
-        pGuiGraphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
+    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        pGuiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.extractBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void renderBackground(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         if (this.bgTexture != null) pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    }
+
+    /** Vanilla's abstract background hook; forwards to the mod's own renderBgs extension point. */
+    @Override
+    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         this.renderBgs(pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
     }
 
-    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY){
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY){
     }
 
     public void dataChanged(@NotNull AbstractContainerMenu pContainerMenu, int pDataSlotIndex, int pValue) {

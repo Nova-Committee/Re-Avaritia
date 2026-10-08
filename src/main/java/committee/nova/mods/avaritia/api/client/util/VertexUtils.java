@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
 import net.minecraft.client.model.geom.builders.UVPair;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector3fc;
@@ -29,13 +29,12 @@ public class VertexUtils {
     }
 
     public static void putQuad(IVertexConsumer consumer, BakedQuad quad) {
-        BakedQuad.MaterialInfo materialInfo = quad.materialInfo();
-        consumer.setTexture(materialInfo.sprite());
+        consumer.setTexture(quad.sprite());
         consumer.setQuadOrientation(quad.direction());
-        if (materialInfo.isTinted()) {
-            consumer.setQuadTint(materialInfo.tintIndex());
+        if (quad.isTinted()) {
+            consumer.setQuadTint(quad.tintIndex());
         }
-        consumer.setApplyDiffuseLighting(materialInfo.shade());
+        consumer.setApplyDiffuseLighting(quad.shade());
         VertexFormat formatFrom = consumer.getVertexFormat();
         int countFrom = formatFrom.getElements().size();
         for (int v = 0; v < 4; v++) {

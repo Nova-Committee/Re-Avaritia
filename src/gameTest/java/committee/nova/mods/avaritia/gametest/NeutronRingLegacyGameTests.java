@@ -59,8 +59,8 @@ public final class NeutronRingLegacyGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("neutron_ring_legacy"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("neutron_ring_legacy"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         event.registerTest(CREATIVE_FULL, new FunctionGameTestInstance(CREATIVE_FULL_FN, new TestData<>(environment, EMPTY_STRUCTURE, 40, 0, true)));
         event.registerTest(CREATIVE_PARTIAL, new FunctionGameTestInstance(CREATIVE_PARTIAL_FN, new TestData<>(environment, EMPTY_STRUCTURE, 40, 0, true)));
         event.registerTest(SURVIVAL_RETRY, new FunctionGameTestInstance(SURVIVAL_RETRY_FN, new TestData<>(environment, EMPTY_STRUCTURE, 40, 0, true)));

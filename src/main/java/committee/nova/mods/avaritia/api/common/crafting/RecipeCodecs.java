@@ -13,7 +13,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
@@ -21,9 +20,18 @@ import java.util.List;
 public final class RecipeCodecs {
     public static final Codec<ItemStack> STRICT_ITEM_STACK = ItemStack.CODEC.validate(ItemStack::validateStrict);
     public static final Codec<Ingredient> LEGACY_INGREDIENT = legacyIngredientCodec();
-    public static final Codec<ItemStackTemplate> LEGACY_ITEM_STACK_TEMPLATE = legacyItemStackTemplateCodec();
+    public static final Codec<ItemStack> LEGACY_ITEM_STACK_TEMPLATE = legacyItemStackCodec();
 
     private RecipeCodecs() {
+    }
+
+    /**
+     * Minecraft 1.21.11 has no {@code ItemStackTemplate}; the 26.1 sources wrapped
+     * recipe results in one. {@code fromNonEmptyStack} is the identity on a plain
+     * {@link ItemStack}, so it is kept as a named helper at the original call sites.
+     */
+    public static ItemStack fromNonEmptyStack(ItemStack stack) {
+        return stack;
     }
 
     public static Codec<NonNullList<Ingredient>> ingredientList(int max, boolean allowEmpty, String recipeName) {
@@ -49,8 +57,8 @@ public final class RecipeCodecs {
         return Codec.PASSTHROUGH.flatXmap(RecipeCodecs::decodeLegacyIngredient, RecipeCodecs::encodeIngredient);
     }
 
-    private static Codec<ItemStackTemplate> legacyItemStackTemplateCodec() {
-        return Codec.PASSTHROUGH.flatXmap(RecipeCodecs::decodeLegacyItemStackTemplate, RecipeCodecs::encodeItemStackTemplate);
+    private static Codec<ItemStack> legacyItemStackCodec() {
+        return Codec.PASSTHROUGH.flatXmap(RecipeCodecs::decodeLegacyItemStack, RecipeCodecs::encodeItemStack);
     }
 
     private static DataResult<Ingredient> decodeLegacyIngredient(Dynamic<?> input) {
@@ -68,17 +76,17 @@ public final class RecipeCodecs {
                 .map(json -> new Dynamic<>(JsonOps.INSTANCE, json));
     }
 
-    private static DataResult<ItemStackTemplate> decodeLegacyItemStackTemplate(Dynamic<?> input) {
+    private static DataResult<ItemStack> decodeLegacyItemStack(Dynamic<?> input) {
         if (input.getValue() instanceof JsonElement json) {
             @SuppressWarnings("unchecked")
             DynamicOps<JsonElement> ops = (DynamicOps<JsonElement>) input.getOps();
-            return ItemStackTemplate.CODEC.parse(ops, normalizeLegacyItemStack(json));
+            return ItemStack.CODEC.parse(ops, normalizeLegacyItemStack(json));
         }
-        return ItemStackTemplate.CODEC.parse(input);
+        return ItemStack.CODEC.parse(input);
     }
 
-    private static DataResult<Dynamic<?>> encodeItemStackTemplate(ItemStackTemplate template) {
-        return ItemStackTemplate.CODEC
+    private static DataResult<Dynamic<?>> encodeItemStack(ItemStack template) {
+        return ItemStack.CODEC
                 .encodeStart(JsonOps.INSTANCE, template)
                 .map(json -> new Dynamic<>(JsonOps.INSTANCE, json));
     }

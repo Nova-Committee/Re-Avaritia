@@ -40,45 +40,27 @@ config = "${mod_id}.mixins.json"
     side = "BOTH"
 
 # ── 可选兼容 ──────────────────────────────────────────────
+# 注意：FML 对「已安装但版本不满足」的依赖报的是**致命错误**，即使类型是 optional。
+# 所以这些版本下限必须低于目标环境里实际安装的版本，否则会直接导致启动失败。
+# 下面两个下限分别对应 1.21.11 环境里实际在用的 JEI 27.4.0.22 与 Jade 21.1.3。
 
 [[dependencies.${mod_id}]]
     modId = "jei"
     type = "optional"
-    versionRange = "[29.6.2.31,)"
+    versionRange = "[27.4.0,)"
     ordering = "NONE"
     side = "CLIENT"
 
 [[dependencies.${mod_id}]]
     modId = "jade"
     type = "optional"
-    versionRange = "[15,)"
+    versionRange = "[21.1.3,)"
     ordering = "NONE"
     side = "BOTH"
 
 [[dependencies.${mod_id}]]
     modId = "curios"
     type = "optional"
-    versionRange = "[9,)"
+    versionRange = "[14.0.0,)"
     ordering = "NONE"
-    side = "BOTH"
-
-[[dependencies.${mod_id}]]
-    modId = "kubejs"
-    type = "optional"
-    versionRange = "[26.1.2-8.0.1,)"
-    ordering = "NONE"
-    side = "BOTH"
-
-[[dependencies.${mod_id}]]
-    modId = "rhino"
-    type = "optional"
-    versionRange = "[2101.2.7-build.85,)"
-    ordering = "NONE"
-    side = "BOTH"
-
-[[dependencies.${mod_id}]]
-    modId = "equivox"
-    type = "optional"
-    versionRange = "[1.4.0,)"
-    ordering = "AFTER"
     side = "BOTH"

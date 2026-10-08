@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.api.common.crafting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -48,7 +47,7 @@ public interface ITierCraftingRecipe extends Recipe<TierInput> {
     }
 
     @Override
-    default @NotNull ItemStack assemble(@NotNull TierInput input) {
+    default @NotNull ItemStack assemble(@NotNull TierInput input, net.minecraft.core.HolderLookup.Provider registries) {
         return this.getResultItem(null).copy();
     }
 
@@ -79,7 +78,7 @@ public interface ITierCraftingRecipe extends Recipe<TierInput> {
         }
         return List.of(new ShapelessCraftingRecipeDisplay(
                 this.getIngredients().stream().map(Ingredient::display).toList(),
-                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(result)),
+                new SlotDisplay.ItemStackSlotDisplay(committee.nova.mods.avaritia.api.common.crafting.RecipeCodecs.fromNonEmptyStack(result)),
                 new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
         ));
     }

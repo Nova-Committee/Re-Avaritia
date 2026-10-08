@@ -3,6 +3,7 @@
   "ingredient": "avaritia:neutron_ingot",
   "inputCount": 4096,
   "result": {
+    "count": 1,
     "id": "avaritia:full_matter_cluster"
   },
   "timeCost": 240

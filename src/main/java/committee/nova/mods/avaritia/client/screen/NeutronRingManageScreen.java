@@ -13,7 +13,7 @@ import committee.nova.mods.avaritia.common.net.S2CNeutronRingOpenPack;
 import committee.nova.mods.avaritia.common.net.S2CNeutronRingPreviewPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
@@ -262,7 +262,7 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     @Override
-    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
+    protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
         graphics.fill(0, 0, width, height, 0xA0000000);
         PortableUi.panel(graphics, panel);
         UiInspector.region("neutron.panel", panel, null, false);
@@ -272,13 +272,13 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.library", spaces.size()),
                 library.left(), panel.top() + 33, library.width(), PortableUi.MUTED);
         UiInspector.region("neutron.preview.content", previewContent, previewContent, previewEntry != null);
         if (previewEntry == null) {
-            graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
+            graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
                     previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
         } else {
             PortableUi.text(graphics, font, Component.literal(previewEntry.name() + " · "
@@ -287,11 +287,11 @@ public final class NeutronRingManageScreen extends Screen {
             NeutronSpacePreview preview = previews.get(previewEntry.id());
             if (previewMissing && preview == null) {
                 graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
-                graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
+                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
                         previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else if (preview == null) {
                 graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
-                graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
+                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
                         previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else {
                 renderer.draw(graphics, previewContent.left(), previewContent.top(), previewContent.width(), previewContent.height(),
@@ -302,7 +302,7 @@ public final class NeutronRingManageScreen extends Screen {
             UiInspector.region("neutron.preview.hint", previewHint, null, false);
         }
         if (list.children().isEmpty()) {
-            graphics.textWithWordWrap(font, Component.translatable(query.isBlank()
+            graphics.drawWordWrap(font, Component.translatable(query.isBlank()
                             ? "gui.avaritia.neutron_ring.empty_list" : "gui.avaritia.portable.no_results"),
                     list.getX() + 8, list.getY() + 12, list.getWidth() - 16, PortableUi.MUTED);
         }
@@ -589,7 +589,7 @@ public final class NeutronRingManageScreen extends Screen {
             return super.mouseClicked(event, doubleClick);
         }
 
-        void renderNameTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        void renderNameTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
             SpaceEntry hovered = getHovered();
             if (hovered != null && font.width(hovered.space.name()) > getRowWidth() - 8) {
                 graphics.setTooltipForNextFrame(font, Component.literal(hovered.space.name()), mouseX, mouseY);
@@ -606,7 +606,7 @@ public final class NeutronRingManageScreen extends Screen {
             }
 
             @Override
-            public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
                 int left = getX();
                 int top = getY();
                 int width = getWidth();

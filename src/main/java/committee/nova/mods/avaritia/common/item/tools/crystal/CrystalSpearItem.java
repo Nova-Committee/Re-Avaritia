@@ -99,8 +99,8 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
         long gameTime = serverLevel.getGameTime();
         CrystalSpearCooldown cooldown = stack.get(ModDataComponents.CRYSTAL_SPEAR_COOLDOWN.get());
         if (cooldown != null && cooldown.isActive(gameTime)) {
-            player.sendOverlayMessage(Component.translatable(
-                    "message.avaritia.crystal_spear.cooldown", cooldown.remainingSeconds(gameTime)));
+            player.displayClientMessage(Component.translatable(
+                    "message.avaritia.crystal_spear.cooldown", cooldown.remainingSeconds(gameTime)), true);
             return InteractionResult.SUCCESS_SERVER;
         }
         refreshCompletedCooldown(stack, gameTime);
@@ -112,20 +112,20 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
         }
         if (remainingThrusts <= 0) {
             CrystalSpearCooldown startedCooldown = startCooldown(stack, gameTime);
-            player.sendOverlayMessage(Component.translatable(
-                    "message.avaritia.crystal_spear.cooldown", startedCooldown.remainingSeconds(gameTime)));
+            player.displayClientMessage(Component.translatable(
+                    "message.avaritia.crystal_spear.cooldown", startedCooldown.remainingSeconds(gameTime)), true);
             return InteractionResult.SUCCESS_SERVER;
         }
 
         LivingEntity target = SpearThrustUtils.selectRandomTarget(
                 serverLevel, serverPlayer, AUTO_TARGET_RANGE, AUTO_TARGET_POOL_SIZE);
         if (target == null) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.no_target"));
+            player.displayClientMessage(Component.translatable("message.avaritia.crystal_spear.no_target"), true);
             return InteractionResult.SUCCESS_SERVER;
         }
 
         if (!SpearThrustUtils.movePlayerToTarget(serverLevel, serverPlayer, target)) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_unavailable"));
+            player.displayClientMessage(Component.translatable("message.avaritia.crystal_spear.target_unavailable"), true);
             return InteractionResult.SUCCESS_SERVER;
         }
 
@@ -135,8 +135,8 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(), nextRemaining);
             if (nextRemaining == 0) {
                 startCooldown(stack, gameTime);
-                player.sendOverlayMessage(Component.translatable(
-                        "message.avaritia.crystal_spear.exhausted", CrystalSpearCooldown.DURATION_TICKS / 20));
+                player.displayClientMessage(Component.translatable(
+                        "message.avaritia.crystal_spear.exhausted", CrystalSpearCooldown.DURATION_TICKS / 20), true);
             }
         }
         return InteractionResult.SUCCESS_SERVER;
@@ -170,8 +170,8 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             boolean newlyMarked = !SpearMarkUtils.isMarkedBy(target, player);
             SpearMarkUtils.apply(target, player);
             if (newlyMarked) {
-                player.sendOverlayMessage(Component.translatable(
-                        "message.avaritia.crystal_spear.marked", target.getDisplayName()));
+                player.displayClientMessage(Component.translatable(
+                        "message.avaritia.crystal_spear.marked", target.getDisplayName()), true);
             }
 
             // 破盾：被击中的持盾玩家盾牌失效（只强制停用+冷却）

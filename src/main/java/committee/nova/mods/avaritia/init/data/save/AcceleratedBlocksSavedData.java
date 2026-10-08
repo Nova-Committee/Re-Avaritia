@@ -31,7 +31,7 @@ public class AcceleratedBlocksSavedData extends SavedData {
     public static final Codec<AcceleratedBlocksSavedData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DIMENSION_ENTRY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(AcceleratedBlocksSavedData::toEntries)
     ).apply(instance, AcceleratedBlocksSavedData::fromEntries));
-    public static final SavedDataType<AcceleratedBlocksSavedData> TYPE = new SavedDataType<>(Const.rl(NAME), AcceleratedBlocksSavedData::new, CODEC);
+    public static final SavedDataType<AcceleratedBlocksSavedData> TYPE = new SavedDataType<>(Const.rl(NAME).getPath(), AcceleratedBlocksSavedData::new, CODEC);
 
     private final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
 
