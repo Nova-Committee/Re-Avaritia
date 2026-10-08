@@ -55,7 +55,9 @@ class InfinityChestMenuTest {
                 () -> assertEquals(15, InfinityChestContainer.WIDTH),
                 () -> assertEquals(7, InfinityChestContainer.HEIGHT),
                 () -> assertEquals(105, InfinityChestContainer.SIZE),
-                () -> assertTrue(screen.contains("super(menu,inventory,title,302,238)")),
+                () -> assertTrue(screen.contains("super(menu,inventory,title)")),
+                () -> assertTrue(screen.contains("this.imageWidth=302")),
+                () -> assertTrue(screen.contains("this.imageHeight=238")),
                 () -> assertTrue(screen.contains("LEGACY_PLAYER_SECTION_Y"))
         );
     }
