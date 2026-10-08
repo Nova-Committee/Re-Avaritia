@@ -74,6 +74,11 @@ repositories {
         }
         filter {
             includeGroup "mezz.jei"
+            // The 1.21.11 JEI build pulls mezz_config in as a transitive dependency.
+            // It lives in this same repository, but exclusiveContent only consults
+            // the repository for the groups listed here, so the group has to be
+            // declared too or testRuntimeClasspath fails to resolve.
+            includeGroup "net.mezzdev.config"
         }
     }
     exclusiveContent {
