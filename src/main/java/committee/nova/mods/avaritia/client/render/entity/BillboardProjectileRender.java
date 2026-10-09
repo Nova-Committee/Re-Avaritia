@@ -24,7 +24,12 @@ public class BillboardProjectileRender<T extends Entity> extends EntityRenderer<
     public BillboardProjectileRender(EntityRendererProvider.Context context, Identifier texture, float scale) {
         super(context);
         this.texture = texture;
-        this.renderType = RenderTypes.entityCutout(texture);
+        // 1.21.11's CameraRenderState.orientation is the camera rotation itself (as in
+        // vanilla's DragonFireballRenderer), so the quad already faces the camera. The
+        // 26.1 code additionally flipped it on Y, and with backface culling that turned
+        // the whole quad away and made every billboard projectile invisible. NoCull
+        // matches vanilla and keeps them visible regardless of facing.
+        this.renderType = RenderTypes.entityCutoutNoCull(texture);
         this.scale = scale;
     }
 
@@ -47,7 +52,6 @@ public class BillboardProjectileRender<T extends Entity> extends EntityRenderer<
         poseStack.pushPose();
         poseStack.scale(this.scale, this.scale, this.scale);
         poseStack.mulPose(cameraState.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         output.submitCustomGeometry(poseStack, this.renderType, (pose, vertexConsumer) -> {
             vertex(vertexConsumer, pose, state.lightCoords, 0.0F, 0, 0, 1);
             vertex(vertexConsumer, pose, state.lightCoords, 1.0F, 0, 1, 1);
