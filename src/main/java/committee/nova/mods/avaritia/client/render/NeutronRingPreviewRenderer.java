@@ -104,6 +104,10 @@ public final class NeutronRingPreviewRenderer {
         line(pose, lines, x1, y0, z1, x1, y1, z1, r, g, b, a);
     }
 
+    /** 线宽（原版 DebugScreenOverlay 画线用的值）。
+     */
+    private static final float LINE_WIDTH = 4.0F;
+
     private static void line(PoseStack.Pose pose, VertexConsumer lines, float x0, float y0, float z0,
                              float x1, float y1, float z1, float r, float g, float b, float a) {
         float dx = x1 - x0;
@@ -116,8 +120,13 @@ public final class NeutronRingPreviewRenderer {
         dx /= len;
         dy /= len;
         dz /= len;
-        lines.addVertex(pose, x0, y0, z0).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
-        lines.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
+        // RenderTypes.lines() 的顶点格式含 LINE_WIDTH 元素，不写就会在
+        // BufferBuilder.endLastVertex 抛 "Missing elements in vertex: LineWidth"。
+        // 原版 DebugScreenOverlay 画线用的是 4.0F。
+        lines.addVertex(pose, x0, y0, z0).setColor(r, g, b, a)
+                .setNormal(pose, dx, dy, dz).setLineWidth(LINE_WIDTH);
+        lines.addVertex(pose, x1, y1, z1).setColor(r, g, b, a)
+                .setNormal(pose, dx, dy, dz).setLineWidth(LINE_WIDTH);
     }
 
     private static ItemStack ring(Player player) {
