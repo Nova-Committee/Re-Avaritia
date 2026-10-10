@@ -19,7 +19,7 @@ class StackIngredientTest {
         String source = compact(Files.readString(STACK_INGREDIENT_SOURCE));
 
         assertTrue(source.contains("publicSlotDisplaydisplay()"));
-        assertTrue(source.contains("newSlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.item))"));
+        assertTrue(source.contains("newSlotDisplay.ItemStackSlotDisplay(committee.nova.mods.avaritia.api.common.crafting.RecipeCodecs.fromNonEmptyStack(this.item))"));
     }
 
     @Test

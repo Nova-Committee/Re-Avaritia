@@ -31,14 +31,16 @@ public class InfinityShieldItem extends ShieldItem implements ISwitchable, IUnda
                 .stacksTo(1)
                 .fireResistant()
                 .equippableUnswappable(EquipmentSlot.OFFHAND)
-                .delayedComponent(
+                // 1.21.11's BlocksAttacks stores the bypass TagKey directly, so no
+                // registry context is needed and the 26.1 delayedComponent indirection goes away.
+                .component(
                         DataComponents.BLOCKS_ATTACKS,
-                        context -> new BlocksAttacks(
+                        new BlocksAttacks(
                                 0.01F,
                                 0F,
                                 List.of(new BlocksAttacks.DamageReduction(180.0F, Optional.empty(), 9999.0F, 1.0F)),
                                 new BlocksAttacks.ItemDamageFunction(9999.0F, 0F, 0.01F),
-                                Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
+                                Optional.of(DamageTypeTags.BYPASSES_SHIELD),
                                 Optional.of(SoundEvents.SHIELD_BLOCK),
                                 Optional.of(SoundEvents.SHIELD_BREAK)
                         )

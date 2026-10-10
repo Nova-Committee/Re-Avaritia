@@ -16,14 +16,13 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -52,6 +51,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.textures.FluidSpriteCache;
 
 public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu> {
     private static final int LIST_X = 8;
@@ -176,9 +177,10 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
                     EntityType<?> type = creature.entityType();
                     ItemStack icon = type == null ? new ItemStack(Items.WATER_BUCKET)
                             : creatureIcons.computeIfAbsent(type, key ->
-                            SpawnEggItem.byId(key).map(holder -> new ItemStack(holder.value()))
-                                    .orElse(new ItemStack(Items.WATER_BUCKET)));
-                    rows.add(new Row(i, null, creature, name, Component.literal(id), id, icon));
+                            {
+                                SpawnEggItem egg = SpawnEggItem.byId(key);
+                                return egg == null ? new ItemStack(Items.WATER_BUCKET) : new ItemStack(egg);
+                            });
                 }
             }
         } else {
@@ -226,9 +228,9 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         ensureCache();
-        super.extractContents(graphics, mouseX, mouseY, partialTick);
+        super.renderContents(graphics, mouseX, mouseY, partialTick);
         if (!overlayOpen()) {
             Row row = hoveredRow(mouseX, mouseY);
             if (row != null) {
@@ -239,7 +241,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     }
 
     @Override
-    protected void renderBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
+    protected void renderBgs(GuiGraphics graphics, float partialTick, int x, int y) {
         PortableUi.panel(graphics, panel);
         UiInspector.region("bucket.panel", panel, null, false);
         PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
@@ -252,7 +254,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         drawScrollbar(graphics);
     }
 
-    private void drawScrollbar(GuiGraphicsExtractor graphics) {
+    private void drawScrollbar(GuiGraphics graphics) {
         int extra = Math.max(0, rows.size() - VISIBLE_ROWS);
         int barH = scrollbar.height();
         int handleH = extra <= 0 ? barH : Math.max(8, LIST_HEIGHT * VISIBLE_ROWS / rows.size());
@@ -264,12 +266,12 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     }
 
     @Override
-    protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         PortableUi.text(graphics, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 164, PortableUi.MUTED);
     }
 
     @Override
-    protected void renderFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int x = list.left();
         int y = list.top();
         UiInspector.region("bucket.list", list, list, true);
@@ -277,8 +279,8 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         if (rows.isEmpty()) {
             Component empty = Component.translatable(sourceCount == 0
                     ? "gui.avaritia.infinity_bucket.empty" : "gui.avaritia.infinity_bucket.no_results");
-            graphics.centeredText(font, empty, x + LIST_WIDTH / 2, y + 14, PortableUi.TEXT);
-            graphics.textWithWordWrap(font, HINT, x + 12, y + 32, LIST_WIDTH - 24, PortableUi.MUTED);
+            graphics.drawCenteredString(font, empty, x + LIST_WIDTH / 2, y + 14, PortableUi.TEXT);
+            graphics.drawWordWrap(font, HINT, x + 12, y + 32, LIST_WIDTH - 24, PortableUi.MUTED);
             graphics.disableScissor();
             return;
         }
@@ -297,16 +299,15 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             if (row.fluid != null) {
                 renderFluidIcon(graphics, row.fluid, x + 1, top + 1);
             } else {
-                graphics.item(row.icon, x + 1, top + 1);
+                graphics.renderItem(row.icon, x + 1, top + 1);
             }
         }
         graphics.disableScissor();
     }
 
-    private void renderFluidIcon(GuiGraphicsExtractor graphics, FluidStack fluid, int x, int y) {
-        FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet()
-                .get(fluid.getFluid().defaultFluidState());
-        TextureAtlasSprite sprite = model.stillMaterial().sprite();
+    private void renderFluidIcon(GuiGraphics graphics, FluidStack fluid, int x, int y) {
+        TextureAtlasSprite sprite = FluidSpriteCache.getSprite(
+                IClientFluidTypeExtensions.of(fluid.getFluid()).getStillTexture());
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, 16, 16);
     }
 

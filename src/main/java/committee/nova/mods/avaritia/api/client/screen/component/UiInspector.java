@@ -12,7 +12,7 @@ import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -21,7 +21,7 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.fog.FogRenderer;
-import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.api.distmarker.Dist;
@@ -289,7 +289,7 @@ public final class UiInspector {
                 }
             }
         }
-        GuiGraphicsExtractor graphics = event.getGuiGraphics();
+        GuiGraphics graphics = event.getGuiGraphics();
         if (State.requested) {
             State.requested = false;
             WindowInfo window = WindowInfo.capture(Minecraft.getInstance().getWindow());
@@ -397,7 +397,7 @@ public final class UiInspector {
         return result == null ? ScreenRectangle.empty() : result;
     }
 
-    private static void annotate(GuiGraphicsExtractor graphics, List<Element> elements, List<Issue> issues) {
+    private static void annotate(GuiGraphics graphics, List<Element> elements, List<Issue> issues) {
         Minecraft minecraft = Minecraft.getInstance();
         Window window = minecraft.getWindow();
         double mouseX = minecraft.mouseHandler.getScaledXPos(window);
@@ -433,7 +433,7 @@ public final class UiInspector {
         graphics.fill(0, y, window.getGuiScaledWidth(), window.getGuiScaledHeight(), 0xDD000000);
         Font font = minecraft.font;
         for (String line : lines) {
-            graphics.text(font, font.plainSubstrByWidth(line, Math.max(0, window.getGuiScaledWidth() - 4)), 2, y + 2, 0xFFFFFFFF, false);
+            graphics.drawString(font, font.plainSubstrByWidth(line, Math.max(0, window.getGuiScaledWidth() - 4)), 2, y + 2, 0xFFFFFFFF, false);
             y += 10;
         }
     }
@@ -442,8 +442,8 @@ public final class UiInspector {
         Window window = minecraft.getWindow();
         int mouseX = (int) minecraft.mouseHandler.getScaledXPos(window);
         int mouseY = (int) minecraft.mouseHandler.getScaledYPos(window);
-        GuiRenderState state = minecraft.gameRenderer.getGameRenderState().guiRenderState;
-        GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(minecraft, state, mouseX, mouseY);
+        GuiRenderState state = minecraft.gameRenderer.guiRenderState;
+        GuiGraphics graphics = new GuiGraphics(minecraft, state, mouseX, mouseY);
         graphics.nextStratum();
         annotate(graphics, elements, issues);
         var target = minecraft.getMainRenderTarget();
@@ -457,9 +457,9 @@ public final class UiInspector {
         return bounds == null ? "none" : bounds.left() + "," + bounds.top() + " " + bounds.width() + "x" + bounds.height();
     }
 
-    private static void outline(GuiGraphicsExtractor graphics, ScreenRectangle bounds, int color) {
+    private static void outline(GuiGraphics graphics, ScreenRectangle bounds, int color) {
         if (positive(bounds)) {
-            graphics.outline(bounds.left(), bounds.top(), bounds.width(), bounds.height(), color);
+            graphics.renderOutline(bounds.left(), bounds.top(), bounds.width(), bounds.height(), color);
         }
     }
 

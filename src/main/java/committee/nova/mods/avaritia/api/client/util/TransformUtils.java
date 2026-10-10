@@ -6,8 +6,8 @@ import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.utils.math.MathUtils;
 import committee.nova.mods.avaritia.api.utils.vec.Vector3;
-import net.minecraft.client.resources.model.cuboid.ItemTransform;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -148,7 +148,7 @@ public class TransformUtils {
     }
 
     public static Transformation create(ItemTransform transform) {
-        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.IDENTITY;
+        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.identity();
 
         return create(transform.translation(), transform.rotation(), transform.scale());
     }

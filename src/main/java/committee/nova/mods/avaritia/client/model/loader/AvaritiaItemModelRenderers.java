@@ -8,18 +8,20 @@ import committee.nova.mods.avaritia.client.render.util.ArcRender;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -42,13 +44,32 @@ import java.util.function.Consumer;
  * 真正把 halo、pulse、effect、三叉戟和弧光提交到 {@link SubmitNodeCollector} 的逻辑集中放在这里。
  */
 public final class AvaritiaItemModelRenderers {
+    /**
+     * 26.1 read the render type straight off the quad via {@code materialInfo().itemRenderType()},
+     * which 1.21.11's BakedQuad no longer carries. The information is not actually lost though:
+     * vanilla's own {@code BlockModelWrapper.detectRenderType} derives it from the quad's sprite,
+     * picking the items sheet for sprites in the item atlas and the block-item sheet for sprites
+     * in the block atlas. Hard-coding the block-item sheet (as this used to) samples the wrong
+     * atlas for item-atlas sprites, which showed up as misplaced/swapped textures and opaque
+     * backgrounds on the affected items.
+     */
+    private static RenderType renderTypeFor(BakedQuad quad) {
+        Identifier atlas = quad.sprite().atlasLocation();
+        return TextureAtlas.LOCATION_ITEMS.equals(atlas)
+                ? Sheets.translucentItemSheet()
+                : Sheets.translucentBlockItemSheet();
+    }
     public static final SpecialModelRenderer<EffectLayerArgument> EFFECT = new EffectSpecialRenderer();
     public static final SpecialModelRenderer<HaloLayerArgument> HALO = new HaloSpecialRenderer();
     public static final SpecialModelRenderer<PulseLayerArgument> PULSE = new PulseSpecialRenderer();
     public static final SpecialModelRenderer<TridentLayerArgument> TRIDENT = new TridentSpecialRenderer();
     public static final SpecialModelRenderer<ArcLayerArgument> ARC = new ArcSpecialRenderer();
 
-    private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
+    /**
+     * 26.1 packed the pulse tint as 0x99FFFFFF and handed it to {@code QuadInstance}.
+     * 1.21.11's {@code putBulkData} takes float RGBA, so only the alpha is needed here.
+     */
+    private static final float PULSE_ALPHA = 0x99 / 255.0F;
     // halo 与 pulse 是底模背后的背景层；普通物品保持 order(0)，星空遮罩使用 order(1)。
     private static final int ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER = -1;
     // effect 覆盖层要排在基础物品层之后，才能让星空遮罩覆盖在原模型上而不是抢先写入。
@@ -80,7 +101,7 @@ public final class AvaritiaItemModelRenderers {
         private static Map<RenderType, List<BakedQuad>> groupQuadsByRenderType(List<BakedQuad> quads) {
             Map<RenderType, List<BakedQuad>> grouped = new LinkedHashMap<>();
             for (BakedQuad quad : quads) {
-                grouped.computeIfAbsent(quad.materialInfo().itemRenderType(), ignored -> new ArrayList<>()).add(quad);
+                grouped.computeIfAbsent(renderTypeFor(quad), ignored -> new ArrayList<>()).add(quad);
             }
             grouped.replaceAll((renderType, group) -> List.copyOf(group));
             return Collections.unmodifiableMap(grouped);
@@ -90,7 +111,7 @@ public final class AvaritiaItemModelRenderers {
     public static List<RenderType> itemRenderTypes(List<BakedQuad> quads) {
         LinkedHashSet<RenderType> renderTypes = new LinkedHashSet<>();
         for (BakedQuad quad : quads) {
-            renderTypes.add(quad.materialInfo().itemRenderType());
+            renderTypes.add(renderTypeFor(quad));
         }
         return List.copyOf(renderTypes);
     }
@@ -103,7 +124,7 @@ public final class AvaritiaItemModelRenderers {
 
     private static final class HaloSpecialRenderer implements SpecialModelRenderer<HaloLayerArgument> {
         @Override
-        public void submit(@Nullable HaloLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+        public void submit(@Nullable HaloLayerArgument argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
             if (argument == null) {
                 return;
@@ -111,7 +132,7 @@ public final class AvaritiaItemModelRenderers {
 
             // halo 使用圆形自定义几何，避免旧式单张方形透明贴图在 JEI/创造栏中露出方边。
             TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
-                    .get(new SpriteId(Const.HALO_ATLAS_LOCATION, argument.texture()));
+                    .get(new Material(Const.HALO_ATLAS_LOCATION, argument.texture()));
             RenderType renderType = NeoForgeRenderTypes.getItemLayeredTranslucent(sprite.atlasLocation());
             submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER).submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
                 renderCircularHalo(pose, buffer, sprite, argument.setting(), lightCoords, overlayCoords);
@@ -172,7 +193,7 @@ public final class AvaritiaItemModelRenderers {
 
     private static final class PulseSpecialRenderer implements SpecialModelRenderer<PulseLayerArgument> {
         @Override
-        public void submit(@Nullable PulseLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+        public void submit(@Nullable PulseLayerArgument argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
             if (argument == null || argument.quadsByRenderType().isEmpty()) {
                 return;
@@ -181,13 +202,8 @@ public final class AvaritiaItemModelRenderers {
             for (Map.Entry<RenderType, List<BakedQuad>> entry : argument.quadsByRenderType().entrySet()) {
                 submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER)
                         .submitCustomGeometry(poseStack, entry.getKey(), (pose, buffer) -> {
-                    QuadInstance instance = new QuadInstance();
-                    instance.setColor(PULSE_ALPHA_COLOR);
-                    instance.setLightCoords(lightCoords);
-                    instance.setOverlayCoords(overlayCoords);
-
                     for (BakedQuad quad : entry.getValue()) {
-                        buffer.putBakedQuad(pose, quad, instance);
+                        buffer.putBulkData(pose, quad, 1.0F, 1.0F, 1.0F, PULSE_ALPHA, lightCoords, overlayCoords);
                     }
                 });
             }
@@ -205,7 +221,7 @@ public final class AvaritiaItemModelRenderers {
 
     private static final class TridentSpecialRenderer implements SpecialModelRenderer<TridentLayerArgument> {
         @Override
-        public void submit(@Nullable TridentLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+        public void submit(@Nullable TridentLayerArgument argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
             if (argument == null || argument.models().isEmpty()) {
                 return;
@@ -250,7 +266,7 @@ public final class AvaritiaItemModelRenderers {
 
     private static final class ArcSpecialRenderer implements SpecialModelRenderer<ArcLayerArgument> {
         @Override
-        public void submit(@Nullable ArcLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+        public void submit(@Nullable ArcLayerArgument argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
             if (argument == null) {
                 return;
@@ -281,7 +297,7 @@ public final class AvaritiaItemModelRenderers {
 
     private static final class EffectSpecialRenderer implements SpecialModelRenderer<EffectLayerArgument> {
         @Override
-        public void submit(@Nullable EffectLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+        public void submit(@Nullable EffectLayerArgument argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
             if (argument == null || argument.quads().isEmpty()) {
                 return;
@@ -292,13 +308,8 @@ public final class AvaritiaItemModelRenderers {
             submitNodeCollector.order(ITEM_EFFECT_OVERLAY_SUBMIT_ORDER)
                     .submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
                         flushBaseLayers(argument.baseRenderTypes(), hasFoil);
-                        QuadInstance instance = new QuadInstance();
-                        instance.setColor(-1);
-                        instance.setLightCoords(lightCoords);
-                        instance.setOverlayCoords(overlayCoords);
-
                         for (BakedQuad quad : argument.quads()) {
-                            buffer.putBakedQuad(pose, quad, instance);
+                            buffer.putBulkData(pose, quad, 1.0F, 1.0F, 1.0F, 1.0F, lightCoords, overlayCoords);
                         }
                     });
         }
@@ -309,7 +320,7 @@ public final class AvaritiaItemModelRenderers {
             for (RenderType baseRenderType : baseRenderTypes) {
                 bufferSource.endBatch(baseRenderType);
                 if (hasFoil) {
-                    bufferSource.endBatch(ItemFeatureRenderer.getFoilRenderType(baseRenderType, true));
+                    bufferSource.endBatch(RenderTypes.glintTranslucent());
                 }
             }
         }

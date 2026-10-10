@@ -21,7 +21,6 @@ import net.minecraft.client.renderer.item.ConditionalItemModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.RangeSelectItemModel;
 import net.minecraft.client.renderer.item.properties.select.DisplayContext;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -656,7 +655,7 @@ public class AvaritiaModelProvider implements DataProvider {
         return List.of(new RainbowTintSource(), new RainbowTintSource());
     }
 
-    private Material texture(Identifier id) {
-        return new Material(id);
+    private Identifier texture(Identifier id) {
+        return id;
     }
 }

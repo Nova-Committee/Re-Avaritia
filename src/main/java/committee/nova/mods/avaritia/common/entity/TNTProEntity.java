@@ -51,6 +51,9 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        // 父类 ThrowableItemProjectile 会在这里登记承载体携带的物品；不调用 super 就会漏掉那一项，
+        // 服务端与客户端的槽位编号随之错位，触发「has not defined synched data value」。
+        super.defineSynchedData(builder);
         builder.define(DATA_FUSE_ID, 80);
     }
 
@@ -117,7 +120,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
         if (fuse <= 0) {
             this.explodeAndRemove();
         } else {
-            this.updateFluidInteraction();
+            this.updateInWaterStateAndDoFluidPushing();
             if (this.level().isClientSide()) {
                 this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5D, this.getZ(), 0.0D, 0.0D, 0.0D);
             }

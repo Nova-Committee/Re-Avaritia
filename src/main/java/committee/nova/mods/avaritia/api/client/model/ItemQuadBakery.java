@@ -1,12 +1,10 @@
 package committee.nova.mods.avaritia.api.client.model;
 
-import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.model.geom.builders.UVPair;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
@@ -17,6 +15,12 @@ import java.util.List;
 
 /**
  * Created by covers1624 on 13/02/2017.
+ *
+ * <p>Backported to 1.21.11: 26.1's {@code BakedQuad} took a {@code BakedQuad.MaterialInfo}
+ * bundling the sprite, chunk layer, render type, tint index, shade flag and light
+ * emission. The 1.21.11 {@code BakedQuad} record has no such field, so those values are
+ * passed individually. The render type is no longer carried per quad — 1.21.11 selects it
+ * at the model/layer level — so {@code renderType} is kept only for call-site compatibility.
  */
 public class ItemQuadBakery {
 
@@ -51,27 +55,16 @@ public class ItemQuadBakery {
     }
 
     private static List<BakedQuad> bakeItem(ModelState state, RenderType renderType, float depthOffset, TextureAtlasSprite... sprites) {
-        // LambdaUtils.checkArgument(sprites, "Sprites must not be Null or empty!", ArrayUtils::isNullOrContainsNull);
-
         List<BakedQuad> quads = new LinkedList<>();
         for (int i = 0; i < sprites.length; i++) {
             TextureAtlasSprite sprite = sprites[i];
-            BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
-                    sprite,
-                    ChunkSectionLayer.TRANSLUCENT,
-                    renderType != null ? renderType : RenderTypes.itemTranslucent(sprite.atlasLocation()),
-                    i,
-                    true,
-                    0
-            );
-            quads.add(frontFace(state, materialInfo, depthOffset));
-            quads.add(backFace(state, materialInfo, depthOffset));
+            quads.add(frontFace(state, sprite, i, depthOffset));
+            quads.add(backFace(state, sprite, i, depthOffset));
         }
         return quads;
     }
 
-    private static BakedQuad frontFace(ModelState state, BakedQuad.MaterialInfo materialInfo, float depthOffset) {
-        TextureAtlasSprite sprite = materialInfo.sprite();
+    private static BakedQuad frontFace(ModelState state, TextureAtlasSprite sprite, int tintIndex, float depthOffset) {
         return new BakedQuad(
                 transform(state, OVERLAY_INSET, OVERLAY_INSET, 8.5F + depthOffset),
                 transform(state, 16.0F - OVERLAY_INSET, OVERLAY_INSET, 8.5F + depthOffset),
@@ -81,13 +74,15 @@ public class ItemQuadBakery {
                 uv(sprite, 16.0F, 16.0F),
                 uv(sprite, 16.0F, 0.0F),
                 uv(sprite, 0.0F, 0.0F),
+                tintIndex,
                 Direction.SOUTH,
-                materialInfo
+                sprite,
+                true,
+                0
         );
     }
 
-    private static BakedQuad backFace(ModelState state, BakedQuad.MaterialInfo materialInfo, float depthOffset) {
-        TextureAtlasSprite sprite = materialInfo.sprite();
+    private static BakedQuad backFace(ModelState state, TextureAtlasSprite sprite, int tintIndex, float depthOffset) {
         return new BakedQuad(
                 transform(state, 16.0F - OVERLAY_INSET, OVERLAY_INSET, 7.5F - depthOffset),
                 transform(state, OVERLAY_INSET, OVERLAY_INSET, 7.5F - depthOffset),
@@ -97,8 +92,11 @@ public class ItemQuadBakery {
                 uv(sprite, 0.0F, 16.0F),
                 uv(sprite, 0.0F, 0.0F),
                 uv(sprite, 16.0F, 0.0F),
+                tintIndex,
                 Direction.NORTH,
-                materialInfo
+                sprite,
+                true,
+                0
         );
     }
 
@@ -111,7 +109,7 @@ public class ItemQuadBakery {
 
     private static long uv(TextureAtlasSprite sprite, float u, float v) {
         // Cuboid UVs are expressed in the traditional 0..16 model space, while
-        // TextureAtlasSprite#getU/getV use a normalized 0..1 offset in 26.1.2.
+        // TextureAtlasSprite#getU/getV use a normalized 0..1 offset.
         // Passing 16 directly walks beyond this sprite and samples unrelated
         // entries from the atlas, which makes an item mask appear on other
         // fragments of the generated item plane.

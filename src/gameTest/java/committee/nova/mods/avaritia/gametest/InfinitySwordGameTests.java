@@ -49,14 +49,14 @@ public final class InfinitySwordGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("infinity_sword"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("infinity_sword"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         event.registerTest(ENDER_DRAGON_PART_ID, runtimeTest(ENDER_DRAGON_PART, environment));
         event.registerTest(RANGED_KILL_ID, runtimeTest(RANGED_KILL, environment));
     }
 
     private static FunctionGameTestInstance runtimeTest(
-            ResourceKey<Consumer<GameTestHelper>> test, Holder<TestEnvironmentDefinition<?>> environment) {
+            ResourceKey<Consumer<GameTestHelper>> test, Holder<TestEnvironmentDefinition> environment) {
         return new FunctionGameTestInstance(test, new TestData<>(environment, EMPTY_STRUCTURE, 40, 0, true));
     }
 

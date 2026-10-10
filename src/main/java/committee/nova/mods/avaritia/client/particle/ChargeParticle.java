@@ -19,7 +19,7 @@ public class ChargeParticle extends SimpleAnimatedParticle {
     }
 
     @Override
-    public int getLightCoords(float partialTick) {
+    public int getLightColor(float partialTick) {
         return 15728880;
     }
 

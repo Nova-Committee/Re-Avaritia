@@ -72,9 +72,12 @@ public class AvaritiaData {
         generator.addProvider(true, new AvaritiaDamageTypeTagsProvider(packOutput, lookupProvider));
         generator.addProvider(true, AvaritiaAdvancementProvider.create(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaSingularityProvider(packOutput, lookupProvider));
-        var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES);
+        // The pack carries both assets/ and data/, and 1.21.11 rejects a pack that declares a
+        // legacy-range resource format (75) without a supported_formats field. Declaring the
+        // data format instead is what other 1.21.11 mods do and loads cleanly on either side.
+        var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA);
         PackMetadataGenerator metadataProvider = new PackMetadataGenerator(packOutput).add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
-                Component.literal("Re:Avaritia 26 Generated Resources"),
+                Component.literal("Re:Avaritia 1.21.11 Generated Resources"),
                 packFormat.minorRange()
         ));
         generator.addProvider(true, metadataProvider);

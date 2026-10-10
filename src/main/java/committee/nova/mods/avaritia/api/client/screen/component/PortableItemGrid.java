@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -184,7 +184,7 @@ public final class PortableItemGrid extends AbstractWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         PortableUi.inset(graphics, content);
         int hovered = indexAt(mouseX, mouseY);
         graphics.enableScissor(content.left(), content.top(), content.right(), content.bottom());
@@ -199,7 +199,7 @@ public final class PortableItemGrid extends AbstractWidget {
             ItemStack stack = items.get(index);
             PortableUi.row(graphics, x, y, 18, 18, hovered == index,
                     !selected.isEmpty() && ItemStack.isSameItemSameComponents(stack, selected));
-            graphics.item(stack, x + 1, y + 1);
+            graphics.renderItem(stack, x + 1, y + 1);
             if (UiInspector.enabled()) {
                 UiInspector.row(inspectorPrefix + ".grid", null, index, x, y, 18, 18, content, active);
             }
@@ -212,7 +212,7 @@ public final class PortableItemGrid extends AbstractWidget {
         }
     }
 
-    public void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         int index = indexAt(mouseX, mouseY);
         if (index >= 0 && !draggingScrollbar) {
             ItemStack stack = items.get(index);

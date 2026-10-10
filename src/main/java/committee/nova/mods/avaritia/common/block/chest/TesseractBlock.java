@@ -94,7 +94,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
                 tile.setLocked(false);
             }
             if (!tile.canPlayerModify(player)) {
-                player.sendOverlayMessage(Component.translatable("gui.avaritia.noPermission.tip3"));
+                player.displayClientMessage(Component.translatable("gui.avaritia.noPermission.tip3"), true);
             } else if (tile.getChannelInfo() == null) {
                 tile.openSelector(serverPlayer);
             } else {

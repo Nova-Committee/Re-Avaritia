@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -75,7 +75,7 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
         }
 
         @Override
-        protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             if (isHovered()) {
                 int hoverU = 177 + (index % 2) * (w + 1);
                 int hoverV = 1 + (index / 2) * (h + 1);

@@ -17,6 +17,7 @@
     "  aaa  "
   ],
   "result": {
+    "count": 1,
     "id": "avaritia:neutron_ring"
   },
   "tier": 3

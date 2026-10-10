@@ -147,9 +147,9 @@ public class NeutronRingItem extends ResourceItem {
         if (current == null || !current.equals(clicked)) {
             stack.set(ModDataComponents.NEUTRON_RING.get(),
                     placing ? data.withPlace(clicked) : data.withCapture(clicked));
-            player.sendOverlayMessage(Component.translatable(placing
+            player.displayClientMessage(Component.translatable(placing
                     ? "message.avaritia.neutron_ring.place_preview"
-                    : "message.avaritia.neutron_ring.base_set"));
+                    : "message.avaritia.neutron_ring.base_set"), true);
             return InteractionResult.SUCCESS;
         }
         return execute(stack, serverPlayer, level) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
@@ -164,29 +164,29 @@ public class NeutronRingItem extends ResourceItem {
         UUID library = data.storageId();
         if (data.selectedId().isPresent()) {
             if (data.placeBase().isEmpty() || !NeutronRingSpaces.sameDimension(level, data.placeBase().get())) {
-                player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.no_place"));
+                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.no_place"), true);
                 return false;
             }
             var space = store.get(library, data.selectedId().get());
             if (space.isEmpty()) {
-                player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.missing"));
+                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.missing"), true);
                 return false;
             }
             if (!NeutronRingSpaces.place(serverLevel, data.placeBase().get().pos(), space.get().template())) {
-                player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.place_failed"));
+                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.place_failed"), true);
                 return false;
             }
             store.remove(library, data.selectedId().get());
             stack.set(ModDataComponents.NEUTRON_RING.get(), data.deselect());
-            player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.placed"));
+            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.placed"), true);
             return true;
         }
         if (data.captureBase().isEmpty() || !NeutronRingSpaces.sameDimension(level, data.captureBase().get())) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.no_base"));
+            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.no_base"), true);
             return false;
         }
         if (store.list(library).size() >= NeutronRingSavedData.MAX_SPACES) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.full"));
+            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.full"), true);
             return false;
         }
         BlockPos base = data.captureBase().get().pos();
@@ -194,12 +194,12 @@ public class NeutronRingItem extends ResourceItem {
         String name = Component.translatable("gui.avaritia.neutron_ring.default_name", store.list(library).size() + 1)
                 .getString();
         if (!store.add(library, name, NeutronRingSpaces.capture(serverLevel, base, captureSize))) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.full"));
+            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.full"), true);
             return false;
         }
         NeutronRingSpaces.clear(serverLevel, base, captureSize);
         stack.set(ModDataComponents.NEUTRON_RING.get(), data.clearCapture());
-        player.sendOverlayMessage(Component.translatable("message.avaritia.neutron_ring.saved", name));
+        player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.saved", name), true);
         return true;
     }
 }

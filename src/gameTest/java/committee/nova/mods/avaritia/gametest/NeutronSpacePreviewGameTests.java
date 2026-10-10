@@ -95,8 +95,8 @@ public final class NeutronSpacePreviewGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("neutron_ring"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("neutron_ring"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         event.registerTest(CAPTURE_ID, new FunctionGameTestInstance(CAPTURE, new TestData<>(environment, EMPTY_STRUCTURE, 100, 0, true)));
         event.registerTest(CHEST_ID, new FunctionGameTestInstance(CHEST, new TestData<>(environment, EMPTY_STRUCTURE, 100, 0, true)));
         event.registerTest(ADOPT_OK_ID, new FunctionGameTestInstance(ADOPT_OK, new TestData<>(environment, EMPTY_STRUCTURE, 40, 0, true)));

@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -248,7 +248,7 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (Math.abs(scrollVelocity) > MIN_VELOCITY) {
             int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
             scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollVelocity));
@@ -259,8 +259,8 @@ public class AvaritiaConfigScreen extends Screen {
             repositionEntries();
         }
 
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        graphics.centeredText(font, title, width / 2, 20, 0xFFFFFFFF);
+        super.render(graphics, mouseX, mouseY, partialTick);
+        graphics.drawCenteredString(font, title, width / 2, 20, 0xFFFFFFFF);
 
         for (int i = 0; i < configEntries.size(); i++) {
             ConfigEntry<?> entry = configEntries.get(i);
@@ -364,7 +364,7 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         abstract void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width);
-        abstract void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font);
+        abstract void extract(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font);
         AbstractWidget control() {
             return null;
         }
@@ -398,8 +398,8 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
-        void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            graphics.text(font, title, x, y + 5, 0xFFFFFFA0);
+        void extract(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
+            graphics.drawString(font, title, x, y + 5, 0xFFFFFFA0);
             graphics.fill(x, y + 20, x + width, y + 22, 0xFFA0A0A0);
         }
 
@@ -426,11 +426,11 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
-        void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            graphics.text(font, title, x, y + 5, 0xFFFFFFFF);
+        void extract(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
+            graphics.drawString(font, title, x, y + 5, 0xFFFFFFFF);
             List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
             for (int i = 0; i < wrappedDesc.size(); i++) {
-                graphics.text(font, wrappedDesc.get(i), x, y + 20 + i * 10, 0xFFAAAAAA);
+                graphics.drawString(font, wrappedDesc.get(i), x, y + 20 + i * 10, 0xFFAAAAAA);
             }
         }
 
@@ -491,11 +491,11 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
-        void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
-            graphics.text(font, title, x, yPos + 5, 0xFFFFFFFF);
+        void extract(GuiGraphics graphics, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
+            graphics.drawString(font, title, x, yPos + 5, 0xFFFFFFFF);
             List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
             for (int i = 0; i < wrappedDesc.size(); i++) {
-                graphics.text(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xFFAAAAAA);
+                graphics.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xFFAAAAAA);
             }
         }
 

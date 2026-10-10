@@ -18,6 +18,7 @@
   },
   "base": "minecraft:wolf_armor",
   "result": {
+    "count": 1,
     "id": "avaritia:neutron_wolf_armor"
   },
   "template": "avaritia:upgrade_smithing_template"

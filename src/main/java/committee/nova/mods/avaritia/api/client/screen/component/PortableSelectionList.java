@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -31,19 +31,19 @@ public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<
     }
 
     @Override
-    protected void extractListBackground(@NotNull GuiGraphicsExtractor graphics) {
+    protected void renderListBackground(@NotNull GuiGraphics graphics) {
         if (drawInset) {
             PortableUi.inset(graphics, getX(), getY(), getWidth(), getHeight());
         }
     }
 
     @Override
-    protected void extractListSeparators(@NotNull GuiGraphicsExtractor graphics) {
+    protected void renderListSeparators(@NotNull GuiGraphics graphics) {
         // The portable inset owns its border.
     }
 
     @Override
-    protected void extractSelection(@NotNull GuiGraphicsExtractor graphics, E entry, int index) {
+    protected void renderSelection(@NotNull GuiGraphics graphics, E entry, int index) {
         // Entries draw their own hover and selection state with PortableUi.row.
     }
 

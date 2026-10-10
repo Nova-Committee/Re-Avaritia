@@ -36,7 +36,7 @@ public class WorldUtils {
             int skyLight = world.getBrightness(LightLayer.SKY, pos);
             int blockLight = world.getBrightness(LightLayer.BLOCK, pos);
             // 获取世界时间、天气和维度的影响
-            long dayTime = world.getOverworldClockTime();
+            long dayTime = world.getDayTime();
             boolean isDay = Math.floorMod(dayTime, 24000L) < 13000L;
             boolean isRaining = world.isRaining();
             boolean isThundering = world.isThundering();

@@ -19,6 +19,7 @@
     "frame": "challenge",
     "hidden": true,
     "icon": {
+      "count": 1,
       "id": "avaritia:matter_cluster"
     },
     "title": {

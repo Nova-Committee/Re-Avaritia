@@ -16,9 +16,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.RecipeMatcher;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private final NonNullList<Ingredient> originalInputs;
 
     public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
-        super(NonNullList.create(), new ItemStackTemplate(ModItems.infinity_catalyst.get(), count), 4);
+        super(NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get(), count), 4);
         this.group = pGroup;
         this.count = count;
         this.originalInputs = inputs;
@@ -208,7 +208,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, InfinityCatalystCraftRecipe> STREAM_CODEC = StreamCodec.of(
                 InfinityCatalystCraftRecipe.Serializer::toNetwork, InfinityCatalystCraftRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<InfinityCatalystCraftRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<InfinityCatalystCraftRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static InfinityCatalystCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();

@@ -24,7 +24,7 @@ public final class TesseractSavedData extends SavedData {
             Codec.BOOL.optionalFieldOf("legacy_imported", false).forGetter(TesseractSavedData::legacyImported)
     ).apply(instance, TesseractSavedData::new));
     public static final SavedDataType<TesseractSavedData> TYPE = new SavedDataType<>(
-            Const.rl(NAME), TesseractSavedData::new, CODEC);
+            Const.rl(NAME).getPath(), TesseractSavedData::new, CODEC);
 
     private final Map<UUID, Map<Integer, ServerChannel>> channels = new HashMap<>();
     private boolean legacyImported;

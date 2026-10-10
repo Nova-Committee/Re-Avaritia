@@ -13,13 +13,13 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -41,13 +41,10 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     public final Ingredient template;
     public final Ingredient base;
     public final Ingredient additions;
-    public final ItemStackTemplate result;
+    public final ItemStack result;
+
 
     public ExtremeSmithingRecipe(Ingredient pTemplate, Ingredient pBase, Ingredient additions, ItemStack pResult) {
-        this(pTemplate, pBase, additions, ItemStackTemplate.fromNonEmptyStack(pResult));
-    }
-
-    public ExtremeSmithingRecipe(Ingredient pTemplate, Ingredient pBase, Ingredient additions, ItemStackTemplate pResult) {
         this.template = pTemplate;
         this.base = pBase;
         this.additions = additions;
@@ -62,9 +59,9 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull ExtremeSmithingRecipeInput input) {
-        ItemStack itemstack = input.base().transmuteCopy(this.result.item().value(), this.result.count());
-        itemstack.applyComponents(this.result.components());
+    public @NotNull ItemStack assemble(@NotNull ExtremeSmithingRecipeInput input, net.minecraft.core.HolderLookup.Provider registries) {
+        ItemStack itemstack = input.base().transmuteCopy(this.result.getItem(), this.result.getCount());
+        itemstack.applyComponents(this.result.getComponentsPatch());
         return itemstack;
     }
 
@@ -73,7 +70,7 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     }
 
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result.create();
+        return this.result.copy();
     }
     public boolean isTemplateIngredient(@NotNull ItemStack pStack) {
         return this.template.test(pStack);
@@ -135,7 +132,7 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
 
     @Override
     public @NotNull List<RecipeDisplay> display() {
-        ItemStack result = this.result.create();
+        ItemStack result = this.result.copy();
         if (result.isEmpty()) {
             return List.of();
         }
@@ -166,13 +163,13 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
             ExtremeSmithingRecipe::toNetwork, ExtremeSmithingRecipe::fromNetwork
     );
 
-    public static final RecipeSerializer<ExtremeSmithingRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+    public static final RecipeSerializer<ExtremeSmithingRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
     private static ExtremeSmithingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
         Ingredient ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
         Ingredient ingredient1 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
         Ingredient ingredient2 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-        ItemStackTemplate itemstack = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+        ItemStack itemstack = ItemStack.STREAM_CODEC.decode(buffer);
         return new ExtremeSmithingRecipe(ingredient, ingredient1, ingredient2, itemstack);
     }
 
@@ -180,6 +177,6 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
         Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.template);
         Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.base);
         Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.additions);
-        ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+        ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
     }
 }

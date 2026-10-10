@@ -11,10 +11,18 @@ import net.neoforged.neoforge.world.inventory.StackCopySlot;
 
 public class ResourceHandlerCopySlot extends StackCopySlot {
     private final ResourceHandler<ItemResource> handler;
+    private final int handlerSlot;
 
     public ResourceHandlerCopySlot(ResourceHandler<ItemResource> handler, int handlerSlot, int xPosition, int yPosition) {
-        super(handlerSlot, xPosition, yPosition);
+        // 1.21.11 的 StackCopySlot 构造器只接收坐标，槽位索引改由 getSlotIndex() 提供
+        super(xPosition, yPosition);
         this.handler = handler;
+        this.handlerSlot = handlerSlot;
+    }
+
+    @Override
+    public int getSlotIndex() {
+        return this.handlerSlot;
     }
 
     @Override

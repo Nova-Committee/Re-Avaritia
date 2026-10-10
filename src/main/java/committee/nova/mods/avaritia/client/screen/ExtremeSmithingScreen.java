@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -50,7 +50,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     }
 
     @Override
-    protected void extractErrorIcon(@NotNull GuiGraphicsExtractor graphics, int x, int y) {
+    protected void renderErrorIcon(@NotNull GuiGraphics graphics, int x, int y) {
         if (this.hasRecipeError()) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.EXTREME_SMITHING, this.errorIcon.left(), this.errorIcon.top(), this.imageWidth, 0.0F, this.errorIcon.width(), this.errorIcon.height(), 256, 256);
             UiInspector.region("smithing.error", this.errorIcon, null, true);
@@ -65,18 +65,18 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         this.extractOnboardingTooltips(graphics, mouseX, mouseY);
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        this.templateIcon.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+        this.templateIcon.render(this.menu, graphics, partialTick, this.leftPos, this.topPos);
     }
 
-    private void extractOnboardingTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void extractOnboardingTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
         Optional<Component> optional = Optional.empty();
         if (this.hasRecipeError() && PortableLayout.contains(this.errorIcon, mouseX, mouseY)) {
             optional = Optional.of(ERROR_TOOLTIP);

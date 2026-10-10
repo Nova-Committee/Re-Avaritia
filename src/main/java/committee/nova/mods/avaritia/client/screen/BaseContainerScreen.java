@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -15,7 +15,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**
- * 26.1.2-compatible base screen for Avaritia container GUIs.
+ * 1.21.11-compatible base screen for Avaritia container GUIs.
+ *
+ * <p>The 26.1 sources used the {@code GuiGraphicsExtractor} hook family
+ * ({@code renderBackground}/{@code renderContents}/{@code renderLabels}).
+ * Minecraft 1.21.11 still uses the classic {@code render*} hooks, so those are
+ * restored here and the mod's own {@code renderBgs}/{@code renderFg} extension
+ * points are invoked directly from them.
  */
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener {
     protected static final int LABEL_COLOR = 0xFF404040;
@@ -33,7 +39,11 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     public BaseContainerScreen(T menu, Inventory inventory, Component title, Identifier bgTexture, int bgWidth, int bgHeight, int bgImgWidth, int bgImgHeight) {
-        super(menu, inventory, title, bgWidth, bgHeight);
+        super(menu, inventory, title);
+        // 1.21.11 has only the three-argument AbstractContainerScreen constructor; the
+        // image size is carried by the protected fields instead.
+        this.imageWidth = bgWidth;
+        this.imageHeight = bgHeight;
         this.bgTexture = bgTexture;
         this.bgImgWidth = bgImgWidth;
         this.bgImgHeight = bgImgHeight;
@@ -65,42 +75,35 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
         if (this.bgTexture != null) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         }
-        this.extractBgs(graphics, partialTick, this.leftPos, this.topPos);
     }
 
-    protected void extractBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
-        this.renderBgs(graphics, partialTick, x, y);
+    /** Vanilla's abstract background hook; forwards to the mod's own renderBgs extension point. */
+    @Override
+    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        this.renderBgs(graphics, partialTick, this.leftPos, this.topPos);
     }
 
-    protected void renderBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
+    protected void renderBgs(GuiGraphics graphics, float partialTick, int x, int y) {
     }
 
-    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    }
+
+    @Override
+    public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderContents(graphics, mouseX, mouseY, partialTick);
         this.renderFg(graphics, mouseX, mouseY, partialTick);
     }
 
-    protected void renderFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-    }
-
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractContents(graphics, mouseX, mouseY, partialTick);
-        this.extractFg(graphics, mouseX, mouseY, partialTick);
-    }
-
-    @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        this.renderLabels(graphics, mouseX, mouseY);
-    }
-
-    protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
+    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override

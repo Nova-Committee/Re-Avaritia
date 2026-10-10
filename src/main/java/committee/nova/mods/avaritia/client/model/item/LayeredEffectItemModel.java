@@ -9,20 +9,22 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.BlockModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
@@ -58,7 +60,7 @@ public final class LayeredEffectItemModel implements ItemModel {
         this.effectQuads = effectQuads;
         this.baseQuads = baseQuads;
         this.haloLayer = haloLayer;
-        this.effectExtents = CuboidItemModelWrapper.computeExtents(effectQuads);
+        this.effectExtents = BlockModelWrapper.computeExtents(effectQuads);
         this.cosmicArc = cosmicArc;
         this.tridentModels = tridentModels;
     }
@@ -152,7 +154,6 @@ public final class LayeredEffectItemModel implements ItemModel {
     private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         this.properties.applyToLayer(layer, displayContext);
-        layer.setLocalTransform(this.transformation);
         layer.setExtents(halo::extents);
         layer.setupSpecialModel(AvaritiaItemModelRenderers.HALO, new AvaritiaItemModelRenderers.HaloLayerArgument(halo.texture(), halo.setting()));
         renderState.setAnimated();
@@ -166,26 +167,27 @@ public final class LayeredEffectItemModel implements ItemModel {
 
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         this.properties.applyToLayer(layer, displayContext);
-        layer.setLocalTransform(pulseTransform(level, seed));
+        // 1.21.11 has one layer transform slot, and applyToLayer already wrote the display-context
+        // transform there. The pulse is therefore composed onto it instead of being applied
+        // on top of a separate local matrix, as 26.1 allowed.
+        ItemTransform displayTransform = this.properties.transforms().getTransform(displayContext);
+        float pulseScale = pulseScale(level, seed);
+        layer.setTransform(new ItemTransform(displayTransform.rotation(), displayTransform.translation(),
+                new Vector3f(displayTransform.scale()).mul(pulseScale, pulseScale, 1.0001F)));
         // 脉冲始终位于固定 halo 外包络内，不能让动画缩放参与 oversized GUI 的离屏纹理尺寸计算。
         // 同一模型在创造栏和 JEI 中会使用不同 seed；动态 extents 会让共享渲染器在同帧改尺寸并关闭待绘制纹理。
         layer.setupSpecialModel(AvaritiaItemModelRenderers.PULSE, new AvaritiaItemModelRenderers.PulseLayerArgument(this.baseQuads));
         renderState.setAnimated();
     }
 
-    private Matrix4fc pulseTransform(@Nullable ClientLevel level, int seed) {
+    private float pulseScale(@Nullable ClientLevel level, int seed) {
         float time = level != null ? level.getGameTime() + seed : seed;
-        float scale = 0.95F + (Mth.sin(time * 0.25F) + 1.0F) * 0.075F;
-        float translation = (1.0F - scale) * 0.5F;
-        return new Matrix4f(this.transformation)
-                .translate(translation, translation, 0.0F)
-                .scale(scale, scale, 1.0001F);
+        return 0.95F + (Mth.sin(time * 0.25F) + 1.0F) * 0.075F;
     }
 
     private void appendTridentLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext) {
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         this.properties.applyToLayer(layer, displayContext);
-        layer.setLocalTransform(this.transformation);
         layer.setupSpecialModel(AvaritiaItemModelRenderers.TRIDENT, new AvaritiaItemModelRenderers.TridentLayerArgument(this.tridentModels, displayContext));
     }
 
@@ -193,7 +195,6 @@ public final class LayeredEffectItemModel implements ItemModel {
                                 @Nullable ClientLevel level, int seed) {
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         this.properties.applyToLayer(layer, displayContext);
-        layer.setLocalTransform(this.transformation);
         long time = (level != null ? level.getGameTime() : 0L) + seed;
         layer.setupSpecialModel(AvaritiaItemModelRenderers.ARC, new AvaritiaItemModelRenderers.ArcLayerArgument(time));
         renderState.setAnimated();
@@ -203,7 +204,6 @@ public final class LayeredEffectItemModel implements ItemModel {
                                    AvaritiaItemModelRenderers.EffectLayerArgument argument, Vector3fc[] extents) {
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         layer.setExtents(() -> extents);
-        layer.setLocalTransform(this.transformation);
         layer.setupSpecialModel(AvaritiaItemModelRenderers.EFFECT, argument);
         this.properties.applyToLayer(layer, displayContext);
         renderState.setAnimated();
