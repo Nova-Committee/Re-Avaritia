@@ -121,6 +121,6 @@ jobs:
           loaders: neoforge
           game-versions: ${{ steps.metadata.outputs.game_version }}
           game-version-filter: none
-          github-generate-changelog: true
+          changelog-file: CHANGELOG.md
           retry-attempts: 2
           fail-mode: fail
