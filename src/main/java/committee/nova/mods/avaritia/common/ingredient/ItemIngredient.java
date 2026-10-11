@@ -38,7 +38,7 @@ public record ItemIngredient(Identifier item) implements ICustomIngredient {
 
     @Override
     public @NonNull Stream<Holder<Item>> items() {
-        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.getValue(this.item)).typeHolder() : ItemStack.EMPTY.typeHolder());
+        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.getValue(this.item)).getItemHolder() : ItemStack.EMPTY.getItemHolder());
     }
 
     @Override

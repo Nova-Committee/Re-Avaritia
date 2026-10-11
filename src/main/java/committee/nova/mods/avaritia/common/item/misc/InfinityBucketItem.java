@@ -191,7 +191,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
 
     public static void notifyOverCapacity(Player player) {
         if (player != null) {
-            player.sendOverlayMessage(Component.translatable("gui.avaritia.infinity_bucket.over_capacity"));
+            player.displayClientMessage(Component.translatable("gui.avaritia.infinity_bucket.over_capacity"), true);
         }
     }
 
@@ -311,16 +311,16 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (living instanceof Player) {
             return false;
         }
-        if (living.typeHolder().is(ModTags.INFINITY_BUCKET_BOSSES)
-                || living.typeHolder().is(ModTags.INFINITY_BUCKET_CAPTURING_NOT_SUPPORTED)) {
+        if (living.getType().builtInRegistryHolder().is(ModTags.INFINITY_BUCKET_BOSSES)
+                || living.getType().builtInRegistryHolder().is(ModTags.INFINITY_BUCKET_CAPTURING_NOT_SUPPORTED)) {
             return false;
         }
         if (living.isPassenger() || living.isVehicle() || !living.getPassengers().isEmpty()) {
             return false;
         }
         return living instanceof Bucketable
-                || living.typeHolder().is(EntityTypeTags.AQUATIC)
-                || living.typeHolder().is(ModTags.INFINITY_BUCKET_AQUATIC);
+                || living.getType().builtInRegistryHolder().is(EntityTypeTags.AQUATIC)
+                || living.getType().builtInRegistryHolder().is(ModTags.INFINITY_BUCKET_AQUATIC);
     }
 
     public static boolean isEntityInWater(LivingEntity entity) {
@@ -383,12 +383,12 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             NumberFormat formatter = DecimalFormat.getInstance();
             InfinityBucketCreature creature = getSelectedCreature(stack);
             if (creature != null) {
-                player.sendOverlayMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message_creature", creature.displayName()));
+                player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message_creature", creature.displayName()), true);
                 return;
             }
             FluidStack selected = getSelectedFluid(stack);
-            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message",
-                    selected.getHoverName().getString(), formatter.format(selected.getAmount())));
+            player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message",
+                    selected.getHoverName().getString(), formatter.format(selected.getAmount())), true);
         }
     }
 

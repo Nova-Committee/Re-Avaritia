@@ -32,7 +32,7 @@ public final class InfinityChestSavedData extends SavedData {
     ).apply(instance, InfinityChestSavedData::new));
 
     public static final SavedDataType<InfinityChestSavedData> TYPE = new SavedDataType<>(
-            Const.rl(NAME), InfinityChestSavedData::new, CODEC);
+            Const.rl(NAME).getPath(), InfinityChestSavedData::new, CODEC);
 
     private final Map<UUID, Map<UUID, ServerChestHandler>> channels = new HashMap<>();
     private boolean legacyImported;

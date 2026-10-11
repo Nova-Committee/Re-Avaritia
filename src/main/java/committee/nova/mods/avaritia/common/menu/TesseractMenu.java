@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
@@ -231,7 +231,7 @@ public class TesseractMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
+    public void clicked(int slotId, int button, ClickType clickType, Player player) {
         int visibleSlot = slotId - CHANNEL_START;
         if (visibleSlot >= 0 && visibleSlot < CHANNEL_SLOTS) {
             if (player instanceof ServerPlayer serverPlayer && validVirtualClick(visibleSlot, player)) {
@@ -265,12 +265,12 @@ public class TesseractMenu extends AbstractContainerMenu {
                 && stillValid(player) && canPlayerModify(player);
     }
 
-    private static boolean supportsContainerTransfer(ContainerInput input) {
-        return input == ContainerInput.PICKUP || input == ContainerInput.QUICK_MOVE
-                || input == ContainerInput.QUICK_CRAFT;
+    private static boolean supportsContainerTransfer(ClickType input) {
+        return input == ClickType.PICKUP || input == ClickType.QUICK_MOVE
+                || input == ClickType.QUICK_CRAFT;
     }
 
-    private void clickItem(ItemResource resource, int button, ContainerInput input, ServerPlayer serverPlayer) {
+    private void clickItem(ItemResource resource, int button, ClickType input, ServerPlayer serverPlayer) {
         if (resource.isEmpty()) return;
         int maxStack = resource.toStack(1).getMaxStackSize();
         switch (input) {
@@ -380,7 +380,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             resultSlots.setItem(0, ItemStack.EMPTY);
         } else {
             resultSlots.setRecipeUsed(recipe);
-            resultSlots.setItem(0, recipe.value().assemble(input));
+            resultSlots.setItem(0, recipe.value().assemble(input, this.player.level().registryAccess()));
         }
         broadcastChanges();
     }
@@ -394,7 +394,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             RecipeHolder<CraftingRecipe> recipe = serverPlayer.level().recipeAccess()
                     .getRecipeFor(RecipeType.CRAFTING, input, serverPlayer.level()).orElse(null);
             if (recipe == null) break;
-            ItemStack result = recipe.value().assemble(input);
+            ItemStack result = recipe.value().assemble(input, serverPlayer.level().registryAccess());
             if (result.isEmpty()) break;
             if (target == 0) {
                 if (!insertWholeIntoChannel(result)) break;

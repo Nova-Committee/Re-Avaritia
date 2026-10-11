@@ -8,7 +8,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -38,7 +37,7 @@ public record StackIngredient(ItemStack item) implements ICustomIngredient {
 
     @Override
     public @NonNull Stream<Holder<Item>> items() {
-        return Stream.of(this.item.typeHolder());
+        return Stream.of(this.item.getItemHolder());
     }
 
     @Override
@@ -49,7 +48,7 @@ public record StackIngredient(ItemStack item) implements ICustomIngredient {
     @Override
     public SlotDisplay display() {
         // JEI 和原版配方展示会读取 SlotDisplay；这里必须保留 ItemStack 的数据组件。
-        return new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.item));
+        return new SlotDisplay.ItemStackSlotDisplay(committee.nova.mods.avaritia.api.common.crafting.RecipeCodecs.fromNonEmptyStack(this.item));
     }
 
     @Override

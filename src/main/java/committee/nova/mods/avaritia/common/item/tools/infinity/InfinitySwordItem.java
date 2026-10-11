@@ -129,7 +129,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
 
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -150,7 +150,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     }
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.LOOTING)) {
             return 10;
         }

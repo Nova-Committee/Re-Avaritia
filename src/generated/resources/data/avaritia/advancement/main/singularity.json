@@ -19,6 +19,7 @@
     "frame": "goal",
     "hidden": true,
     "icon": {
+      "count": 1,
       "id": "avaritia:singularity"
     },
     "title": {

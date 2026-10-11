@@ -14,10 +14,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.RecipeMatcher;
@@ -34,23 +34,17 @@ import java.util.function.BiFunction;
 public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     @Getter
     public final NonNullList<Ingredient> inputs;
-    public final ItemStackTemplate result;
+    public final ItemStack result;
     public final int tier;
     private BiFunction<Integer, ItemStack, ItemStack> transformer;
 
-    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result) {
-        this(inputs, ItemStackTemplate.fromNonEmptyStack(result), 0);
-    }
 
-    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStackTemplate result) {
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result) {
         this(inputs, result, 0);
     }
 
-    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result, int tier) {
-        this(inputs, ItemStackTemplate.fromNonEmptyStack(result), tier);
-    }
 
-    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStackTemplate result, int tier) {
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result, int tier) {
         this.inputs = inputs;
         this.result = result;
         this.tier = tier;
@@ -58,7 +52,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result.create();
+        return this.result.copy();
     }
 
     @Override
@@ -82,8 +76,8 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull TierInput input) {
-        return this.result.create();
+    public @NotNull ItemStack assemble(@NotNull TierInput input, net.minecraft.core.HolderLookup.Provider registries) {
+        return this.result.copy();
     }
     @Override
     public boolean matches(@NotNull TierInput input, @NotNull Level level) {
@@ -167,7 +161,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessTableCraftingRecipe> STREAM_CODEC = StreamCodec.of(
                 ShapelessTableCraftingRecipe.Serializer::toNetwork, ShapelessTableCraftingRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<ShapelessTableCraftingRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<ShapelessTableCraftingRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static ShapelessTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
@@ -177,7 +171,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                 inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
 
-            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            var result = ItemStack.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
 
             return new ShapelessTableCraftingRecipe(inputs, result, tier);
@@ -190,7 +184,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
 
-            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
         }
     }

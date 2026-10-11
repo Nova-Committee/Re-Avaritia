@@ -71,7 +71,7 @@ public class BlazeSpearItem extends Item implements ITooltip, InitEnchantItem, I
 
     // ==================== Fire Aspect 10 ====================
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         return enchantmentHolder.is(Enchantments.FIRE_ASPECT) ? 10 : 0;
     }
     // ==================== 模式切换：shift+右键 ====================

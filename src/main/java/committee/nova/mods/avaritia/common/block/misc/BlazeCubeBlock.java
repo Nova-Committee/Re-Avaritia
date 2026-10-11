@@ -32,7 +32,7 @@ public class BlazeCubeBlock extends ResourceBlock {
 
     @Override
     protected void tick(@NotNull BlockState state, @NotNull ServerLevel level, BlockPos pos, @NotNull RandomSource random) {
-        BubbleColumnBlock.updateColumn(this, level, pos.above(), state);
+        BubbleColumnBlock.updateColumn(level, pos.above(), state);
     }
 
 

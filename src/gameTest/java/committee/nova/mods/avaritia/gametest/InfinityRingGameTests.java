@@ -64,8 +64,8 @@ public final class InfinityRingGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("infinity_ring"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("infinity_ring"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         register(event, SURFACE, environment);
         register(event, OBSTRUCTED, environment);
         register(event, RETURNS, environment);
@@ -76,7 +76,7 @@ public final class InfinityRingGameTests {
     }
 
     private static void register(RegisterGameTestsEvent event, Identifier id,
-                                 Holder<TestEnvironmentDefinition<?>> environment) {
+                                 Holder<TestEnvironmentDefinition> environment) {
         event.registerTest(id, new FunctionGameTestInstance(
                 ResourceKey.create(Registries.TEST_FUNCTION, id),
                 new TestData<>(environment, EMPTY_STRUCTURE, 100, 0, true)));

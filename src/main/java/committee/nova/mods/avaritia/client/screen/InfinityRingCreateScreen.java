@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -85,11 +85,11 @@ public final class InfinityRingCreateScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (help.width() > 0 && help.height() > 0) {
             graphics.enableScissor(help.left(), help.top(), help.right(), help.bottom());
-            graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.infinity_ring.access.help"),
+            graphics.drawWordWrap(font, Component.translatable("gui.avaritia.infinity_ring.access.help"),
                     help.left(), help.top(), help.width(), PortableUi.MUTED);
             UiInspector.region("ring.create.help", help, help, false);
             graphics.disableScissor();
@@ -97,7 +97,7 @@ public final class InfinityRingCreateScreen extends Screen {
     }
 
     @Override
-    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
+    protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
         PortableUi.panel(graphics, panel);
         UiInspector.region("ring.create.panel", panel, null, false);
         PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());

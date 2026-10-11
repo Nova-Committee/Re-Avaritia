@@ -1,15 +1,11 @@
 package committee.nova.mods.avaritia.common.dimension;
 
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.clock.ServerClockManager;
-import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WorldData;
 
-import java.util.Optional;
 
 /**
  * Writable game-time for a personal dimension. {@link DerivedLevelData#setGameTime(long)} is a no-op.
@@ -38,24 +34,17 @@ public final class PersonalLevelData extends DerivedLevelData {
     }
 
     public void applyClock(ServerLevel personal, ServerLevel overworld, InfinityRingSettings settings) {
-        Optional<Holder<WorldClock>> personalClock = personal.dimensionTypeRegistration().value().defaultClock();
-        if (personalClock.isEmpty()) {
-            return;
-        }
-        ServerClockManager clocks = personal.getServer().clockManager();
-        Holder<WorldClock> clock = personalClock.get();
         switch (settings.time) {
-            case FOLLOW -> overworld.dimensionTypeRegistration().value().defaultClock().ifPresent(overworldClock -> {
-                long overworldTicks = clocks.getTotalTicks(overworldClock);
-                long personalTicks = clocks.getTotalTicks(clock);
-                boolean drifted = Math.abs(overworldTicks - personalTicks) > 2L;
+            case FOLLOW -> {
+                long overworldTicks = overworld.getDayTime();
+                boolean drifted = Math.abs(overworldTicks - personal.getDayTime()) > 2L;
                 if (appliedTime != InfinityRingSettings.TimeMode.FOLLOW || drifted || appliedPaused) {
-                    applyClockState(clocks, clock, settings.time, overworldTicks, false, 1.0F, true);
+                    applyClockState(personal, settings.time, overworldTicks, false, 1.0F, true);
                 }
-            });
-            case DAY -> applyClockState(clocks, clock, settings.time, aligned(clocks.getTotalTicks(clock), DAY_TIME), true, 1.0F, true);
-            case NIGHT -> applyClockState(clocks, clock, settings.time, aligned(clocks.getTotalTicks(clock), NIGHT_TIME), true, 1.0F, true);
-            case CYCLE -> applyClockState(clocks, clock, settings.time, clocks.getTotalTicks(clock), false, 1.0F, false);
+            }
+            case DAY -> applyClockState(personal, settings.time, aligned(personal.getDayTime(), DAY_TIME), true, 1.0F, true);
+            case NIGHT -> applyClockState(personal, settings.time, aligned(personal.getDayTime(), NIGHT_TIME), true, 1.0F, true);
+            case CYCLE -> applyClockState(personal, settings.time, personal.getDayTime(), false, 1.0F, false);
         }
     }
 
@@ -84,18 +73,20 @@ public final class PersonalLevelData extends DerivedLevelData {
         return (currentTicks / DAY_TICKS) * DAY_TICKS + timeOfDay;
     }
 
-    private void applyClockState(ServerClockManager clocks, Holder<WorldClock> clock,
-                                 InfinityRingSettings.TimeMode mode, long ticks, boolean paused, float rate,
-                                 boolean setTicks) {
+    /**
+     * 1.21.11 keeps day time on the level. {@code ServerLevel#setDayTimePerTick} ignores a
+     * rate of zero, so a paused mode (DAY/NIGHT) cannot be expressed as a rate: the fixed
+     * day time is re-asserted on every apply while the mode stays paused.
+     */
+    private void applyClockState(ServerLevel personal, InfinityRingSettings.TimeMode mode, long ticks,
+                                 boolean paused, float rate, boolean setTicks) {
         boolean same = appliedTime == mode && appliedPaused == paused && appliedRate == rate
                 && (!setTicks || appliedTicks == ticks);
-        if (same) {
+        if (same && !paused) {
             return;
         }
-        clocks.setPaused(clock, paused);
-        clocks.setRate(clock, rate);
         if (setTicks) {
-            clocks.setTotalTicks(clock, ticks);
+            personal.setDayTime(ticks);
         }
         appliedTime = mode;
         appliedTicks = ticks;

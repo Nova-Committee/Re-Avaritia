@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPacke
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPacket;
 import committee.nova.mods.avaritia.common.net.chest.ChannelAction;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -59,7 +59,10 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
     private ItemResource lastDragged = ItemResource.EMPTY;
 
     public InfinityChestScreen(InfinityChestMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 302, 238);
+        super(menu, inventory, title);
+        // 1.21.11 has only the three-argument constructor; the image size lives in the fields.
+        this.imageWidth = 302;
+        this.imageHeight = 238;
         inventoryLabelX = 62;
         inventoryLabelY = 144;
     }
@@ -86,8 +89,8 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0.0F, 0.0F,
                 imageWidth, STORAGE_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + STORAGE_HEIGHT,
@@ -96,21 +99,25 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         drawScrollbar(graphics);
     }
 
+    /** Vanilla's abstract background hook; 26.1 used the extractBackground family instead. */
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
-        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    }
+
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override
-    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack stack, Slot slot, String itemCount) {
+    protected void renderSlotContents(GuiGraphics graphics, ItemStack stack, Slot slot, String itemCount) {
         int virtualIndex = menu.virtualIndex(slot);
         String count = virtualIndex >= 0 ? menu.getChestContainer().formattedAmount(virtualIndex) : itemCount;
         super.renderSlotContents(graphics, stack, slot, count);
     }
 
     @Override
-    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (menu.getCarried().isEmpty() && isVirtual(hoveredSlot) && hoveredSlot.hasItem()) {
             ItemStack stack = hoveredSlot.getItem();
             long amount = menu.getChestContainer().amount(menu.virtualIndex(hoveredSlot));
@@ -120,7 +127,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
                     stack.get(DataComponents.TOOLTIP_STYLE));
             return;
         }
-        super.extractTooltip(graphics, mouseX, mouseY);
+        super.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -222,7 +229,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         }
     }
 
-    private void drawScrollbar(GuiGraphicsExtractor graphics) {
+    private void drawScrollbar(GuiGraphics graphics) {
         int x = leftPos + SCROLLBAR_X;
         int y = topPos + SCROLLBAR_Y;
         graphics.fill(x, y, x + SCROLLBAR_WIDTH, y + SCROLLBAR_HEIGHT, 0x66000000);
@@ -306,7 +313,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         }
 
         @Override
-        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             int textureY = LOCK_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
                     lockTextureX(menu.isLocked()), textureY,
@@ -324,7 +331,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         }
 
         @Override
-        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             int textureY = SORT_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
                     sortTextureX(menu.getSortType()), textureY,

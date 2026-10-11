@@ -29,7 +29,7 @@ class C2SSetTimePacketTest {
     void handlerSetsAbsoluteClockTimeWithoutDefaultClockWarnings() throws IOException {
         String source = compact(Files.readString(PACKET_SOURCE));
 
-        assertTrue(source.contains("setTotalTicks(clockHolder,InfinityClockTimes.resolveSelectedDayTime"));
+        assertTrue(source.contains("server.getAllLevels().forEach(level->level.setDayTime(InfinityClockTimes.resolveSelectedDayTime(level.getDayTime(),packet.time())))"));
         assertFalse(source.contains("addTicks("));
         assertFalse(source.contains("no_default_clock"));
     }

@@ -14,7 +14,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -64,8 +63,9 @@ public class ModApi {
         if (!singularity.hasIngredient())
             return null;
 
-        ItemStackTemplate output = new ItemStackTemplate(
-                ModItems.singularity.get(),
+        ItemStack output = new ItemStack(
+                ModItems.singularity.get().builtInRegistryHolder(),
+                1,
                 DataComponentPatch.builder()
                         .set(ModDataComponents.SINGULARITY_ID.get(), singularity.getRegistryName())
                         .build()

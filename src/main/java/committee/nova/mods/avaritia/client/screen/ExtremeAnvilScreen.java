@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.net.C2SRenamePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.KeyEvent;
@@ -86,18 +86,18 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.EXTREME_ANVIL, this.nameBackground.left(), this.nameBackground.top(), 0.0F, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0.0F : 16.0F), this.nameBackground.width(), this.nameBackground.height(), 256, 256);
     }
 
     @Override
-    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.name.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.name.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void extractBgs(@NotNull GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
+    protected void renderBgs(@NotNull GuiGraphics graphics, float partialTick, int x, int y) {
         if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem()) && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.EXTREME_ANVIL, this.errorIcon.left(), this.errorIcon.top(), this.imageWidth, 0.0F, this.errorIcon.width(), this.errorIcon.height(), 256, 256);
             UiInspector.region("anvil.error", this.errorIcon, null, false);

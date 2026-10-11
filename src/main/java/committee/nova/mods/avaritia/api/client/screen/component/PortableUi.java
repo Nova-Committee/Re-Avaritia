@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -38,37 +38,37 @@ public final class PortableUi {
     private PortableUi() {
     }
 
-    private static void sprite(GuiGraphicsExtractor graphics, Identifier sprite, int x, int y, int width, int height) {
+    private static void sprite(GuiGraphics graphics, Identifier sprite, int x, int y, int width, int height) {
         if (width > 0 && height > 0) {
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height);
         }
     }
 
-    public static void panel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+    public static void panel(GuiGraphics graphics, int x, int y, int width, int height) {
         sprite(graphics, PANEL, x, y, width, height);
     }
 
-    public static void panel(GuiGraphicsExtractor graphics, ScreenRectangle bounds) {
+    public static void panel(GuiGraphics graphics, ScreenRectangle bounds) {
         panel(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
     }
 
-    public static void inset(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+    public static void inset(GuiGraphics graphics, int x, int y, int width, int height) {
         sprite(graphics, INSET, x, y, width, height);
     }
 
-    public static void inset(GuiGraphicsExtractor graphics, ScreenRectangle bounds) {
+    public static void inset(GuiGraphics graphics, ScreenRectangle bounds) {
         inset(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
     }
 
-    public static void slot(GuiGraphicsExtractor graphics, int x, int y) {
+    public static void slot(GuiGraphics graphics, int x, int y) {
         sprite(graphics, SLOT, x, y, 18, 18);
     }
 
-    public static void header(GuiGraphicsExtractor graphics, Font font, Component title, int x, int y, int width) {
+    public static void header(GuiGraphics graphics, Font font, Component title, int x, int y, int width) {
         text(graphics, font, title, x + 8, y + 6, width - 16, TEXT);
     }
 
-    public static void text(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int maxWidth, int color) {
+    public static void text(GuiGraphics graphics, Font font, Component text, int x, int y, int maxWidth, int color) {
         if (maxWidth <= 0) {
             return;
         }
@@ -77,15 +77,15 @@ public final class PortableUi {
             shown = Component.literal(font.plainSubstrByWidth(text.getString(), Math.max(0, maxWidth - font.width("…"))) + "…")
                     .setStyle(text.getStyle());
         }
-        graphics.text(font, shown, x, y, color, false);
+        graphics.drawString(font, shown, x, y, color, false);
     }
 
-    public static void row(GuiGraphicsExtractor graphics, int x, int y, int width, int height, boolean hovered, boolean selected) {
+    public static void row(GuiGraphics graphics, int x, int y, int width, int height, boolean hovered, boolean selected) {
         if (selected || hovered) {
             graphics.fill(x, y, x + width, y + height, selected ? 0xFFD8D8D8 : 0xFFC8C8C8);
         }
         if (selected) {
-            graphics.outline(x, y, width, height, 0xFFFFFFFF);
+            graphics.renderOutline(x, y, width, height, 0xFFFFFFFF);
         }
     }
 
@@ -195,14 +195,14 @@ public final class PortableUi {
         }
 
         @Override
-        public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             graphics.fill(0, 0, width, height, 0xA0000000);
             panel(graphics, panel);
             UiInspector.region("dialog.panel", panel, null, false);
             header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
             if (content.width() > 0 && content.height() > 0) {
                 graphics.enableScissor(content.left(), content.top(), content.right(), content.bottom());
-                graphics.textWithWordWrap(font, message, content.left() + 2, content.top() + 1,
+                graphics.drawWordWrap(font, message, content.left() + 2, content.top() + 1,
                         Math.max(1, content.width() - 4), TEXT);
                 graphics.disableScissor();
             }
@@ -288,7 +288,7 @@ public final class PortableUi {
         }
 
         @Override
-        public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             graphics.fill(0, 0, width, height, 0xA0000000);
             panel(graphics, panel);
             UiInspector.region("dialog.panel", panel, null, false);
@@ -296,8 +296,8 @@ public final class PortableUi {
         }
 
         @Override
-        public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            super.render(graphics, mouseX, mouseY, partialTick);
             suggestions.render(graphics, font, mouseX, mouseY);
         }
 

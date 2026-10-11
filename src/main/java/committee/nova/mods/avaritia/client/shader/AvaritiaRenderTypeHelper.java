@@ -64,6 +64,6 @@ public class AvaritiaRenderTypeHelper {
     }
 
     public static RenderType itemTranslucent() {
-        return RenderTypes.itemTranslucent(Const.rl("item/halo"));
+        return RenderTypes.itemEntityTranslucentCull(Const.rl("item/halo"));
     }
 }

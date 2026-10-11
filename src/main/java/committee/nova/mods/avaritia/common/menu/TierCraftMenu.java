@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -154,12 +154,12 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         var inventory = this.craftContainer.asCraftInput();
         return serverLevel.recipeAccess()
                 .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, serverLevel)
-                .map(recipe -> recipe.value().assemble(inventory))
+                .map(recipe -> recipe.value().assemble(inventory, serverLevel.registryAccess()))
                 .orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public void clicked(int slotId, int button, @NotNull ContainerInput input, @NotNull Player player) {
+    public void clicked(int slotId, int button, @NotNull ClickType input, @NotNull Player player) {
         if (slotId == 0 && !this.canTakeCraftingResult()) {
             return;
         }

@@ -10,7 +10,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -85,8 +85,8 @@ public class ItemFilterScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        extractTransparentBackground(graphics);
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderTransparentBackground(graphics);
         if (this.panel.width() > 0 && this.panel.height() > 0) {
             PortableUi.panel(graphics, this.panel);
             PortableUi.header(graphics, this.font, this.title, this.panel.left(), this.panel.top(), this.panel.width());
@@ -95,8 +95,8 @@ public class ItemFilterScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (this.itemGrid != null) {
             this.itemGrid.renderTooltip(graphics, mouseX, mouseY);
         }
@@ -193,7 +193,7 @@ public class ItemFilterScreen extends Screen {
         }
         List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(minecraft, stack));
         int insert = Math.min(1, lines.size());
-        stack.typeHolder().tags()
+        stack.getItemHolder().tags()
                 .sorted(Comparator.comparing(tag -> tag.location().toString()))
                 .forEach(tag -> lines.add(insert, Component.literal("#" + tag.location()).withStyle(ChatFormatting.DARK_PURPLE)));
         return lines;

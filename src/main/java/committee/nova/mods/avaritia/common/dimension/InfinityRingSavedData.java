@@ -43,7 +43,7 @@ public final class InfinityRingSavedData extends SavedData {
     ).apply(instance, InfinityRingSavedData::fromEntries));
 
     public static final SavedDataType<InfinityRingSavedData> TYPE = new SavedDataType<>(
-            Const.rl(NAME), InfinityRingSavedData::new, CODEC);
+            Const.rl(NAME).getPath(), InfinityRingSavedData::new, CODEC);
 
     private final Map<UUID, InfinityRingSettings> owners = new HashMap<>();
     private final Map<UUID, TravelPoint> returns = new HashMap<>();

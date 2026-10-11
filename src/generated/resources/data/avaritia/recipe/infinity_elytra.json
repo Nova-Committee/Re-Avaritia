@@ -10,6 +10,7 @@
   },
   "base": "minecraft:elytra",
   "result": {
+    "count": 1,
     "id": "avaritia:infinity_elytra"
   },
   "template": "avaritia:upgrade_smithing_template"

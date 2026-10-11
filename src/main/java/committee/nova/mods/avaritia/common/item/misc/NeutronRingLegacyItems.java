@@ -39,7 +39,7 @@ public final class NeutronRingLegacyItems extends SavedData {
     ).apply(instance, NeutronRingLegacyItems::fromEntries));
 
     public static final SavedDataType<NeutronRingLegacyItems> TYPE = new SavedDataType<>(
-            Const.rl(NAME), NeutronRingLegacyItems::new, CODEC);
+            Const.rl(NAME).getPath(), NeutronRingLegacyItems::new, CODEC);
 
     private final Map<UUID, List<ItemStack>> items = new HashMap<>();
     private final Set<UUID> leftoverNotified = new HashSet<>();
@@ -80,7 +80,7 @@ public final class NeutronRingLegacyItems extends SavedData {
         if (contents == null) {
             return;
         }
-        List<ItemStack> imported = contents.nonEmptyItemCopyStream()
+        List<ItemStack> imported = contents.nonEmptyStream()
                 .filter(stack -> !stack.isEmpty())
                 .map(ItemStack::copy)
                 .toList();

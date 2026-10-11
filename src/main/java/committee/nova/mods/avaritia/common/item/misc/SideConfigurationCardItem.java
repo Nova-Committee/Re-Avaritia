@@ -75,21 +75,21 @@ public class SideConfigurationCardItem extends Item {
                 if (!level.isClientSide()) {
                     SideConfiguration config = tileIO.getSideConfiguration();
                     saveConfigToItem(stack, config);
-                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"));
+                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"), true);
                 }
                 return InteractionResult.SUCCESS;
             }
 
             if (!hasSavedConfig(stack)) {
                 if (!level.isClientSide()) {
-                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.no_config_to_apply"));
+                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.no_config_to_apply"), true);
                 }
                 return InteractionResult.SUCCESS;
             }
 
             if (!level.isClientSide()) {
                 tileIO.setSideConfiguration(loadConfigFromItem(stack));
-                player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"));
+                player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"), true);
             }
             return InteractionResult.SUCCESS;
         }
@@ -140,9 +140,9 @@ public class SideConfigurationCardItem extends Item {
     private void clearConfig(ItemStack stack, Player player) {
         if (hasSavedConfig(stack)) {
             ItemUtils.updateTag(stack, tag -> tag.remove(TAG_SIDE_CONFIG));
-            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"));
+            player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"), true);
         } else {
-            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"));
+            player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"), true);
         }
     }
 

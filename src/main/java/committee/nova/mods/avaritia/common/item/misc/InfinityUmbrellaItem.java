@@ -23,7 +23,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.saveddata.WeatherData;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -57,12 +56,8 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     }
 
     private static void setWeather(ServerLevel level, int duration, boolean raining, boolean thundering) {
-        WeatherData weatherData = level.getWeatherData();
-        weatherData.setClearWeatherTime(raining ? 0 : duration);
-        weatherData.setRainTime(raining ? duration : 0);
-        weatherData.setThunderTime(thundering ? duration : 0);
-        weatherData.setRaining(raining);
-        weatherData.setThundering(thundering);
+        // 1.21.11 sets weather in one call; 26.1 had a WeatherData object with per-field setters.
+        level.setWeatherParameters(raining ? 0 : duration, raining ? duration : 0, raining, thundering);
     }
 
     private void onUse(Level level, Player player, ItemStack stack, @NotNull InteractionHand hand) {
@@ -79,7 +74,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
                 case MODE_SUN:
                     SunProEntity sunProEntity = ModEntityTypes.SUN_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F) {
-                        if (level.isRaining() || server.getWeatherData().isThundering()) {
+                        if (level.isRaining() || level.isThundering()) {
                             setWeather(server, duration, false, false);
                         }
                     } else if (sunProEntity != null) {

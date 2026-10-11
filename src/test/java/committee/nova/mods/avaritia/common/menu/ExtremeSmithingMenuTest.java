@@ -69,7 +69,7 @@ class ExtremeSmithingMenuTest {
                         "JEI recipe input order must follow menu slots 2 (right) then 3 (top)"),
                 () -> assertTrue(screen.contains("container/slot/smithing_template_netherite_upgrade")),
                 () -> assertTrue(screen.contains("newCyclingSlotBackground(0)")),
-                () -> assertTrue(screen.contains("templateIcon.extractRenderState(")),
+                () -> assertTrue(screen.contains("templateIcon.render(")),
                 () -> assertTrue(!screen.contains("getBaseSlotEmptyIcons")),
                 () -> assertTrue(!screen.contains("getAdditionalSlotEmptyIcons")),
                 () -> assertTrue(!screen.contains("newCyclingSlotBackground(1)")),

@@ -40,7 +40,7 @@ public class NeutronNautilusArmorItem extends Item implements InitEnchantItem {
     }
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return 10;
     }
 
@@ -61,7 +61,7 @@ public class NeutronNautilusArmorItem extends Item implements InitEnchantItem {
     }
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
          if (enchantmentHolder.is(Enchantments.PROTECTION)) {
             return 10;
         }else if (enchantmentHolder.is(Enchantments.FEATHER_FALLING)) {

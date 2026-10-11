@@ -17,6 +17,7 @@
     "components": {
       "avaritia:singularity_id": "avaritia:refined_obsidian"
     },
+    "count": 1,
     "id": "avaritia:singularity"
   },
   "timeCost": 240

@@ -62,7 +62,7 @@ public class SimpleDatagenIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return stack.typeHolder().getKey().identifier().equals(mod.asResource(id));
+        return stack.getItemHolder().unwrapKey().map(key -> key.identifier().equals(mod.asResource(id))).orElse(false);
     }
 
     @Override

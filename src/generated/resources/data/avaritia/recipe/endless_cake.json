@@ -10,6 +10,7 @@
   },
   "base": "minecraft:cake",
   "result": {
+    "count": 1,
     "id": "avaritia:endless_cake"
   },
   "template": "avaritia:upgrade_smithing_template"

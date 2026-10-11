@@ -12,18 +12,14 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.jetbrains.annotations.NotNull;
 
 public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
     public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStack output, int tier) {
-        super(pattern, output, tier, false);
-    }
-
-    public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStackTemplate output, int tier) {
         super(pattern, output, tier, false);
     }
 
@@ -56,18 +52,18 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, NoConsumeCatalystShapedRecipe> STREAM_CODEC = StreamCodec.of(
                 Serializer::toNetwork, Serializer::fromNetwork
         );
-        public static final RecipeSerializer<NoConsumeCatalystShapedRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<NoConsumeCatalystShapedRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static NoConsumeCatalystShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            var result = ItemStack.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
             return new NoConsumeCatalystShapedRecipe(pattern, result, tier);
         }
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, NoConsumeCatalystShapedRecipe recipe) {
             ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
         }
     }

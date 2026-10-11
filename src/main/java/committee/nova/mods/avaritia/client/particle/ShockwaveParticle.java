@@ -8,7 +8,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.renderer.state.QuadParticleRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.ARGB;
@@ -111,7 +111,7 @@ public class ShockwaveParticle extends SingleQuadParticle {
         Quaternionf quaternion = (new Quaternionf()).setAngleAxis(0.0F, ROTATION_VECTOR.x(), ROTATION_VECTOR.y(), ROTATION_VECTOR.z());
 
         pQuaternion.accept(quaternion);
-        renderState.add(this.getLayer(), f, f1, f2, quaternion.x, quaternion.y, quaternion.z, quaternion.w, this.getQuadSize(partialTick), this.getU0(), this.getU1(), this.getV0(), this.getV1(), ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol), this.getLightCoords(partialTick));
+        renderState.add(this.getLayer(), f, f1, f2, quaternion.x, quaternion.y, quaternion.z, quaternion.w, this.getQuadSize(partialTick), this.getU0(), this.getU1(), this.getV0(), this.getV1(), ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol), this.getLightColor(partialTick));
     }
 
     @Override
@@ -120,12 +120,12 @@ public class ShockwaveParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected int getLightCoords(float pPartialTick) {
+    protected int getLightColor(float pPartialTick) {
         if (isFullbright) {
             return 15728880;
         }
         BlockPos blockpos = BlockPos.containing(this.x, this.y, this.z).above();
-        return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightCoords(this.level, blockpos) : 15728640;
+        return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightColor(this.level, blockpos) : 15728640;
     }
 
     public static class Provider implements ParticleProvider<ShockwaveParticleOptions> {

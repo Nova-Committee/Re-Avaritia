@@ -13,7 +13,7 @@ import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -218,16 +218,16 @@ public final class TesseractChannelScreen extends BaseContainerScreen<TesseractC
     }
 
     @Override
-    protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
     }
 
     @Override
-    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        search.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        search.render(graphics, mouseX, mouseY, partialTick);
         if (channels.size() > ROWS) {
             graphics.fill(scrollbarHandle.left() + 2, scrollbarHandle.top(),
                     scrollbarHandle.right() - 2, scrollbarHandle.bottom(), 0xFF777777);
-            graphics.outline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
+            graphics.renderOutline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
                     scrollbarHandle.width() - 2, scrollbarHandle.height() + 2, 0xFF202020);
         }
         UiInspector.region("channels.list", listBounds, listBounds, true);
@@ -297,7 +297,7 @@ public final class TesseractChannelScreen extends BaseContainerScreen<TesseractC
         }
 
         @Override
-        public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             ChannelEntry entry = rowEntry(row);
             if (entry == null) return;
             int vOffset = 154;
@@ -311,7 +311,7 @@ public final class TesseractChannelScreen extends BaseContainerScreen<TesseractC
                 default -> 0xFFFFFFFF;
             };
             String label = font.plainSubstrByWidth(entry.name(), ROW_WIDTH - 8);
-            graphics.text(font, Component.literal(label), getX() + 4, getY() + 2, color, false);
+            graphics.drawString(font, Component.literal(label), getX() + 4, getY() + 2, color, false);
         }
     }
 
@@ -329,7 +329,7 @@ public final class TesseractChannelScreen extends BaseContainerScreen<TesseractC
         }
 
         @Override
-        public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             int uOffset = isHoveredOrFocused() ? u + hoverOffset : u;
             graphics.blit(RenderPipelines.GUI_TEXTURED, Res.BLACK_HOLE_CHANNEL_SELECT,
                     getX(), getY(), uOffset, v, width, height, 256, 256);

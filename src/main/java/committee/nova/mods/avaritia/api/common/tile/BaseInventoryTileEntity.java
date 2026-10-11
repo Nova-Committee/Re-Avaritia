@@ -38,7 +38,7 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
     public static boolean canUnlock(Player pPlayer, LockCode pCode, Component pDisplayName) {
         if (!pPlayer.isSpectator() && !pCode.unlocksWith(pPlayer.getMainHandItem())) {
-            pPlayer.sendOverlayMessage(Component.translatable("container.isLocked", pDisplayName));
+            pPlayer.displayClientMessage(Component.translatable("container.isLocked", pDisplayName), true);
             pPlayer.playSound(SoundEvents.CHEST_LOCKED, 1.0F, 1.0F);
             return false;
         } else {

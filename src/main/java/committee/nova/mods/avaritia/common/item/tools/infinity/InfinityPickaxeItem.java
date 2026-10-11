@@ -26,7 +26,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -90,7 +89,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
     }
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -146,7 +145,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
 
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FORTUNE)) {
             return 10;
         }

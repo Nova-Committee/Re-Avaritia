@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.model;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
-import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.world.item.ItemDisplayContext;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class PerspectiveModelState implements ModelState {
 
     public static final PerspectiveModelState IDENTITY = new PerspectiveModelState(ImmutableMap.of());
-    private static final Transformation IDENTITY_TRANSFORM = Transformation.IDENTITY;
+    private static final Transformation IDENTITY_TRANSFORM = Transformation.identity();
 
     private final Map<ItemDisplayContext, Transformation> transforms;
     private final boolean isUvLocked;

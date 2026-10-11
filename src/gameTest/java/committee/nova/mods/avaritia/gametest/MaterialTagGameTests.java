@@ -35,7 +35,7 @@ public final class MaterialTagGameTests {
 
     @SubscribeEvent
     public static void registerTest(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(Const.rl("material_tags"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(Const.rl("material_tags"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         event.registerTest(ID, new FunctionGameTestInstance(FUNCTION, new TestData<>(environment, Identifier.withDefaultNamespace("empty"), 40, 0, true)));
     }
 

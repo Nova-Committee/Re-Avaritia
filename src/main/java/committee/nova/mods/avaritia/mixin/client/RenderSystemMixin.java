@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.mixin.client;
 
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.mojang.blaze3d.TracyFrameCapture;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +18,12 @@ public abstract class RenderSystemMixin {
         AvaritiaShaderUniforms.bindIfAvaritia(renderPass);
     }
 
+    // 1.21.11 declares flipFrame(Window, @Nullable TracyFrameCapture), so the handler has to
+    // declare the Window too; in 26.1 the TracyFrameCapture was the only parameter.
+    // A signature mismatch here fails injection, and the config is required, so it would
+    // abort client startup - which a dedicated-server run can never surface.
     @Inject(method = "flipFrame", at = @At("TAIL"))
-    private static void avaritia$endFrame(@Nullable TracyFrameCapture tracyFrameCapture, CallbackInfo ci) {
+    private static void avaritia$endFrame(Window window, @Nullable TracyFrameCapture tracyFrameCapture, CallbackInfo ci) {
         AvaritiaShaderUniforms.endFrame();
     }
 }

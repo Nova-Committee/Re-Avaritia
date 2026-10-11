@@ -82,7 +82,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+    public int getEnchantmentLevel(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
        return 99;
     }//闄勯瓟绯绘暟
 
@@ -108,7 +108,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantment) {
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
         return this.initEnchantment.getLevel(enchantment);
     }
 

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.screen.component;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -85,7 +85,7 @@ public final class OperationMenu {
         lastMouseY = mouseY;
     }
 
-    public void render(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
         if (!isOpen()) {
             return;
         }

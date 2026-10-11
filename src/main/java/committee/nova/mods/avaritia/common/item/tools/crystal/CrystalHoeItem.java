@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.FarmlandBlock;
+import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.GrassBlock;
 import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
         var blockpos = context.getClickedPos();
         var targetBlock = world.getBlockState(blockpos).getBlock();
         var player = context.getPlayer();
-        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmlandBlock.MOISTURE, 7);
+        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
         int range = 1; // 3x3 area
         var minPos = blockpos.offset(-range, 0, -range);
         var maxPos = blockpos.offset(range, 0, range);

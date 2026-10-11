@@ -17,6 +17,7 @@
     "components": {
       "avaritia:singularity_id": "avaritia:aluminum"
     },
+    "count": 1,
     "id": "avaritia:singularity"
   },
   "timeCost": 240

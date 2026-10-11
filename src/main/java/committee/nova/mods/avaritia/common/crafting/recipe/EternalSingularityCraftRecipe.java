@@ -16,9 +16,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +35,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public final NonNullList<Ingredient> originalInputs;
 
     public EternalSingularityCraftRecipe(NonNullList<Ingredient> originalInputs, int count) {
-        super(NonNullList.create(), new ItemStackTemplate(ModItems.eternal_singularity.get(), count), 4);
+        super(NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get(), count), 4);
         this.count = count;
         this.originalInputs = originalInputs;
     }
@@ -128,7 +128,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         public static final StreamCodec<RegistryFriendlyByteBuf, EternalSingularityCraftRecipe> STREAM_CODEC = StreamCodec.of(
                 EternalSingularityCraftRecipe.Serializer::toNetwork, EternalSingularityCraftRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<EternalSingularityCraftRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<EternalSingularityCraftRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         public static EternalSingularityCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();

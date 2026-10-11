@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.resources.Identifier;
 import org.joml.Vector3fc;
 import org.junit.jupiter.api.DisplayName;

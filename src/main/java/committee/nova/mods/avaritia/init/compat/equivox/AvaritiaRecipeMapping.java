@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
@@ -63,7 +62,7 @@ final class AvaritiaRecipeMapping {
         }
         if (custom instanceof DataComponentIngredient components) {
             return components.itemSet().stream()
-                    .map(item -> new ItemStackTemplate(item, 1, components.components()).create())
+                    .map(item -> new ItemStack(item, 1, components.components()).create())
                     .toArray(ItemStack[]::new);
         }
         if (custom instanceof CompoundIngredient compound) {

@@ -36,7 +36,7 @@ class TierCraftMenuTest {
                 () -> assertTrue(menu.contains("this.craftContainer.isEmpty()"),
                         "an empty input grid must assemble to an empty result"),
                 () -> assertTrue(menu.contains("serverLevel.recipeAccess().getRecipeFor(")),
-                () -> assertTrue(menu.contains("recipe.value().assemble(inventory)")),
+                () -> assertTrue(menu.contains("recipe.value().assemble(inventory,serverLevel.registryAccess())")),
                 () -> assertTrue(menu.contains(".orElse(ItemStack.EMPTY)"),
                         "a grid with no matching recipe must assemble to an empty result")
         );

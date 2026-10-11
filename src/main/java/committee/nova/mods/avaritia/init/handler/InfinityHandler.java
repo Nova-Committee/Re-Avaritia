@@ -43,7 +43,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -157,7 +157,7 @@ public class InfinityHandler {
 
 
     @SubscribeEvent
-    public static void onPlayerMine(BreakBlockEvent event) {
+    public static void onPlayerMine(BlockEvent.BreakEvent event) {
         if (event.getLevel().isClientSide()) return;
         var level = (ServerLevel) event.getLevel();
         BlockPos pos = event.getPos();

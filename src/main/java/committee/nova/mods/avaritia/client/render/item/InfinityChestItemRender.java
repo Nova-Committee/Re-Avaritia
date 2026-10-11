@@ -8,34 +8,39 @@ import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.object.chest.ChestModel;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
-import net.minecraft.client.resources.model.sprite.SpriteGetter;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.resources.model.Material;
 import org.joml.Vector3fc;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import net.minecraft.world.item.ItemDisplayContext;
 
 /**
  * @author cnlimiter
  */
 public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
-    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("infinity_chest"));
+    private static final Material INFINITY_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("infinity_chest"));
 
     private final ChestModel model;
-    private final SpriteGetter sprites;
+    private final MaterialSet sprites;
 
-    public InfinityChestItemRender(EntityModelSet entityModelSet, SpriteGetter sprites) {
+    public InfinityChestItemRender(EntityModelSet entityModelSet, MaterialSet sprites) {
         this.model = new ChestModel(entityModelSet.bakeLayer(InfinityChestBlockRender.INFINITY_CHEST));
         this.sprites = sprites;
     }
 
     @Override
-    public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
-        output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay,
-                RainbowTintSource.currentColor(), INFINITY_CHEST_SPRITE, this.sprites, outlineColor, null);
+    public void submit(@NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
+        // 1.21.11's submitModel takes an explicit RenderType and resolved sprite instead of
+        // the 26.1 Material + MaterialSet pair.
+        output.submitModel(this.model, 0.0F, poseStack, INFINITY_CHEST_SPRITE.renderType(RenderTypes::entityCutout),
+                packedLight, packedOverlay, RainbowTintSource.currentColor(),
+                this.sprites.get(INFINITY_CHEST_SPRITE), outlineColor, null);
     }
 
     @Override
@@ -45,17 +50,17 @@ public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
         this.model.root().getExtentsForGui(poseStack, output);
     }
 
-    public static record Unbaked() implements SpecialModelRenderer.Unbaked<Void> {
+    public static record Unbaked() implements SpecialModelRenderer.Unbaked {
         public static final MapCodec<InfinityChestItemRender.Unbaked> MAP_CODEC = MapCodec.unit(new InfinityChestItemRender.Unbaked());
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked<Void>> type() {
+        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 
         @Override
-        public SpecialModelRenderer<Void> bake(SpecialModelRenderer.BakingContext context) {
-            return new InfinityChestItemRender(context.entityModelSet(), context.sprites());
+        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
+            return new InfinityChestItemRender(context.entityModelSet(), context.materials());
         }
     }
 }

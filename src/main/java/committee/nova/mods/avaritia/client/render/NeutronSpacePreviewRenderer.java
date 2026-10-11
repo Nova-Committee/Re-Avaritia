@@ -9,25 +9,26 @@ import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreviewLevel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.BlockStateModelSet;
-import net.minecraft.client.renderer.block.FluidRenderer;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.LiquidBlockRenderer;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
@@ -35,6 +36,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,6 +45,9 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 import net.neoforged.neoforge.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Snapshot preview submitted through native PIP.
@@ -77,7 +82,7 @@ public final class NeutronSpacePreviewRenderer {
         setPreview(null);
     }
 
-    public void draw(GuiGraphicsExtractor graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom,
+    public void draw(GuiGraphics graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom,
                      float panX, float panY) {
         graphics.fill(x, y, x + w, y + h, PortableUi.INSET_BG);
         bindSnapshot();
@@ -174,9 +179,9 @@ public final class NeutronSpacePreviewRenderer {
             poseStack.translate(-sizeX / 2.0F, -sizeY / 2.0F, -sizeZ / 2.0F);
 
             SnapshotTintGetter getter = new SnapshotTintGetter(snapshot);
-            BlockStateModelSet models = minecraft.getModelManager().getBlockStateModelSet();
-            ModelBlockRenderer blockRenderer = new ModelBlockRenderer(true, true, minecraft.getBlockColors());
-            FluidRenderer fluidRenderer = new FluidRenderer(minecraft.getModelManager().getFluidStateModelSet());
+            BlockModelShaper models = minecraft.getModelManager().getBlockModelShaper();
+            ModelBlockRenderer blockRenderer = new ModelBlockRenderer(minecraft.getBlockColors());
+            LiquidBlockRenderer fluidRenderer = new LiquidBlockRenderer(minecraft.getAtlasManager());
             int count = Math.min(preview.positions().length, preview.states().length);
             for (int i = 0; i < count; i++) {
                 int packed = preview.positions()[i];
@@ -203,28 +208,26 @@ public final class NeutronSpacePreviewRenderer {
             features.renderAllFeatures();
         }
 
-        private void tessellateModel(PoseStack poseStack, ModelBlockRenderer blockRenderer, BlockStateModelSet models,
+        private void tessellateModel(PoseStack poseStack, ModelBlockRenderer blockRenderer, BlockModelShaper models,
                                      SnapshotTintGetter getter, BlockPos pos, BlockState blockState) {
-            BlockStateModel model = models.get(blockState);
+            BlockStateModel model = models.getBlockModel(blockState);
+            List<BlockModelPart> parts = new ArrayList<>();
+            model.collectParts(RandomSource.create(blockState.getSeed(pos)), parts);
             poseStack.pushPose();
             poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-            blockRenderer.tesselateBlock(
-                    (ox, oy, oz, quad, instance) -> {
-                        poseStack.pushPose();
-                        poseStack.translate(ox, oy, oz);
-                        bufferSource.getBuffer(layerType(quad.materialInfo().layer())).putBakedQuad(poseStack.last(), quad, instance);
-                        poseStack.popPose();
-                    },
-                    0.0F, 0.0F, 0.0F, getter, pos, blockState, model, blockState.getSeed(pos));
+            blockRenderer.tesselateBlock(getter, parts, blockState, pos, poseStack,
+                    layer -> new PosedConsumer(bufferSource.getBuffer(layerType(layer)), poseStack.last()),
+                    true, (int) blockState.getSeed(pos));
             poseStack.popPose();
         }
 
-        private void tessellateFluid(PoseStack poseStack, FluidRenderer fluidRenderer, SnapshotTintGetter getter,
+        private void tessellateFluid(PoseStack poseStack, LiquidBlockRenderer fluidRenderer, SnapshotTintGetter getter,
                                      BlockPos pos, BlockState blockState, FluidState fluid) {
             poseStack.pushPose();
             poseStack.translate(pos.getX() & ~15, pos.getY() & ~15, pos.getZ() & ~15);
             PoseStack.Pose pose = poseStack.last();
-            fluidRenderer.tesselate(getter, pos, layer -> new PosedConsumer(bufferSource.getBuffer(layerType(layer)), pose),
+            fluidRenderer.tesselate(getter, pos,
+                    new PosedConsumer(bufferSource.getBuffer(layerType(ItemBlockRenderTypes.getRenderLayer(fluid))), pose),
                     blockState, fluid);
             poseStack.popPose();
         }
@@ -234,6 +237,8 @@ public final class NeutronSpacePreviewRenderer {
                 case SOLID -> RenderTypes.solidMovingBlock();
                 case CUTOUT -> RenderTypes.cutoutMovingBlock();
                 case TRANSLUCENT -> RenderTypes.translucentMovingBlock();
+                  // 1.21.11 added a fourth terrain layer alongside the three 26.1 had.
+                  case TRIPWIRE -> RenderTypes.tripwireMovingBlock();
             };
         }
 
@@ -244,8 +249,11 @@ public final class NeutronSpacePreviewRenderer {
             if (renderer == null) {
                 return;
             }
-            BlockEntityRenderState renderState = renderer.createRenderState();
-            renderer.extractRenderState(blockEntity, renderState, 0.0F, Vec3.ZERO, null);
+            BlockEntityRenderState renderState = minecraft.getBlockEntityRenderDispatcher()
+                    .tryExtractRenderState(blockEntity, 0.0F, null, null);
+            if (renderState == null) {
+                return;
+            }
             BlockPos pos = blockEntity.getBlockPos();
             poseStack.pushPose();
             poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
@@ -273,8 +281,16 @@ public final class NeutronSpacePreviewRenderer {
         }
 
         @Override
-        public CardinalLighting cardinalLighting() {
-            return CardinalLighting.DEFAULT;
+        public float getShade(net.minecraft.core.Direction direction, boolean shade) {
+            if (!shade) {
+                return 1.0F;
+            }
+            return switch (direction) {
+                case DOWN -> 0.5F;
+                case UP -> 1.0F;
+                case NORTH, SOUTH -> 0.8F;
+                case WEST, EAST -> 0.6F;
+            };
         }
 
         @Override

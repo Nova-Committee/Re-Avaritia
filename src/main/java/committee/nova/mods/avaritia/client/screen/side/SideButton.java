@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.client.screen.side;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -48,7 +48,7 @@ class SideButton extends ImageButton {
     }
 
     @Override
-    public void extractContents(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderContents(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         int texX;
         int texY = 118;
 

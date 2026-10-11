@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -86,7 +86,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderContents(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 47;
@@ -114,7 +114,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderContents(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 35;
@@ -128,7 +128,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     @Override
-    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (PortableLayout.contains(material, pMouseX, pMouseY)) {
             List<Component> tooltip = new ArrayList<>();
 
@@ -152,15 +152,15 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
-        stack.text(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
-        stack.text(font, this.playerInventoryTitle, 8, this.imageHeight - 94, LABEL_COLOR, false);
+        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
+        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, LABEL_COLOR, false);
     }
 
 
     @Override
-    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
                 int filled = this.getMaterialBarScaled(material.width() - 1);

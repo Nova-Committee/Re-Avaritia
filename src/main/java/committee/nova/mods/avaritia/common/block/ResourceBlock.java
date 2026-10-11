@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,7 +30,7 @@ public class ResourceBlock extends BaseBlock {
     }
 
     @Override
-    public float getEnchantPowerBonus(@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos) {
+    public float getEnchantPowerBonus(@NonNull BlockState state, @NonNull LevelReader level, @NonNull BlockPos pos) {
         return this.type.enchantPower;
     }
 }

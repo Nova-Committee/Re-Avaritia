@@ -10,7 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -138,9 +138,9 @@ public class InfinityBucketMenu extends BaseMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ContainerInput input, Player clicker) {
+    public void clicked(int slotId, int button, ClickType input, Player clicker) {
         if (clicker != player || slotId == offhandSyncSlot
-                || (input == ContainerInput.SWAP && button == bucketSlot)) {
+                || (input == ClickType.SWAP && button == bucketSlot)) {
             return;
         }
         super.clicked(slotId, button, input, clicker);

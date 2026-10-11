@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -51,7 +51,7 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
     }
 
     @Override
-    public void draw(@NotNull RecipeHolder<ExtremeSmithingRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+    public void draw(@NotNull RecipeHolder<ExtremeSmithingRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }
 

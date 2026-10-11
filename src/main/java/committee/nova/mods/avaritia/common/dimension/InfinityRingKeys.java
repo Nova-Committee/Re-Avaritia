@@ -4,7 +4,6 @@ import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 /** Resource keys for per-player Infinity Ring dimensions. */
 public final class InfinityRingKeys {
     public static final String PATH_PREFIX = "personal_";
-    public static final ResourceKey<WorldClock> CLOCK = ResourceKey.create(Registries.WORLD_CLOCK, Const.rl("personal"));
     public static final ResourceKey<DimensionType> DIMENSION_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, Const.rl("personal"));
 
     private InfinityRingKeys() {

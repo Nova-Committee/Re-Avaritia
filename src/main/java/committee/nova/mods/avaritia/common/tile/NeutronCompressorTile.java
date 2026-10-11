@@ -183,7 +183,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
                 // 检查是否完成
                 if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
                     CraftingInput craftingInput = tile.recipeInventory.toShapelessCraftingInput();
-                    var baseResult = tile.recipe.assemble(craftingInput);
+                    var baseResult = tile.recipe.assemble(craftingInput, level.registryAccess());
                     var result = baseResult.copyWithCount(baseResult.getCount() * tile.tier.outputAmplifier);
 
                     if (ItemUtils.canCombineStacks(result, output)) {

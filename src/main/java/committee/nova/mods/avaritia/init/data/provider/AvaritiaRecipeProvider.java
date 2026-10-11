@@ -482,7 +482,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider.Runner {
         }
 
         @Override
-        default ItemStack assemble(T input) {
+        default ItemStack assemble(T input, net.minecraft.core.HolderLookup.Provider registries) {
             return ItemStack.EMPTY;
         }
 

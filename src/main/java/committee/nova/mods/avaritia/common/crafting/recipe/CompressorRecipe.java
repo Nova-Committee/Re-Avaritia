@@ -13,10 +13,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
@@ -34,15 +34,12 @@ import java.util.List;
  */
 public class CompressorRecipe implements ICompressorRecipe {
     private final Ingredient input;
-    private final ItemStackTemplate result;
+    private final ItemStack result;
     private final int inputCount;
     private final int timeCost;
 
-    public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
-        this(input, ItemStackTemplate.fromNonEmptyStack(result), inputCount, timeCost);
-    }
 
-    public CompressorRecipe(Ingredient input, ItemStackTemplate result, int inputCount, int timeCost) {
+    public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
         this.input = input;
         this.result = result;
         this.inputCount = inputCount;
@@ -55,12 +52,12 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
 
     public @NotNull ItemStack getResultItem() {
-        return this.result.create();
+        return this.result.copy();
     }
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result.create();
+        return this.result.copy();
     }
 
     @Override
@@ -89,8 +86,8 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull CraftingInput input) {
-        return this.result.create();
+    public @NotNull ItemStack assemble(@NotNull CraftingInput input, net.minecraft.core.HolderLookup.Provider registries) {
+        return this.result.copy();
     }
     @Override
     public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
@@ -107,7 +104,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
     @Override
     public @NotNull List<RecipeDisplay> display() {
-        ItemStack result = this.result.create();
+        ItemStack result = this.result.copy();
         if (result.isEmpty()) {
             return List.of();
         }
@@ -134,11 +131,11 @@ public class CompressorRecipe implements ICompressorRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, CompressorRecipe> STREAM_CODEC = StreamCodec.of(
                 CompressorRecipe.Serializer::toNetwork, CompressorRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<CompressorRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<CompressorRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static CompressorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            var output = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            var output = ItemStack.STREAM_CODEC.decode(buffer);
             int inputCount = buffer.readVarInt();
             int timeCost = buffer.readVarInt();
 
@@ -147,7 +144,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input);
-            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.inputCount);
             buffer.writeVarInt(recipe.timeCost);
         }

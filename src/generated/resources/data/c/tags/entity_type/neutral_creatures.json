@@ -30,6 +30,90 @@
     "minecraft:trader_llama",
     "minecraft:turtle",
     "minecraft:wandering_trader",
-    "minecraft:wolf"
+    "minecraft:wolf",
+    {
+      "id": "bagus_lib:mini_bagu",
+      "required": false
+    },
+    {
+      "id": "ecologics:coconut_crab",
+      "required": false
+    },
+    {
+      "id": "ecologics:penguin",
+      "required": false
+    },
+    {
+      "id": "ecologics:squirrel",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:cluck_shroom",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:fancy_chicken",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:wooly_cow",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:umbra_cow",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:teacup_pig",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:magma_cow",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:horned_sheep",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:hyper_rabbit",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:moobloom",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:moolip",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:jumbo_rabbit",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:zombified_pig",
+      "required": false
+    },
+    {
+      "id": "earthmobsmod:jolly_llama",
+      "required": false
+    },
+    {
+      "id": "eternalnether:wither_skeleton_horse",
+      "required": false
+    },
+    {
+      "id": "aquaculture:box_turtle",
+      "required": false
+    },
+    {
+      "id": "aquaculture:arrau_turtle",
+      "required": false
+    },
+    {
+      "id": "aquaculture:starshell_turtle",
+      "required": false
+    }
   ]
 }

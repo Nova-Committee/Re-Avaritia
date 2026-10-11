@@ -47,7 +47,7 @@ public final class EquivoxGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TEST_ID, new TestEnvironmentDefinition.AllOf());
+        var environment = event.registerEnvironment(TEST_ID, new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         event.registerTest(TEST_ID, new FunctionGameTestInstance(TEST,
                 new TestData<>(environment, Identifier.withDefaultNamespace("empty"), 200, 0, true)));
     }

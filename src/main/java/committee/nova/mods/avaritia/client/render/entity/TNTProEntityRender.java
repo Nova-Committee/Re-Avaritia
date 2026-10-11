@@ -4,26 +4,21 @@ import committee.nova.mods.avaritia.common.entity.TNTProEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockModelResolver;
-import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.TntMinecartRenderer;
 import net.minecraft.client.renderer.entity.state.TntRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 
 public class TNTProEntityRender extends EntityRenderer<TNTProEntity, TntRenderState> {
-    private static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
-    private final BlockModelResolver blockModelResolver;
 
     public TNTProEntityRender(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.5F;
-        this.blockModelResolver = context.getBlockModelResolver();
     }
 
     @Override
@@ -57,7 +52,8 @@ public class TNTProEntityRender extends EntityRenderer<TNTProEntity, TntRenderSt
     public void extractRenderState(TNTProEntity entity, TntRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.fuseRemainingInTicks = (float) entity.getFuse() - partialTicks + 1.0F;
-        this.blockModelResolver.update(state.blockState, Blocks.TNT.defaultBlockState(), BLOCK_DISPLAY_CONTEXT);
+        // 1.21.11 stores the block state directly on the render state; 26.1 resolved it through a BlockDisplayContext.
+        state.blockState = Blocks.TNT.defaultBlockState();
     }
 
     public Identifier getTextureLocation(TNTProEntity entity) {

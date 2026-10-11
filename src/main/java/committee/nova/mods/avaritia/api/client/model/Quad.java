@@ -29,7 +29,7 @@ import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.model.quad.BakedColors;
@@ -295,14 +295,8 @@ public class Quad implements IVertexProducer, IVertexConsumer {
             throw new IllegalStateException("Unable to bake this quad to the specified format. " + format.format);
         }
         TextureAtlasSprite quadSprite = sprite != null ? sprite : TextureUtils.getMissingSprite();
-        BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
-                quadSprite,
-                ChunkSectionLayer.TRANSLUCENT,
-                RenderTypes.itemTranslucent(quadSprite.atlasLocation()),
-                tintIndex,
-                diffuseLighting,
-                0
-        );
+        // 1.21.11's BakedQuad record has no bundled MaterialInfo and carries no render
+        // type (the layer picks it), so sprite/tint/shade are passed individually.
         return new BakedQuad(
                 position(vertices[0]),
                 position(vertices[1]),
@@ -312,10 +306,14 @@ public class Quad implements IVertexProducer, IVertexConsumer {
                 uv(vertices[1]),
                 uv(vertices[2]),
                 uv(vertices[3]),
+                tintIndex,
                 orientation != null ? orientation : Direction.NORTH,
-                materialInfo,
+                quadSprite,
+                diffuseLighting,
+                0,
                 normals(),
-                colors()
+                colors(),
+                true
         );
     }
 

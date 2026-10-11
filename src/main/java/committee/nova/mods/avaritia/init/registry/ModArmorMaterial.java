@@ -48,7 +48,11 @@ public class ModArmorMaterial {
     public static final ResourceKey<EquipmentAsset> NEUTRON_HARNESS_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
             Identifier.fromNamespaceAndPath(Const.MOD_ID, "neutron_harness"));
 
-    public static final ArmorMaterial neutron_wolf_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
+    // 第一个参数是耐久倍率（ArmorType.BODY 的单位耐久为 16），不是护甲值。
+    // 原版狼铠（犰狳鳞）用 4，即 64 点耐久；这里给 20，即 320 点。
+    // 注意：InfinityArmorItem 实现了 IUndamageable，耐久对它无影响；
+    // 中子狼铠/马铠/鹦鹉螺铠会实际掉耐久，所以这个值对它们是生效的。
+    public static final ArmorMaterial neutron_wolf_armor = new ArmorMaterial(20, Util.make(new EnumMap<>(ArmorType.class), map -> {
         map.put(ArmorType.BODY, 50);
     }), 10, SoundEvents.ARMOR_EQUIP_WOLF, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, NEUTRON_WOLF_ARMOR_ASSET);
 }

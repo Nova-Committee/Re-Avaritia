@@ -54,8 +54,8 @@ public final class DeathLootGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("death_loot"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("death_loot"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         for (String name : TESTS) {
             Identifier id = Const.rl("death_loot_" + name);
             ResourceKey<Consumer<GameTestHelper>> function = ResourceKey.create(Registries.TEST_FUNCTION, id);

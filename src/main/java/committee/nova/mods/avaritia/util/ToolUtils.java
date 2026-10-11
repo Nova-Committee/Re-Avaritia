@@ -101,7 +101,7 @@ public class ToolUtils {
      * Common
      ***/
     public static boolean canUseTool(BlockState state, Set<TagKey<Block>> keySets) {
-        return state.tags().collect(Collectors.toSet()).retainAll(keySets);
+        return state.getTags().collect(Collectors.toSet()).retainAll(keySets);
     }
 
     /**
@@ -450,7 +450,7 @@ public class ToolUtils {
                     if (hurtAnimal) {
                         return true;
                     } else {
-                        return entity instanceof Enemy && !entity.is(ModTags.NEUTRAL_CREATURES);
+                        return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
                     }
                 })
 
@@ -722,7 +722,7 @@ public class ToolUtils {
      */
     public static ItemStack getMeltingItem(Player player, ServerLevel world, ItemStack itemStack, ItemStack tool) {
         ItemStack dropStack = world.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
-                .map(smeltingRecipe -> smeltingRecipe.value().assemble(new SingleRecipeInput(itemStack))).filter(e -> !e.isEmpty())
+                .map(smeltingRecipe -> smeltingRecipe.value().assemble(new SingleRecipeInput(itemStack), world.registryAccess())).filter(e -> !e.isEmpty())
                 .map(e -> e.copyWithCount(tool.getCount() * e.getCount()))
                 .orElse(itemStack);
         Holder<Enchantment> fortuneEnchant =

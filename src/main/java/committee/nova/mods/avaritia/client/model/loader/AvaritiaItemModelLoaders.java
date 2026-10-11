@@ -11,6 +11,7 @@ import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.ResolvableModel;
 import net.minecraft.resources.Identifier;
+import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.NonNull;
 
@@ -25,6 +26,15 @@ import java.util.Optional;
  * 要烘焙的模型资源，真正的纹理拆分、遮罩 quad 和特殊渲染层由 {@link EffectItemModelBaker} 处理。
  */
 public final class AvaritiaItemModelLoaders {
+    /**
+     * Minecraft 1.21.11 bakes item models without a transform matrix — the
+     * {@code ItemModel.Unbaked.bake} hook takes only the {@code BakingContext}, and
+     * display transforms are applied per render layer at draw time ({@code ItemTransform}).
+     * The 26.1 sources received a bake-time {@code Matrix4fc}; that value no longer exists,
+     * so the effect layers are baked untransformed.
+     */
+    private static final Matrix4fc IDENTITY_TRANSFORM = new Matrix4f();
+
     private AvaritiaItemModelLoaders() {
     }
 
@@ -39,8 +49,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty());
+        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty());
         }
 
         @Override
@@ -65,8 +75,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty(), true);
+        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty(), true);
         }
 
         @Override
@@ -91,8 +101,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.HELL, Optional.empty());
+        public ItemModel bake(ItemModel.BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.HELL, Optional.empty());
         }
 
         @Override
@@ -117,8 +127,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.ETERNAL, Optional.empty());
+        public ItemModel bake(ItemModel.BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.ETERNAL, Optional.empty());
         }
 
         @Override
@@ -143,8 +153,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.UNSTABLE, Optional.empty());
+        public ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.UNSTABLE, Optional.empty());
         }
 
         @Override
@@ -169,8 +179,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, List.of(), null, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
+        public ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, List.of(), null, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
         }
 
         @Override
@@ -195,8 +205,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
+        public ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
         }
 
         @Override
@@ -221,8 +231,8 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
-            return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.ETERNAL, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
+        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context) {
+            return EffectItemModelBaker.bake(context, IDENTITY_TRANSFORM, this.model, this.tints, this.mask, ItemEffect.ETERNAL, Optional.of(EffectItemModelBaker.toHaloLayer(context, this)));
         }
 
         @Override

@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.api.common.crafting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -34,7 +33,7 @@ public interface ICompressorRecipe extends Recipe<CraftingInput> {
     }
 
     @Override
-    default @NotNull ItemStack assemble(@NotNull CraftingInput input) {
+    default @NotNull ItemStack assemble(@NotNull CraftingInput input, net.minecraft.core.HolderLookup.Provider registries) {
         return this.getResultItem(null).copy();
     }
 
@@ -66,7 +65,7 @@ public interface ICompressorRecipe extends Recipe<CraftingInput> {
         }
         return List.of(new ShapelessCraftingRecipeDisplay(
                 this.getIngredients().stream().map(Ingredient::display).toList(),
-                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(result)),
+                new SlotDisplay.ItemStackSlotDisplay(committee.nova.mods.avaritia.api.common.crafting.RecipeCodecs.fromNonEmptyStack(result)),
                 new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
         ));
     }

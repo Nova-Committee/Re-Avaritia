@@ -75,7 +75,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                                             case 256 -> next = 512;
                                             default -> next = 1;
                                         }
-                                        player.sendOverlayMessage(Component.literal(next + "x"));
+                                        player.displayClientMessage(Component.literal(next + "x"), true);
                                         tag.putInt("SpeedMultiplier", next);
                                     }
                             )

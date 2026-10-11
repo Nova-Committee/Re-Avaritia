@@ -9,14 +9,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.client.fluid.FluidTintSource;
-import net.neoforged.neoforge.client.fluid.FluidTintSources;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.textures.FluidSpriteCache;
 
 
 /**
@@ -136,19 +136,15 @@ public final class FluidItemRender {
             consumer.addVertex(poseStack.last(), x1, y1, zIndex).setUv(minU, minV).setColor(r, g, b, blending ? a : 255);
 
             MeshData mesh = buffer.buildOrThrow();
-            RenderTypes.itemTranslucent(sprite.atlasLocation()).draw(mesh);
+            Sheets.translucentBlockItemSheet().draw(mesh);
         }
     }
 
     public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, int x, int y, int z) {
         FluidState fluidState = fluidStack.getFluid().defaultFluidState();
-        FluidModel fluidModel = Minecraft.getInstance()
-                .getModelManager()
-                .getFluidStateModelSet()
-                .get(fluidState);
-        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
-        FluidTintSource tintSource = FluidTintSources.of(fluidModel.tintSource());
-        int color = tintSource != null ? tintSource.colorAsStack(fluidStack) : -1;
+        IClientFluidTypeExtensions fluidExtensions = IClientFluidTypeExtensions.of(fluidState.getType());
+        TextureAtlasSprite sprite = FluidSpriteCache.getSprite(fluidExtensions.getStillTexture());
+        int color = fluidExtensions.getTintColor();
         sprite(sprite)
                 .colorRgb(color)
                 .blending(false)

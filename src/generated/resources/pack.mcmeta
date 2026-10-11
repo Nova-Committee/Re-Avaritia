@@ -1,7 +1,10 @@
 {
   "pack": {
-    "description": "Re:Avaritia 26 Generated Resources",
-    "max_format": 84,
-    "min_format": 84
+    "description": "Re:Avaritia 1.21.11 Generated Resources",
+    "max_format": 94,
+    "min_format": [
+      94,
+      1
+    ]
   }
 }

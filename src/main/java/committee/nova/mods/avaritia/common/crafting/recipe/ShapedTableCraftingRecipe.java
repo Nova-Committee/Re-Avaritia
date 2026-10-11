@@ -16,12 +16,12 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import committee.nova.mods.avaritia.api.common.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
@@ -41,25 +41,19 @@ import java.util.List;
  */
 public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     public final ShapedRecipePattern pattern;
-    public final ItemStackTemplate result;
+    public final ItemStack result;
     public final int tier;
     @Getter
     private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
-    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result) {
-        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), 0, false);
-    }
 
-    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result) {
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result) {
         this(pattern, result, 0, false);
     }
 
-    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {
-        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), tier, compatible);
-    }
 
-    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result, int tier, boolean compatible) {
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {
         this.pattern = pattern;
         this.result = result;
         this.tier = tier;
@@ -68,12 +62,12 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result.create();
+        return this.result.copy();
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull TierInput input) {
-        return this.result.create();
+    public @NotNull ItemStack assemble(@NotNull TierInput input, net.minecraft.core.HolderLookup.Provider registries) {
+        return this.result.copy();
     }
 
     @Override
@@ -221,11 +215,11 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, ShapedTableCraftingRecipe> STREAM_CODEC = StreamCodec.of(
                 ShapedTableCraftingRecipe.Serializer::toNetwork, ShapedTableCraftingRecipe.Serializer::fromNetwork
         );
-        public static final RecipeSerializer<ShapedTableCraftingRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        public static final RecipeSerializer<ShapedTableCraftingRecipe> SERIALIZER = new SimpleRecipeSerializer<>(CODEC, STREAM_CODEC);
 
         private static ShapedTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            var result = ItemStack.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
             var compatible = buffer.readBoolean();
 
@@ -234,7 +228,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, ShapedTableCraftingRecipe recipe) {
             ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
             buffer.writeBoolean(recipe.compatible);
         }

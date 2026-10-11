@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -406,7 +406,7 @@ public class GapingVoidEntity extends Entity {
                         double dist = pos2.lengthSqr();
                         if (dist <= nomrange && !level().getBlockState(blockPos).isAir()) {
                             BlockState state = level().getBlockState(blockPos);
-                            BreakBlockEvent event = new BreakBlockEvent(level(), blockPos, state, fakePlayer);
+                            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level(), blockPos, state, fakePlayer);
                             NeoForge.EVENT_BUS.post(event);
                             if (!event.isCanceled()) {
                                 float resist = state.getBlock().getExplosionResistance();

@@ -198,7 +198,7 @@ public class ItemUtils {
     public static ItemStack withSize(ItemStack stack, int size, boolean container) {
         if (size <= 0) {
             UseRemainder remainder = stack.get(DataComponents.USE_REMAINDER);
-            return container && remainder != null ? remainder.convertInto().create() : ItemStack.EMPTY;
+            return container && remainder != null ? remainder.convertInto().copy() : ItemStack.EMPTY;
         } else {
             stack = stack.copy();
             stack.setCount(size);

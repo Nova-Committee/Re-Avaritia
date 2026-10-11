@@ -152,25 +152,25 @@ public final class InfinityChestContainer extends SimpleContainer {
     private static boolean matches(ItemResource resource, String query) {
         if (query.isEmpty()) return true;
         if (query.charAt(0) == '*') {
-            return resource.typeHolder().getRegisteredName().toLowerCase(Locale.ROOT).contains(query.substring(1));
+            return resource.getHolder().getRegisteredName().toLowerCase(Locale.ROOT).contains(query.substring(1));
         }
         if (query.charAt(0) == '$') {
             String tagQuery = query.substring(1);
-            return resource.test(stack -> stack.typeHolder().tags()
+            return resource.test(stack -> stack.getItemHolder().tags()
                     .anyMatch(tag -> tag.location().toString().toLowerCase(Locale.ROOT).contains(tagQuery)));
         }
-        String id = resource.typeHolder().getRegisteredName().toLowerCase(Locale.ROOT);
+        String id = resource.getHolder().getRegisteredName().toLowerCase(Locale.ROOT);
         String name = resource.getHoverName().getString().toLowerCase(Locale.ROOT);
         return id.contains(query) || name.contains(query);
     }
 
     private static Comparator<ChestHandler.StoredItem> comparator(byte sortType) {
         Comparator<ChestHandler.StoredItem> byFullId = Comparator.comparing(
-                entry -> entry.resource().typeHolder().getRegisteredName());
+                entry -> entry.resource().getHolder().getRegisteredName());
         Comparator<ChestHandler.StoredItem> byPath = Comparator.comparing(
-                entry -> path(entry.resource().typeHolder().getRegisteredName()));
+                entry -> path(entry.resource().getHolder().getRegisteredName()));
         Comparator<ChestHandler.StoredItem> byMirror = (left, right) -> compareMirrored(
-                left.resource().typeHolder().getRegisteredName(), right.resource().typeHolder().getRegisteredName());
+                left.resource().getHolder().getRegisteredName(), right.resource().getHolder().getRegisteredName());
         Comparator<ChestHandler.StoredItem> byCount = Comparator.comparingLong(ChestHandler.StoredItem::amount)
                 .thenComparing(byFullId);
         return switch (sortType) {

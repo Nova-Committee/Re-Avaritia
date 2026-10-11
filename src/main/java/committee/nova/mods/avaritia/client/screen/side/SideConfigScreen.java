@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
@@ -64,7 +64,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
                     @Override
-                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -83,7 +83,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> onClose()) {
                     @Override
-                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -149,17 +149,17 @@ public class SideConfigScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.extractTransparentBackground(guiGraphics);
+    public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderTransparentBackground(guiGraphics);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.centeredText(this.font, this.title, this.width / 2, this.guiTop + 7, 0xFF404040);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, this.guiTop + 7, 0xFF404040);
     }
 
     @Override

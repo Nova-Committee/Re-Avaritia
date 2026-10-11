@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -18,7 +18,9 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class BurningBallRender extends EntityRenderer<BurningBallEntity, EntityRenderState> {
-    private static final RenderType RENDER_TYPE = RenderTypes.entityCutout(Res.DRAGON_FIREBALL);
+    // Same fix as BillboardProjectileRender: vanilla's DragonFireballRenderer uses
+    // entityCutoutNoCull and applies only the camera orientation.
+    private static final RenderType RENDER_TYPE = RenderTypes.entityCutoutNoCull(Res.DRAGON_FIREBALL);
 
     public BurningBallRender(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -38,7 +40,6 @@ public class BurningBallRender extends EntityRenderer<BurningBallEntity, EntityR
         pPoseStack.pushPose();
         pPoseStack.scale(2.0F, 2.0F, 2.0F);
         pPoseStack.mulPose(pCameraState.orientation);
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         pOutput.submitCustomGeometry(pPoseStack, RENDER_TYPE, (pose, vertexconsumer) -> {
             vertex(vertexconsumer, pose, pState.lightCoords, 0.0F, 0, 0, 1);
             vertex(vertexconsumer, pose, pState.lightCoords, 1.0F, 0, 1, 1);

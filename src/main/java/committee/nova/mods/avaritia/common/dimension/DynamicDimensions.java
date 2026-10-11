@@ -91,7 +91,7 @@ public final class DynamicDimensions {
             }
         }
         WorldData worldData = server.getWorldData();
-        long biomeZoomSeed = BiomeManager.obfuscateSeed(server.getWorldGenSettings().options().seed());
+        long biomeZoomSeed = BiomeManager.obfuscateSeed(worldData.worldGenOptions().seed());
         ServerLevel level = new ServerLevel(
                 server,
                 server.executor,
@@ -102,7 +102,8 @@ public final class DynamicDimensions {
                 worldData.isDebugWorld(),
                 biomeZoomSeed,
                 List.of(),
-                true);
+                true,
+                  null);
         levels.put(key, level);
         server.markWorldsDirty();
         NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));

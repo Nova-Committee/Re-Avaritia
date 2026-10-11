@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.api.client.util.VertexUtils;
 import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +106,7 @@ public class HaloUtils {
     }
 
     public static BakedQuad transformQuad(final BakedQuad quad, final IntList layerColors) {
-        final int tintIndex = quad.materialInfo().tintIndex();
+        final int tintIndex = quad.tintIndex();
         if (tintIndex == -1 || tintIndex >= layerColors.size()) {
             return quad;
         }

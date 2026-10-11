@@ -11,7 +11,6 @@ import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.TickRateManager;
 import net.minecraft.world.attribute.EnvironmentAttributeSystem;
-import net.minecraft.world.clock.ClockManager;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -352,9 +351,24 @@ public final class NeutronSpacePreviewLevel extends Level {
         return metadataSource.fuelValues();
     }
 
+    // 1.21.11 declares the day-time controls on Level; this snapshot level is static,
+    // so the fraction stays at zero and the rate is a no-op.
     @Override
-    public ClockManager clockManager() {
-        return metadataSource.clockManager();
+    public float getDayTimeFraction() {
+        return 0.0F;
+    }
+
+    @Override
+    public void setDayTimeFraction(float dayTimeFraction) {
+    }
+
+    @Override
+    public float getDayTimePerTick() {
+        return 1.0F;
+    }
+
+    @Override
+    public void setDayTimePerTick(float dayTimePerTick) {
     }
 
     @Override
@@ -520,6 +534,24 @@ public final class NeutronSpacePreviewLevel extends Level {
         @Override
         public void setSpawn(LevelData.RespawnData respawnData) {
         }
+
+        @Override
+        public boolean isRaining() {
+            return false;
+        }
+
+        @Override
+        public void setRaining(boolean raining) {
+        }
+
+        @Override
+        public boolean isThundering() {
+            return false;
+        }
+        @Override
+        public long getDayTime() {
+            return gameTime;
+        }
     }
 
     private static final class EmptyEntities implements LevelEntityGetter<Entity> {
@@ -549,5 +581,19 @@ public final class NeutronSpacePreviewLevel extends Level {
         @Override
         public <U extends Entity> void get(EntityTypeTest<Entity, U> test, AABB bounds, AbortableIterationConsumer<U> consumer) {
         }
+    }
+
+    /** 1.21.11's BlockAndTintGetter declares directional shading; this snapshot is lit flat. */
+    @Override
+    public float getShade(net.minecraft.core.Direction direction, boolean shade) {
+        if (!shade) {
+            return 1.0F;
+        }
+        return switch (direction) {
+            case DOWN -> 0.5F;
+            case UP -> 1.0F;
+            case NORTH, SOUTH -> 0.8F;
+            case WEST, EAST -> 0.6F;
+        };
     }
 }

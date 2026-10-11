@@ -37,7 +37,7 @@ public final class NeutronRingSavedData extends SavedData {
     ).apply(instance, NeutronRingSavedData::fromEntries));
 
     public static final SavedDataType<NeutronRingSavedData> TYPE = new SavedDataType<>(
-            Const.rl(NAME), NeutronRingSavedData::new, CODEC);
+            Const.rl(NAME).getPath(), NeutronRingSavedData::new, CODEC);
 
     private final Map<UUID, List<Space>> libraries = new HashMap<>();
 

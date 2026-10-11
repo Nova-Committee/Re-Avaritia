@@ -11,7 +11,7 @@ import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
 import committee.nova.mods.avaritia.common.net.S2CUpdateDimensionsPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -232,8 +232,8 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (playerList != null && playerList.children().isEmpty()) {
             int textY = playerList.getY() + 6;
             int textW = Math.max(40, playerList.getWidth() - 8);
@@ -246,7 +246,7 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     @Override
-    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
+    protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
         PortableUi.panel(graphics, panel);
         UiInspector.region("ring.control.panel", panel, null, false);
         PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
@@ -494,7 +494,7 @@ public final class InfinityRingControlScreen extends Screen {
             }
 
             @Override
-            public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+            public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY,
                                        boolean hovering, float partialTick) {
                 lastLeft = getX();
                 lastTop = getY();

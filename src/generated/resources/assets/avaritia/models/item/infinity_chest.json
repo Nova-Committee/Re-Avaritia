@@ -1,5 +1,4 @@
 {
-  "parent": "minecraft:builtin/entity",
   "display": {
     "firstperson_righthand": {
       "rotation": [

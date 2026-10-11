@@ -15,6 +15,7 @@ import org.joml.Vector3fc;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import net.minecraft.world.item.ItemDisplayContext;
 
 public class InfinityShieldRender implements NoDataSpecialModelRenderer {
 
@@ -29,7 +30,7 @@ public class InfinityShieldRender implements NoDataSpecialModelRenderer {
     }
 
     @Override
-    public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
+    public void submit(@NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
         output.submitCustomGeometry(poseStack, this.model.renderType(TEXTURE), (pose, vertexConsumer) -> {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);
@@ -42,16 +43,16 @@ public class InfinityShieldRender implements NoDataSpecialModelRenderer {
     public void getExtents(@NotNull Consumer<Vector3fc> output) {
     }
 
-    public static record Unbaked() implements SpecialModelRenderer.Unbaked<Void> {
+    public static record Unbaked() implements SpecialModelRenderer.Unbaked {
         public static final MapCodec<InfinityShieldRender.Unbaked> MAP_CODEC = MapCodec.unit(new InfinityShieldRender.Unbaked());
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked<Void>> type() {
+        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 
         @Override
-        public SpecialModelRenderer<Void> bake(SpecialModelRenderer.BakingContext context) {
+        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
             return new InfinityShieldRender(context.entityModelSet());
         }
     }

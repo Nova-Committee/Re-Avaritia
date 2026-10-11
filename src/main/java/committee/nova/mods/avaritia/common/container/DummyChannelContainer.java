@@ -109,7 +109,7 @@ public final class DummyChannelContainer implements Container {
 
         public String identifier() {
             return switch (kind) {
-                case ITEM -> item.typeHolder().getRegisteredName();
+                case ITEM -> item.getHolder().getRegisteredName();
                 case FLUID -> fluid.getFluid().builtInRegistryHolder().getRegisteredName();
                 case ENERGY -> "avaritia:forge_energy";
                 case EMPTY -> "";

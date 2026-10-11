@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client;
 
+import com.google.common.reflect.TypeToken;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
@@ -67,13 +68,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
-import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -107,7 +108,6 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import org.lwjgl.glfw.GLFW;
@@ -213,10 +213,19 @@ public class AvaritiaClient {
 
     @SubscribeEvent
     public static void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
-        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
-            @Override
-            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
-                renderState.setRenderData(INFINITY_ARMOR_FLYING, avatar instanceof Player player && player.getAbilities().flying);
+        // 1.21.11 has no AvatarRenderStateModifier, so this goes through the generic modifier.
+        // The typed overload cannot be used here: ensureParametersMatchBounds demands that every
+        // bound of the renderer's type parameter be a *subtype* of the one type argument you pass,
+        // but AvatarRenderer's parameter is bounded by the intersection (Avatar & ClientAvatarEntity)
+        // -- a class plus an unrelated interface -- and nothing nameable is a supertype of both.
+        // Handing over the raw class keeps TypeToken.of(...) a plain Class instead of a
+        // ParameterizedType, which skips that check while the modifier still registers for
+        // AvatarRenderer and its subclasses.
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Class rawRenderer = AvatarRenderer.class;
+        event.registerEntityModifier(rawRenderer, (java.util.function.BiConsumer) (entity, renderState) -> {
+            if (entity instanceof Player player && renderState instanceof AvatarRenderState state) {
+                state.setRenderData(INFINITY_ARMOR_FLYING, player.getAbilities().flying);
             }
         });
     }
@@ -369,7 +378,7 @@ public class AvaritiaClient {
         CosmicRenderQueue.renderAll();
     }
 
-    private static void renderDarknessOverlay(GuiGraphicsExtractor guiGraphics, net.minecraft.client.DeltaTracker deltaTracker) {
+    private static void renderDarknessOverlay(GuiGraphics guiGraphics, net.minecraft.client.DeltaTracker deltaTracker) {
         if (darknessIntensity > 0.01f) {
             int alpha = Math.min(255, (int) (darknessIntensity * 255));
             guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), alpha << 24);

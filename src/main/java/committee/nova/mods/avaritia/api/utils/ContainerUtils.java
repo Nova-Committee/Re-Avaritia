@@ -101,7 +101,7 @@ public class ContainerUtils {
         ItemStack stack = inv.getItem(slot);
         var remainder = stack.getCraftingRemainder();
         if (remainder != null) {
-            inv.setItem(slot, remainder.create());
+            inv.setItem(slot, remainder.copy());
         } else {
             inv.removeItem(slot, 1);
         }

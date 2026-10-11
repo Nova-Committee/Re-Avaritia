@@ -86,8 +86,8 @@ public final class InfinityBucketGameTests {
 
     @SubscribeEvent
     public static void register(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(
-                Const.rl("infinity_bucket"), new TestEnvironmentDefinition.AllOf());
+        Holder<TestEnvironmentDefinition> environment = event.registerEnvironment(
+                Const.rl("infinity_bucket"), new TestEnvironmentDefinition.AllOf(java.util.List.of()));
         register(event, NAMED_TROPICAL, environment);
         register(event, STACKED_AXOLOTL, environment);
         register(event, FULL_CREATURES, environment);
@@ -101,7 +101,7 @@ public final class InfinityBucketGameTests {
         register(event, EXTRACT_NO_WATER, environment);
     }
 
-    private static void register(RegisterGameTestsEvent event, Identifier id, Holder<TestEnvironmentDefinition<?>> environment) {
+    private static void register(RegisterGameTestsEvent event, Identifier id, Holder<TestEnvironmentDefinition> environment) {
         event.registerTest(id, new FunctionGameTestInstance(
                 ResourceKey.create(Registries.TEST_FUNCTION, id),
                 new TestData<>(environment, EMPTY_STRUCTURE, 100, 0, true)));
