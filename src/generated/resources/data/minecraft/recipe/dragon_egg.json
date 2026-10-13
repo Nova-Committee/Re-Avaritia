@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:egg",
+    "b": "minecraft:dragon_breath",
+    "c": "minecraft:experience_bottle",
+    "d": "minecraft:dragon_head",
+    "e": "minecraft:ender_chest",
+    "f": "minecraft:end_crystal",
+    "g": "avaritia:neutron_pile"
+  },
+  "pattern": [
+    "  ggg  ",
+    " gfefg ",
+    "gfbdbfg",
+    "gecaceg",
+    "gfbcbfg",
+    "ggfefgg",
+    " ggggg "
+  ],
+  "result": {
+    "id": "minecraft:dragon_egg"
+  },
+  "tier": 3
+}

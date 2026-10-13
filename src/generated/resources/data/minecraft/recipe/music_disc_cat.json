@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:record_fragment",
+    "b": "minecraft:green_dye"
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "id": "minecraft:music_disc_cat"
+  },
+  "tier": 1
+}
