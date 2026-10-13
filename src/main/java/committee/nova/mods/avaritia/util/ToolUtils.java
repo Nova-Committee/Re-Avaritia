@@ -140,11 +140,14 @@ public class ToolUtils {
      * @param player 玩家
      * @return 是否身穿全套无尽装备
      */
+    // 26.3 的 EquipmentSlot 新增了 SADDLE/BODY 等槽位，isArmor() 语义不可靠；
+    // 全套无尽装备判定只认人类盔甲四槽。
+    private static final EquipmentSlot[] HUMANOID_ARMOR_SLOTS = {
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
+    };
+
     public static boolean isInfinite(LivingEntity player) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (!slot.isArmor()) {
-                continue;
-            }
+        for (EquipmentSlot slot : HUMANOID_ARMOR_SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
             if (stack.isEmpty() || !(stack.getItem() instanceof InfinityArmorItem)) {
                 return false;

@@ -11,6 +11,8 @@ run/
 bin/
 logs/
 specs/
+hs_err_pid*.log
+replay_pid*.log
 
 # 26.3 升级参考资源（体积巨大，不属于模组源码）
 mc263-sources/
