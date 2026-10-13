@@ -1,41 +1,47 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.AbortableIterationConsumer;
-import net.minecraft.util.profiling.InactiveProfiler;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.TickRateManager;
+import net.minecraft.world.attribute.EnvironmentAttributeSystem;
+import net.minecraft.world.clock.ClockManager;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.crafting.RecipeAccess;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -71,7 +77,10 @@ public final class NeutronSpacePreviewLevel extends Level {
     private final Map<BlockPos, BlockEntity> entities = new HashMap<>();
     private final Collection<BlockEntity> blockEntities = Collections.unmodifiableCollection(entities.values());
     private final SnapshotChunkSource chunkSource;
+    private final TickRateManager tickRateManager = new TickRateManager();
     private final Scoreboard scoreboard = new Scoreboard();
+    private final SnapshotData snapshotData;
+    private final WorldBorder worldBorder = new WorldBorder();
 
     public NeutronSpacePreviewLevel(Level metadataSource, BlockPos tintOrigin, NeutronSpacePreview preview) {
         super(
@@ -79,32 +88,35 @@ public final class NeutronSpacePreviewLevel extends Level {
                 metadataSource.dimension(),
                 metadataSource.registryAccess(),
                 metadataSource.dimensionTypeRegistration(),
-                () -> InactiveProfiler.INSTANCE,
                 metadataSource.isClientSide(),
                 false,
                 0L,
                 0);
         this.metadataSource = metadataSource;
+        this.snapshotData = (SnapshotData) getLevelData();
         this.tintBiome = metadataSource.getBiome(tintOrigin.immutable());
         this.sizeX = Math.max(1, preview.sizeX());
         this.sizeY = Math.max(1, preview.sizeY());
         this.sizeZ = Math.max(1, preview.sizeZ());
-        int volume = this.sizeX * this.sizeY * this.sizeZ;
-        this.cells = new BlockState[volume];
+        this.cells = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
         this.chunkSource = new SnapshotChunkSource();
         fillCells(preview);
         bindBlockEntities(preview);
     }
 
     @Override
-    public net.minecraft.world.flag.FeatureFlagSet enabledFeatures() {
-        return metadataSource.enabledFeatures();
+    public int getSeaLevel() {
+        return metadataSource.getSeaLevel();
+    }
+
+    @Override
+    public WorldBorder getWorldBorder() {
+        return worldBorder;
     }
 
     public Collection<BlockEntity> blockEntities() {
         return blockEntities;
     }
-
 
     private void fillCells(NeutronSpacePreview preview) {
         int count = Math.min(preview.positions().length, preview.states().length);
@@ -148,7 +160,8 @@ public final class NeutronSpacePreviewLevel extends Level {
             NeutronSpacePreview.BlockEntityData extra = extras.get(packed);
             if (extra != null && !extra.updateTag().isEmpty()) {
                 try {
-                    blockEntity.load(extra.updateTag().copy());
+                    blockEntity.loadWithComponents(TagValueInput.create(
+                            ProblemReporter.DISCARDING, registryAccess(), extra.updateTag().copy()));
                 } catch (RuntimeException ignored) {
                 }
             }
@@ -170,7 +183,7 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public int getMinBuildHeight() {
+    public int getMinY() {
         return 0;
     }
 
@@ -208,14 +221,13 @@ public final class NeutronSpacePreviewLevel extends Level {
         return 15;
     }
 
-    @Override
-    public float getShade(Direction direction, boolean shade) {
-        return metadataSource.getShade(direction, shade);
+    public int foliageTint(ColorResolver color) {
+        return color.getColor(tintBiome.value(), 0.0, 0.0);
     }
 
     @Override
-    public int getBlockTint(BlockPos blockPos, ColorResolver colorResolver) {
-        return colorResolver.getColor(tintBiome.value(), 0.0, 0.0);
+    public Holder<Biome> getNoiseBiome(int x, int y, int z) {
+        return tintBiome;
     }
 
     @Override
@@ -239,9 +251,12 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public Explosion explode(@Nullable Entity source, @Nullable net.minecraft.world.damagesource.DamageSource damageSource,
-                             @Nullable ExplosionDamageCalculator damageCalculator, double x, double y, double z,
-                             float radius, boolean fire, ExplosionInteraction interaction, boolean spawnParticles) {
+    public void explode(@Nullable Entity source, @Nullable DamageSource damageSource,
+                        @Nullable ExplosionDamageCalculator damageCalculator, double x, double y, double z,
+                        float radius, boolean fire, ExplosionInteraction interaction,
+                        ParticleOptions smallParticles, ParticleOptions largeParticles,
+                        WeightedList<net.minecraft.core.particles.ExplosionParticleInfo> blockParticles,
+                        Holder<SoundEvent> sound) {
         throw new UnsupportedOperationException("NeutronSpacePreviewLevel cannot create explosions");
     }
 
@@ -283,9 +298,14 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
+    public LevelLightEngine getLightEngine() {
+        return LevelLightEngine.EMPTY;
+    }
+
+    @Override
     public int getHeight(Heightmap.Types heightmapType, int x, int z) {
         if (x < 0 || z < 0 || x >= sizeX || z >= sizeZ) {
-            return getMinBuildHeight();
+            return getMinY();
         }
         Predicate<BlockState> opaque = heightmapType.isOpaque();
         for (int y = sizeY - 1; y >= 0; y--) {
@@ -294,12 +314,7 @@ public final class NeutronSpacePreviewLevel extends Level {
                 return y + 1;
             }
         }
-        return getMinBuildHeight();
-    }
-
-    @Override
-    public DifficultyInstance getCurrentDifficultyAt(BlockPos pos) {
-        return new DifficultyInstance(getDifficulty(), getDayTime(), 0L, 0.0F);
+        return getMinY();
     }
 
     @Override
@@ -308,8 +323,33 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public RecipeManager getRecipeManager() {
-        return metadataSource.getRecipeManager();
+    public FeatureFlagSet enabledFeatures() {
+        return metadataSource.enabledFeatures();
+    }
+
+    @Override
+    public RecipeAccess recipeAccess() {
+        return metadataSource.recipeAccess();
+    }
+
+    @Override
+    public ClockManager clockManager() {
+        return metadataSource.clockManager();
+    }
+
+    @Override
+    public EnvironmentAttributeSystem environmentAttributes() {
+        return metadataSource.environmentAttributes();
+    }
+
+    @Override
+    public TickRateManager tickRateManager() {
+        return tickRateManager;
+    }
+
+    @Override
+    public Collection<EnderDragonPart> dragonParts() {
+        return List.of();
     }
 
     @Override
@@ -320,6 +360,15 @@ public final class NeutronSpacePreviewLevel extends Level {
     @Override
     public @Nullable Entity getEntity(int id) {
         return null;
+    }
+
+    @Override
+    public void setRespawnData(LevelData.RespawnData respawnData) {
+    }
+
+    @Override
+    public LevelData.RespawnData getRespawnData() {
+        return snapshotData.getRespawnData();
     }
 
     @Override
@@ -342,12 +391,12 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public void playSeededSound(@Nullable Player player, double x, double y, double z, Holder<SoundEvent> sound,
+    public void playSeededSound(@Nullable Entity player, double x, double y, double z, Holder<SoundEvent> sound,
                                 SoundSource category, float volume, float pitch, long seed) {
     }
 
     @Override
-    public void playSeededSound(@Nullable Player player, Entity entity, Holder<SoundEvent> sound, SoundSource category,
+    public void playSeededSound(@Nullable Entity player, Entity entity, Holder<SoundEvent> sound, SoundSource category,
                                 float volume, float pitch, long seed) {
     }
 
@@ -357,17 +406,8 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public @Nullable MapItemSavedData getMapData(String mapName) {
+    public @Nullable MapItemSavedData getMapData(MapId mapId) {
         return null;
-    }
-
-    @Override
-    public void setMapData(String mapName, MapItemSavedData data) {
-    }
-
-    @Override
-    public int getFreeMapId() {
-        throw new UnsupportedOperationException("NeutronSpacePreviewLevel cannot allocate map ids");
     }
 
     @Override
@@ -375,11 +415,11 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     @Override
-    public void levelEvent(@Nullable Player player, int type, BlockPos pos, int data) {
+    public void levelEvent(@Nullable Entity source, int type, BlockPos pos, int data) {
     }
 
     @Override
-    public void gameEvent(GameEvent event, Vec3 position, GameEvent.Context context) {
+    public void gameEvent(Holder<GameEvent> gameEvent, Vec3 pos, GameEvent.Context context) {
     }
 
     @Override
@@ -387,8 +427,6 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     private final class SnapshotChunkSource extends ChunkSource {
-        private final LevelLightEngine lightEngine = new LevelLightEngine(this, false, false);
-
         @Override
         public @Nullable ChunkAccess getChunk(int x, int z, ChunkStatus chunkStatus, boolean requireChunk) {
             return null;
@@ -410,7 +448,7 @@ public final class NeutronSpacePreviewLevel extends Level {
 
         @Override
         public LevelLightEngine getLightEngine() {
-            return lightEngine;
+            return LevelLightEngine.EMPTY;
         }
 
         @Override
@@ -420,52 +458,23 @@ public final class NeutronSpacePreviewLevel extends Level {
     }
 
     private static final class SnapshotData implements WritableLevelData {
-        private final int spawnX;
-        private final int spawnY;
-        private final int spawnZ;
-        private final float spawnAngle;
+        private final LevelData.RespawnData respawn;
         private final long gameTime;
-        private final long dayTime;
-        private final boolean thundering;
-        private final boolean raining;
         private final boolean hardcore;
-        private final GameRules gameRules;
         private final Difficulty difficulty;
         private final boolean difficultyLocked;
 
         private SnapshotData(LevelData source) {
-            this.spawnX = source.getXSpawn();
-            this.spawnY = source.getYSpawn();
-            this.spawnZ = source.getZSpawn();
-            this.spawnAngle = source.getSpawnAngle();
+            this.respawn = source.getRespawnData();
             this.gameTime = source.getGameTime();
-            this.dayTime = source.getDayTime();
-            this.thundering = source.isThundering();
-            this.raining = source.isRaining();
             this.hardcore = source.isHardcore();
-            this.gameRules = source.getGameRules().copy();
             this.difficulty = source.getDifficulty();
             this.difficultyLocked = source.isDifficultyLocked();
         }
 
         @Override
-        public int getXSpawn() {
-            return spawnX;
-        }
-
-        @Override
-        public int getYSpawn() {
-            return spawnY;
-        }
-
-        @Override
-        public int getZSpawn() {
-            return spawnZ;
-        }
-
-        @Override
-        public float getSpawnAngle() {
-            return spawnAngle;
+        public LevelData.RespawnData getRespawnData() {
+            return respawn;
         }
 
         @Override
@@ -474,32 +483,8 @@ public final class NeutronSpacePreviewLevel extends Level {
         }
 
         @Override
-        public long getDayTime() {
-            return dayTime;
-        }
-
-        @Override
-        public boolean isThundering() {
-            return thundering;
-        }
-
-        @Override
-        public boolean isRaining() {
-            return raining;
-        }
-
-        @Override
-        public void setRaining(boolean raining) {
-        }
-
-        @Override
         public boolean isHardcore() {
             return hardcore;
-        }
-
-        @Override
-        public GameRules getGameRules() {
-            return gameRules;
         }
 
         @Override
@@ -513,19 +498,7 @@ public final class NeutronSpacePreviewLevel extends Level {
         }
 
         @Override
-        public void setXSpawn(int xSpawn) {
-        }
-
-        @Override
-        public void setYSpawn(int ySpawn) {
-        }
-
-        @Override
-        public void setZSpawn(int zSpawn) {
-        }
-
-        @Override
-        public void setSpawnAngle(float spawnAngle) {
+        public void setSpawn(LevelData.RespawnData respawnData) {
         }
     }
 

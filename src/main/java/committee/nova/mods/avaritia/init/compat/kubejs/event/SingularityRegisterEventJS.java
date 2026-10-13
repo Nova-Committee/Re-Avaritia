@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.core.singularity.SingularityValidationException;
 import dev.latvian.mods.kubejs.event.EventJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
 
@@ -18,7 +18,7 @@ public class SingularityRegisterEventJS extends EventJS {
     }
 
     public void register(Object key, Consumer<Singularity> consumer) {
-        ResourceLocation id = parseId(key);
+        Identifier id = parseId(key);
         if (id == null) {
             return;
         }
@@ -49,7 +49,7 @@ public class SingularityRegisterEventJS extends EventJS {
 
 
     public void remove(Object key) {
-        ResourceLocation id = parseId(key);
+        Identifier id = parseId(key);
         if (id != null) {
             SingularityReloadListener.INSTANCE.removeSingularity(
                     SingularityReloadListener.ScriptSource.KUBE_JS, id);
@@ -57,17 +57,17 @@ public class SingularityRegisterEventJS extends EventJS {
     }
 
     public void removeRecipe(Object key) {
-        ResourceLocation id = parseId(key);
+        Identifier id = parseId(key);
         if (id != null) {
             SingularityReloadListener.INSTANCE.removeSingularityRecipe(
                     SingularityReloadListener.ScriptSource.KUBE_JS, id);
         }
     }
 
-    private static ResourceLocation parseId(Object key) {
-        ResourceLocation id = key instanceof ResourceLocation resourceLocation
+    private static Identifier parseId(Object key) {
+        Identifier id = key instanceof Identifier resourceLocation
                 ? resourceLocation
-                : key == null ? null : ResourceLocation.tryParse(key.toString());
+                : key == null ? null : Identifier.tryParse(key.toString());
         if (id == null) {
             Const.LOGGER.error("Singularity: Invalid KubeJS singularity id {}; skipping this operation", key);
         }

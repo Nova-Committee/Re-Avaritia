@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 public class ModApi {
     @ApiStatus.AvailableSince("1.3.9.0")
     public static ShapelessTableCraftingRecipe addModShapelessRecipe(ItemStack result, List<ItemStack> ingredients, int tier) {
-        UUID uuid = UUID.randomUUID();
         List<ItemStack> arraylist = new ArrayList<>();
 
         for (ItemStack stack : ingredients) {
@@ -36,13 +35,13 @@ public class ModApi {
             }
         }
 
-        return new ShapelessTableCraftingRecipe(Const.rl(uuid.toString()), getList(arraylist), result, tier);
+        return new ShapelessTableCraftingRecipe(getList(arraylist), result, tier);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
         NonNullList<Ingredient> ingredients = NonNullList.create();
         for (ItemStack stack : arrayList) {
-            ingredients.add(Ingredient.of(stack));
+            ingredients.add(Ingredient.of(stack.getItem()));
         }
         return ingredients;
     }
@@ -51,16 +50,14 @@ public class ModApi {
     public static CompressorRecipe addSingularityRecipe(Singularity singularity) {
         singularity = singularity.copy();
         var ingredient = singularity.getIngredient();
-        if (ingredient == Ingredient.EMPTY)
+        if (ingredient.isEmpty())
             return null;
 
-        var id = singularity.getRegistryName();
-        var recipeId = new ResourceLocation(id.getNamespace(), id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getCount();
         int timeRequired = singularity.getTimeCost();
 
-        return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
+        return new CompressorRecipe(ingredient, output, ingredientCount, timeRequired);
     }
 
     /**
@@ -71,7 +68,7 @@ public class ModApi {
      * @return 注册的奇点
      */
     @ApiStatus.AvailableSince("1.3.9.3")
-    public static Singularity registerSingularity(@NotNull ResourceLocation resourceLocation, @NotNull Consumer<Singularity> builder) {
+    public static Singularity registerSingularity(@NotNull Identifier resourceLocation, @NotNull Consumer<Singularity> builder) {
         var singularity = new Singularity(resourceLocation);
         builder.accept(singularity);
         SingularityReloadListener.INSTANCE.registerPersistentSingularity(singularity);

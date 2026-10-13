@@ -6,13 +6,15 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.SmallFireball;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
-import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.EggItem;
 import net.minecraft.world.item.EnderpearlItem;
@@ -73,9 +75,9 @@ public class ProjectileItemUtils {
 
         ItemStack ammo = copySingle(sourceStack);
         if (ammo.getItem() instanceof ArrowItem arrowItem) {
-            AbstractArrow arrow = arrowItem.createArrow(level, ammo, shooter);
+            AbstractArrow arrow = arrowItem.createArrow(level, ammo, shooter, null);
             arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-            return new LaunchProjectile(arrow, SoundEvents.TRIDENT_THROW, 2.5F, 1.0F, 0.0F);
+            return new LaunchProjectile(arrow, SoundEvents.TRIDENT_THROW.value(), 2.5F, 1.0F, 0.0F);
         }
         if (ammo.is(Items.FIREWORK_ROCKET)) {
             FireworkRocketEntity firework = new FireworkRocketEntity(
@@ -88,7 +90,7 @@ public class ProjectileItemUtils {
         if (ammo.getItem() instanceof TridentItem) {
             ThrownTrident trident = new ThrownTrident(level, shooter, ammo);
             trident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-            return new LaunchProjectile(trident, SoundEvents.TRIDENT_THROW, 2.5F, 1.0F, 0.0F);
+            return new LaunchProjectile(trident, SoundEvents.TRIDENT_THROW.value(), 2.5F, 1.0F, 0.0F);
         }
         if (ammo.is(Items.TNT)) {
             TNTProEntity tnt = new TNTProEntity(level, shooter.getX(), shooter.getEyeY(), shooter.getZ(), shooter);
@@ -96,8 +98,7 @@ public class ProjectileItemUtils {
             return new LaunchProjectile(tnt, SoundEvents.TNT_PRIMED, 1.5F, 1.0F, 0.0F);
         }
         if (ammo.is(Items.FIRE_CHARGE)) {
-            SmallFireball fireball = new SmallFireball(level, shooter,
-                    shooter.getLookAngle().x, shooter.getLookAngle().y, shooter.getLookAngle().z);
+            SmallFireball fireball = new SmallFireball(level, shooter, shooter.getLookAngle());
             fireball.setItem(ammo);
             return new LaunchProjectile(fireball, SoundEvents.BLAZE_SHOOT, 1.5F, 1.0F, 0.0F);
         }
@@ -168,7 +169,7 @@ public class ProjectileItemUtils {
     @Nullable
     public static Entity createEntitySafely(EntityType<?> type, Level level) {
         try {
-            return type.create(level);
+            return type.create(level, EntitySpawnReason.EVENT);
         } catch (RuntimeException ignored) {
             return null;
         }
@@ -185,19 +186,19 @@ public class ProjectileItemUtils {
     @Nullable
     private static EntityType<?> findKnownThrowableProjectileType(ItemStack stack) {
         if (stack.getItem() instanceof EnderpearlItem) {
-            return EntityType.ENDER_PEARL;
+            return EntityTypes.ENDER_PEARL;
         }
         if (stack.getItem() instanceof SnowballItem) {
-            return EntityType.SNOWBALL;
+            return EntityTypes.SNOWBALL;
         }
         if (stack.getItem() instanceof EggItem) {
-            return EntityType.EGG;
+            return EntityTypes.EGG;
         }
         if (stack.getItem() instanceof ExperienceBottleItem) {
-            return EntityType.EXPERIENCE_BOTTLE;
+            return EntityTypes.EXPERIENCE_BOTTLE;
         }
         if (stack.getItem() instanceof ThrowablePotionItem) {
-            return EntityType.POTION;
+            return EntityTypes.SPLASH_POTION;
         }
         return null;
     }
@@ -235,7 +236,7 @@ public class ProjectileItemUtils {
         if (ammo.getItem() instanceof ThrowablePotionItem) {
             return ammo.is(Items.LINGERING_POTION) ? SoundEvents.LINGERING_POTION_THROW : SoundEvents.SPLASH_POTION_THROW;
         }
-        return SoundEvents.TRIDENT_THROW;
+        return SoundEvents.TRIDENT_THROW.value();
     }
 
     public record LaunchProjectile(@NotNull Projectile entity, @NotNull SoundEvent sound, float velocity,

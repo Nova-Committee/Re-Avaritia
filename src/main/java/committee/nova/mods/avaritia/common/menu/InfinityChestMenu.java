@@ -17,7 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -174,7 +174,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots; i++) {
                         ItemStack tryInsertItem = chest.getItemTemplate(id, 1);
-                        if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
+                        if (!ItemStack.isSameItemSameComponents(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
                             continue;
                         int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
                         if (remainingSlotSpace <= 0) continue;
@@ -320,14 +320,14 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (id.equals("minecraft:air")) return;
         if (!chest.storageItems.containsKey(id)) return;
         ItemStack itemStack = chest.takeItem(id, 1);
-        player.drop(itemStack, false);
+        player.drop(itemStack, false, net.minecraft.util.Prediction.PREDICTED);
     }
 
     public void tryThrowStickFromDummySlot(String id) {
         if (id.equals("minecraft:air")) return;
         if (!chest.storageItems.containsKey(id)) return;
         ItemStack itemStack = chest.saveTakeItem(id, false);
-        player.drop(itemStack, false);
+        player.drop(itemStack, false, net.minecraft.util.Prediction.PREDICTED);
     }
 
     public void onLeftDragDummySlot(String id) {
@@ -374,7 +374,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void clicked(int pSlotId, int pButton, ClickType pClickType, Player pPlayer) {
+    public void clicked(int pSlotId, int pButton, ContainerInput pClickType, Player pPlayer) {
         if (pSlotId >= CONTAINER_SLOT_START) {
             //???????
             String object;
@@ -434,7 +434,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     }
                 }
                 case 4 -> {
-                    if (pClickType == ClickType.CLONE) {
+                    if (pClickType == ContainerInput.CLONE) {
                         //??
                         if (object.equals("minecraft:air")) return;
                         NetworkHandler.CHANNEL.sendToServer( new C2SInfinityChestActionPack(containerId, StorageUtils.Action.CLONE, object));
@@ -442,14 +442,14 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     }
                 }
                 case 5 -> {
-                    if (pClickType == ClickType.QUICK_CRAFT) {
+                    if (pClickType == ContainerInput.QUICK_CRAFT) {
                         //????
                         NetworkHandler.CHANNEL.sendToServer( new C2SInfinityChestActionPack(containerId, StorageUtils.Action.RIGHT_DRAG, object));
                         onRightDragDummySlot(object);
                     }
                 }
                 case 9 -> {
-                    if (pClickType == ClickType.QUICK_CRAFT) {
+                    if (pClickType == ContainerInput.QUICK_CRAFT) {
                         //????
                         NetworkHandler.CHANNEL.sendToServer( new C2SInfinityChestActionPack(containerId, StorageUtils.Action.DRAG_CLONE, object));
                         onDragCloneDummySlot(object);
@@ -511,7 +511,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     @ParametersAreNonnullByDefault
     public void removed(Player player) {
         super.removed(player);
-        if (level.isClientSide || chestTile == null) {
+        if (level.isClientSide() || chestTile == null) {
             return;
         }
         if (!chest.isRemoved() && player instanceof ServerPlayer serverPlayer) {

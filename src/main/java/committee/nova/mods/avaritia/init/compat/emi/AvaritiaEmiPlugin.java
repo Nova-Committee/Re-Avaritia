@@ -24,7 +24,7 @@ import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
@@ -69,8 +69,8 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
                 default -> throw new UnsupportedOperationException("Unsupported tier " + recipe.getTier());
             });
 
-        registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModBlocks.neutron_collector.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_collector")), ResourceLocation.tryBuild(Const.MOD_ID, "/info_collector")));
-        registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModItems.neutron_pile.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_pile")), ResourceLocation.tryBuild(Const.MOD_ID, "/info_pile")));
+        registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModBlocks.neutron_collector.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_collector")), Identifier.tryBuild(Const.MOD_ID, "/info_collector")));
+        registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModItems.neutron_pile.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_pile")), Identifier.tryBuild(Const.MOD_ID, "/info_pile")));
         registry.addRecipeHandler(ModMenus.sculk_crafting_tile_table.get(), new SculkCraftingRecipeHandler());
         registry.addRecipeHandler(ModMenus.nether_crafting_tile_table.get(), new NetherCraftingRecipeHandler());
         registry.addRecipeHandler(ModMenus.end_crafting_tile_table.get(), new EndCraftingRecipeHandler());

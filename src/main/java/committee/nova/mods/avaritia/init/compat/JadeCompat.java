@@ -11,7 +11,7 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 
@@ -48,8 +48,8 @@ public class JadeCompat implements IWailaPlugin {
         }
 
         @Override
-        public ResourceLocation getUid() {
-            return new ResourceLocation(Const.MOD_ID, "compressor");
+        public Identifier getUid() {
+            return Identifier.fromNamespaceAndPath(Const.MOD_ID, "compressor");
         }
     }
 
@@ -71,8 +71,8 @@ public class JadeCompat implements IWailaPlugin {
         }
 
         @Override
-        public ResourceLocation getUid() {
-            return new ResourceLocation(Const.MOD_ID, "crafting_table");
+        public Identifier getUid() {
+            return Identifier.fromNamespaceAndPath(Const.MOD_ID, "crafting_table");
         }
     }
 
@@ -93,8 +93,8 @@ public class JadeCompat implements IWailaPlugin {
         }
 
         @Override
-        public ResourceLocation getUid() {
-            return new ResourceLocation(Const.MOD_ID, "extreme_smithing");
+        public Identifier getUid() {
+            return Identifier.fromNamespaceAndPath(Const.MOD_ID, "extreme_smithing");
         }
     }
 }

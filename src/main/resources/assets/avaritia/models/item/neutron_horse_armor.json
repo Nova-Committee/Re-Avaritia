@@ -1,14 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/armor/horse/neutron_horse_armor_item",
-    "halo": "avaritia:misc/halo_noise"
-  },
-  "loader": "avaritia:halo",
-  "halo": {
-    "texture": "#halo",
-    "color": -1711276033,
-    "size": 6,
-    "pulse": false
+    "layer0": "avaritia:item/armor/horse/neutron_horse_armor_item"
   }
 }

@@ -1,34 +1,34 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -36,15 +36,14 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalPickaxeItem extends PickaxeItem implements ITooltip , InitEnchantItem {
-
+public class CrystalPickaxeItem extends Item implements ITooltip, InitEnchantItem {
 
     public CrystalPickaxeItem() {
-        super(ModToolTiers.CRYSTAL, -25, 0F,
-                new Properties()
-                        .rarity(ModRarities.EPIC)
-                        .stacksTo(1)
-                        .fireResistant());
+        super(ModItems.properties()
+                .rarity(ModRarities.EPIC)
+                .stacksTo(1)
+                .fireResistant()
+                .pickaxe(ModToolTiers.CRYSTAL, -25, 0F));
     }
 
     @Override
@@ -57,51 +56,45 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip , InitEn
         return false;
     }
 
-    @Override public int getEnchantmentValue() { return 0; }
-
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
         return 100F;
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
+            Holder<Enchantment> silkTouch = player.level().registryAccess()
+                    .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
+            if (EnchantmentHelper.getItemEnchantmentLevel(silkTouch, stack) > 0) {
                 ItemUtils.clearEnchants(stack, Enchantments.SILK_TOUCH);
-                if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                     serverPlayer.sendSystemMessage(Component.translatable("tooltip.avaritia.tool.crystal_pickaxe.enchant_1"), true);
             } else {
-                stack.enchant(Enchantments.SILK_TOUCH, 1);
-                if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                stack.enchant(silkTouch, 1);
+                if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                     serverPlayer.sendSystemMessage(Component.translatable("tooltip.avaritia.tool.crystal_pickaxe.enchant_2"), true);
             }
-            player.swing(hand);
-            return InteractionResultHolder.success(stack);
+            player.swing(hand, SwingAnimation.DEFAULT, false);
+            return InteractionResult.SUCCESS;
         }
         return super.use(world, player, hand);
     }
 
-
-    @Override public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) { Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-    if (slot == EquipmentSlot.MAINHAND) {
-        multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-        multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-    }
-    return multimap; }
-
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.BLOCK_FORTUNE ? 3 : 0;
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+        return enchantmentHolder.is(Enchantments.FORTUNE) ? 3 : 0;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.BLOCK_FORTUNE.getFullname(3)).build());
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display,
+                                @NotNull Consumer<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        var registries = context.registries();
+        if (registries != null) {
+            Holder<Enchantment> fortune = registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
+            tooltipComponents.accept(ModTooltips.INIT_ENCHANT.args(Enchantment.getFullname(fortune, 3)).build());
+        }
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
-
-
 }

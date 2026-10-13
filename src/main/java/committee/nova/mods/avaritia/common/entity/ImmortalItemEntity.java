@@ -1,15 +1,16 @@
 package committee.nova.mods.avaritia.common.entity;
 
-
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,17 +24,18 @@ import java.util.UUID;
  */
 public class ImmortalItemEntity extends ItemEntity {
     private static final int RETURN_PICKUP_DELAY = 5;
-    private static final int INFINITE_PICKUP_DELAY = 32767;
+
     @Nullable
     private UUID lockedReturnPlayerId;
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.setUnlimitedLifetime();
+        this.setPermanentlyInvulnerable(true);
+        this.applyImmortalLifetime();
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
-        ImmortalItemEntity entity = type.create(level);
+        ImmortalItemEntity entity = type.create(level, EntitySpawnReason.EVENT);
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);
@@ -41,17 +43,16 @@ public class ImmortalItemEntity extends ItemEntity {
             entity.applyImmortalLifetime();
         }
         return entity;
-
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, Entity location, ItemStack itemStack) {
-        ImmortalItemEntity entity = type.create(level);
+        ImmortalItemEntity entity = type.create(level, EntitySpawnReason.EVENT);
         if (entity != null) {
             entity.restoreFrom(location);
             entity.setItem(itemStack);
             entity.lockedReturnPlayerId = getLockedReturnPlayerId(location);
             entity.lockToReturnPlayer();
-            entity.shortenPickupDelay();
+            entity.setPickUpDelay(RETURN_PICKUP_DELAY);
             entity.applyImmortalLifetime();
         }
         return entity;
@@ -62,25 +63,21 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        return source == this.damageSources().fellOutOfWorld();
-    }
-
-    @Override
     public void tick() {
         super.tick();
 
-        if (!this.level().isClientSide) {
-            returnToOwner();
+        if (!this.level().isClientSide()) {
+            this.returnToOwner();
         }
+        this.applyImmortalLifetime();
     }
 
     private void returnToOwner() {
-        if (this.pickupDelay > 0) {
+        if (this.hasPickUpDelay()) {
             return;
         }
 
-        Player player = findReturnPlayer();
+        Player player = this.findReturnPlayer();
         if (player == null) {
             return;
         }
@@ -103,51 +100,28 @@ public class ImmortalItemEntity extends ItemEntity {
         this.lockToReturnPlayer();
     }
 
-    private void shortenPickupDelay() {
-        if (this.pickupDelay != INFINITE_PICKUP_DELAY) {
-            this.pickupDelay = Math.min(this.pickupDelay, RETURN_PICKUP_DELAY);
-        }
-    }
-
     @Nullable
     private static UUID getLockedReturnPlayerId(Entity location) {
         if (!(location instanceof ItemEntity itemEntity)) {
             return null;
         }
 
-        CompoundTag itemData = new CompoundTag();
-        itemEntity.addAdditionalSaveData(itemData);
-        return getLockedReturnPlayerId(itemData);
-    }
-
-    @Nullable
-    private static UUID getLockedReturnPlayerId(CompoundTag itemData) {
-        if (itemData.hasUUID("Owner")) {
-            return itemData.getUUID("Owner");
+        UUID target = itemEntity.target;
+        if (target != null) {
+            return target;
         }
-        if (itemData.hasUUID("Thrower")) {
-            return itemData.getUUID("Thrower");
-        }
-        return null;
+        Entity owner = itemEntity.getOwner();
+        return owner == null ? null : owner.getUUID();
     }
 
     @Nullable
     private Player findReturnPlayer() {
-        if (this.lockedReturnPlayerId == null) {
-            return null;
-        }
-        if (!(this.level() instanceof ServerLevel serverLevel)) {
+        if (this.lockedReturnPlayerId == null || !(this.level() instanceof ServerLevel serverLevel)) {
             return null;
         }
 
         Player player = serverLevel.getPlayerByUUID(this.lockedReturnPlayerId);
-        return isValidReturnPlayer(player) ? player : null;
-    }
-
-    private boolean isValidReturnPlayer(@Nullable Player player) {
-        return player != null
-                && player.isAlive()
-                && player.level() == this.level();
+        return player != null && player.isAlive() && player.level() == this.level() ? player : null;
     }
 
     private void lockToReturnPlayer() {
@@ -157,15 +131,16 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.lockedReturnPlayerId = getLockedReturnPlayerId(compound);
+    protected void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.lockedReturnPlayerId = input.read("Owner", UUIDUtil.CODEC).orElse(null);
         this.lockToReturnPlayer();
+        this.applyImmortalLifetime();
     }
 
     @Override
-    public void remove(@NotNull RemovalReason pReason) {
-        super.remove(pReason);
+    public void remove(@NotNull RemovalReason reason) {
+        super.remove(reason);
     }
 
     @Override
@@ -174,12 +149,12 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean ignoreExplosion() {
+    public boolean ignoreExplosion(@NotNull Explosion explosion) {
         return true;
     }
 
     @Override
-    public boolean canChangeDimensions() {
+    public boolean canTeleport(@NotNull Level oldLevel, @NotNull Level newLevel) {
         return false;
     }
 }

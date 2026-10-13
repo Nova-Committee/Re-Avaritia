@@ -3,10 +3,12 @@ package committee.nova.mods.avaritia.util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -67,7 +69,7 @@ public class StorageUtils {
         id = getBaseItemId(id);
         if (ID_ITEM_MAP.containsKey(id)) return ID_ITEM_MAP.get(id);
         else {
-            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(id));
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(id));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
             // Storage variant keys must never replace an item's canonical registry ID.
@@ -89,7 +91,7 @@ public class StorageUtils {
     public static Fluid getFluid(String id) {
         if (ID_FLUID_MAP.containsKey(id)) return ID_FLUID_MAP.get(id);
         else {
-            Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(id));
+            Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(id));
             if (fluid == null) return Fluids.EMPTY;
             ID_FLUID_MAP.put(id, fluid);
             FLUID_ID_MAP.put(fluid, id);
@@ -104,10 +106,11 @@ public class StorageUtils {
     public static String getNbtItemId(ItemStack item) {
         if (item.isEmpty()) return "minecraft:air";
         String itemId = getItemId(item.getItem());
-        if (!item.hasTag()) {
+        CustomData customData = item.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) {
             return itemId;
         }
-        String nbtHash = hashNbt(item.getTag());
+        String nbtHash = hashNbt(customData.copyTag());
         return itemId + "#" + nbtHash;
     }
 

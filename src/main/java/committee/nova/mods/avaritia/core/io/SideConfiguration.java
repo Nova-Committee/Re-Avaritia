@@ -220,12 +220,12 @@ public class SideConfiguration {
      */
     public static SideConfiguration fromNBT(CompoundTag tag) {
         SideConfiguration config = new SideConfiguration();
-        config.north = SideMode.fromName(tag.getString("north"));
-        config.south = SideMode.fromName(tag.getString("south"));
-        config.east = SideMode.fromName(tag.getString("east"));
-        config.west = SideMode.fromName(tag.getString("west"));
-        config.up = SideMode.fromName(tag.getString("up"));
-        config.down = SideMode.fromName(tag.getString("down"));
+        config.north = SideMode.fromName(tag.getStringOr("north", "off"));
+        config.south = SideMode.fromName(tag.getStringOr("south", "off"));
+        config.east = SideMode.fromName(tag.getStringOr("east", "off"));
+        config.west = SideMode.fromName(tag.getStringOr("west", "off"));
+        config.up = SideMode.fromName(tag.getStringOr("up", "off"));
+        config.down = SideMode.fromName(tag.getStringOr("down", "off"));
         return config;
     }
 

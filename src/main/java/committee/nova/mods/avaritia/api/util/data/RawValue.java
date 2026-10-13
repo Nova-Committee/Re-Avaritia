@@ -1,9 +1,8 @@
 package committee.nova.mods.avaritia.api.util.data;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,21 +17,19 @@ import java.util.Collections;
  * @description
  * @date 2024/6/16 下午2:02
  */
-public class RawValue implements Ingredient.Value {
-    private final ResourceLocation item;
+public class RawValue {
+    private final Identifier item;
 
-    public RawValue(ResourceLocation pItem) {
+    public RawValue(Identifier pItem) {
         this.item = pItem;
     }
 
     @NotNull
-    @Override
     public Collection<ItemStack> getItems() {
-        return Collections.singleton(new ItemStack(BuiltInRegistries.ITEM.get(this.item)));
+        return Collections.singleton(new ItemStack(BuiltInRegistries.ITEM.getValue(this.item)));
     }
 
     @NotNull
-    @Override
     public JsonObject serialize() {
         JsonObject jsonobject = new JsonObject();
         jsonobject.addProperty("item", item.toString());

@@ -1,132 +1,108 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
-import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
-import committee.nova.mods.avaritia.api.client.screen.component.ScreenGuiScale;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
+import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
-import committee.nova.mods.avaritia.core.channel.ClientChannel;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.ItemStack;
 
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 import java.util.function.IntSupplier;
 
 import static committee.nova.mods.avaritia.client.screen.TesseractScreenLayout.*;
 
-/** 使用 1.20.1 材质图集的超立方体存储与合成界面。 */
-public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
-    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_PANEL;
+/** 11x9 Tesseract storage view with crafting controls and long-count overlays. */
+public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
+    private static final Identifier TEXTURE = Const.rl("textures/gui/chest/channel_panel.png");
     private static final int TEXTURE_SIZE = 256;
-    private static final int CHANNEL_SLOT_START = 51;
-
+    private EditBox search;
     private final List<Button> craftingButtons = new ArrayList<>();
-    private final ScreenGuiScale guiScale = new ScreenGuiScale();
-    private EditBox searchBox;
-    private Button craftToChannelButton;
-    private Button craftToInventoryButton;
-    private Button craftAndDropButton;
-    private String previousFilter = "";
-    private ScreenRectangle storageViewport;
-    private ScreenRectangle craftingStorageViewport;
+    private final WidgetSprites legacySprites = new WidgetSprites(TEXTURE, TEXTURE);
 
     public TesseractScreen(TesseractMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageWidth = WIDTH;
-        imageHeight = HEIGHT;
-        titleLabelX = TITLE_X;
-        titleLabelY = TITLE_Y;
-        inventoryLabelX = INVENTORY_TITLE_X;
-        inventoryLabelY = INVENTORY_TITLE_Y;
+        super(menu, inventory, title, null, WIDTH, HEIGHT, WIDTH, HEIGHT);
+        inventoryLabelX = 23;
+        inventoryLabelY = INVENTORY_LABEL_Y;
+        titleLabelX = 8;
+        titleLabelY = 5;
     }
 
     @Override
-    protected void init() {
-        if (guiScale.resizeToFit(minecraft, width, height, imageWidth, imageHeight, 4)) {
-            return;
-        }
-        super.init();
+    protected void subInit() {
         leftPos = (width - imageWidth + 4) / 2;
-        topPos = Math.max(0, (height - imageHeight) / 2);
-        storageViewport = PortableLayout.translate(new ScreenRectangle(5, 17, 210, 154), leftPos, topPos);
-        craftingStorageViewport = PortableLayout.translate(new ScreenRectangle(5, 17, 210, 120), leftPos, topPos);
+        topPos = Math.max(0, topPos);
         craftingButtons.clear();
-
-        searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
+        search = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
                 Component.translatable("gui.avaritia.search"));
-        searchBox.setMaxLength(64);
-        searchBox.setBordered(false);
-        searchBox.setValue(menu.filter);
-        previousFilter = menu.filter;
-        addRenderableWidget(UiInspector.name(searchBox, "tesseract.search"));
+        search.setBordered(false);
+        search.setMaxLength(64);
+        search.setValue(menu.filter());
+        search.setResponder(value -> menu.setFilterFromClient(value.toLowerCase(Locale.ROOT)));
+        addRenderableWidget(UiInspector.name(search, "tesseract.search"));
 
         UiInspector.name(addLegacyButton(CONTROL_X, CRAFTING_TOGGLE_Y, CONTROL_SIZE, CONTROL_SIZE,
-                () -> toggleTextureX(menu.craftingMode), () -> CRAFTING_ICON_TEXTURE_Y,
-                this::toggleCraftingMode, null), "tesseract.crafting");
+                () -> toggleTextureX(menu.isCraftingMode()), () -> CRAFTING_ICON_TEXTURE_Y, 1,
+                Component.translatable("gui.avaritia.tesseract.button.craft")), "tesseract.crafting");
         UiInspector.name(addLegacyButton(CONTROL_X, LOCK_Y, CONTROL_SIZE, CONTROL_SIZE,
-                () -> toggleTextureX(menu.locked), () -> LOCK_ICON_TEXTURE_Y,
-                this::toggleLock, Component.translatable("gui.avaritia.owner", menu.player.getName())), "tesseract.lock");
+                () -> toggleTextureX(menu.isLocked()), () -> LOCK_ICON_TEXTURE_Y, 0,
+                Component.translatable("gui.avaritia.tesseract.button.lock")), "tesseract.lock");
         UiInspector.name(addLegacyButton(CONTROL_X, CHANNEL_Y, CONTROL_SIZE, CONTROL_SIZE,
-                () -> ICON_TEXTURE_X, () -> CHANNEL_ICON_TEXTURE_Y,
-                () -> sendMenuButton(5), Component.translatable("gui.avaritia.channel.tip1", menu.channel.getName())), "tesseract.channel");
+                () -> ICON_TEXTURE_X, () -> CHANNEL_ICON_TEXTURE_Y, 5,
+                Component.translatable("gui.avaritia.tesseract.button.channel")), "tesseract.channel");
         UiInspector.name(addLegacyButton(CONTROL_X, SORT_Y, CONTROL_SIZE, CONTROL_SIZE,
-                () -> ICON_TEXTURE_X, () -> sortTextureY(menu.sortType),
-                this::cycleSort, Component.translatable("gui.avaritia.sort.tip1")), "tesseract.sort");
+                () -> ICON_TEXTURE_X, () -> sortTextureY(menu.sortType()), -1,
+                Component.translatable("gui.avaritia.tesseract.button.sort")), "tesseract.sort");
         UiInspector.name(addLegacyButton(CONTROL_X, VIEW_Y, CONTROL_SIZE, CONTROL_SIZE,
-                () -> ICON_TEXTURE_X, () -> viewTextureY(menu.viewType),
-                this::changeViewType, Component.translatable("gui.avaritia.view.all")), "tesseract.view");
+                () -> ICON_TEXTURE_X, () -> viewTextureY(menu.viewType()), 4,
+                Component.translatable("gui.avaritia.tesseract.button.view")), "tesseract.view");
 
-        craftToChannelButton = addCraftButton(CRAFT_TO_CHANNEL_Y, CRAFT_TO_CHANNEL_TEXTURE_Y, 6,
-                Component.translatable("gui.avaritia.craft.channel"));
-        craftToInventoryButton = addCraftButton(CRAFT_TO_INVENTORY_Y, CRAFT_TO_INVENTORY_TEXTURE_Y, 10,
-                Component.translatable("gui.avaritia.craft.inv"));
-        craftAndDropButton = addCraftButton(CRAFT_AND_DROP_Y, CRAFT_AND_DROP_TEXTURE_Y, 14,
-                Component.translatable("gui.avaritia.craft.drop"));
-        UiInspector.name(craftToChannelButton, "tesseract.craft.channel");
-        UiInspector.name(craftToInventoryButton, "tesseract.craft.inventory");
-        UiInspector.name(craftAndDropButton, "tesseract.craft.drop");
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_CHANNEL_Y,
+                CRAFT_TO_CHANNEL_TEXTURE_Y, 6, Component.translatable("gui.avaritia.tesseract.craft.channel_short")), "tesseract.craft.channel"));
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_TO_INVENTORY_Y,
+                CRAFT_TO_INVENTORY_TEXTURE_Y, 10, Component.translatable("gui.avaritia.tesseract.craft.inventory_short")), "tesseract.craft.inventory"));
+        craftingButtons.add(UiInspector.name(addCraftButton(CRAFT_BUTTON_X, CRAFT_AND_DROP_Y,
+                CRAFT_AND_DROP_TEXTURE_Y, 14, Component.translatable("gui.avaritia.tesseract.craft.drop_short")), "tesseract.craft.drop"));
         updateCraftingButtons();
-        menu.dummyChannelContainer.refreshContainer(true);
-        menu.craftModeSetter = () -> {
-            if (!menu.craftingMode) {
-                toggleCraftingMode();
-            }
-        };
     }
 
-    private Button addLegacyButton(int x, int y, int buttonWidth, int buttonHeight, IntSupplier textureX,
-                                   IntSupplier textureY, Runnable action, Component tooltip) {
-        LegacyButton button = new LegacyButton(leftPos + x, topPos + y, buttonWidth, buttonHeight,
-                textureX, textureY, action);
-        if (tooltip != null) {
-            button.setTooltip(Tooltip.create(tooltip));
-        }
+    private Button addLegacyButton(int x, int y, int width, int height, IntSupplier textureX,
+                                   IntSupplier textureY, int id, Component tooltip) {
+        LegacyButton button = new LegacyButton(leftPos + x, topPos + y, width, height, textureX, textureY,
+                () -> sendMenuButton(id == -1 && isShiftDown() ? 3 : id == -1 ? 2 : id));
+        button.setTooltip(Tooltip.create(tooltip));
         return addRenderableWidget(button);
     }
 
-    private Button addCraftButton(int y, int textureY, int baseId, Component tooltip) {
-        Button button = addLegacyButton(CRAFT_BUTTON_X, y, CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT,
-                () -> ICON_TEXTURE_X, () -> textureY,
-                () -> sendMenuButton(baseId + (hasShiftDown() ? 3 : 2)), tooltip);
-        craftingButtons.add(button);
-        return button;
+    private Button addCraftButton(int x, int y, int textureY, int baseId, Component tooltip) {
+        LegacyButton button = new LegacyButton(leftPos + x, topPos + y, CRAFT_BUTTON_WIDTH,
+                CRAFT_BUTTON_HEIGHT, () -> ICON_TEXTURE_X, () -> textureY, () -> {
+                int amountOffset = isControlDown() ? (isShiftDown() ? 3 : 2) : (isShiftDown() ? 1 : 0);
+                sendMenuButton(baseId + amountOffset);
+            });
+        button.setTooltip(Tooltip.create(tooltip));
+        return addRenderableWidget(button);
     }
 
     private void sendMenuButton(int id) {
@@ -135,182 +111,139 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         }
     }
 
-    private void toggleCraftingMode() {
-        menu.craftingMode = !menu.craftingMode;
-        menu.dummyChannelContainer.refreshContainer(true);
-        searchBox.setFocused(false);
-        updateCraftingButtons();
-        sendMenuButton(1);
-    }
-
-    private void toggleLock() {
-        if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
-            menu.locked = !menu.locked;
-            searchBox.setFocused(false);
-            sendMenuButton(0);
-        }
-    }
-
-    private void cycleSort() {
-        if (hasShiftDown()) {
-            menu.reverseSort();
-            sendMenuButton(3);
-        } else {
-            menu.nextSort();
-            sendMenuButton(2);
-        }
-    }
-
-    private void changeViewType() {
-        menu.changeViewType();
-        sendMenuButton(4);
-    }
-
     private void updateCraftingButtons() {
+        boolean visible = menu.isCraftingMode();
         craftingButtons.forEach(button -> {
-            button.visible = menu.craftingMode;
-            button.active = menu.craftingMode;
+            button.visible = visible;
+            button.active = visible;
         });
     }
 
+    private boolean isShiftDown() {
+        var window = minecraft.getWindow();
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+    }
+
+    private boolean isControlDown() {
+        var window = minecraft.getWindow();
+        return com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
+                || com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
+    }
+
     @Override
-    protected void containerTick() {
-        super.containerTick();
-        if (searchBox.isFocused()) {
-            searchBox.tick();
-        }
-        String filter = searchBox.getValue().toLowerCase(Locale.ROOT);
-        if (!previousFilter.equals(filter)) {
-            previousFilter = filter;
-            menu.filter = filter;
-            menu.dummyChannelContainer.refreshContainer(true);
-        }
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         updateCraftingButtons();
-    }
-
-    private ScreenRectangle storageBounds() {
-        return menu.craftingMode ? craftingStorageViewport : storageViewport;
-    }
-
-    @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        for (BackgroundSlice slice : background(menu.craftingMode)) {
-            graphics.blit(GUI_IMG, leftPos, topPos + slice.destinationY(), 0, slice.sourceY(),
-                    imageWidth, slice.height(), TEXTURE_SIZE, TEXTURE_SIZE);
+        for (BackgroundSlice slice : background(menu.isCraftingMode())) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + slice.destinationY(),
+                    0.0F, slice.sourceY(), imageWidth, slice.height(), TEXTURE_SIZE, TEXTURE_SIZE);
         }
-        UiInspector.region("tesseract.storage", storageBounds(), null, true);
+        UiInspector.region("tesseract.storage", new ScreenRectangle(leftPos, topPos, imageWidth, INVENTORY_LABEL_Y), null, true);
+    }
+
+
+    @Override
+    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        search.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
-    }
-
-    @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderFluids(graphics);
-        renderStoredCounts(graphics);
-        renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    private void renderFluids(GuiGraphics graphics) {
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(leftPos, topPos, 300.0D);
-        menu.dummyChannelContainer.fluidStacks.forEach((index, fluidStack) -> {
-            Slot slot = menu.slots.get(CHANNEL_SLOT_START + index);
-            if (slot.isActive()) {
-                FluidItemRender.renderFluid(fluidStack, poseStack, slot.x, slot.y, 0);
-            }
-        });
-        poseStack.popPose();
-    }
-
-    private void renderStoredCounts(GuiGraphics graphics) {
-        int count = Math.min(menu.dummyChannelContainer.formatCount.size(), menu.slots.size() - CHANNEL_SLOT_START);
-        for (int index = 0; index < count; index++) {
-            Slot slot = menu.slots.get(CHANNEL_SLOT_START + index);
-            if (!slot.isActive() || slot.getItem().isEmpty()) {
-                continue;
-            }
-            String value = menu.dummyChannelContainer.formatCount.get(index);
-            graphics.pose().pushPose();
-            graphics.pose().translate(leftPos + slot.x + 16, topPos + slot.y + 11, 300);
-            graphics.pose().scale(0.5F, 0.5F, 1.0F);
-            graphics.drawString(font, value, -font.width(value), 0, 0xFFFFFF, true);
-            graphics.pose().popPose();
+    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, String itemCount) {
+        int menuIndex = menu.slots.indexOf(slot);
+        if (menuIndex >= TesseractMenu.CHANNEL_START) {
+            long amount = menu.projected().amount(menuIndex - TesseractMenu.CHANNEL_START);
+            super.renderSlotContents(graphics, itemStack, slot, formatAmount(amount));
+            return;
         }
+        super.renderSlotContents(graphics, itemStack, slot, itemCount);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 1) {
-            if (searchBox.isMouseOver(mouseX, mouseY)) {
-                searchBox.setValue("");
-                searchBox.setFocused(true);
-                return true;
-            }
-            if (sendRightClickCraft(craftToChannelButton, 6, mouseX, mouseY)
-                    || sendRightClickCraft(craftToInventoryButton, 10, mouseX, mouseY)
-                    || sendRightClickCraft(craftAndDropButton, 14, mouseX, mouseY)) {
-                return true;
+    protected void extractSlot(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY) {
+        int menuIndex = menu.slots.indexOf(slot);
+        if (menuIndex < TesseractMenu.CHANNEL_START) {
+            super.extractSlot(graphics, slot, mouseX, mouseY);
+            return;
+        }
+        DummyChannelContainer.Entry entry = menu.projected().entry(menuIndex - TesseractMenu.CHANNEL_START);
+        if (entry.kind() != DummyChannelContainer.Kind.FLUID || !slot.isActive()) {
+            super.extractSlot(graphics, slot, mouseX, mouseY);
+            return;
+        }
+
+        FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet()
+                .get(entry.fluid().getFluid().defaultFluidState());
+        TextureAtlasSprite sprite = model.stillMaterial().sprite();
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, slot.x, slot.y, 16, 16);
+        graphics.itemDecorations(font, new ItemStack(committee.nova.mods.avaritia.init.registry.ModItems.forge_energy.get()),
+                slot.x, slot.y, formatAmount(entry.amount()));
+    }
+
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (menu.getCarried().isEmpty() && hoveredSlot != null) {
+            int menuIndex = menu.slots.indexOf(hoveredSlot);
+            if (menuIndex >= TesseractMenu.CHANNEL_START) {
+                DummyChannelContainer.Entry entry = menu.projected().entry(menuIndex - TesseractMenu.CHANNEL_START);
+                if (entry.kind() == DummyChannelContainer.Kind.EMPTY) return;
+                List<Component> lines = new ArrayList<>();
+                if (entry.kind() == DummyChannelContainer.Kind.ITEM) {
+                    lines.addAll(getTooltipFromContainerItem(entry.item()));
+                } else {
+                    lines.add(Component.literal(entry.displayName()));
+                    lines.add(Component.literal(entry.identifier()).withColor(0x777777));
+                }
+                String unit = entry.kind() == DummyChannelContainer.Kind.FLUID ? " mB"
+                        : entry.kind() == DummyChannelContainer.Kind.ENERGY ? " FE" : "";
+                lines.add(Component.literal(InfinityChestContainer.formatExactAmount(entry.amount()) + unit));
+                graphics.setTooltipForNextFrame(font, lines, Optional.empty(), mouseX, mouseY);
+                return;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    private boolean sendRightClickCraft(Button button, int baseId, double mouseX, double mouseY) {
-        if (!button.visible || !button.isMouseOver(mouseX, mouseY)) {
-            return false;
-        }
-        sendMenuButton(baseId + (hasShiftDown() ? 0 : 1));
-        return true;
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        int visibleSlots = menu.craftingMode ? 77 : 99;
-        if (PortableLayout.contains(storageBounds(), mouseX, mouseY)
-                && menu.dummyChannelContainer.sortedObject.size() > visibleSlots) {
-            menu.dummyChannelContainer.onMouseScrolled(delta > 0);
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean keyPressed(KeyEvent event) {
+        return search.keyPressed(event) || search.canConsumeInput() || super.keyPressed(event);
     }
 
     @Override
     public void onClose() {
-        NetworkHandler.CHANNEL.sendToServer(new C2SChannelFilterPack(menu.containerId, menu.filter));
-        if (menu.channel instanceof ClientChannel channel) {
-            channel.removeListener();
-        }
+        NetworkHandler.sendToServer(new C2SChannelFilterPack(menu.containerId, search.getValue()));
         super.onClose();
     }
 
-    @Override
-    public void removed() {
-        super.removed();
-        guiScale.restore(minecraft);
+    private static String formatAmount(long value) {
+        if (value < 1_000) return Long.toString(value);
+        if (value == Long.MAX_VALUE) return "MAX";
+        String[] suffixes = {"K", "M", "G", "T", "P", "E"};
+        double scaled = value;
+        int suffix = -1;
+        while (scaled >= 1_000 && suffix + 1 < suffixes.length) {
+            scaled /= 1_000;
+            suffix++;
+        }
+        return (scaled >= 100 ? String.format(Locale.ROOT, "%.0f", scaled)
+                : String.format(Locale.ROOT, "%.1f", scaled)) + suffixes[suffix];
     }
 
     private final class LegacyButton extends ImageButton {
         private final IntSupplier textureX;
         private final IntSupplier textureY;
 
-        private LegacyButton(int x, int y, int buttonWidth, int buttonHeight, IntSupplier textureX,
+        private LegacyButton(int x, int y, int width, int height, IntSupplier textureX,
                              IntSupplier textureY, Runnable action) {
-            super(x, y, buttonWidth, buttonHeight, 0, 0, GUI_IMG, ignored -> action.run());
+            super(x, y, width, height, legacySprites, ignored -> action.run());
             this.textureX = textureX;
             this.textureY = textureY;
         }
 
         @Override
-        public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            graphics.blit(GUI_IMG, getX(), getY(), textureX.getAsInt(), textureY.getAsInt(),
-                    width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(), textureX.getAsInt(),
+                    textureY.getAsInt(), width, height, TEXTURE_SIZE, TEXTURE_SIZE);
         }
     }
 }

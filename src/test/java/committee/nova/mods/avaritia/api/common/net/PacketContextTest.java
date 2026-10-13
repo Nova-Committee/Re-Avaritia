@@ -10,24 +10,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PacketContextTest {
     @Test
     void openingDataRunsBeforeFollowingVanillaScreenTask() {
-        ReentrantBlockableEventLoop<Runnable> loop = new ReentrantBlockableEventLoop<>("packet-order-test") {
-            private final Thread owner = Thread.currentThread();
-
-            @Override
-            protected Runnable wrapRunnable(Runnable runnable) { return runnable; }
-
-            @Override
-            protected boolean shouldRun(Runnable runnable) { return true; }
-
-            @Override
-            protected Thread getRunningThread() { return owner; }
-        };
+        // 26.3 的 execute() 在同线程直接运行；强制排队以复现游戏线程的任务语义
+        TestLoop loop = new TestLoop();
         PacketContext context = new PacketContext(null, loop);
         AtomicBoolean openingData = new AtomicBoolean();
-        loop.tell(() -> context.enqueueWork(() -> openingData.set(true)));
-        loop.tell(() -> assertTrue(openingData.get(), "vanilla screen construction requires the preceding opening data"));
-        loop.pollTask();
+        loop.execute(() -> context.enqueueWork(() -> openingData.set(true)));
+        loop.execute(() -> assertTrue(openingData.get(), "vanilla screen construction requires the preceding opening data"));
+        loop.pump();
         assertTrue(openingData.get(), "packet work must complete inside its original game-thread task");
-        loop.pollTask();
+        loop.pump();
+    }
+
+    private static final class TestLoop extends ReentrantBlockableEventLoop<Runnable> {
+        private final Thread owner = Thread.currentThread();
+
+        private TestLoop() {
+            super("packet-order-test", false);
+        }
+
+        @Override
+        public Runnable wrapRunnable(Runnable runnable) { return runnable; }
+
+        @Override
+        protected boolean shouldRun(Runnable runnable) { return true; }
+
+        @Override
+        protected boolean scheduleExecutables() { return true; }
+
+        @Override
+        protected Thread getRunningThread() { return owner; }
+
+        void pump() { pollTask(); }
     }
 }

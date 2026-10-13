@@ -1,21 +1,23 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,99 +31,44 @@ public final class PortableUi {
     public static final int ACCENT = 0xFF555555;
     public static final int DANGER = 0xFFAA0000;
     public static final int INSET_BG = 0xFF8B8B8B;
-    private static final ResourceLocation PANEL = Const.rl("textures/gui/portable/panel.png");
-    private static final ResourceLocation INSET = Const.rl("textures/gui/portable/inset.png");
-    private static final ResourceLocation SLOT = Const.rl("textures/gui/portable/slot.png");
+    private static final Identifier PANEL = Const.rl("portable/panel");
+    private static final Identifier INSET = Const.rl("portable/inset");
+    private static final Identifier SLOT = Const.rl("portable/slot");
 
     private PortableUi() {
     }
 
-    private static void nineSlice(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height,
-                                  int border, int textureSize) {
-        if (width <= 0 || height <= 0) {
-            return;
-        }
-        RenderSystem.enableBlend();
-        int edgeX = Math.min(border, width / 2);
-        int edgeY = Math.min(border, height / 2);
-        int targetY = y;
-        for (int row = 0; row < 3; row++) {
-            int regionHeight = row == 1 ? height - 2 * edgeY : edgeY;
-            int sourceY = row == 0 ? 0 : row == 1 ? edgeY : textureSize - edgeY;
-            int sourceHeight = row == 1 ? textureSize - 2 * edgeY : edgeY;
-            int targetX = x;
-            for (int column = 0; column < 3; column++) {
-                int regionWidth = column == 1 ? width - 2 * edgeX : edgeX;
-                int sourceX = column == 0 ? 0 : column == 1 ? edgeX : textureSize - edgeX;
-                int sourceWidth = column == 1 ? textureSize - 2 * edgeX : edgeX;
-                tileRegion(graphics, texture, targetX, targetY, regionWidth, regionHeight,
-                        sourceX, sourceY, sourceWidth, sourceHeight, textureSize);
-                targetX += regionWidth;
-            }
-            targetY += regionHeight;
-        }
-        RenderSystem.disableBlend();
-    }
-
-    private static void tileRegion(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height,
-                                   int sourceX, int sourceY, int sourceWidth, int sourceHeight, int textureSize) {
-        if (width <= 0 || height <= 0) {
-            return;
-        }
-        int columns = (width + sourceWidth - 1) / sourceWidth;
-        int rows = (height + sourceHeight - 1) / sourceHeight;
-        int remainderX = 0;
-        for (int column = 0; column < columns; column++) {
-            int tileWidth = width / columns;
-            remainderX += width % columns;
-            if (remainderX >= columns) {
-                tileWidth++;
-                remainderX -= columns;
-            }
-            int targetY = y;
-            int remainderY = 0;
-            for (int row = 0; row < rows; row++) {
-                int tileHeight = height / rows;
-                remainderY += height % rows;
-                if (remainderY >= rows) {
-                    tileHeight++;
-                    remainderY -= rows;
-                }
-                graphics.blit(texture, x, targetY, sourceX + (sourceWidth - tileWidth) / 2,
-                        sourceY + (sourceHeight - tileHeight) / 2, tileWidth, tileHeight, textureSize, textureSize);
-                targetY += tileHeight;
-            }
-            x += tileWidth;
+    private static void sprite(GuiGraphicsExtractor graphics, Identifier sprite, int x, int y, int width, int height) {
+        if (width > 0 && height > 0) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height);
         }
     }
 
-    public static void panel(GuiGraphics graphics, int x, int y, int width, int height) {
-        nineSlice(graphics, PANEL, x, y, width, height, 4, 128);
+    public static void panel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+        sprite(graphics, PANEL, x, y, width, height);
     }
 
-    public static void panel(GuiGraphics graphics, ScreenRectangle bounds) {
+    public static void panel(GuiGraphicsExtractor graphics, ScreenRectangle bounds) {
         panel(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
     }
 
-    public static void inset(GuiGraphics graphics, int x, int y, int width, int height) {
-        nineSlice(graphics, INSET, x, y, width, height, 3, 128);
+    public static void inset(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+        sprite(graphics, INSET, x, y, width, height);
     }
 
-    public static void inset(GuiGraphics graphics, ScreenRectangle bounds) {
+    public static void inset(GuiGraphicsExtractor graphics, ScreenRectangle bounds) {
         inset(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
     }
 
-    public static void slot(GuiGraphics graphics, int x, int y) {
-        RenderSystem.enableBlend();
-        graphics.blit(SLOT, x, y, 0, 0, 18, 18, 18, 18);
-        RenderSystem.disableBlend();
+    public static void slot(GuiGraphicsExtractor graphics, int x, int y) {
+        sprite(graphics, SLOT, x, y, 18, 18);
     }
 
-    public static void header(GuiGraphics graphics, Font font, Component title, int x, int y, int width) {
+    public static void header(GuiGraphicsExtractor graphics, Font font, Component title, int x, int y, int width) {
         text(graphics, font, title, x + 8, y + 6, width - 16, TEXT);
     }
 
-    public static void text(GuiGraphics graphics, Font font, Component text, int x, int y, int maxWidth, int color) {
+    public static void text(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int maxWidth, int color) {
         if (maxWidth <= 0) {
             return;
         }
@@ -130,15 +77,15 @@ public final class PortableUi {
             shown = Component.literal(font.plainSubstrByWidth(text.getString(), Math.max(0, maxWidth - font.width("…"))) + "…")
                     .setStyle(text.getStyle());
         }
-        graphics.drawString(font, shown, x, y, color, false);
+        graphics.text(font, shown, x, y, color, false);
     }
 
-    public static void row(GuiGraphics graphics, int x, int y, int width, int height, boolean hovered, boolean selected) {
+    public static void row(GuiGraphicsExtractor graphics, int x, int y, int width, int height, boolean hovered, boolean selected) {
         if (selected || hovered) {
             graphics.fill(x, y, x + width, y + height, selected ? 0xFFD8D8D8 : 0xFFC8C8C8);
         }
         if (selected) {
-            graphics.renderOutline(x, y, width, height, 0xFFFFFFFF);
+            graphics.outline(x, y, width, height, 0xFFFFFFFF);
         }
     }
 
@@ -151,7 +98,10 @@ public final class PortableUi {
     }
 
     public static void confirm(Screen parent, Component title, Component message, Runnable confirmed) {
-        PortableScreenLayers.open(parent, new Confirmation(parent, title, message, confirmed));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.gui.screen() == parent) {
+            minecraft.gui.setScreen(new Confirmation(parent, title, message, confirmed));
+        }
     }
 
     public static void prompt(Screen parent, Component title, String initial, int maxLength,
@@ -161,12 +111,18 @@ public final class PortableUi {
 
     public static void prompt(Screen parent, Component title, String initial, int maxLength,
                               boolean allowBlank, List<String> suggestions, Consumer<String> confirmed) {
-        PortableScreenLayers.open(parent, new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.gui.screen() == parent) {
+            minecraft.gui.setScreen(new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
+        }
     }
 
     @Nullable
     public static Screen root(@Nullable Screen screen) {
-        return PortableScreenLayers.root(screen);
+        while (screen instanceof Dialog dialog) {
+            screen = dialog.parent;
+        }
+        return screen;
     }
 
     private abstract static class Dialog extends Screen {
@@ -185,11 +141,12 @@ public final class PortableUi {
 
         protected final boolean finish() {
             Minecraft minecraft = Minecraft.getInstance();
-            if (finished || minecraft.screen != this) {
+            if (finished || minecraft.gui.screen() != this) {
                 return false;
             }
             finished = true;
-            return PortableScreenLayers.close(this, parent);
+            minecraft.gui.setScreen(this.parent);
+            return true;
         }
 
         @Override
@@ -238,18 +195,17 @@ public final class PortableUi {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             graphics.fill(0, 0, width, height, 0xA0000000);
             panel(graphics, panel);
             UiInspector.region("dialog.panel", panel, null, false);
             header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
             if (content.width() > 0 && content.height() > 0) {
                 graphics.enableScissor(content.left(), content.top(), content.right(), content.bottom());
-                graphics.drawWordWrap(font, message, content.left() + 2, content.top() + 1,
+                graphics.textWithWordWrap(font, message, content.left() + 2, content.top() + 1,
                         Math.max(1, content.width() - 4), TEXT);
                 graphics.disableScissor();
             }
-            super.render(graphics, mouseX, mouseY, partialTick);
         }
     }
 
@@ -332,41 +288,45 @@ public final class PortableUi {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             graphics.fill(0, 0, width, height, 0xA0000000);
             panel(graphics, panel);
             UiInspector.region("dialog.panel", panel, null, false);
             header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
-            super.render(graphics, mouseX, mouseY, partialTick);
+        }
+
+        @Override
+        public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            super.extractRenderState(graphics, mouseX, mouseY, partialTick);
             suggestions.render(graphics, font, mouseX, mouseY);
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return suggestions.mouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            return suggestions.mouseClicked(event.x(), event.y(), event.button()) || super.mouseClicked(event, doubleClick);
         }
 
         @Override
-        public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-            return suggestions.mouseScrolled(delta) || super.mouseScrolled(mouseX, mouseY, delta);
+        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+            return suggestions.mouseScrolled(scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
 
         @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            boolean enter = keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER;
+        public boolean keyPressed(KeyEvent event) {
+            boolean enter = event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER;
             if (input.isFocused()) {
                 if (enter && !suggestions.hasSelection()) {
                     submit();
                     return true;
                 }
-                if (suggestions.keyPressed(keyCode)) {
+                if (suggestions.keyPressed(event.key())) {
                     return true;
                 }
             }
-            if (keyCode == GLFW.GLFW_KEY_TAB) {
+            if (event.key() == InputConstants.KEY_TAB) {
                 suggestions.close();
             }
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
     }
 }

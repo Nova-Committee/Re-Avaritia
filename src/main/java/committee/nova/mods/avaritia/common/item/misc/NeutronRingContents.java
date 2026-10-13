@@ -2,14 +2,16 @@ package committee.nova.mods.avaritia.common.item.misc;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
@@ -48,7 +50,7 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
         }
 
         public static Size load(CompoundTag tag) {
-            return new Size(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")).clamp();
+            return new Size(tag.getIntOr("x", MAX_XZ), tag.getIntOr("y", MAX_XZ), tag.getIntOr("z", MAX_XZ)).clamp();
         }
     }
 
@@ -88,12 +90,13 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
     }
 
     public void save(ItemStack stack) {
-        stack.getOrCreateTag().put(TAG, save());
+        CompoundTag tag = save();
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.put(TAG, tag));
     }
 
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putUUID("storage", storageId);
+        tag.store("storage", UUIDUtil.CODEC, storageId);
         captureBase.ifPresent(pos -> tag.put("capture", writePos(pos)));
         placeBase.ifPresent(pos -> tag.put("place", writePos(pos)));
         selectedId.ifPresent(id -> tag.putString("selected", id));
@@ -103,24 +106,24 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
     }
 
     public static NeutronRingContents load(CompoundTag tag) {
-        UUID storage = tag.hasUUID("storage") ? tag.getUUID("storage") : UUID.randomUUID();
+        UUID storage = tag.read("storage", UUIDUtil.CODEC).orElseGet(UUID::randomUUID);
         Optional<GlobalPos> capture = readPos(tag, "capture");
         Optional<GlobalPos> place = readPos(tag, "place");
-        Optional<String> selected = tag.contains("selected", Tag.TAG_STRING)
-                ? Optional.of(tag.getString("selected")) : Optional.empty();
-        Size size = tag.contains("size", Tag.TAG_COMPOUND) ? Size.load(tag.getCompound("size")) : Size.DEFAULT;
-        boolean bound = tag.getBoolean("playerBound");
+        Optional<String> selected = tag.getString("selected");
+        Size size = tag.getCompound("size").map(Size::load).orElse(Size.DEFAULT);
+        boolean bound = tag.getBooleanOr("playerBound", false);
         return new NeutronRingContents(storage, capture, place, selected, size.clamp(), bound);
     }
 
     public static NeutronRingContents of(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(TAG);
-        if (tag != null) {
-            return load(tag);
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag root = data.copyTag();
+        if (root.contains(TAG)) {
+            return load(root.getCompoundOrEmpty(TAG));
         }
-        NeutronRingContents data = create();
-        data.save(stack);
-        return data;
+        NeutronRingContents contents = create();
+        contents.save(stack);
+        return contents;
     }
 
     public void write(FriendlyByteBuf buf) {
@@ -145,7 +148,7 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
 
     private static CompoundTag writePos(GlobalPos pos) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("dimension", pos.dimension().location().toString());
+        tag.putString("dimension", pos.dimension().identifier().toString());
         tag.putInt("x", pos.pos().getX());
         tag.putInt("y", pos.pos().getY());
         tag.putInt("z", pos.pos().getZ());
@@ -153,22 +156,27 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
     }
 
     private static Optional<GlobalPos> readPos(CompoundTag parent, String key) {
-        if (!parent.contains(key, Tag.TAG_COMPOUND)) {
+        Optional<CompoundTag> optional = parent.getCompound(key);
+        if (optional.isEmpty()) {
             return Optional.empty();
         }
-        CompoundTag tag = parent.getCompound(key);
-        ResourceLocation dimension = ResourceLocation.tryParse(tag.getString("dimension"));
+        CompoundTag tag = optional.get();
+        Optional<String> dimensionName = tag.getString("dimension");
+        if (dimensionName.isEmpty()) {
+            return Optional.empty();
+        }
+        Identifier dimension = Identifier.tryParse(dimensionName.get());
         if (dimension == null) {
             return Optional.empty();
         }
         return Optional.of(GlobalPos.of(ResourceKey.create(Registries.DIMENSION, dimension),
-                new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"))));
+                new BlockPos(tag.getIntOr("x", 0), tag.getIntOr("y", 0), tag.getIntOr("z", 0))));
     }
 
     private static void writeOptionalPos(FriendlyByteBuf buf, Optional<GlobalPos> pos) {
         buf.writeBoolean(pos.isPresent());
         pos.ifPresent(value -> {
-            buf.writeResourceLocation(value.dimension().location());
+            buf.writeIdentifier(value.dimension().identifier());
             buf.writeBlockPos(value.pos());
         });
     }
@@ -177,7 +185,7 @@ public record NeutronRingContents(UUID storageId, Optional<GlobalPos> captureBas
         if (!buf.readBoolean()) {
             return Optional.empty();
         }
-        ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
+        ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, buf.readIdentifier());
         return Optional.of(GlobalPos.of(dimension, buf.readBlockPos()));
     }
 }

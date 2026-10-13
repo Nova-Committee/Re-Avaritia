@@ -1,14 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
-import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import net.minecraft.client.KeyboardHandler;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
-@Mixin(KeyboardHandler.class)
+
+/**
+ * 已在 26.3 升级中废弃：UiInspector.onKey 改经 ScreenKeyboardEvents（allowKeyPress）自注册，
+ * 输入层由 GLFW 切换为 SDL3，无需再钩 KeyboardHandler.keyPress(long,int,int,int,int)。
+ * 条目已从 avaritia.mixins.json 移除。
+ */
 public abstract class ClientKeyboardMixin {
- @Inject(method="keyPress",at=@At("HEAD"),cancellable=true)
- private void avaritia$inspect(long window,int key,int scan,int action,int modifiers,org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
-  var minecraft=net.minecraft.client.Minecraft.getInstance();
-  if(window==minecraft.getWindow().getWindow() && action==org.lwjgl.glfw.GLFW.GLFW_PRESS && minecraft.screen!=null
-    && UiInspector.onKey(minecraft.screen,key,modifiers))ci.cancel();
- }
 }

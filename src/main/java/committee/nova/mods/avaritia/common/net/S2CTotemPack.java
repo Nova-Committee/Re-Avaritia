@@ -3,7 +3,13 @@ package committee.nova.mods.avaritia.common.net;
 
 
 
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.RegistryOps;
 
 
 import net.minecraft.world.item.ItemStack;
@@ -22,11 +28,16 @@ import java.util.function.Supplier;
  * @date 2024/3/28 14:02
  */
 public class S2CTotemPack {
+    private static final RegistryOps<Tag> STACK_OPS = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)
+            .createSerializationContext(NbtOps.INSTANCE);
+
     public final ItemStack stack;
     public final int entityId;
 
     public S2CTotemPack(FriendlyByteBuf buf) {
-        this.stack = buf.readItem();
+        CompoundTag tag = buf.readNbt();
+        this.stack = tag == null ? ItemStack.EMPTY
+                : ItemStack.OPTIONAL_CODEC.parse(STACK_OPS, tag).result().orElse(ItemStack.EMPTY);
         this.entityId = buf.readInt();
     }
 
@@ -36,7 +47,8 @@ public class S2CTotemPack {
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeItem(this.stack);
+        Tag tag = ItemStack.OPTIONAL_CODEC.encodeStart(STACK_OPS, this.stack).getOrThrow(IllegalArgumentException::new);
+        buf.writeNbt(tag);
         buf.writeInt(this.entityId);
     }
 

@@ -2,12 +2,11 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
@@ -28,7 +27,7 @@ public class InfinityShieldItem extends ShieldItem implements ISwitchable, IUnda
     public static final int MODE_FLOAT = 3;
 
     public InfinityShieldItem() {
-        super((new Item.Properties())
+        super(ModItems.properties()
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant());
@@ -36,12 +35,10 @@ public class InfinityShieldItem extends ShieldItem implements ISwitchable, IUnda
 
     /** Missing mode data means normal; rendering and event queries must not mutate stack NBT. */
     public static int getShieldMode(ItemStack stack) {
-        CompoundTag modeTag = stack.getTagElement("mode");
-        if (modeTag != null) {
-            for (int i = 0; i < MODES.size(); i++) {
-                if (modeTag.getBoolean(MODES.get(i))) {
-                    return i;
-                }
+        var modeTag = ISwitchable.getModeTag(stack);
+        for (int i = 0; i < MODES.size(); i++) {
+            if (modeTag.getBooleanOr(MODES.get(i), false)) {
+                return i;
             }
         }
         return MODE_NORMAL;
@@ -60,14 +57,12 @@ public class InfinityShieldItem extends ShieldItem implements ISwitchable, IUnda
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             cycleMode(level, player, hand, MODES);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
         return super.use(level, player, hand);
     }
-
-
 }

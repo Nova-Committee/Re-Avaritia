@@ -1,26 +1,24 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.FuncUtils;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -28,10 +26,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -39,7 +37,7 @@ import java.util.Map;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable, InitEnchantItem {
+public class BlazeShovelItem extends Item implements ITooltip, ISwitchable, InitEnchantItem {
     public static Map<Block, Block> TRANS_MAP = Map.ofEntries(
             Map.entry(Blocks.DIRT, Blocks.SOUL_SOIL),
             Map.entry(Blocks.SAND, Blocks.SOUL_SAND),
@@ -61,11 +59,11 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     );
 
     public BlazeShovelItem() {
-        super(ModToolTiers.BLAZE, -15, 15f,
-                new Properties()
-                        .rarity(ModRarities.EPIC)
-                        .stacksTo(1)
-                        .fireResistant());
+        super(ModItems.properties()
+                .rarity(ModRarities.EPIC)
+                .stacksTo(1)
+                .fireResistant()
+                .shovel(ModToolTiers.BLAZE, -15, 15f));
     }
 
     @Override
@@ -74,8 +72,8 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.FIRE_ASPECT ? 10 : 0;
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
+        return enchantmentHolder.is(Enchantments.FIRE_ASPECT) ? 10 : 0;
     }
 
     @Override
@@ -84,18 +82,22 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display,
+                                @NotNull Consumer<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        var registries = context.registries();
+        if (registries != null) {
+            Holder<Enchantment> fireAspect = registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT);
+            tooltipComponents.accept(ModTooltips.INIT_ENCHANT.args(Enchantment.getFullname(fireAspect, 10)).build());
+        }
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             switchMode(pLevel, player, hand, "blaze_shovel_trans");
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
         return super.use(pLevel, player, hand);
     }
@@ -110,11 +112,4 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
             return FuncUtils.transBlock(level, player, blockpos, TRANS_MAP);
         } else return super.useOn(pContext);
     }
-
-    @Override public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) { Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-    if (slot == EquipmentSlot.MAINHAND) {
-        multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-        multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-    }
-    return multimap; }
 }

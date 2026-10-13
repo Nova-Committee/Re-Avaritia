@@ -1,11 +1,12 @@
 package committee.nova.mods.avaritia.api.client.screen;
 
 import committee.nova.mods.avaritia.api.iface.IDataReceiver;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
@@ -15,33 +16,27 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-/**
- * Description:
- * @author cnlimiter
- * Date: 2022/4/2 11:37
- * Version: 1.0
- */
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener, IDataReceiver {
-    protected ResourceLocation bgTexture;
-    protected int bgImgWidth;
-    protected int bgImgHeight;
+    protected static final int LABEL_COLOR = 0xFF404040;
+
+    protected final Identifier bgTexture;
+    protected final int bgImgWidth;
+    protected final int bgImgHeight;
 
     public BaseContainerScreen(T container, Inventory inventory, Component title) {
         this(container, inventory, title, null);
     }
 
-    public BaseContainerScreen(T container, Inventory inventory, Component title, ResourceLocation bgTexture) {
+    public BaseContainerScreen(T container, Inventory inventory, Component title, Identifier bgTexture) {
         this(container, inventory, title, bgTexture, 176, 166, 256, 256);
     }
 
-    public BaseContainerScreen(T container, Inventory inventory, Component title, ResourceLocation bgTexture, int bgWidth, int bgHeight) {
+    public BaseContainerScreen(T container, Inventory inventory, Component title, Identifier bgTexture, int bgWidth, int bgHeight) {
         this(container, inventory, title, bgTexture, bgWidth, bgHeight, 256, 256);
     }
 
-    public BaseContainerScreen(T container, Inventory inventory, Component title, ResourceLocation bgTexture, int bgWidth, int bgHeight, int bgImgWidth, int bgImgHeight) {
-        super(container, inventory, title);
-        this.imageWidth = bgWidth;
-        this.imageHeight = bgHeight;
+    public BaseContainerScreen(T container, Inventory inventory, Component title, Identifier bgTexture, int bgWidth, int bgHeight, int bgImgWidth, int bgImgHeight) {
+        super(container, inventory, title, bgWidth, bgHeight);
         this.bgTexture = bgTexture;
         this.bgImgWidth = bgImgWidth;
         this.bgImgHeight = bgImgHeight;
@@ -73,24 +68,32 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
-    public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractContents(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractContents(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderFg(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
-    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
-        if (this.bgTexture != null)
-            pGuiGraphics.blit(this.bgTexture, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    protected void extractLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
+        this.renderLabels(pGuiGraphics, pMouseX, pMouseY);
+    }
+
+    protected void renderLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
+        pGuiGraphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        pGuiGraphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
+    }
+
+    @Override
+    public void extractBackground(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        if (this.bgTexture != null) pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         this.renderBgs(pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
     }
 
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY){
     }
 
     public void dataChanged(@NotNull AbstractContainerMenu pContainerMenu, int pDataSlotIndex, int pValue) {
@@ -101,6 +104,5 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
 
     @Override
     public void receive(CompoundTag tag) {
-
     }
 }

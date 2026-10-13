@@ -1,8 +1,10 @@
-#version 150
+#version 330
+#extension GL_ARB_separate_shader_objects : require
 
 #define M_PI 3.1415926535897932384626433832795
 
-#moj_import <fog.glsl>
+#include <minecraft:fog.glsl>
+#include <minecraft:dynamictransforms.glsl>
 
 const int cosmiccount = 10;
 const int cosmicoutof = 101;
@@ -10,28 +12,20 @@ const float lightmix = 0.2f;
 
 uniform sampler2D Sampler0;
 
-uniform vec4 ColorModulator;
-uniform float FogStart;
-uniform float FogEnd;
-uniform vec4 FogColor;
+// 26.3: custom uniforms are an std140 block bound by name (see AvaritiaShaders/AvaritiaShaderUniforms)
+layout(std140) uniform AvaritiaCosmic {
+    vec4 CosmicParams1;   // x: time, y: yaw, z: pitch, w: externalScale
+    vec4 CosmicParams2;   // x: opacity, y: substrateAlpha, z/w: padding
+    vec4 cosmicuvs[10];
+};
 
-uniform float time;
+layout(location = 0) in float sphericalVertexDistance;
+layout(location = 1) in float cylindricalVertexDistance;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 texCoord0;
+layout(location = 4) in vec3 fPos;
 
-uniform float yaw;
-uniform float pitch;
-uniform float externalScale;
-
-uniform float opacity;
-
-uniform mat2 cosmicuvs[cosmiccount];
-
-in float vertexDistance;
-in vec4 vertexColor;
-in vec2 texCoord0;
-in vec4 normal;
-in vec3 fPos;
-
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 mat4 rotationMatrix(vec3 axis, float angle)
 {
@@ -42,27 +36,30 @@ mat4 rotationMatrix(vec3 axis, float angle)
     float oc = 1.0 - c;
 
     return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-    0.0,                                0.0,                                0.0,                                1.0);
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
 }
 
 void main (void)
 {
+    float time = CosmicParams1.x;
+    float yaw = CosmicParams1.y;
+    float pitch = CosmicParams1.z;
+    float externalScale = CosmicParams1.w;
+    float opacity = CosmicParams2.x;
+
     vec4 mask = texture(Sampler0, texCoord0.xy);
 
     float oneOverExternalScale = 1.0/externalScale;
 
     int uvtiles = 16;
 
-
     vec4 col = vec4(0.2, 0.0, 0.0, 1.0);
 
     float pulse = mod(time,400)/400.0;
 
-
     col.g = sin(pulse*M_PI*2) * 0.025 + 0.075;
-
     col.b = cos(pulse*M_PI*2) * 0.02 + 0.05;
 
     // get ray from camera to fragment
@@ -150,11 +147,11 @@ void main (void)
                 orv = 1.0-ru;
             }
 
-            // get the iicon uvs for the tile
-            float umin = cosmicuvs[symbol][0][0];
-            float umax = cosmicuvs[symbol][1][0];
-            float vmin = cosmicuvs[symbol][0][1];
-            float vmax = cosmicuvs[symbol][1][1];
+            // get the icon uvs for the tile (U0,V0,U1,V1 packed in one vec4)
+            float umin = cosmicuvs[symbol].x;
+            float vmin = cosmicuvs[symbol].y;
+            float umax = cosmicuvs[symbol].z;
+            float vmax = cosmicuvs[symbol].w;
 
             // interpolate based on tile uvs
             cosmictex.x = umin * (1.0-oru) + umax * oru;
@@ -184,5 +181,6 @@ void main (void)
 
     col = clamp(col,0.0,1.0);
 
-    fragColor = linear_fog(col * ColorModulator, vertexDistance, FogStart, FogEnd, FogColor);
+    fragColor = apply_fog(col * ColorModulator, sphericalVertexDistance, cylindricalVertexDistance,
+                          FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 }

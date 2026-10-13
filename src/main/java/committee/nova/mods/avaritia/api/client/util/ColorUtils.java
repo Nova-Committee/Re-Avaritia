@@ -18,7 +18,7 @@ public class ColorUtils {
         if (hsv[0] == -1.0F) {
             rgb[0] = rgb[1] = rgb[2] = hsv[2];
         } else {
-            int i = (int) Math.floor((double) hsv[0]);
+            int i = (int) Math.floor(hsv[0]);
             float f = hsv[0] - (float) i;
             if (i % 2 == 0) {
                 f = 1.0F - f;

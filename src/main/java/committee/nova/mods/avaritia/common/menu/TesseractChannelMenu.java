@@ -56,7 +56,7 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
         switch (type) {
             case (byte) 0 -> terminal.setChannel(player.getUUID(), id);
             case (byte) 1 -> terminal.setChannel(terminal.getTerminalOwner(), id);
-            case (byte) 2 -> terminal.setChannel(Const.AVARITIA_FAKE_PLAYER.getId(), id);
+            case (byte) 2 -> terminal.setChannel(Const.AVARITIA_FAKE_PLAYER.id(), id);
         }
     }
 
@@ -86,7 +86,7 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
     public void removed(@NotNull Player pPlayer) {
         super.removed(pPlayer);
 
-        if (pPlayer.level().isClientSide) {
+        if (pPlayer.level().isClientSide()) {
             ClientChannelManager.getInstance().onScreenClose();
         } else {
             terminal.removeChannelSelector((ServerPlayer) player);

@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.api.common.item;
 
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,23 +16,21 @@ import java.util.function.Function;
  * Name BaseItem
  * Description
  */
-
 public class BaseItem extends Item {
     public BaseItem() {
-        super(new Properties());
+        super(ModItems.properties());
     }
 
     public BaseItem(Function<Properties, Properties> properties) {
-        super(properties.apply(new Properties()));
+        super(properties.apply(ModItems.properties()));
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> rightClick(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        return InteractionResultHolder.pass(stack);
+    public @NotNull InteractionResult rightClick(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+        return InteractionResult.PASS;
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
+    public @NotNull InteractionResult use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
         if (pPlayer.isShiftKeyDown()) return rightClick(pLevel, pPlayer, pUsedHand);
         return super.use(pLevel, pPlayer, pUsedHand);
     }

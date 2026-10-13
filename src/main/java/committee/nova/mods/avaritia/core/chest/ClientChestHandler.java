@@ -34,13 +34,13 @@ public class ClientChestHandler extends ChestHandler {
 
     public void update(CompoundTag tag) {
         if (container == null) return;
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
 
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
-        items.getAllKeys().forEach(itemId -> {
-            long count = items.getLong(itemId);
+        items.keySet().forEach(itemId -> {
+            long count = items.getLongOr(itemId, 0L);
             if (count <= 0L) {
                 if (storageItems.containsKey(itemId)) {
                     storageItems.remove(itemId);
@@ -64,7 +64,7 @@ public class ClientChestHandler extends ChestHandler {
 
         // 处理NBT数据
         if (nbtData != null) {
-            nbtData.getAllKeys().forEach(itemId -> {
+            nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
                 if (nbtTag instanceof CompoundTag) {
                     nbtDataCache.put(itemId, nbtTag);
@@ -77,16 +77,16 @@ public class ClientChestHandler extends ChestHandler {
     }
 
     public void fullUpdate(CompoundTag tag) {
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
 
         storageItems.clear();
         nbtDataCache.clear();
 
-        items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
+        items.keySet().forEach(itemId -> storageItems.put(itemId, items.getLongOr(itemId, 0L)));
 
         if (nbtData != null) {
-            nbtData.getAllKeys().forEach(itemId -> {
+            nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
                 if (nbtTag instanceof CompoundTag) {
                     nbtDataCache.put(itemId, nbtTag);

@@ -1,24 +1,15 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
-import java.util.function.Supplier;
+import net.minecraft.world.item.ToolMaterial;
 
+/**
+ * Description:
+ * @author cnlimiter
+ * Date: 2022/4/21 15:13
+ * Version: 1.0
+ */
 public final class ModToolTiers {
-    public static final Tier BLAZE = new NativeTier(7777, 7777, 25F, 25F, 77,
-            () -> Ingredient.of(ModItems.blaze_cube.get()));
-    public static final Tier CRYSTAL = new NativeTier(8888, 8888, 50F, 50F, 888,
-            () -> Ingredient.of(ModItems.crystal_matrix_ingot.get()));
-    public static final Tier INFINITY = new NativeTier(9999, 9999, 100F, 100F, 9999,
-            () -> Ingredient.of(ModItems.infinity_ingot.get()));
-
-    private record NativeTier(int level, int uses, float speed, float damage, int enchantment,
-                              Supplier<Ingredient> repair) implements Tier {
-        public int getLevel() { return level; }
-        public int getUses() { return uses; }
-        public float getSpeed() { return speed; }
-        public float getAttackDamageBonus() { return damage; }
-        public int getEnchantmentValue() { return enchantment; }
-        public Ingredient getRepairIngredient() { return repair.get(); }
-    }
+    public static final ToolMaterial BLAZE = new ToolMaterial(ModTags.INCORRECT_FOR_BLAZE_TOOL, 7777, 25F, 25F, 77, ModTags.REPAIRS_BLAZE_TOOLS);
+    public static final ToolMaterial CRYSTAL = new ToolMaterial(ModTags.INCORRECT_FOR_CRYSTAL_TOOL, 8888, 50F, 50F, 888, ModTags.REPAIRS_CRYSTAL_TOOLS);
+    public static final ToolMaterial INFINITY = new ToolMaterial(ModTags.INCORRECT_FOR_INFINITY_TOOL, 9999, 100F, 100F, 9999, ModTags.REPAIRS_INFINITY_TOOLS);
 }

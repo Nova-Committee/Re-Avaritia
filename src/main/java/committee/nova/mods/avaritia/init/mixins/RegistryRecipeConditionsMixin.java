@@ -1,23 +1,10 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import com.google.gson.JsonElement;
-import committee.nova.mods.avaritia.api.init.data.ResourceConditions;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.RecipeManager;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.util.Map;
-
-@Mixin(RecipeManager.class)
+/**
+ * 已在 26.3 升级中废弃：RecipeManager 不再是重载监听器，apply(Map, ...) 已删除，
+ * 配方改走动态注册表加载（RecipeManager.finalizeRecipeLoading）。
+ * 条件配方处理需迁至注册表加载钩子。
+ * 条目已从 avaritia.mixins.json 移除，保留文件仅作记录。
+ */
 public abstract class RegistryRecipeConditionsMixin {
-    @Inject(method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V", at = @At("HEAD"))
-    private void avaritia$conditions(Map<ResourceLocation, JsonElement> recipes, ResourceManager manager,
-                                     ProfilerFiller profiler, CallbackInfo ci) {
-        recipes.entrySet().removeIf(entry -> entry.getValue().isJsonObject()
-                && !ResourceConditions.processConditions(entry.getValue().getAsJsonObject()));
-    }
 }

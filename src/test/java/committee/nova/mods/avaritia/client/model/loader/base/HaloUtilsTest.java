@@ -1,81 +1,119 @@
 package committee.nova.mods.avaritia.client.model.loader.base;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.core.Direction;
+import com.mojang.blaze3d.platform.NativeImage;
+import committee.nova.mods.avaritia.api.client.model.CachedFormat;
+import committee.nova.mods.avaritia.api.client.model.Quad;
+import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloUtils;
+import net.minecraft.client.model.geom.builders.UVPair;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.animation.FrameSize;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.resources.Identifier;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteOrder;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * 26.3 起 halo 改为直接生成圆形扇面 BakedQuad（旧 renderHaloQuad/BufferBuilder 路径已删除），
+ * 原"顶点颜色保留"断言无对应目标：颜色写入 Quad.Vertex.color 但 bake() 生成的 BakedQuad 不再携带颜色。
+ * 这里改为校验新 API 的分段数、半径、putVertex 写入以及扇面几何/UV 语义。
+ */
+@DisplayName("Halo utils")
 class HaloUtilsTest {
+    private static final float EPSILON = 0.0001F;
+
     @Test
-    void haloBufferRetainsBlackTintAndTransparentOrColoredVertices() {
-        int[] colors = {0xFF000000, 0x00FFFFFF, 0x33C08020, 0x99FFFFFF};
-        BufferBuilder builder = new BufferBuilder(256);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
-        HaloUtils.renderHaloQuad(new PoseStack().last(), builder, quad(colors), 0x00F000F0, 0);
-        BufferBuilder.RenderedBuffer rendered = builder.end();
-        try {
-            var bytes = rendered.vertexBuffer().order(ByteOrder.nativeOrder());
-            int stride = DefaultVertexFormat.NEW_ENTITY.getVertexSize();
-            for (int i = 0; i < 4; i++) {
-                int offset = i * stride + 12;
-                assertEquals(colors[i] & 255, Byte.toUnsignedInt(bytes.get(offset)), "red");
-                assertEquals(colors[i] >>> 8 & 255, Byte.toUnsignedInt(bytes.get(offset + 1)), "green");
-                assertEquals(colors[i] >>> 16 & 255, Byte.toUnsignedInt(bytes.get(offset + 2)), "blue");
-                assertEquals(colors[i] >>> 24 & 255, Byte.toUnsignedInt(bytes.get(offset + 3)), "alpha");
-            }
-        } finally {
-            rendered.release();
-        }
+    @DisplayName("circle segment count grows with size and stays clamped")
+    void circleSegmentsClamped() {
+        assertAll(
+                () -> assertEquals(24, HaloUtils.circleSegments(1)),
+                () -> assertEquals(24, HaloUtils.circleSegments(4)),
+                () -> assertEquals(32, HaloUtils.circleSegments(8)),
+                () -> assertEquals(64, HaloUtils.circleSegments(16)),
+                () -> assertEquals(64, HaloUtils.circleSegments(1024))
+        );
     }
 
     @Test
-    void haloBufferUsesModelPoseAndKeepsAtlasUvOverlayAndLight() {
-        PoseStack pose = new PoseStack();
-        pose.translate(2, 3, 4);
-        pose.scale(2, 3, 1);
-        BufferBuilder builder = new BufferBuilder(256);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
-        HaloUtils.renderHaloQuad(pose.last(), builder,
-                quad(new int[]{-1, -1, -1, -1}), 0x00A000B0, 0x00070008);
-        BufferBuilder.RenderedBuffer rendered = builder.end();
-        try {
-            var bytes = rendered.vertexBuffer().order(ByteOrder.nativeOrder());
-            int stride = DefaultVertexFormat.NEW_ENTITY.getVertexSize();
-            for (int i = 0; i < 4; i++) {
-                int offset = i * stride;
-                assertEquals(2 + 2 * (i & 1), bytes.getFloat(offset), 0.00001F);
-                assertEquals(3 + 3 * (i >>> 1), bytes.getFloat(offset + 4), 0.00001F);
-                assertEquals(4, bytes.getFloat(offset + 8), 0.00001F);
-                assertEquals(0.25F, bytes.getFloat(offset + 16), 0.00001F);
-                assertEquals(0.75F, bytes.getFloat(offset + 20), 0.00001F);
-                assertEquals(0x00070008, bytes.getInt(offset + 24));
-                assertEquals(0x00A000B0, bytes.getInt(offset + 28));
-                assertEquals(0, bytes.get(offset + 32));
-                assertEquals(0, bytes.get(offset + 33));
-                assertEquals(127, bytes.get(offset + 34));
+    @DisplayName("halo radius keeps legacy diameter formula")
+    void haloRadiusKeepsLegacyFormula() {
+        assertAll(
+                () -> assertEquals(0.5, HaloUtils.haloRadius(0), 1.0E-6),
+                () -> assertEquals(1.0, HaloUtils.haloRadius(8), 1.0E-6),
+                () -> assertEquals(1.5, HaloUtils.haloRadius(16), 1.0E-6)
+        );
+    }
+
+    @Test
+    @DisplayName("putVertex writes position and uv into the vertex")
+    void putVertexWritesPositionAndUv() {
+        Quad.Vertex vertex = new Quad.Vertex(CachedFormat.BLOCK);
+        HaloUtils.putVertex(vertex, 1.0, 2.0, 3.0, 0.25, 0.75);
+        assertAll(
+                () -> assertEquals(1.0F, vertex.vec[0], EPSILON),
+                () -> assertEquals(2.0F, vertex.vec[1], EPSILON),
+                () -> assertEquals(3.0F, vertex.vec[2], EPSILON),
+                () -> assertEquals(0.25F, vertex.uv[0], EPSILON),
+                () -> assertEquals(0.75F, vertex.uv[1], EPSILON)
+        );
+    }
+
+    @Test
+    @DisplayName("generateHaloQuads bakes one fan quad per segment with center and rim vertices")
+    void generateHaloQuadsBakesCircleFan() {
+        int size = 8;
+        int color = 0x33C08020; // 颜色写入顶点但 26.3 的 BakedQuad 不再保留，这里只验证几何与 UV
+        NativeImage image = new NativeImage(16, 16, false);
+        SpriteContents contents = new SpriteContents(
+                Identifier.withDefaultNamespace("halo_utils_test"),
+                new FrameSize(16, 16),
+                image
+        );
+        try (TextureAtlasSprite sprite = new TestSprite(contents)) {
+            List<BakedQuad> quads = HaloUtils.generateHaloQuads(sprite, size, color);
+            int segments = HaloUtils.circleSegments(size);
+            double radius = HaloUtils.haloRadius(size);
+            assertEquals(segments, quads.size());
+
+            float midU = (sprite.getU0() + sprite.getU1()) / 2.0F;
+            float midV = (sprite.getV0() + sprite.getV1()) / 2.0F;
+            for (int i = 0; i < segments; i++) {
+                BakedQuad quad = quads.get(i);
+                double current = Math.PI * 2.0 * i / segments;
+                double next = Math.PI * 2.0 * (i + 1) / segments;
+                int index = i;
+                assertAll(
+                        // 顶点 0/3 是圆心
+                        () -> assertPosition(quad, 0, 0.5, 0.5, 0.0, "center0 of quad " + index),
+                        () -> assertPosition(quad, 3, 0.5, 0.5, 0.0, "center3 of quad " + index),
+                        // 顶点 1/2 落在圆周上
+                        () -> assertPosition(quad, 1, 0.5 + Math.cos(current) * radius, 0.5 + Math.sin(current) * radius, 0.0, "rim1 of quad " + index),
+                        () -> assertPosition(quad, 2, 0.5 + Math.cos(next) * radius, 0.5 + Math.sin(next) * radius, 0.0, "rim2 of quad " + index),
+                        // 圆心 UV 是贴图 UV 区间中点
+                        () -> assertEquals(midU, UVPair.unpackU(quad.packedUV0()), EPSILON, "center u of quad " + index),
+                        () -> assertEquals(midV, UVPair.unpackV(quad.packedUV0()), EPSILON, "center v of quad " + index)
+                );
             }
-        } finally {
-            rendered.release();
         }
     }
 
-    private static BakedQuad quad(int[] colors) {
-        int[] vertices = new int[4 * DefaultVertexFormat.BLOCK.getIntegerSize()];
-        for (int i = 0; i < 4; i++) {
-            int offset = i * DefaultVertexFormat.BLOCK.getIntegerSize();
-            vertices[offset] = Float.floatToRawIntBits(i & 1);
-            vertices[offset + 1] = Float.floatToRawIntBits(i >>> 1);
-            vertices[offset + 3] = colors[i];
-            vertices[offset + 4] = Float.floatToRawIntBits(0.25F);
-            vertices[offset + 5] = Float.floatToRawIntBits(0.75F);
+    private static void assertPosition(BakedQuad quad, int vertex, double x, double y, double z, String label) {
+        assertAll(
+                () -> assertEquals((float) x, quad.position(vertex).x(), EPSILON, label + " x"),
+                () -> assertEquals((float) y, quad.position(vertex).y(), EPSILON, label + " y"),
+                () -> assertEquals((float) z, quad.position(vertex).z(), EPSILON, label + " z")
+        );
+    }
+
+    private static final class TestSprite extends TextureAtlasSprite {
+        private TestSprite(SpriteContents contents) {
+            super(TextureAtlas.LOCATION_BLOCKS, contents, 256, 256, 32, 64, 0);
         }
-        return new BakedQuad(vertices, -1, Direction.SOUTH, null, false);
     }
 }

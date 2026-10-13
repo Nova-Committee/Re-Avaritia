@@ -7,16 +7,12 @@ import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
-import java.util.Collection;
 
 /** Loader-independent datapack gates, evaluated against this reload's item tags. */
 public final class ResourceConditions {
-    private static volatile TagManager tagManager;
-    public static void setTagManager(TagManager manager) { tagManager = manager; }
 
     public static JsonObject tagNotEmpty(String tag) {
         JsonObject empty = new JsonObject();
@@ -60,8 +56,8 @@ public final class ResourceConditions {
         String type = GsonHelper.getAsString(condition, "type");
         return switch (type) {
             case "avaritia:mod_loaded" -> FabricLoader.getInstance().isModLoaded(GsonHelper.getAsString(condition, "modid"));
-            case "avaritia:item_exists" -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(GsonHelper.getAsString(condition, "item")));
-            case "avaritia:tag_empty" -> tagsReady ? tagEmpty(new ResourceLocation(GsonHelper.getAsString(condition, "tag"))) : null;
+            case "avaritia:item_exists" -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(GsonHelper.getAsString(condition, "item")));
+            case "avaritia:tag_empty" -> tagsReady ? tagEmpty(Identifier.parse(GsonHelper.getAsString(condition, "tag"))) : null;
             case "avaritia:true", "avaritia:infinity_catalyst_recipe" -> true;
             case "avaritia:false" -> false;
             case "avaritia:not" -> {
@@ -83,18 +79,13 @@ public final class ResourceConditions {
         };
     }
 
-    private static boolean tagEmpty(ResourceLocation id) {
-        TagManager manager = tagManager;
-        if (manager != null) {
-            for (TagManager.LoadResult<?> result : manager.getResult()) {
-                if (result.key().equals(Registries.ITEM)) {
-                    Collection<?> values = result.tags().get(id);
-                    return values == null || values.isEmpty();
-                }
-            }
-            return true;
-        }
-        return BuiltInRegistries.ITEM.getTag(TagKey.create(Registries.ITEM, id)).map(tag -> tag.size() == 0).orElse(true);
+    private static boolean tagEmpty(Identifier id) {
+        TagKey<net.minecraft.world.item.Item> key = TagKey.create(Registries.ITEM, id);
+        return BuiltInRegistries.ITEM.getTags()
+                .filter(named -> named.key().equals(key))
+                .findFirst()
+                .map(named -> named.size() == 0)
+                .orElse(true);
     }
 
     private ResourceConditions() {}

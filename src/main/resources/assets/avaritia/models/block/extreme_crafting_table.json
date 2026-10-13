@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_top",
+  "textures": {
+    "side": "avaritia:block/machine/craft/extreme_side",
+    "top": "avaritia:block/machine/craft/extreme_top"
+  }
+}

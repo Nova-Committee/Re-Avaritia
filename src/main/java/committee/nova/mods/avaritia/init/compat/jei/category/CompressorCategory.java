@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import mezz.jei.api.constants.VanillaTypes;
@@ -13,45 +12,36 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-
-/**
- * Description:
- * @author cnlimiter
- * Date: 2022/5/15 23:12
- * Version: 1.0
- */
-public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
-    public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "compressor", ICompressorRecipe.class);
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Const.MOD_ID, "textures/gui/jei/compressor.png");
-    private final IDrawable background;
+public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompressorRecipe>> {
+    public static final IRecipeHolderType<ICompressorRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "compressor"));
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/gui/jei/compressor.png");
     private final IDrawable icon;
-
+    private final IDrawable background;
 
     public CompressorCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 63);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.neutron_compressor.get()));
     }
 
-
     @Override
-    public @NotNull RecipeType<ICompressorRecipe> getRecipeType() {
+    public @NotNull IRecipeHolderType<ICompressorRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
     @Override
     public @NotNull Component getTitle() {
-        return Localizable.of("jei.category.avaritia.compressor").build();
+        return Component.translatable("jei.category.avaritia.compressor");
     }
 
     @Override
@@ -65,7 +55,7 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     }
 
     @Override
-    public void draw(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(@NotNull RecipeHolder<ICompressorRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }
 
@@ -75,24 +65,26 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, ICompressorRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<ICompressorRecipe> recipeHolder, @NotNull IFocusGroup focuses) {
+        var recipe = recipeHolder.value();
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
         var output = recipe.getResultItem(level.registryAccess());
-        builder.addSlot(RecipeIngredientRole.INPUT, 37, 21).addIngredients(inputs.get(0));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 21).addItemStack(output);
+        builder.addSlot(RecipeIngredientRole.INPUT, 37, 21).add(inputs.get(0));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 21).add(output);
         builder.moveRecipeTransferButton(160, 68);
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RecipeHolder<ICompressorRecipe> recipeHolder, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        var recipe = recipeHolder.value();
         if (mouseX > 62 && mouseX < 77 && mouseY > 21 && mouseY < 36) {
-            tooltip.addAll(Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build()));
+            tooltip.add(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build());
         }
 
         if (mouseX > 86 && mouseX < 107 && mouseY > 22 && mouseY < 36) {
-            tooltip.addAll(Collections.singletonList(ModTooltips.TIME_CONSUME.args(recipe.getTimeCost()).color(ChatFormatting.BLUE).build()));
+            tooltip.add(ModTooltips.TIME_CONSUME.args(recipe.getTimeCost()).color(ChatFormatting.BLUE).build());
         }
     }
 }

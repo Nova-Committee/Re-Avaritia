@@ -6,6 +6,8 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -13,10 +15,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
@@ -59,7 +63,7 @@ public class CompressedChestTile extends ChestBlockEntity {
             }
 
             @Override
-            protected boolean isOwnContainer(@NotNull Player pPlayer) {
+            public boolean isOwnContainer(@NotNull Player pPlayer) {
                 if (pPlayer.containerMenu instanceof CompressedChestMenu chestMenu) {
                     Container container = chestMenu.getContainer();
                     return container == CompressedChestTile.this || container instanceof CompoundContainer && ((CompoundContainer) container).contains(CompressedChestTile.this);
@@ -87,7 +91,7 @@ public class CompressedChestTile extends ChestBlockEntity {
                 d2 += (double) direction.getStepZ() * 0.5;
             }
 
-            pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+            pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.getRandom().nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -107,17 +111,17 @@ public class CompressedChestTile extends ChestBlockEntity {
     }
 
     @Override
-    public void startOpen(@NotNull Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
-            this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void startOpen(@NotNull ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator()) {
+            this.openersCounter.incrementOpeners(containerUser.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState(), containerUser.getContainerInteractionRange());
         }
 
     }
 
     @Override
-    public void stopOpen(@NotNull Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
-            this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void stopOpen(@NotNull ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator()) {
+            this.openersCounter.decrementOpeners(containerUser.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }
 
@@ -140,5 +144,34 @@ public class CompressedChestTile extends ChestBlockEntity {
 
     public void setChestTag(CompoundTag chestTag) {
         this.chestTag = chestTag;
+    }
+
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super（默认会把 Container 内容物散落一地），
+     * 改为把内容物序列化进 chestTag，由 CompressedChestBlock.playerDestroy 写入掉落物。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
+        CompoundTag tag = new CompoundTag();
+        CompoundTag nameTag = new CompoundTag();
+        CompoundTag countTag = new CompoundTag();
+        CompoundTag nbtTag = new CompoundTag();
+        int stackCount = 0;
+        for (int i = 0; i < this.getContainerSize(); ++i) {
+            ItemStack item = this.getItem(i);
+            if (item.isEmpty()) continue;
+            stackCount++;
+            nameTag.putString(String.valueOf(i), String.valueOf(BuiltInRegistries.ITEM.getKey(item.getItem())));
+            countTag.putInt(String.valueOf(i), item.getCount());
+            CustomData data = item.get(DataComponents.CUSTOM_DATA);
+            if (data != null) {
+                nbtTag.put(String.valueOf(i), data.copyTag());
+            }
+        }
+        tag.put("name", nameTag);
+        tag.put("count", countTag);
+        tag.put("nbt", nbtTag);
+        tag.putInt("stackCount", stackCount);
+        this.setChestTag(tag);
     }
 }

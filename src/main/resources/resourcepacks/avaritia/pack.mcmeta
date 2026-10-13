@@ -3,7 +3,13 @@
     "description": {
       "text": "Re:Avaritia Vanilla Resources by kyln默寒寒冰"
     },
-    "pack_format": 15,
-    "supported_formats": [15, 99]
+    "min_format": [
+      97,
+      1
+    ],
+    "max_format": [
+      97,
+      1
+    ]
   }
 }

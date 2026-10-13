@@ -1,16 +1,18 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +29,8 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public final NonNullList<Ingredient> originalInputs;
     private final int count;
 
-    public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> originalInputs, int count) {
-        super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get(), count), 4);
+    public EternalSingularityCraftRecipe(NonNullList<Ingredient> originalInputs, int count) {
+        super(NonNullList.create(), new ItemStackTemplate(ModItems.eternal_singularity.get(), count), 4);
         this.originalInputs = originalInputs;
         this.count = count;
     }
@@ -39,7 +41,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             super.getIngredients().clear();
             SingularityReloadListener.INSTANCE.getAllSingularities().values()
                     .stream()
-                    .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                    .filter(singularity -> singularity.hasIngredient())
                     .map(SingularityUtils::getItemForSingularity)
                     .map(NbtIngredients::of)
                     .forEach(super.getIngredients()::add);
@@ -51,41 +53,44 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         return super.getIngredients();
     }
 
-    @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
+    public int getCount() {
+        return this.count;
     }
 
-    public static class Serializer implements RecipeSerializer<EternalSingularityCraftRecipe> {
-        @Override
-        public @NotNull EternalSingularityCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
+    @Override
+    public @NotNull RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.CraftingInput>> getSerializer() {
+        return (RecipeSerializer<EternalSingularityCraftRecipe>) ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
+    }
 
-            for (int i = 0; i < ingredients.size(); i++) {
-                inputs.add(Ingredient.fromJson(ingredients.get(i)));
-            }
-            int count = GsonHelper.getAsInt(json, "count", 1);
-            return new EternalSingularityCraftRecipe(recipeId, inputs, count);
-        }
+    public static class Serializer {
+        public static final MapCodec<EternalSingularityCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        RecipeCodecs.ingredientList(81, true, "Combination recipe")
+                                .fieldOf("ingredients")
+                                .forGetter(recipe -> recipe.originalInputs),
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
+                ).apply(builder, EternalSingularityCraftRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, EternalSingularityCraftRecipe> STREAM_CODEC = StreamCodec.of(
+                EternalSingularityCraftRecipe.Serializer::toNetwork, EternalSingularityCraftRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<EternalSingularityCraftRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
-        @Override
-        public EternalSingularityCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+        private static EternalSingularityCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             int count = buffer.readInt();
-            return new EternalSingularityCraftRecipe(recipeId, inputs, count);
+            return new EternalSingularityCraftRecipe(inputs, count);
         }
 
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, EternalSingularityCraftRecipe recipe) {
             buffer.writeVarInt(recipe.originalInputs.size());
             for (var ingredient : recipe.originalInputs) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             buffer.writeInt(recipe.count);
         }

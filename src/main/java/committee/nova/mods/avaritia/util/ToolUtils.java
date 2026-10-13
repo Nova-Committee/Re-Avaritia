@@ -13,14 +13,14 @@ import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTags;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +29,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -39,13 +38,16 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -93,7 +95,7 @@ public class ToolUtils {
             BlockTags.MINEABLE_WITH_SHOVEL
     );
     private static TagKey<Block> blockTag(String path) {
-        return TagKey.create(net.minecraft.core.registries.Registries.BLOCK, new ResourceLocation("forge", path));
+        return TagKey.create(net.minecraft.core.registries.Registries.BLOCK, Identifier.fromNamespaceAndPath("forge", path));
     }
     /**
      * 列表中生物被弓箭攻击使用无尽伤害
@@ -140,7 +142,7 @@ public class ToolUtils {
      */
     public static boolean isInfinite(LivingEntity player) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() != EquipmentSlot.Type.ARMOR) {
+            if (!slot.isArmor()) {
                 continue;
             }
             ItemStack stack = player.getItemBySlot(slot);
@@ -204,7 +206,7 @@ public class ToolUtils {
      * @param range    挖掘范围
      */
     public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range) {
-        ServerLevel world = player.serverLevel();
+        ServerLevel world = player.level();
 
         // 计算方形范围
         int halfRange = range / 2;
@@ -226,8 +228,8 @@ public class ToolUtils {
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    Identifier blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
@@ -254,7 +256,7 @@ public class ToolUtils {
      * @param range    挖掘范围
      */
     public static void destroyShovelBlocks(ServerPlayer player, BlockPos startPos, int range) {
-        ServerLevel world = player.serverLevel();
+        ServerLevel world = player.level();
 
         int halfRange = range / 2;
         BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
@@ -272,8 +274,8 @@ public class ToolUtils {
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    Identifier blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
@@ -295,7 +297,7 @@ public class ToolUtils {
         Block block = state.getBlock();
         if (world.isClientSide) return;
 
-        if (state.is(Blocks.GRASS) && stack.is(ModItems.infinity_pickaxe.get())) {
+        if (state.is(Blocks.SHORT_GRASS) && stack.is(ModItems.infinity_pickaxe.get())) {
             world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
         }
 
@@ -310,9 +312,9 @@ public class ToolUtils {
         if (!blockDrops.isEmpty()) {
             drops.addAll(blockDrops);
         } else {
-            ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
+            Identifier blockKey = BuiltInRegistries.BLOCK.getKey(block);
 
-            Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+            Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
             drops.add(new ItemStack(blockItem));
         }
 
@@ -347,7 +349,7 @@ public class ToolUtils {
             double dz = Math.cos(dangle) * dDist;
 
             HeavenSubArrowEntity subArrow = new HeavenSubArrowEntity(level, shooter, x, y, z);
-            subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
+            // 26.3: AbstractArrow.piercedAndKilledEntities 已私有化；子箭 pierceLevel 恒为 0，该列表仅在穿透时使用，此赋值为死代码
             subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
             subArrow.setCritArrow(true);//子箭必定暴击
             subArrow.setBaseDamage(ModConfig.subArrowDamage.get());
@@ -386,86 +388,50 @@ public class ToolUtils {
         Entity entity = result.getEntity();
         Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
         if (entity == owner) {
-            arrow.skipOwnerHit();
+            // 26.3 无 skipOwnerHit：命中发射者时直接转向下一目标
+            arrow.setDeltaMovement(arrow.getDeltaMovement().scale(0.0D));
+            arrow.setPos(entity.position());
+            arrow.seekNextTarget();
             return;
         }
 
         float f = (float) arrow.getDeltaMovement().length();
-        int i = Mth.ceil(Mth.clamp((double) f * arrow.getBaseDamage(), 0.0D, 2.147483647E9D));
-        if (arrow.getPierceLevel() > 0) {
-            if (arrow.piercingIgnoreEntityIds == null) {
-                arrow.piercingIgnoreEntityIds = new IntOpenHashSet(5);
-            }
-
-            if (arrow.piercedAndKilledEntities == null) {
-                arrow.piercedAndKilledEntities = Lists.newArrayListWithCapacity(5);
-            }
-
-            if (arrow.piercingIgnoreEntityIds.size() >= arrow.getPierceLevel() + 1) {
-                arrow.discard();
-                return;
-            }
-
-            arrow.piercingIgnoreEntityIds.add(entity.getId());
-        }
+        // 26.3 AbstractArrow.baseDamage 已私有化；追踪箭伤害语义对照 Neo 版：有来源物品即视为无尽（无限伤害）
+        double baseDamage = arrow.getPickupItemStackOrigin().isEmpty() ? 2.0D : Double.POSITIVE_INFINITY;
+        int i = Mth.ceil(Mth.clamp((double) f * baseDamage, 0.0D, 2.147483647E9D));
 
         if (arrow.isCritArrow()) {
-            long j = arrow.random.nextInt(i / 2 + 2);
+            long j = arrow.getRandom().nextInt(i / 2 + 2);
             i = (int) Math.min(j + (long) i, 2147483647L);
         }
 
         DamageSource damagesource = ToolUtils.getArrowDamageSource(level, arrow, owner, entity);
-        boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
+        boolean isEnderman = entity.getType() == EntityTypes.ENDERMAN;
         int k = entity.getRemainingFireTicks();
         if (arrow.isOnFire() && !isEnderman) {
-            entity.setSecondsOnFire(5);
+            entity.igniteForSeconds(5);
         }
 
         if (entity instanceof Player player) {
             if (player.isUsingItem() && player.getUseItem().getItem() instanceof ShieldItem) {
-                player.getCooldowns().addCooldown(player.getUseItem().getItem(), 100);
+                player.getCooldowns().addCooldown(player.getUseItem(), 100);
                 arrow.level().broadcastEntityEvent(player, (byte) 30);
                 player.stopUsingItem();
             }
         }
 
-        if (entity.hurt(damagesource, (float) i)) {
+        boolean hurtDone = false;
+        if (level instanceof ServerLevel serverLevel) {
+            hurtDone = entity.hurtServer(serverLevel, damagesource, (float) i);
+        }
+        if (hurtDone) {
             if (entity instanceof LivingEntity livingentity) {
                 if (!arrow.level().isClientSide && arrow.getPierceLevel() <= 0) {
                     livingentity.setArrowCount(livingentity.getArrowCount() + 1);
                 }
-
-                if (arrow.knockback > 0) {
-                    Vec3 vector3d = arrow.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale((double) arrow.knockback * 0.6D);
-                    if (vector3d.lengthSqr() > 0.0D) {
-                        livingentity.push(vector3d.x, 0.1D, vector3d.z);
-                    }
-                }
-
-                if (!arrow.level().isClientSide && owner instanceof LivingEntity livingOwner) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity, livingOwner);
-                    EnchantmentHelper.doPostDamageEffects(livingOwner, livingentity);
-                }
-
-                arrow.doPostHurtEffects(livingentity);
-                if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer serverPlayer && !arrow.isSilent()) {
-                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
-                }
-
-                if (!entity.isAlive() && arrow.piercedAndKilledEntities != null) {
-                    arrow.piercedAndKilledEntities.add(livingentity);
-                }
-
-                if (!arrow.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
-                    if (arrow.piercedAndKilledEntities != null && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, arrow.piercedAndKilledEntities);
-                    } else if (!entity.isAlive() && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, List.of(entity));
-                    }
-                }
             }
 
-            arrow.playSound(arrow.getHitGroundSoundEvent(), 1.0F, 1.2F / (arrow.random.nextFloat() * 0.2F + 0.9F));
+            arrow.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 1.2F / (arrow.getRandom().nextFloat() * 0.2F + 0.9F));
             if (arrow.getPierceLevel() <= 0) {
                 arrow.setDeltaMovement(entity.getDeltaMovement().scale(0.0D));
                 arrow.setPos(entity.position());
@@ -478,9 +444,9 @@ public class ToolUtils {
             arrow.setYRot(arrow.getYRot() + 180.0F);
             arrow.setPos(entity.position());
             arrow.yRotO += 180.0F;
-            if (!arrow.level().isClientSide && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
+            if (arrow.level() instanceof ServerLevel serverLevel && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
                 if (arrow.pickup == AbstractArrow.Pickup.ALLOWED) {
-                    arrow.spawnAtLocation(arrow.getPickupItem(), 0.1F);
+                    arrow.spawnAtLocation(serverLevel, arrow.getPickupItem(), 0.1F);
                 }
                 arrow.seekNextTarget();
                 arrow.level().playSound(null, arrow.getX(), arrow.getY(), arrow.getZ(), SoundEvents.ARROW_HIT, SoundSource.PLAYERS, 4.0F, 1.0F);
@@ -500,7 +466,8 @@ public class ToolUtils {
             for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, victim.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
                 double entityReachSq = Mth.square(3.0D); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                 if (!player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && player.distanceToSqr(livingentity) < entityReachSq) {
-                    livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
+                    livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)),
+                            player.damageSources().playerAttack(player), 0.0F);
                 }
             }
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
@@ -521,17 +488,17 @@ public class ToolUtils {
      */
     public static void pearlAttack(Player player, ItemStack stack, Level world) {
         if (!world.isClientSide) {
-            EndestPearlEntity pearl = ModEntities.ENDER_PEARL.get().create(player.level());
+            EndestPearlEntity pearl = ModEntities.ENDER_PEARL.get().create(player.level(), EntitySpawnReason.EVENT);
             if (pearl != null) {
                 pearl.setItem(stack);
                 pearl.setShooter(player);
                 pearl.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                 pearl.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                 world.addFreshEntity(pearl);
-                player.getCooldowns().addCooldown(stack.getItem(), 30);
+                player.getCooldowns().addCooldown(stack, 30);
             }
         }
-        world.playSound(player, player.getOnPos(), SoundEvents.ENDER_PEARL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        world.playSound(player, player.getOnPos(), SoundEvents.ENDER_PEARL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
 
@@ -545,7 +512,7 @@ public class ToolUtils {
      * @param lightOn    使用闪电
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
-        if (player.level().isClientSide) return;
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         AABB aabb = player.getBoundingBox().inflate(range, range, range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
@@ -570,7 +537,7 @@ public class ToolUtils {
                     if (hurtAnimal) {
                         return true;
                     } else {
-                        return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
+                        return entity instanceof Enemy && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(ModTags.NEUTRAL_CREATURES);
                     }
                 })
                 .forEach(entity -> {
@@ -579,16 +546,16 @@ public class ToolUtils {
                             dragon.setHealth(0);
                         } else if (livingEntity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(src, damage);
+                            wither.hurtServer(serverLevel, src, damage);
                         } else {
-                            livingEntity.hurt(src, damage);
+                            livingEntity.hurtServer(serverLevel, src, damage);
                         }
                     } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
                         entity.discard();
                     }else if(entity instanceof Projectile){
                         entity.discard();
                     } else if (entity instanceof Entity) {
-                        entity.hurt(src, damage);
+                        entity.hurtServer(serverLevel, src, damage);
                     }
                     if (lightOn) trySummonLightning(player.level(), 1, entity.blockPosition(),
                             player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
@@ -610,9 +577,9 @@ public class ToolUtils {
         if (level instanceof ServerLevel serverLevel){
             boolean hasAction = false;
             for (int i = 0; i < bolts; i++) {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.EVENT);
                 if (lightning != null) {
-                    lightning.moveTo(Vec3.atBottomCenterOf(hitPos));
+                    lightning.setPos(Vec3.atBottomCenterOf(hitPos));
                     lightning.setCause(thrower);
                     serverLevel.addFreshEntity(lightning);
                 }
@@ -653,7 +620,7 @@ public class ToolUtils {
                     serverLevel.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
                 }
             }
-            if (block instanceof StemGrownBlock) { //pumpkin
+            if (block == Blocks.PUMPKIN || block == Blocks.MELON) { //pumpkin
                 ClustersUtils.putMapDrops(serverLevel, pos, player, stack, map);
                 serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
             }
@@ -689,10 +656,10 @@ public class ToolUtils {
             BlockState state = serverLevel.getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
-                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state, false)
+                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state, BonemealSource.INTERACTION)
             ) {
                 for (int i = 0; i < cost; i++) {
-                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
+                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.getRandom(), pos, state, BonemealSource.INTERACTION);
                     serverLevel.levelEvent(2005, pos, 0);
                 }
             }
@@ -739,9 +706,9 @@ public class ToolUtils {
             if (!blockDrops.isEmpty()) {
                 drops.addAll(blockDrops);
             } else {
-                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
+                Identifier blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
 
-                Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                 if (blockItem != Items.AIR && blockItem != null) {
                     drops.add(new ItemStack(blockItem));
                 }
@@ -808,8 +775,8 @@ public class ToolUtils {
     public static boolean melting(Block block, BlockState state, Level world, BlockPos pos, Player player, ItemStack tool) {
         if (!(world instanceof ServerLevel server) || !player.hasCorrectToolForDrops(state) || block instanceof CropBlock) return false;
         List<ItemStack> drops = Block.getDrops(state, server, pos, world.getBlockEntity(pos), player, tool);
-        int unLuck = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
-        if (drops.isEmpty() || unLuck > 0 && world.random.nextDouble() < unLuck * 0.2) return false;
+        int unLuck = EnchantmentHelper.getItemEnchantmentLevel(enchantment(world, Enchantments.FORTUNE), tool);
+        if (drops.isEmpty() || unLuck > 0 && world.getRandom().nextDouble() < unLuck * 0.2) return false;
         boolean changed = false;
         List<ItemStack> melted = new ArrayList<>(drops.size());
         for (ItemStack drop : drops) {
@@ -832,11 +799,12 @@ public class ToolUtils {
      * @return 烧炼产物
      */
     public static ItemStack getMeltingItem(Level world, ItemStack itemStack, ItemStack tool) {
-        ItemStack dropStack = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(itemStack), world)
-                .map(smeltingRecipe -> smeltingRecipe.getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
+        if (!(world instanceof ServerLevel serverLevel)) return itemStack;
+        ItemStack dropStack = serverLevel.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), serverLevel)
+                .map(smeltingRecipe -> smeltingRecipe.value().assemble(new SingleRecipeInput(itemStack))).filter(e -> !e.isEmpty())
                 .map(e -> e.copyWithCount(itemStack.getCount() * e.getCount()))
                 .orElse(itemStack);
-        int fortune = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+        int fortune = EnchantmentHelper.getItemEnchantmentLevel(enchantment(world, Enchantments.FORTUNE), tool);
         if (fortune > 0) { //时运影响产物数量
             RandomSource random = RandomSource.create();
             int count = 1;
@@ -863,8 +831,8 @@ public class ToolUtils {
         if (!world.isClientSide) {
             ServerLevel serverWorld = (ServerLevel) world;
             for (int i = 0; i < 10; i++) {
-                serverWorld.addParticle(ParticleTypes.FLAME, pos.getX() + world.random.nextDouble(), pos.getY() + 1d,
-                        pos.getZ() + world.random.nextDouble(), 1, 0, 0);
+                serverWorld.addParticle(ParticleTypes.FLAME, pos.getX() + world.getRandom().nextDouble(), pos.getY() + 1d,
+                        pos.getZ() + world.getRandom().nextDouble(), 1, 0, 0);
             }
         }
         world.playSound(player, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -879,12 +847,17 @@ public class ToolUtils {
      */
     public static void shootBladeSlash(ItemStack stack, Player player) {
         Level world = player.level();
-        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
+        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getItemEnchantmentLevel(enchantment(world, Enchantments.SWEEPING_EDGE), stack));
         world.addFreshEntity(projectile);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-        player.swing(player.getUsedItemHand());
+        player.swing(player.getUsedItemHand(), SwingAnimation.DEFAULT, false);
     }
 
+
+    /** 26.3 附魔为 ResourceKey + 注册表 Holder，统一经 registryAccess 解析。 */
+    private static Holder<Enchantment> enchantment(Level level, ResourceKey<Enchantment> key) {
+        return level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key);
+    }
 
     private static class BlockPosList extends ArrayList<BlockPos> {
         @Override

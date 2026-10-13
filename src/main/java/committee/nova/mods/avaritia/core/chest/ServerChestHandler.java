@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashSet;
@@ -36,18 +36,19 @@ public class ServerChestHandler extends ChestHandler {
         nbtDataCache.clear();
 
         if (dat.contains("items")) {
-            CompoundTag items = dat.getCompound("items");
-            items.getAllKeys().forEach(itemId -> {
-                if (items.getLong(itemId) > 0 && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(new ResourceLocation(StorageUtils.getBaseItemId(itemId)))) {
-                    storageItems.put(itemId, items.getLong(itemId));
+            CompoundTag items = dat.getCompoundOrEmpty("items");
+            items.keySet().forEach(itemId -> {
+                long count = items.getLongOr(itemId, 0L);
+                if (count > 0 && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(Identifier.parse(StorageUtils.getBaseItemId(itemId)))) {
+                    storageItems.put(itemId, count);
                 }
             });
         }
 
         // 加载NBT数据（如果有）
         if (dat.contains("nbtData")) {
-            CompoundTag nbtData = dat.getCompound("nbtData");
-            nbtData.getAllKeys().forEach(itemId -> {
+            CompoundTag nbtData = dat.getCompoundOrEmpty("nbtData");
+            nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
                 if (nbtTag instanceof CompoundTag compoundTag) {
                     nbtDataCache.put(itemId, compoundTag);

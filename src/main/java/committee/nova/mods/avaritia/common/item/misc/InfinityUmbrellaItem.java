@@ -12,14 +12,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.WeatherData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,12 +52,12 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     }
 
     private int getRandomDuration(Level level) {
-        return MIN_DURATION + level.random.nextInt(MAX_DURATION - MIN_DURATION + 1);
+        return MIN_DURATION + level.getRandom().nextInt(MAX_DURATION - MIN_DURATION + 1);
     }
 
     private void onUse(Level level, Player player, ItemStack stack, @NotNull InteractionHand hand) {
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide() && level instanceof ServerLevel server) {
             float pitch = player.getXRot();
 
             int currentMode = ISwitchable.getCurrentMode(stack, MODES);
@@ -62,25 +67,26 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
                     //0
                     break;
                 case MODE_SUN:
-                    SunProEntity sunProEntity = ModEntities.SUN_PRO.get().create(level);
+                    SunProEntity sunProEntity = ModEntities.SUN_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F) {
-                        if (level.getLevelData().isRaining() || !level.getLevelData().isThundering()) {
-                            level.getLevelData().setRaining(false);
+                        // 26.3 天气状态迁移到 WeatherData（SavedData），不再挂在 LevelData 上
+                        WeatherData weather = server.getWeatherData();
+                        if (weather.isRaining() || !weather.isThundering()) {
+                            weather.setRaining(false);
                         }
                     } else if (sunProEntity != null) {
                         sunProEntity.setOwner(player);
                         sunProEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                         sunProEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                         level.addFreshEntity(sunProEntity);
-                        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+                        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
                     }
 
                     break;
                 case MODE_RAIN:
-                    RainProEntity rainProEntity = ModEntities.RAIN_PRO.get().create(level);
-                    if (pitch <= -85.0F && level instanceof ServerLevel server) {
-                        level.getLevelData().setRaining(true);
-                        server.setWeatherParameters(0, duration, true, false);
+                    RainProEntity rainProEntity = ModEntities.RAIN_PRO.get().create(level, EntitySpawnReason.EVENT);
+                    if (pitch <= -85.0F) {
+                        server.getServer().setWeatherParameters(0, duration, true, false);
                     } else if (rainProEntity != null) {
                         rainProEntity.setOwner(player);
                         rainProEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
@@ -91,10 +97,9 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
 
                     break;
                 case MODE_STORM:
-                    StormProEntity stormProEntity = ModEntities.STORM_PRO.get().create(level);
-                    if (pitch <= -85.0F && level instanceof ServerLevel server) {
-                        level.getLevelData().setRaining(true);
-                        server.setWeatherParameters(0, duration, true, true);
+                    StormProEntity stormProEntity = ModEntities.STORM_PRO.get().create(level, EntitySpawnReason.EVENT);
+                    if (pitch <= -85.0F) {
+                        server.getServer().setWeatherParameters(0, duration, true, true);
 
                     } else if (stormProEntity != null) {
                         stormProEntity.setOwner(player);
@@ -106,26 +111,26 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
 
                     break;
             }
-            player.swing(hand, true);
+            player.swing(hand, SwingAnimation.DEFAULT, false);
         }
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             cycleMode(world, player, hand, MODES);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
         onUse(world, player, stack, hand);
         return super.use(world, player, hand);
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pEntity instanceof Player player) {
-            if (pIsSelected) {
+    public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity, @Nullable EquipmentSlot pSlot) {
+        super.inventoryTick(pStack, pLevel, pEntity, pSlot);
+        if (pEntity instanceof Player player) {
+            if (pSlot == EquipmentSlot.MAINHAND || pSlot == EquipmentSlot.OFFHAND) {
                 player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, -1, 0, false, false));
             } else {
                 player.removeEffect(MobEffects.SLOW_FALLING);

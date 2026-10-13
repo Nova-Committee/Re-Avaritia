@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
@@ -13,16 +14,17 @@ import committee.nova.mods.avaritia.common.net.S2CNeutronRingOpenPack;
 import committee.nova.mods.avaritia.common.net.S2CNeutronRingPreviewPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +64,8 @@ public final class NeutronRingManageScreen extends Screen {
     private static final float ZOOM_MIN = 0.4F;
     private static final float ZOOM_MAX = 2.5F;
     private static final float ZOOM_STEP = 1.15F;
+    /** SDL 扫描码 key.keyboard.menu（原 GLFW_KEY_MENU），InputConstants 未提供该常量 */
+    private static final int KEY_MENU = 118;
     private float yaw = DEFAULT_YAW;
     private float pitch = DEFAULT_PITCH;
     private float zoom = DEFAULT_ZOOM;
@@ -80,16 +84,16 @@ public final class NeutronRingManageScreen extends Screen {
 
     public static void open(S2CNeutronRingOpenPack packet) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (PortableUi.root(minecraft.screen) instanceof NeutronRingManageScreen current
+        if (PortableUi.root(minecraft.gui.screen()) instanceof NeutronRingManageScreen current
                 && current.storageId.equals(packet.storageId())) {
             current.accept(packet);
         } else {
-            minecraft.setScreen(new NeutronRingManageScreen(packet));
+            minecraft.gui.setScreen(new NeutronRingManageScreen(packet));
         }
     }
 
     public static void acceptPreview(S2CNeutronRingPreviewPack packet) {
-        if (PortableUi.root(Minecraft.getInstance().screen) instanceof NeutronRingManageScreen screen) {
+        if (PortableUi.root(Minecraft.getInstance().gui.screen()) instanceof NeutronRingManageScreen screen) {
             screen.handlePreview(packet);
         }
     }
@@ -105,7 +109,7 @@ public final class NeutronRingManageScreen extends Screen {
             previewEntry = find(selectedId);
         }
         if (previewEntry == null && !spaces.isEmpty()) {
-            previewEntry = spaces.get(0);
+            previewEntry = spaces.getFirst();
         }
         previews.keySet().removeIf(id -> find(id) == null);
         if (assembly != null && find(assembly.id) == null) {
@@ -113,7 +117,7 @@ public final class NeutronRingManageScreen extends Screen {
         }
         menu.close();
         if (list != null) {
-            double scroll = list.getScrollAmount();
+            double scroll = list.scrollAmount();
             list.populate();
             list.setScrollAmount(scroll);
         }
@@ -200,7 +204,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     protected void init() {
-        double scroll = list == null ? 0 : list.getScrollAmount();
+        double scroll = list == null ? 0 : list.scrollAmount();
         menu.close();
         stopDrag();
         panel = PortableLayout.centered(width, height, 540, 330, 8);
@@ -233,7 +237,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public void tick() {
-        if (drag != Drag.NONE && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_LEFT) && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+        if (drag != Drag.NONE && !mouseHeld(InputConstants.MOUSE_BUTTON_LEFT) && !mouseHeld(InputConstants.MOUSE_BUTTON_RIGHT)) {
             finishDrag();
         }
     }
@@ -260,7 +264,7 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics) {
+    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
         graphics.fill(0, 0, width, height, 0xA0000000);
         PortableUi.panel(graphics, panel);
         UiInspector.region("neutron.panel", panel, null, false);
@@ -270,14 +274,13 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.library", spaces.size()),
                 library.left(), panel.top() + 33, library.width(), PortableUi.MUTED);
         UiInspector.region("neutron.preview.content", previewContent, previewContent, previewEntry != null);
         if (previewEntry == null) {
-            graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
+            graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
                     previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
         } else {
             PortableUi.text(graphics, font, Component.literal(previewEntry.name() + " · "
@@ -286,11 +289,11 @@ public final class NeutronRingManageScreen extends Screen {
             NeutronSpacePreview preview = previews.get(previewEntry.id());
             if (previewMissing && preview == null) {
                 graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
-                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
+                graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
                         previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else if (preview == null) {
                 graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
-                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
+                graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
                         previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else {
                 renderer.draw(graphics, previewContent.left(), previewContent.top(), previewContent.width(), previewContent.height(),
@@ -301,7 +304,7 @@ public final class NeutronRingManageScreen extends Screen {
             UiInspector.region("neutron.preview.hint", previewHint, null, false);
         }
         if (list.children().isEmpty()) {
-            graphics.drawWordWrap(font, Component.translatable(query.isBlank()
+            graphics.textWithWordWrap(font, Component.translatable(query.isBlank()
                             ? "gui.avaritia.neutron_ring.empty_list" : "gui.avaritia.portable.no_results"),
                     list.getX() + 8, list.getY() + 12, list.getWidth() - 16, PortableUi.MUTED);
         }
@@ -312,87 +315,92 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (menu.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (menu.mouseClicked(event.x(), event.y(), event.button())) {
             stopDrag();
             return true;
         }
-        if (previewEntry != null && insidePreviewChrome(mouseX, mouseY)) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                startDrag(hasShiftDown() ? Drag.PAN : Drag.ORBIT);
+        if (previewEntry != null && insidePreviewChrome(event.x(), event.y())) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+                startDrag(minecraft.hasShiftDown() ? Drag.PAN : Drag.ORBIT);
                 return true;
             }
-            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
                 startDrag(Drag.PAN);
                 return true;
             }
         }
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(event, doubleClick)) {
             return true;
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && insidePanel(mouseX, mouseY)) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && insidePanel(event.x(), event.y())) {
             stopDrag();
-            openBlankMenu(mouseX, mouseY);
+            openBlankMenu(event.x(), event.y());
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (drag != Drag.NONE && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (drag != Drag.NONE && (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT)) {
             finishDrag();
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (menu.isOpen()) {
             return true;
         }
-        if (drag == Drag.ORBIT && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (drag == Drag.ORBIT && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             orbitPreview(dragX, dragY);
             return true;
         }
-        if (drag == Drag.PAN && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+        if (drag == Drag.PAN && (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT)) {
             panPreview(dragX, dragY);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (menu.isOpen()) {
-            return menu.mouseScrolled(delta);
+            return menu.mouseScrolled(scrollY);
         }
         if (previewEntry != null && (drag != Drag.NONE || insidePreviewChrome(mouseX, mouseY))) {
-            zoomPreview(delta);
+            zoomPreview(scrollY);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (menu.keyPressed(keyCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (menu.keyPressed(event.key())) {
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+        if (event.isConfirmation()) {
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && hasShiftDown())) {
+        if (event.key() == KEY_MENU || (event.key() == InputConstants.KEY_F10 && event.hasShiftDown())) {
             openKeyboardMenu();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.gui.setScreen(null);
     }
 
     private boolean insidePreviewChrome(double mouseX, double mouseY) {
@@ -426,7 +434,13 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     private boolean mouseHeld(int button) {
-        return GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), button) == GLFW.GLFW_PRESS;
+        // SDL3 下 GLFW 轮询不可用，改用 MouseHandler 的按键状态
+        return switch (button) {
+            case InputConstants.MOUSE_BUTTON_LEFT -> minecraft.mouseHandler.isLeftPressed();
+            case InputConstants.MOUSE_BUTTON_MIDDLE -> minecraft.mouseHandler.isMiddlePressed();
+            case InputConstants.MOUSE_BUTTON_RIGHT -> minecraft.mouseHandler.isRightPressed();
+            default -> false;
+        };
     }
 
     private void orbitPreview(double dragX, double dragY) {
@@ -454,7 +468,7 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     private void send(int action, String id, String name) {
-        NetworkHandler.CHANNEL.sendToServer(new C2SNeutronRingPack(action, id, name, hand, storageId));
+        NetworkHandler.sendToServer(new C2SNeutronRingPack(action, id, name, hand, storageId));
     }
 
     private void focus(S2CNeutronRingOpenPack.Entry space) {
@@ -573,19 +587,19 @@ public final class NeutronRingManageScreen extends Screen {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && isMouseOver(mouseX, mouseY)
-                    && getEntryAtPosition(mouseX, mouseY) == null) {
-                openBlankMenu(mouseX, mouseY);
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && isMouseOver(event.x(), event.y())
+                    && getEntryAtPosition(event.x(), event.y()) == null) {
+                openBlankMenu(event.x(), event.y());
                 return true;
             }
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, doubleClick);
         }
 
-        void renderNameTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
-            SpaceEntry hovered = getEntryAtPosition(mouseX, mouseY);
+        void renderNameTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            SpaceEntry hovered = getHovered();
             if (hovered != null && font.width(hovered.space.name()) > getRowWidth() - 8) {
-                graphics.renderTooltip(font, Component.literal(hovered.space.name()), mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, Component.literal(hovered.space.name()), mouseX, mouseY);
             }
         }
 
@@ -599,12 +613,15 @@ public final class NeutronRingManageScreen extends Screen {
             }
 
             @Override
-            public void render(@NotNull GuiGraphics graphics, int index, int top, int left, int width, int height,
-                               int mouseX, int mouseY, boolean hovering, float partialTick) {
+            public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+                int left = getX();
+                int top = getY();
+                int width = getWidth();
+                int height = getHeight();
                 boolean active = space.id().equals(selectedId);
                 PortableUi.row(graphics, left, top, width, height, hovering, getSelected() == this);
                 if (UiInspector.enabled()) {
-                    UiInspector.row("neutron.library", space.id(), index, left, top, width, height, library, true);
+                    UiInspector.row("neutron.library", space.id(), children().indexOf(this), left, top, width, height, library, true);
                 }
                 PortableUi.text(graphics, font, Component.literal(space.name()), left + 4, top + 3, width - 8, PortableUi.TEXT);
                 PortableUi.text(graphics, font, active ? Component.translatable("gui.avaritia.neutron_ring.active") : dimensions,
@@ -612,11 +629,11 @@ public final class NeutronRingManageScreen extends Screen {
             }
 
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 focus(space);
                 SpaceList.this.setSelected(this);
-                if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                    openSpaceMenu(space, mouseX, mouseY);
+                if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                    openSpaceMenu(space, event.x(), event.y());
                 }
                 return true;
             }

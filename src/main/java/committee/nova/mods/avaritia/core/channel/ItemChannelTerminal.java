@@ -4,11 +4,13 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -30,8 +32,14 @@ public class ItemChannelTerminal implements IChannelTerminal {
         this.inventory = playerInventory;
         this.slotID = slotID;
         this.terminal = itemStack;
-        CompoundTag nbt = itemStack.getOrCreateTag();
-        this.terminalOwner = nbt.getUUID("owner");
+        CompoundTag nbt = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        UUID owner;
+        try {
+            owner = UUID.fromString(nbt.getStringOr("owner", Const.AVARITIA_FAKE_PLAYER.id().toString()));
+        } catch (IllegalArgumentException e) {
+            owner = Const.AVARITIA_FAKE_PLAYER.id();
+        }
+        this.terminalOwner = owner;
     }
 
     @Override
@@ -42,25 +50,29 @@ public class ItemChannelTerminal implements IChannelTerminal {
     @Override
     @Nullable
     public ChannelInfo getChannelInfo() {
-        CompoundTag nbt = terminal.getOrCreateTag();
+        CompoundTag nbt = terminal.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (!nbt.contains("channel")) return null;
-        CompoundTag channel = nbt.getCompound("channel");
-        int channelId = channel.getInt("channelID");
-        UUID channelOwner = channel.getUUID("channelOwner");
+        CompoundTag channel = nbt.getCompoundOrEmpty("channel");
+        int channelId = channel.getIntOr("channelID", 0);
+        String ownerRaw = channel.getStringOr("channelOwner", "");
+        if (ownerRaw.isEmpty()) return null;
+        UUID channelOwner;
+        try {
+            channelOwner = UUID.fromString(ownerRaw);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
         return new ChannelInfo(channelOwner, channelId);
     }
 
     @Override
     public void setChannel(UUID channelOwner, int channelId) {
-        CompoundTag nbt = terminal.getOrCreateTag();
-        CompoundTag channel;
-        if (nbt.contains("channel")) channel = nbt.getCompound("channel");
-        else {
-            channel = new CompoundTag();
-            nbt.put("channel", channel);
-        }
-        channel.putUUID("channelOwner", channelOwner);
+        CompoundTag root = terminal.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        CompoundTag channel = root.contains("channel") ? root.getCompoundOrEmpty("channel") : new CompoundTag();
+        channel.putString("channelOwner", channelOwner.toString());
         channel.putInt("channelID", channelId);
+        root.put("channel", channel);
+        terminal.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
         ServerChannelManager.sendChannelSet((ServerPlayer) inventory.player, terminalOwner, channelOwner, channelId);
     }
 
@@ -75,10 +87,12 @@ public class ItemChannelTerminal implements IChannelTerminal {
     public void removeChannel(ServerPlayer actor) {
         ChannelInfo info = getChannelInfo();
         if (info == null) return;
-        if (info.owner().equals(actor.getUUID()) || info.owner().equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+        if (info.owner().equals(actor.getUUID()) || info.owner().equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             if (!ServerChannelManager.getInstance().tryRemoveChannel(info.owner(), info.id())) return;
             NetworkHandler.CHANNEL.sendTo((ServerPlayer) inventory.player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1));
-            terminal.getTag().remove("channel");
+            CompoundTag root = terminal.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            root.remove("channel");
+            terminal.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
         }
     }
 
@@ -86,7 +100,7 @@ public class ItemChannelTerminal implements IChannelTerminal {
     public void renameChannel(ServerPlayer actor, String name) {
         ChannelInfo info = getChannelInfo();
         if (info == null) return;
-        if (info.owner().equals(actor.getUUID()) || info.owner().equals(Const.AVARITIA_FAKE_PLAYER.getId()))
+        if (info.owner().equals(actor.getUUID()) || info.owner().equals(Const.AVARITIA_FAKE_PLAYER.id()))
             ServerChannelManager.getInstance().renameChannel(info, name);
     }
 

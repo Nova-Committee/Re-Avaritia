@@ -1,10 +1,12 @@
 package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.util.StorageUtils;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +29,7 @@ public abstract class ChestHandler implements ItemHandler {
 
     public ItemStack getItemTemplate(String itemId, int count) {
         ItemStack stack = new ItemStack(StorageUtils.getItem(itemId), count);
-        if (nbtDataCache.get(itemId) instanceof CompoundTag tag) stack.setTag(tag.copy());
+        if (nbtDataCache.get(itemId) instanceof CompoundTag tag) stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
         return stack;
     }
 
@@ -46,7 +48,7 @@ public abstract class ChestHandler implements ItemHandler {
             if (key.contains("#")) {
                 Tag nbtData = nbtDataCache.get(key);
                 if (nbtData instanceof CompoundTag tag) {
-                    stack.setTag(tag.copy());
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
                 }
             }
 
@@ -114,8 +116,8 @@ public abstract class ChestHandler implements ItemHandler {
         int count = itemStack.getCount();
 
         // 如果是新的NBT物品，保存NBT数据
-        if (itemStack.hasTag() && !nbtDataCache.containsKey(itemId)) {
-            nbtDataCache.put(itemId, itemStack.getTag().copy());
+        if (itemStack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId)) {
+            nbtDataCache.put(itemId, itemStack.get(DataComponents.CUSTOM_DATA).copyTag());
         }
 
         if (storageItems.containsKey(itemId)) {
@@ -175,8 +177,8 @@ public abstract class ChestHandler implements ItemHandler {
         String itemId = StorageUtils.getNbtItemId(itemStack);
 
         // 如果是新的NBT物品，保存NBT数据
-        if (itemStack.hasTag() && !nbtDataCache.containsKey(itemId) && count < 0) {
-            nbtDataCache.put(itemId, itemStack.getTag().copy());
+        if (itemStack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId) && count < 0) {
+            nbtDataCache.put(itemId, itemStack.get(DataComponents.CUSTOM_DATA).copyTag());
         }
 
         if (storageItems.containsKey(itemId)) {
@@ -227,7 +229,7 @@ public abstract class ChestHandler implements ItemHandler {
         if (nbtDataCache.containsKey(itemId)) {
             Tag nbtData = nbtDataCache.get(itemId);
             if (nbtData instanceof CompoundTag compoundTag) {
-                result.setTag(compoundTag.copy());
+                result.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
             }
             if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
         }
@@ -257,7 +259,7 @@ public abstract class ChestHandler implements ItemHandler {
         if (nbtDataCache.containsKey(itemId)) {
             Tag nbtData = nbtDataCache.get(itemId);
             if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.setTag(compoundTag.copy());
+                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
             }
             if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
         }
@@ -284,7 +286,7 @@ public abstract class ChestHandler implements ItemHandler {
         if (nbtDataCache.containsKey(itemId)) {
             Tag nbtData = nbtDataCache.get(itemId);
             if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.setTag(compoundTag.copy());
+                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
             }
             if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
         }
@@ -345,7 +347,7 @@ public abstract class ChestHandler implements ItemHandler {
         if (itemKey.contains("#") && nbtDataCache.containsKey(itemKey)) {
             Tag nbtData = nbtDataCache.get(itemKey);
             if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.setTag(compoundTag.copy());
+                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
             }
         }
 
@@ -359,8 +361,8 @@ public abstract class ChestHandler implements ItemHandler {
         ItemStack remainingStack = ItemStack.EMPTY;
 
         // 如果是新的NBT物品，保存NBT数据
-        if (!simulate && stack.hasTag() && !nbtDataCache.containsKey(itemId)) {
-            nbtDataCache.put(itemId, stack.getTag().copy());
+        if (!simulate && stack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId)) {
+            nbtDataCache.put(itemId, stack.get(DataComponents.CUSTOM_DATA).copyTag());
         }
 
         if (storageItems.containsKey(itemId)) {
@@ -391,7 +393,7 @@ public abstract class ChestHandler implements ItemHandler {
         String itemId = itemKeys[slot - 27];
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
-        if (nbtDataCache.get(itemId) instanceof CompoundTag itemTag) itemStack.setTag(itemTag.copy());
+        if (nbtDataCache.get(itemId) instanceof CompoundTag itemTag) itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(itemTag.copy()));
         int count = Math.min(itemStack.getMaxStackSize(), amount);
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {

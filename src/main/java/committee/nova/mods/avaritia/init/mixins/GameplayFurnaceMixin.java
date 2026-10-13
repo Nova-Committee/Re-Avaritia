@@ -1,28 +1,10 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.api.init.registry.FuelBlockItem;
-import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
-import committee.nova.mods.avaritia.common.item.resources.StarFuelItem;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import java.util.Map;
-
-@Mixin(AbstractFurnaceBlockEntity.class)
+/**
+ * 已在 26.3 升级中废弃：AbstractFurnaceBlockEntity.getFuel() 燃料表已删除，
+ * 燃料值改由物品组件 DataComponents.COOKING_FUEL（CookingFuel record）定义，
+ * 模组燃料物品应在物品属性中直接挂该组件（参考 NeoForge 26.3 版 ModBlocks）。
+ * 条目已从 avaritia.mixins.json 移除，保留文件仅作记录。
+ */
 public abstract class GameplayFurnaceMixin {
-    @Inject(method = "getFuel", at = @At("RETURN"))
-    private static void avaritia$fuels(CallbackInfoReturnable<Map<Item, Integer>> cir) {
-        Map<Item, Integer> fuel = cir.getReturnValue();
-        fuel.put(ModItems.star_fuel.get(), StarFuelItem.BURN_TIME);
-        fuel.put(ModItems.refined_coal.get(), RefinedCoalItem.BURN_TIME);
-        Item starBlock = ModBlocks.star_fuel_block.get().asItem();
-        Item coalBlock = ModBlocks.refined_coal_block.get().asItem();
-        fuel.put(starBlock, ((FuelBlockItem) starBlock).burnTime());
-        fuel.put(coalBlock, ((FuelBlockItem) coalBlock).burnTime());
-    }
 }

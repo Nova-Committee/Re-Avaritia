@@ -1,11 +1,5 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.searchtree.FullTextSearchTree;
-import net.minecraft.client.searchtree.SearchRegistry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.registries.BuiltInRegistries;
-
 /**
  * @Project: Avaritia
  * @author cnlimiter
@@ -13,21 +7,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
  * @Description:
  */
 public class ModSearches {
-    public static final SearchRegistry.Key<EntityType<?>> LIVING_ENTITY_KEY = new SearchRegistry.Key<>();
-
+    // TODO 26.3 已移除 net.minecraft.client.searchtree.SearchRegistry / FullTextSearchTree，
+    //  实体名称搜索（LIVING_ENTITY_KEY）暂无外部消费者，待客户端渲染层迁移时按新搜索 API 重建。
     public static void onClientSetup() {
-        Minecraft.getInstance().searchRegistry.register(LIVING_ENTITY_KEY, (entities) -> {
-                    return new FullTextSearchTree<>((entity) -> {
-                        return BuiltInRegistries.ENTITY_TYPE.stream()
-                                .map((entity1) -> entity1.getDescription().getString())
-                                .filter((name) -> entity.getDescription().getString().equals(name));
-                    }, (living) -> {
-                        return entities.stream()
-                                .map(BuiltInRegistries.ENTITY_TYPE::getKey);
-
-                    }, entities);
-
-                }
-        );
     }
 }

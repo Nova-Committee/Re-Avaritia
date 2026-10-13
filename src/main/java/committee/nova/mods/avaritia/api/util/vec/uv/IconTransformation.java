@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.util.vec.uv;
 
-import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public class IconTransformation extends UVTransformation {
@@ -16,15 +15,9 @@ public class IconTransformation extends UVTransformation {
     }
 
     @Override
-    public void operate(CCRenderState ccrs) {
-        super.operate(ccrs);
-        ccrs.sprite = icon;
-    }
-
-    @Override
     public void apply(UV uv) {
-        uv.u = icon.getU(uv.u * 16);
-        uv.v = icon.getV(uv.v * 16);
+        uv.u = icon.getU((float) (uv.u * 16));
+        uv.v = icon.getV((float) (uv.v * 16));
     }
 
     @Override
@@ -49,8 +42,10 @@ public class IconTransformation extends UVTransformation {
 
         @Override
         public void apply(UV uv) {
-            uv.u = icon.getUOffset((float) uv.u) / 16;
-            uv.v = icon.getVOffset((float) uv.v) / 16;
+            float du = icon.getU1() - icon.getU0();
+            float dv = icon.getV1() - icon.getV0();
+            uv.u = ((float) uv.u - icon.getU0()) / du / 16;
+            uv.v = ((float) uv.v - icon.getV0()) / dv / 16;
         }
 
         @Override

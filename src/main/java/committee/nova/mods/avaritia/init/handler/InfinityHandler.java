@@ -25,6 +25,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +35,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,7 +50,7 @@ public final class InfinityHandler {
         if (player.isCreative()) return false;
         boolean tool = hasBedrockMiningTool(player.getMainHandItem());
         if (isTemporaryFakeBlock(state)) {
-            if (!tool || !isTemporaryFakeBlockBeingMined(player.serverLevel(), pos)) {
+            if (!tool || !isTemporaryFakeBlockBeingMined(player.level(), pos)) {
                 restoreTemporaryFakeBlock(level, pos, state);
                 return true;
             }
@@ -86,7 +86,7 @@ public final class InfinityHandler {
 
     public static void onBlockBroken(ServerPlayer player, BlockPos pos, BlockState state) {
         if (player.isCreative()) return;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = player.level();
         Block drop = state.is(ModBlocks.fake_bedrock.get()) ? Blocks.BEDROCK
                 : state.is(ModBlocks.fake_end_portal_frame.get()) ? Blocks.END_PORTAL_FRAME
                 : state.is(ModBlocks.fake_end_portal.get()) ? Blocks.END_PORTAL
@@ -101,7 +101,9 @@ public final class InfinityHandler {
         ItemStack held = player.getMainHandItem();
         if (held.is(ModItems.infinity_pickaxe.get()) || held.is(ModItems.infinity_shovel.get())) {
             if (!player.onGround()) speed *= 5;
-            if (!player.isInWater() && !EnchantmentHelper.hasAquaAffinity(player)) speed *= 5;
+            // 26.3 水下挖掘效率由 Attributes.SUBMERGED_MINING_SPEED 驱动（水之亲和附魔注入 modifier），
+            // EnchantmentHelper.hasAquaAffinity 已移除。
+            if (!player.isInWater() && player.getAttributeValue(Attributes.SUBMERGED_MINING_SPEED) < 1.0D) speed *= 5;
             if (ISwitchable.isMode(held, "infinity_pickaxe_hammer") || ISwitchable.isMode(held, "infinity_shovel_destroyer")) speed *= 0.5F;
         }
         return speed;
@@ -111,7 +113,7 @@ public final class InfinityHandler {
         ItemStack stack = entity.getItem();
         if (!ModConfig.isMergeMatterCluster.get() || !stack.is(ModItems.matter_cluster.get())) return;
         boolean merged = false;
-        for (ItemStack slot : player.getInventory().items) {
+        for (ItemStack slot : player.getInventory().getNonEquipmentItems()) {
             if (stack.isEmpty()) break;
             if (slot.is(ModItems.matter_cluster.get())) merged |= MatterClusterItem.mergeClusters(stack, slot);
         }
@@ -128,16 +130,16 @@ public final class InfinityHandler {
         player.removeAllEffects();
         player.setHealth(player.getMaxHealth());
         if (totem.getDamageValue() == 1) {
-            player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 800, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 800, 1));
             ToolUtils.aoeAttack(player, 8, 1000F, false, false);
-            player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
+            player.sendSystemMessage(Component.translatable("tooltip.avaritia.totem_break"));
         }
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2600, 4));
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 1));
+        player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 400, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 700, 2));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1100, 0));
-        totem.hurtAndBreak(1, player, e -> e.swing(InteractionHand.MAIN_HAND));
+        totem.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
         return true;
     }
 

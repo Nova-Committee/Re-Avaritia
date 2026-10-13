@@ -2,32 +2,31 @@ package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class InfinityElytraItem extends ElytraItem {
+public class InfinityElytraItem extends Item {
     public InfinityElytraItem() {
-        super(new Item.Properties()
+        super(ModItems.applyId(new Item.Properties()
                 .rarity(ModRarities.COSMIC)
                 .fireResistant()
-                .stacksTo(1));
+                .stacksTo(1)
+                .component(DataComponents.GLIDER, Unit.INSTANCE)));
     }
 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        if (!entity.level().isClientSide && entity.isFallFlying()) {
+        if (!entity.level().isClientSide() && entity.isFallFlying()) {
             entity.resetFallDistance();
             double range = 3.0;
             AABB boundingBox = new AABB(
@@ -41,7 +40,9 @@ public class InfinityElytraItem extends ElytraItem {
 
             entity.level().getEntitiesOfClass(LivingEntity.class, boundingBox, target -> canDamageInFlight(entity, target))
                     .forEach(target -> {
-                        target.hurt(ModDamageTypes.causeRandomDamage(entity.level(), entity), ModConfig.infinityElytraFlyingRangeDamage.get().floatValue());
+                        if (target.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                            target.hurtServer(serverLevel, ModDamageTypes.causeRandomDamage(entity.level(), entity), ModConfig.infinityElytraFlyingRangeDamage.get().floatValue());
+                        }
 
                         double dx = target.getX() - entity.getX();
                         double dz = target.getZ() - entity.getZ();
@@ -50,7 +51,7 @@ public class InfinityElytraItem extends ElytraItem {
                     });
         }
 
-        if (entity.level().isClientSide && entity.isFallFlying()) {
+        if (entity.level().isClientSide() && entity.isFallFlying()) {
             createTrailParticles(entity);
         }
 

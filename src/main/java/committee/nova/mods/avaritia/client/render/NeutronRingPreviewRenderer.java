@@ -1,25 +1,40 @@
 package committee.nova.mods.avaritia.client.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.misc.NeutronRingContents;
 import committee.nova.mods.avaritia.common.item.misc.NeutronRingSpaces;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-
-/** Wireframe preview of the Neutron Ring capture/place volume. */
+/** Wireframe preview of the Neutron Ring capture/place volume using extract-then-submit. */
 public final class NeutronRingPreviewRenderer {
+    // Fabric 的 LevelRenderContext 没有 Neo 的 LevelRenderState/RenderData，
+    // 用静态字段在本帧 extract -> submit 之间传递（同线程同帧，安全）。
+    private static @Nullable Boxes pending;
+
     private NeutronRingPreviewRenderer() {
     }
 
-    public static void onRender(com.mojang.blaze3d.vertex.PoseStack pose, net.minecraft.client.Camera viewCamera) {
+    public static void register() {
+        LevelExtractionEvents.END_EXTRACTION.register(NeutronRingPreviewRenderer::extract);
+        LevelRenderEvents.COLLECT_SUBMITS.register(NeutronRingPreviewRenderer::submit);
+    }
+
+    private static void extract(LevelExtractionContext ctx) {
+        pending = null;
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         if (player == null || minecraft.level == null) {
@@ -29,27 +44,78 @@ public final class NeutronRingPreviewRenderer {
         if (stack.isEmpty()) {
             return;
         }
-        CompoundTag tag = stack.getTagElement(NeutronRingContents.TAG);
-        if (tag == null) {
+        NeutronRingContents data = NeutronRingContents.of(stack);
+        if (data == null) {
             return;
         }
-        NeutronRingContents data = NeutronRingContents.load(tag);
-        Vec3 camera = viewCamera.getPosition();
-        var buffers = minecraft.renderBuffers().bufferSource();
-        pose.pushPose();
-        pose.translate(-camera.x, -camera.y, -camera.z);
-        var lines = buffers.getBuffer(RenderType.lines());
-        data.captureBase().filter(pos -> pos.dimension().equals(minecraft.level.dimension()) && data.selectedId().isEmpty())
-                .ifPresent(pos -> draw(pose, lines, NeutronRingSpaces.previewBox(minecraft.level, pos.pos(), NeutronRingContents.Size.DEFAULT), 0.2F, 0.8F, 1.0F, 1.0F));
-        data.placeBase().filter(pos -> pos.dimension().equals(minecraft.level.dimension()) && data.selectedId().isPresent())
-                .ifPresent(pos -> draw(pose, lines, NeutronRingSpaces.previewBox(minecraft.level, pos.pos(), data.size()), 1.0F, 0.85F, 0.2F, 1.0F));
-        pose.popPose();
-        buffers.endBatch(RenderType.lines());
+        Vec3 camera = ctx.camera().position();
+        AABB capture = data.captureBase()
+                .filter(pos -> pos.dimension().equals(minecraft.level.dimension()) && data.selectedId().isEmpty())
+                .map(pos -> NeutronRingSpaces.previewBox(minecraft.level, pos.pos(), NeutronRingContents.Size.DEFAULT)
+                        .move(-camera.x, -camera.y, -camera.z))
+                .orElse(null);
+        AABB place = data.placeBase()
+                .filter(pos -> pos.dimension().equals(minecraft.level.dimension()) && data.selectedId().isPresent())
+                .map(pos -> NeutronRingSpaces.previewBox(minecraft.level, pos.pos(), data.size())
+                        .move(-camera.x, -camera.y, -camera.z))
+                .orElse(null);
+        if (capture != null || place != null) {
+            pending = new Boxes(capture, place);
+        }
     }
 
-    private static void draw(com.mojang.blaze3d.vertex.PoseStack pose, com.mojang.blaze3d.vertex.VertexConsumer lines,
-                             AABB box, float r, float g, float b, float a) {
-        LevelRenderer.renderLineBox(pose, lines, box, r, g, b, a);
+    private static void submit(LevelRenderContext ctx) {
+        Boxes boxes = pending;
+        if (boxes == null) {
+            return;
+        }
+        SubmitNodeCollector collector = ctx.submitNodeCollector();
+        PoseStack pose = ctx.poseStack();
+        if (boxes.capture() != null) {
+            collector.submitCustomGeometry(pose, RenderTypes.lines(),
+                    (entry, buffer) -> draw(entry, buffer, boxes.capture(), 0.2F, 0.8F, 1.0F, 1.0F));
+        }
+        if (boxes.place() != null) {
+            collector.submitCustomGeometry(pose, RenderTypes.lines(),
+                    (entry, buffer) -> draw(entry, buffer, boxes.place(), 1.0F, 0.85F, 0.2F, 1.0F));
+        }
+    }
+
+    private static void draw(PoseStack.Pose pose, VertexConsumer lines, AABB box, float r, float g, float b, float a) {
+        float x0 = (float) box.minX;
+        float y0 = (float) box.minY;
+        float z0 = (float) box.minZ;
+        float x1 = (float) box.maxX;
+        float y1 = (float) box.maxY;
+        float z1 = (float) box.maxZ;
+        line(pose, lines, x0, y0, z0, x1, y0, z0, r, g, b, a);
+        line(pose, lines, x0, y0, z1, x1, y0, z1, r, g, b, a);
+        line(pose, lines, x0, y1, z0, x1, y1, z0, r, g, b, a);
+        line(pose, lines, x0, y1, z1, x1, y1, z1, r, g, b, a);
+        line(pose, lines, x0, y0, z0, x0, y0, z1, r, g, b, a);
+        line(pose, lines, x1, y0, z0, x1, y0, z1, r, g, b, a);
+        line(pose, lines, x0, y1, z0, x0, y1, z1, r, g, b, a);
+        line(pose, lines, x1, y1, z0, x1, y1, z1, r, g, b, a);
+        line(pose, lines, x0, y0, z0, x0, y1, z0, r, g, b, a);
+        line(pose, lines, x1, y0, z0, x1, y1, z0, r, g, b, a);
+        line(pose, lines, x0, y0, z1, x0, y1, z1, r, g, b, a);
+        line(pose, lines, x1, y0, z1, x1, y1, z1, r, g, b, a);
+    }
+
+    private static void line(PoseStack.Pose pose, VertexConsumer lines, float x0, float y0, float z0,
+                             float x1, float y1, float z1, float r, float g, float b, float a) {
+        float dx = x1 - x0;
+        float dy = y1 - y0;
+        float dz = z1 - z0;
+        float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (len < 1.0E-4F) {
+            return;
+        }
+        dx /= len;
+        dy /= len;
+        dz /= len;
+        lines.addVertex(pose, x0, y0, z0).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
+        lines.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
     }
 
     private static ItemStack ring(Player player) {
@@ -60,5 +126,9 @@ public final class NeutronRingPreviewRenderer {
             return player.getOffhandItem();
         }
         return ItemStack.EMPTY;
+    }
+
+    private record Boxes(@Nullable AABB capture,
+                         @Nullable AABB place) {
     }
 }

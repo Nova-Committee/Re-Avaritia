@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import com.google.common.hash.Hashing;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;

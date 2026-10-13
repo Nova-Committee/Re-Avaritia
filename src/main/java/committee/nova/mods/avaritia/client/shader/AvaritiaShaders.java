@@ -1,144 +1,85 @@
 package committee.nova.mods.avaritia.client.shader;
 
-import com.mojang.blaze3d.shaders.Uniform;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import committee.nova.mods.avaritia.Const;
-import net.minecraft.client.renderer.ShaderInstance;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+import net.minecraft.client.renderer.BindGroupLayouts;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 /**
- * Name: Avaritia-forge / AvaritiaShaders
- * @author cnlimiter
- * CreateTime: 2023/9/18 1:37
- * Description:
+ * Registers Avaritia's custom effect render pipelines (26.3 RenderPipeline system).
+ * <p>26.3 Fabric：管线经 {@link RenderPipelines#register(RenderPipeline)} 注册
+ * （fabric-transitive-access-wideners 已拓宽），替代 Neo 的 RegisterRenderPipelinesEvent。</p>
  */
-
 public class AvaritiaShaders {
+    private static final DepthStencilState TRANSLUCENT_EFFECT_DEPTH =
+            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+    static final DepthStencilState ITEM_EFFECT_OVERLAY_DEPTH =
+            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+
     public static final float[] COSMIC_UVS = new float[40];
     public static TextureAtlasSprite[] COSMIC_SPRITES = new TextureAtlasSprite[10];
     public static final float[] ETERNAL_UVS = new float[40];
     public static TextureAtlasSprite[] ETERNAL_SPRITES = new TextureAtlasSprite[10];
 
-    public static ShaderInstance COSMIC_SHADER;
-    public static ShaderInstance COSMIC_ARMOR_SHADER;
-    public static ShaderInstance HELL_SHADER;
-    public static ShaderInstance ETERNAL_SHADER;
-    public static ShaderInstance UNSTABLE_SHADER;
-    public static ShaderInstance BLACK_HOLE_SHADER;
+    public static RenderPipeline COSMIC_SHADER;
+    public static RenderPipeline COSMIC_ARMOR_SHADER;
+    public static RenderPipeline HELL_SHADER;
+    public static RenderPipeline ETERNAL_SHADER;
+    public static RenderPipeline UNSTABLE_SHADER;
+    public static RenderPipeline BLACK_HOLE_SHADER;
 
-    public static Uniform cosmicTime;
-    public static Uniform cosmicYaw;
-    public static Uniform cosmicPitch;
-    public static Uniform cosmicExternalScale;
-    public static Uniform cosmicOpacity;
-    public static Uniform cosmicUVs;
-
-    public static Uniform cosmicArmorTime;
-    public static Uniform cosmicArmorYaw;
-    public static Uniform cosmicArmorPitch;
-    public static Uniform cosmicArmorExternalScale;
-    public static Uniform cosmicArmorOpacity;
-    public static Uniform cosmicArmorUVs;
-
-    public static Uniform hellTime;
-    public static Uniform hellYaw;
-    public static Uniform hellPitch;
-    public static Uniform hellExternalScale;
-    public static Uniform hellOpacity;
-    public static Uniform hellUVs;
-
-    public static Uniform eternalTime;
-    public static Uniform eternalYaw;
-    public static Uniform eternalPitch;
-    public static Uniform eternalExternalScale;
-    public static Uniform eternalOpacity;
-    public static Uniform eternalUVs;
-
-    public static Uniform unstableTime;
-    public static Uniform unstableYaw;
-    public static Uniform unstablePitch;
-    public static Uniform unstableExternalScale;
-    public static Uniform unstableOpacity;
-    public static Uniform unstableUVs;
-
-    private static final java.util.List<ShaderInstance> LOADED = new java.util.ArrayList<>();
-    private static void registerShader(ShaderInstance shader, java.util.function.Consumer<ShaderInstance> callback) {
-        LOADED.add(shader);
-        callback.accept(shader);
-    }
-    public static void close() {
-        LOADED.forEach(ShaderInstance::close);
-        LOADED.clear();
+    public static void register() {
+        COSMIC_SHADER = registerItemPipeline("cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        COSMIC_ARMOR_SHADER = registerPipeline("cosmic_armor", "cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        HELL_SHADER = registerItemPipeline("hell", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        ETERNAL_SHADER = registerItemPipeline("eternal", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        UNSTABLE_SHADER = registerItemPipeline("unstable", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        BLACK_HOLE_SHADER = registerPipeline("black_hole", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        AvaritiaRenderTypes.reloadEffectTypes();
     }
 
-    public static void reload(net.minecraft.server.packs.resources.ResourceProvider resources) {
-        close();
-        net.minecraft.server.packs.resources.ResourceProvider provider = location -> {
-            if (location.getPath().startsWith("shaders/core/")) {
-                var owned = resources.getResource(Const.rl(location.getPath().replace("shaders/core/avaritia/", "shaders/core/")));
-                if (owned.isPresent()) return owned;
-            }
-            return resources.getResource(location);
-        };
-        try {
-            registerShader(new ShaderInstance(
-                    provider,
-                    "avaritia/black_hole",
-                    DefaultVertexFormat.NEW_ENTITY),
-                    shader -> BLACK_HOLE_SHADER = shader);
-            registerShader(new ShaderInstance(provider, "avaritia/cosmic", DefaultVertexFormat.BLOCK), shader -> {
-                COSMIC_SHADER = shader;
-                cosmicTime = COSMIC_SHADER.getUniform("time");
-                cosmicYaw = COSMIC_SHADER.getUniform("yaw");
-                cosmicPitch = COSMIC_SHADER.getUniform("pitch");
-                cosmicExternalScale = COSMIC_SHADER.getUniform("externalScale");
-                cosmicOpacity = COSMIC_SHADER.getUniform("opacity");
-                cosmicUVs = COSMIC_SHADER.getUniform("cosmicuvs");
-                COSMIC_SHADER.apply();
-            });
-            registerShader(new ShaderInstance(provider, "avaritia/cosmic", DefaultVertexFormat.NEW_ENTITY), shader -> {
-                COSMIC_ARMOR_SHADER = shader;
-                cosmicArmorTime = COSMIC_ARMOR_SHADER.getUniform("time");
-                cosmicArmorYaw = COSMIC_ARMOR_SHADER.getUniform("yaw");
-                cosmicArmorPitch = COSMIC_ARMOR_SHADER.getUniform("pitch");
-                cosmicArmorExternalScale = COSMIC_ARMOR_SHADER.getUniform("externalScale");
-                cosmicArmorOpacity = COSMIC_ARMOR_SHADER.getUniform("opacity");
-                cosmicArmorUVs = COSMIC_ARMOR_SHADER.getUniform("cosmicuvs");
-                COSMIC_ARMOR_SHADER.apply();
-            });
-            registerShader(new ShaderInstance(provider, "avaritia/hell", DefaultVertexFormat.BLOCK), shader -> {
-                HELL_SHADER = shader;
-                hellTime = HELL_SHADER.getUniform("time");
-                hellYaw = HELL_SHADER.getUniform("yaw");
-                hellPitch = HELL_SHADER.getUniform("pitch");
-                hellExternalScale = HELL_SHADER.getUniform("externalScale");
-                hellOpacity = HELL_SHADER.getUniform("opacity");
-                hellUVs = HELL_SHADER.getUniform("cosmicuvs");
-                HELL_SHADER.apply();
-            });
-            registerShader(new ShaderInstance(provider, "avaritia/eternal", DefaultVertexFormat.BLOCK), shader -> {
-                ETERNAL_SHADER = shader;
-                eternalTime = ETERNAL_SHADER.getUniform("time");
-                eternalYaw = ETERNAL_SHADER.getUniform("yaw");
-                eternalPitch = ETERNAL_SHADER.getUniform("pitch");
-                eternalExternalScale = ETERNAL_SHADER.getUniform("externalScale");
-                eternalOpacity = ETERNAL_SHADER.getUniform("opacity");
-                eternalUVs = ETERNAL_SHADER.getUniform("cosmicuvs");
-                ETERNAL_SHADER.apply();
-            });
-            registerShader(new ShaderInstance(provider, "avaritia/unstable", DefaultVertexFormat.BLOCK), shader -> {
-                UNSTABLE_SHADER = shader;
-                unstableTime = UNSTABLE_SHADER.getUniform("time");
-                unstableYaw = UNSTABLE_SHADER.getUniform("yaw");
-                unstablePitch = UNSTABLE_SHADER.getUniform("pitch");
-                unstableExternalScale = UNSTABLE_SHADER.getUniform("externalScale");
-                unstableOpacity = UNSTABLE_SHADER.getUniform("opacity");
-                unstableUVs = UNSTABLE_SHADER.getUniform("cosmicuvs");
-                UNSTABLE_SHADER.apply();
-            });
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not load Avaritia shaders", e);
-        }
+    private static RenderPipeline registerPipeline(String name, VertexFormat vertexFormat, PrimitiveTopology mode) {
+        return registerPipeline(name, name, vertexFormat, mode, TRANSLUCENT_EFFECT_DEPTH);
     }
 
+    private static RenderPipeline registerItemPipeline(String name, VertexFormat vertexFormat, PrimitiveTopology mode) {
+        return registerPipeline(name, name, vertexFormat, mode, ITEM_EFFECT_OVERLAY_DEPTH);
+    }
+
+    private static RenderPipeline registerPipeline(String name, String shaderName, VertexFormat vertexFormat, PrimitiveTopology mode) {
+        return registerPipeline(name, shaderName, vertexFormat, mode, TRANSLUCENT_EFFECT_DEPTH);
+    }
+
+    private static RenderPipeline registerPipeline(String name, String shaderName,
+                                                   VertexFormat vertexFormat, PrimitiveTopology mode,
+                                                   DepthStencilState depthStencilState) {
+        var shader = Const.rl("core/" + shaderName);
+        RenderPipeline pipeline = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
+                .withLocation(Const.rl(name))
+                .withVertexShader(shader)
+                .withFragmentShader(shader)
+                // 26.3 起采样器与自定义 uniform 通过 BindGroupLayout 声明（ENTITY_SNIPPET 已含 Sampler0/Sampler2，这里显式补齐以免依赖父片段）。
+                .withBindGroupLayout(BindGroupLayouts.SAMPLER2)
+                .withBindGroupLayout(BindGroupLayout.builder()
+                        .withUniform(AvaritiaShaderUniforms.UNIFORM_NAME, UniformType.UNIFORM_BUFFER)
+                        .build())
+                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withDepthStencilState(depthStencilState)
+                .withCull(false)
+                .withVertexBinding(0, vertexFormat)
+                .withPrimitiveTopology(mode)
+                .build();
+        RenderPipelines.register(pipeline);
+        return pipeline;
+    }
 }

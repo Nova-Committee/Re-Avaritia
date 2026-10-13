@@ -23,7 +23,10 @@ public class InvItemCounter {
     private final Integer[] noNbtItemIndexArray;
 
     public InvItemCounter(Inventory inventory) {
-        itemList = inventory.items;
+        itemList = NonNullList.withSize(Inventory.INVENTORY_SIZE, ItemStack.EMPTY);
+        for (int i = 0; i < itemList.size(); i++) {
+            itemList.set(i, inventory.getItem(i));
+        }
         for (int i = 9; i < itemList.size(); i++) add(i);
         for (int i = 0; i < 9; i++) add(i);
         nbtItemIndexArray = nbtItemIndex.toArray(new Integer[]{});
@@ -33,7 +36,7 @@ public class InvItemCounter {
     private void add(int i) {
         ItemStack invItem = itemList.get(i);
         if (invItem.isEmpty()) return;
-        if (invItem.hasTag()) nbtItemIndex.add(i);
+        if (!invItem.getComponents().isEmpty()) nbtItemIndex.add(i);
         else {
             if (invItemAmount.containsKey(invItem.getItem()))
                 invItemAmount.replace(invItem.getItem(), invItemAmount.get(invItem.getItem()) + invItem.getCount());
@@ -48,10 +51,10 @@ public class InvItemCounter {
 
     public int getCount(ItemStack itemStack) {
         int count = 0;
-        if (itemStack.hasTag()) {
+        if (!itemStack.getComponents().isEmpty()) {
             for (Integer itemIndex : nbtItemIndex) {
                 ItemStack itemStack1 = itemList.get(itemIndex);
-                if (ItemStack.isSameItemSameTags(itemStack, itemStack1)) {
+                if (ItemStack.isSameItemSameComponents(itemStack, itemStack1)) {
                     count += itemStack.getCount();
                 }
             }

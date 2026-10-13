@@ -1,42 +1,38 @@
 package committee.nova.mods.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.AbstractEndPortalRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 
-/**
- * @author cnlimiter
- */
-public class TesseractRender implements BlockEntityRenderer<BlockEntity> {
+/** Renders the animated end-gateway core inside the Tesseract frame. */
+public final class TesseractRender implements BlockEntityRenderer<TesseractTile, TesseractRender.State> {
+    public TesseractRender(BlockEntityRendererProvider.Context context) { }
 
-    public TesseractRender(BlockEntityRendererProvider.Context context) {
+    @Override
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void render(BlockEntity t, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.endGateway());
-        renderFace(matrix4f, consumer, 0.25F, 0.75F, 0.25F, 0.75F, 0.75F, 0.75F, 0.75F, 0.75F);
-        renderFace(matrix4f, consumer, 0.25F, 0.75F, 0.75F, 0.25F, 0.25F, 0.25F, 0.25F, 0.25F);
-        renderFace(matrix4f, consumer, 0.75F, 0.75F, 0.75F, 0.25F, 0.25F, 0.75F, 0.75F, 0.25F);
-        renderFace(matrix4f, consumer, 0.25F, 0.25F, 0.25F, 0.75F, 0.25F, 0.75F, 0.75F, 0.25F);
-        renderFace(matrix4f, consumer, 0.25F, 0.75F, 0.25F, 0.25F, 0.25F, 0.25F, 0.75F, 0.75F);
-        renderFace(matrix4f, consumer, 0.25F, 0.75F, 0.75F, 0.75F, 0.75F, 0.75F, 0.25F, 0.25F);
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector output, CameraRenderState cameraState) {
+        poseStack.pushPose();
+        poseStack.translate(0.25F, 0.25F, 0.25F);
+        poseStack.scale(0.5F, 0.5F, 0.5F);
+        // 26.3 的 submitSpecial 新增 outlineColor 参数，传 0 表示不渲染描边（与旧版行为一致）。
+        AbstractEndPortalRenderer.submitSpecial(RenderTypes.endGateway(), poseStack, output, 0);
+        poseStack.popPose();
     }
 
-    private void renderFace(Matrix4f matrix4f, VertexConsumer consumer, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8) {
-        consumer.vertex(matrix4f, v1, v3, v5).endVertex();
-        consumer.vertex(matrix4f, v2, v3, v6).endVertex();
-        consumer.vertex(matrix4f, v2, v4, v7).endVertex();
-        consumer.vertex(matrix4f, v1, v4, v8).endVertex();
-    }
-
+    @Override
     public int getViewDistance() {
         return 32;
     }
+
+    public static final class State extends BlockEntityRenderState { }
 }
