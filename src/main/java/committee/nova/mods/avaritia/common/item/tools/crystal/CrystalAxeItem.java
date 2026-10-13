@@ -88,6 +88,6 @@ public class CrystalAxeItem extends Item implements ITooltip {
             }
             serverPlayer.level().broadcastEntityEvent(serverPlayer, (byte) 30);
         }
-        return true;
+        return false;//返回 false 让原版攻击继续（true 会取消攻击）
     }
 }

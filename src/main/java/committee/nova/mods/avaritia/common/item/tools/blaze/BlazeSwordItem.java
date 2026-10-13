@@ -99,9 +99,9 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
         return super.use(level, player, hand);
     }
 
-    //由攻击事件 hook 调用（26.3 无原版 onLeftClickEntity 回调）
+    //由攻击事件 hook 调用（26.3 无原版 onLeftClickEntity 回调）；返回 false 让原版攻击继续（true 会取消攻击）
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         entity.setPermanentlyInvulnerable(false);
-        return true;
+        return false;
     }
 }

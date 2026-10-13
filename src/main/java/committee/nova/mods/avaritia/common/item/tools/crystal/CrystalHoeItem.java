@@ -103,6 +103,6 @@ public class CrystalHoeItem extends Item implements ITooltip {
             // 取消攻击冷却
             serverPlayer.resetAttackStrengthTicker();
         }
-        return true;
+        return false;//返回 false 让原版攻击继续（true 会取消攻击）
     }
 }

@@ -49,7 +49,7 @@ public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
             serverPlayer.resetAttackStrengthTicker();
         }
         entity.setPermanentlyInvulnerable(false);//取消无敌
-        return true;
+        return false;//返回 false 让原版攻击继续（true 会取消攻击）
     }
 
     @Override
