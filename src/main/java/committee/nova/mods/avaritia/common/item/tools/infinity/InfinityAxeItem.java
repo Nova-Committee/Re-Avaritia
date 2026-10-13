@@ -48,7 +48,7 @@ public class InfinityAxeItem extends Item implements ISwitchable, IUndamageable 
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant()
-                .axe(INFINITY_MATERIAL, 100.0F, -50.0F));
+                .axe(INFINITY_MATERIAL, 0, INFINITY_MATERIAL.speed()));
     }
 
     @Override

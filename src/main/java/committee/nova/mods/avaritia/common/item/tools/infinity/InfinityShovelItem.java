@@ -40,7 +40,7 @@ public class InfinityShovelItem extends Item implements ISwitchable, IUndamageab
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant()
-                .shovel(INFINITY_MATERIAL, 0.0F, -50.0F));
+                .shovel(INFINITY_MATERIAL, 0, INFINITY_MATERIAL.speed()));
     }
 
     @Override

@@ -92,7 +92,9 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
 
     @Override
     public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack stack) {
-        return ItemUseAnimation.SPEAR;
+        //必须为 TRIDENT 才会播放原版三叉戟的蓄力举臂/第一人称拉回动画；
+        //SPEAR 是 1.21.2 新增木矛的动画（customArmTransform=true），没有蓄力持握动作。
+        return ItemUseAnimation.TRIDENT;
     }
 
     @Override

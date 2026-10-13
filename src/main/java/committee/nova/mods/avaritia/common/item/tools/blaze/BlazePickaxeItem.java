@@ -39,7 +39,7 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .pickaxe(ModToolTiers.BLAZE, -10, 0f));
+                .pickaxe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed()));
     }
 
     @Override

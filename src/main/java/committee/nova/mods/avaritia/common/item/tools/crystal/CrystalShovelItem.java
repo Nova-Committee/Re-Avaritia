@@ -30,7 +30,7 @@ public class CrystalShovelItem extends Item implements ITooltip {
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .shovel(ModToolTiers.CRYSTAL, -25, 0F));
+                .shovel(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed()));
     }
 
     @Override

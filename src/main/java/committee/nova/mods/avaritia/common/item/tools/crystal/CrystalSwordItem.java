@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +28,7 @@ public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .sword(ModToolTiers.CRYSTAL, 0, 0F));
+                .sword(ModToolTiers.CRYSTAL, ModToolTiers.CRYSTAL.attackDamageBonus(), ModToolTiers.CRYSTAL.speed()));
     }
 
     @Override
@@ -42,14 +41,13 @@ public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
         return false;
     }
 
-    //由攻击事件 hook 调用（26.3 无原版 onLeftClickEntity 回调）
+    //由攻击事件 hook 调用（26.3 无原版 onLeftClickEntity 回调）；返回 false 让原版攻击继续（true 会取消攻击）
+    //注意：此 hook 位于 Player.attack HEAD，早于攻击强度(attackStrengthScale)的计算，
+    //此处不得调用 resetAttackStrengthTicker()，否则本次攻击强度归零，无暴击无横扫且伤害仅剩 20%。
+    //CRTSTAL 攻速 50 使攻击条每 tick 即充满，等效无冷却。
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            // 取消攻击冷却
-            serverPlayer.resetAttackStrengthTicker();
-        }
         entity.setPermanentlyInvulnerable(false);//取消无敌
-        return false;//返回 false 让原版攻击继续（true 会取消攻击）
+        return false;
     }
 
     @Override

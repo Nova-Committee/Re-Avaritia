@@ -45,7 +45,7 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .sword(ModToolTiers.BLAZE, 0, 0f));
+                .sword(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed()));
     }
 
     @Override

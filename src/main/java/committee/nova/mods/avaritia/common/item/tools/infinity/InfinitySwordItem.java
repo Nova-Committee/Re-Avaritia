@@ -58,7 +58,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant()
-                .sword(INFINITY_MATERIAL, 900, 0F));
+                .sword(INFINITY_MATERIAL, 0, INFINITY_MATERIAL.speed()));
     }
 
     public ToolMaterial getTier() {

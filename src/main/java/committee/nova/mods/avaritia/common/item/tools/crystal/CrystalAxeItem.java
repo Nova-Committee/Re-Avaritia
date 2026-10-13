@@ -33,7 +33,7 @@ public class CrystalAxeItem extends Item implements ITooltip {
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .axe(ModToolTiers.CRYSTAL, 25, -25F));
+                .axe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed()));
     }
 
     @Override

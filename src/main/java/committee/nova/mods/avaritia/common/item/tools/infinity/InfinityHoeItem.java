@@ -46,7 +46,7 @@ public class InfinityHoeItem extends Item implements IUndamageable, ISwitchable 
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant()
-                .hoe(INFINITY_MATERIAL, -50.0F, 0.0F));
+                .hoe(INFINITY_MATERIAL, 0, INFINITY_MATERIAL.speed()));
     }
 
     @Override

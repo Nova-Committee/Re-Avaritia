@@ -43,7 +43,7 @@ public class CrystalPickaxeItem extends Item implements ITooltip, InitEnchantIte
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .pickaxe(ModToolTiers.CRYSTAL, -25, 0F));
+                .pickaxe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed()));
     }
 
     @Override

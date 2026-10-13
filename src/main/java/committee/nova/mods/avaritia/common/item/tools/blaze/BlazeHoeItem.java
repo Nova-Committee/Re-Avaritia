@@ -44,7 +44,7 @@ public class BlazeHoeItem extends Item implements ITooltip, ISwitchable, InitEnc
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .hoe(ModToolTiers.BLAZE, -10, 10f)
+                .hoe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
         );
     }
 

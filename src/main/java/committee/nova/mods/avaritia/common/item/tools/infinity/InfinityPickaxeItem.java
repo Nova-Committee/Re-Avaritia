@@ -58,7 +58,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, IFilte
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant()
-                .pickaxe(INFINITY_MATERIAL, 0.0F, 0.0F));
+                .pickaxe(INFINITY_MATERIAL, 0, INFINITY_MATERIAL.speed()));
     }
 
     @Override

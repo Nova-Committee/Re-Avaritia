@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -38,7 +37,7 @@ public class CrystalHoeItem extends Item implements ITooltip {
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .hoe(ModToolTiers.CRYSTAL, 0, -25F)
+                .hoe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
         );
     }
 
@@ -98,11 +97,9 @@ public class CrystalHoeItem extends Item implements ITooltip {
     }
 
     //由攻击事件 hook 调用（26.3 无原版 onLeftClickEntity 回调）
+    //此 hook 位于 Player.attack HEAD，早于攻击强度计算，不得 resetAttackStrengthTicker()，
+    //否则攻击强度归零（攻速 50 本就每 tick 充满，等效无冷却）。
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            // 取消攻击冷却
-            serverPlayer.resetAttackStrengthTicker();
-        }
-        return false;//返回 false 让原版攻击继续（true 会取消攻击）
+        return false;
     }
 }

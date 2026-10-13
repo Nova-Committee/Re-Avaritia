@@ -63,7 +63,7 @@ public class BlazeShovelItem extends Item implements ITooltip, ISwitchable, Init
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .shovel(ModToolTiers.BLAZE, -15, 15f));
+                .shovel(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed()));
     }
 
     @Override

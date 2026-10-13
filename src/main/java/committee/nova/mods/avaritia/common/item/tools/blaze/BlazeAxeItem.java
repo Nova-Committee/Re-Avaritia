@@ -45,7 +45,7 @@ public class BlazeAxeItem extends Item implements ITooltip, ISwitchable, InitEnc
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .axe(ModToolTiers.BLAZE, 10, -10f));
+                .axe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed()));
     }
 
     @Override
