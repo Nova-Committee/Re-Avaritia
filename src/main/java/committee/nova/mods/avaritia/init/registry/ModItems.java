@@ -60,6 +60,8 @@ public class ModItems {
     public static RegistryEntry<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
     public static RegistryEntry<Item> infinity_shield = item("infinity_shield", InfinityShieldItem::new);
     public static RegistryEntry<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
+    public static RegistryEntry<Item> infinity_spear = item("infinity_spear", InfinitySpearItem::new);
+    public static RegistryEntry<Item> infinity_mace = item("infinity_mace", InfinityMaceItem::new);
 
     //crystal
     public static RegistryEntry<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
@@ -68,6 +70,7 @@ public class ModItems {
     public static RegistryEntry<Item> crystal_shovel = item("crystal_shovel", CrystalShovelItem::new);
     public static RegistryEntry<Item> crystal_axe = item("crystal_axe", CrystalAxeItem::new);
     public static RegistryEntry<Item> crystal_bow = item("crystal_bow", CrystalBowItem::new);
+    public static RegistryEntry<Item> crystal_spear = item("crystal_spear", CrystalSpearItem::new);
     //blaze
     public static RegistryEntry<Item> blaze_sword = item("blaze_sword", BlazeSwordItem::new);
     public static RegistryEntry<Item> blaze_hoe = item("blaze_hoe", BlazeHoeItem::new);
@@ -75,6 +78,7 @@ public class ModItems {
     public static RegistryEntry<Item> blaze_shovel = item("blaze_shovel", BlazeShovelItem::new);
     public static RegistryEntry<Item> blaze_axe = item("blaze_axe", BlazeAxeItem::new);
     public static RegistryEntry<Item> blaze_bow= item("blaze_bow", BlazeBowItem::new);
+    public static RegistryEntry<Item> blaze_spear = item("blaze_spear", BlazeSpearItem::new);
 
     /**
      * Armor
@@ -84,6 +88,9 @@ public class ModItems {
     public static RegistryEntry<Item> infinity_pants = item("infinity_pants", () -> new InfinityArmorItem(ArmorType.LEGGINGS, new Item.Properties()));
     public static RegistryEntry<Item> infinity_boots = item("infinity_boots", () -> new InfinityArmorItem(ArmorType.BOOTS, new Item.Properties()));
     public static RegistryEntry<Item> neutron_horse_armor = item("neutron_horse_armor", NeutronHorseArmorItem::new);
+    public static RegistryEntry<Item> neutron_nautilus_armor = item("neutron_nautilus_armor", NeutronNautilusArmorItem::new);
+    public static RegistryEntry<Item> neutron_wolf_armor = item("neutron_wolf_armor", NeutronWolfArmorItem::new);
+    public static RegistryEntry<Item> neutron_harness = item("neutron_harness", NeutronHarnessItem::new);
     public static RegistryEntry<Item> infinity_elytra = item("infinity_elytra", InfinityElytraItem::new);
 
     /**

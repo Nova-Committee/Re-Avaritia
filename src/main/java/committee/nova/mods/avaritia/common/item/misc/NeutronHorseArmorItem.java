@@ -24,8 +24,7 @@ import java.util.function.Consumer;
 public class NeutronHorseArmorItem extends Item implements InitEnchantItem, IUndamageable {
     public NeutronHorseArmorItem() {
         super(ModItems.applyId(new Item.Properties()
-                //TODO: Neo 版使用专属 infinity_horse_armor 材质，Fabric 侧注册层暂未提供，暂用 infinity_armor
-                .horseArmor(ModArmorMaterial.infinity_armor)
+                .horseArmor(ModArmorMaterial.infinity_horse_armor)
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)
                 .fireResistant()));

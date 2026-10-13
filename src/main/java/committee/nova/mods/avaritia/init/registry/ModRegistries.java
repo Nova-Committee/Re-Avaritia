@@ -9,6 +9,7 @@ public final class ModRegistries {
 
     public static void initialize() {
         if (initialized) return;
+        ModDataComponents.initialize();
         ModSounds.SOUNDS.registerAll();
         ModBlocks.BLOCKS.registerAll();
         ModItems.ITEMS.registerAll();

@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:potion"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "minecraft:feather"
+    }
+  ],
+  "base": {
+    "tag": "minecraft:harnesses"
+  },
+  "result": {
+    "item": "avaritia:neutron_harness"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

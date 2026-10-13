@@ -46,7 +46,9 @@
     "GameplayItemEntityMixin",
     "GameplayAnvilMixin",
     "GameplayEnchantmentMenuMixin",
-    "GameplayEnchantmentTableBlockMixin"
+    "GameplayEnchantmentTableBlockMixin",
+    "LivingEntitySpearMarkMixin",
+    "ApplyExhaustionMixin"
   ],
   "client": [
     "LocalPlayerMixin",
