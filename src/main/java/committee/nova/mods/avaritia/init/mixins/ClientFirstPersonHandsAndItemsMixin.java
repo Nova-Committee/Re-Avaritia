@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(FirstPersonHandsAndItems.class)
 public abstract class ClientFirstPersonHandsAndItemsMixin {
     @Redirect(method = {"evaluateWhichHandsToRender", "isChargedCrossbow"},
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;->is(Ljava/lang/Object;)Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"))
     private static boolean avaritia$crossbowIdentity(ItemStack stack, Object item) {
         if (item == Items.CROSSBOW) {
             return stack.getItem() instanceof CrossbowItem;

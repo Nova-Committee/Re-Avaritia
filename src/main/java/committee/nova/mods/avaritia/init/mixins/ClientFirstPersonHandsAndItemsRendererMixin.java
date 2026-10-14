@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(FirstPersonHandsAndItemsRenderer.class)
 public abstract class ClientFirstPersonHandsAndItemsRendererMixin {
     @Redirect(method = "submitArmWithItem",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;->is(Ljava/lang/Object;)Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"))
     private boolean avaritia$crossbowBranchIdentity(ItemStack stack, Object item) {
         if (item == Items.CROSSBOW) {
             return stack.getItem() instanceof CrossbowItem;
