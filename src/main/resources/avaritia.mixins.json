@@ -63,6 +63,10 @@
     "ClientTextureAtlasMixin",
     "ClientAtlasManagerMixin",
     "ClientPlayerRendererMixin",
+    "ClientFirstPersonHandsAndItemsRendererMixin",
+    "ClientFirstPersonHandsAndItemsMixin",
+    "ClientAvatarRendererMixin",
+    "ClientGuiEntityRendererMixin",
     "RenderTypeMixin",
     "PreparedRenderTypeMixin",
     "RenderSystemMixin"

@@ -94,10 +94,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         return true;
     }
 
-    @Override
-    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-        return CrossbowItem.getChargeDuration(stack, entity) + 3;
-    }
+    // 不覆写 getUseDuration：继承 CrossbowItem 的 72000，保证拉弦期间 useItemRemainingTicks 始终 >0，
+    // 否则拉满后手臂姿态谓词失效（装填由 releaseUsing 完成，行为不受影响）。
 
     @Override
     public void onCraftedBy(@NotNull ItemStack stack, @NotNull Player player) {

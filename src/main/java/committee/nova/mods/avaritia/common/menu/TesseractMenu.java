@@ -25,7 +25,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -34,8 +33,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import committee.nova.mods.avaritia.core.io.FluidStack;
 import committee.nova.mods.avaritia.core.io.FluidHandler;
@@ -54,6 +51,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Description:
  */
 public class TesseractMenu extends AbstractContainerMenu {
+    public static final int PLAYER_START = 0;
+    public static final int PLAYER_END = 36;
+    public static final int CRAFT_START = 36;
+    public static final int CRAFT_END = 45;
+    public static final int RESULT_SLOT = 45;
+    public static final int CHANNEL_START = 46;
 
     public final Channel channel;
     public final UUID owner;
@@ -64,6 +67,7 @@ public class TesseractMenu extends AbstractContainerMenu {
      * 便携终端所在物品槽位
      */
     private final int panelItemSlotIndex;
+    private int panelMenuSlotIndex = -1;
     private final ItemStack panelItem;
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
@@ -80,9 +84,6 @@ public class TesseractMenu extends AbstractContainerMenu {
     public Runnable craftModeSetter = () -> {
     };
     private RecipeHolder<CraftingRecipe> lastCraftingRecipe = null;
-
-    /** 第一个虚拟储存槽的菜单槽位索引（快捷栏0~8、背包9~35、盔甲36~40、合成41~49、结果50 之后） */
-    public static final int CHANNEL_START = 51;
 
     public String filter() {
         return this.filter;
@@ -136,6 +137,8 @@ public class TesseractMenu extends AbstractContainerMenu {
 
         addSlots(playerInv.player, playerInv);
         this.channel = ClientChannelManager.getInstance().getChannel(dummyChannelContainer);
+        //打开界面前服务端已推送全量同步，注册监听后需主动重建一次视图
+        dummyChannelContainer.refreshContainer(true);
         //虚拟储存物品格51 ~ 149
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 11; j++) {
@@ -467,8 +470,8 @@ public class TesseractMenu extends AbstractContainerMenu {
                 ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
                 itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), channel.storageItems.get(id)));
                 int i = itemStack.getCount();
-                if (craftingMode) moveItemStackTo(itemStack, 41, 50, false);
-                else moveItemStackTo(itemStack, 0, 36, false);
+                if (craftingMode) moveItemStackTo(itemStack, CRAFT_START, RESULT_SLOT, false);
+                else moveItemStackTo(itemStack, PLAYER_START, PLAYER_END, false);
                 i = i - itemStack.getCount();
                 if (i > 0) {
                     itemStack.setCount(i);
@@ -481,8 +484,8 @@ public class TesseractMenu extends AbstractContainerMenu {
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                if (craftingMode) moveItemStackTo(fluidBucket, 41, 50, false);
-                else moveItemStackTo(fluidBucket, 0, 36, false);
+                if (craftingMode) moveItemStackTo(fluidBucket, CRAFT_START, RESULT_SLOT, false);
+                else moveItemStackTo(fluidBucket, PLAYER_START, PLAYER_END, false);
                 if (fluidBucket.isEmpty()) {
                     channel.takeFluid(id, 1000);
                     channel.takeItem("minecraft:bucket", 1);
@@ -606,8 +609,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (type.equals("item")) {
                 if (!channel.storageItems.containsKey(id)) return;
                 ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-                if (craftingMode) moveItemStackTo(itemStack, 41, 50, false);
-                else moveItemStackTo(itemStack, 0, 36, false);
+                if (craftingMode) moveItemStackTo(itemStack, CRAFT_START, RESULT_SLOT, false);
+                else moveItemStackTo(itemStack, PLAYER_START, PLAYER_END, false);
                 if (itemStack.isEmpty()) channel.takeItem(id, 1);
             } else if (type.equals("fluid")) {
                 if (!channel.storageFluids.containsKey(id)) return;
@@ -616,8 +619,8 @@ public class TesseractMenu extends AbstractContainerMenu {
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                if (craftingMode) moveItemStackTo(fluidBucket, 41, 50, false);
-                else moveItemStackTo(fluidBucket, 0, 36, false);
+                if (craftingMode) moveItemStackTo(fluidBucket, CRAFT_START, RESULT_SLOT, false);
+                else moveItemStackTo(fluidBucket, PLAYER_START, PLAYER_END, false);
                 if (fluidBucket.isEmpty()) {
                     channel.takeFluid(id, 1000);
                     channel.takeItem("minecraft:bucket", 1);
@@ -778,34 +781,23 @@ public class TesseractMenu extends AbstractContainerMenu {
     }
 
     private void addSlots(Player player, Inventory playerInv) {
-        //快捷栏0~8
-        for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 258));
-        }
-
-        //背包9~35
-        for (int k = 0; k < 3; ++k) {
-            for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 195 + k * 17));
+        //背包 9~35 → 菜单槽 0~26
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                int invIndex = col + row * 9 + 9;
+                if (invIndex == panelItemSlotIndex) panelMenuSlotIndex = this.slots.size();
+                this.addSlot(new Slot(playerInv, invIndex, 23 + col * 17, 185 + row * 17));
             }
         }
-
-        //护甲36~40
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.HEAD, 39, 7, 139));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.CHEST, 38, 7, 156));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.LEGS, 37, 58, 139));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.FEET, 36, 58, 156));
-        this.addSlot(new Slot(playerInv, 40, 7, 173) {
-            @Override
-            public boolean isActive() {
-                return craftingMode;
-            }
-        });
-
-        //合成格41~50
+        //快捷栏 0~8 → 菜单槽 27~35
+        for (int col = 0; col < 9; ++col) {
+            if (col == panelItemSlotIndex) panelMenuSlotIndex = this.slots.size();
+            this.addSlot(new Slot(playerInv, col, 23 + col * 17, 237));
+        }
+        //合成格 36~44
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                this.addSlot(new Slot(this.craftSlots, j + i * 3, 92 + j * 17, 139 + i * 17) {
+                this.addSlot(new Slot(this.craftSlots, j + i * 3, 92 + j * 17, 136 + i * 17) {
                     @Override
                     public boolean isActive() {
                         return craftingMode;
@@ -813,47 +805,13 @@ public class TesseractMenu extends AbstractContainerMenu {
                 });
             }
         }
-        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 161, 156) {
+        //结果 45
+        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 161, 153) {
             @Override
             public boolean isActive() {
                 return craftingMode;
             }
         });
-    }
-
-    private Slot getArmorSlot(Player player, Inventory inventory, EquipmentSlot equipmentslot, int slotId, int x, int y) {
-        return new Slot(inventory, slotId, x, y) {
-            @Override
-            @ParametersAreNonnullByDefault
-            public void set(ItemStack itemStack) {
-                ItemStack itemstack = this.getItem();
-                super.set(itemStack);
-                player.onEquipItem(equipmentslot, itemstack, itemStack);
-            }
-
-            @Override
-            public int getMaxStackSize() {
-                return 1;
-            }
-
-            @Override
-            @ParametersAreNonnullByDefault
-            public boolean mayPlace(ItemStack itemStack) {
-                return equipmentslot == player.getEquipmentSlotForItem(itemStack);
-            }
-
-            @Override
-            @ParametersAreNonnullByDefault
-            public boolean mayPickup(Player player1) {
-                ItemStack itemstack = this.getItem();
-                return (itemstack.isEmpty() || player1.isCreative() || !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) && super.mayPickup(player1);
-            }
-
-            @Override
-            public boolean isActive() {
-                return craftingMode;
-            }
-        };
     }
 
     protected void clearCraftSlots() {
@@ -892,11 +850,11 @@ public class TesseractMenu extends AbstractContainerMenu {
     @Override
     @ParametersAreNonnullByDefault
     public void clicked(int pSlotId, int pButton, ContainerInput pContainerInput, Player pPlayer) {
-        if (pSlotId >= 51) {
+        if (pSlotId >= CHANNEL_START) {
             //仅客户端能触发
             String[] object;
-            if (pSlotId - 51 < dummyChannelContainer.viewingObject.size())
-                object = dummyChannelContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - CHANNEL_START < dummyChannelContainer.viewingObject.size())
+                object = dummyChannelContainer.viewingObject.get(pSlotId - CHANNEL_START);
             else object = new String[]{"item", "minecraft:air"};
 
             switch (pButton) {
@@ -974,18 +932,18 @@ public class TesseractMenu extends AbstractContainerMenu {
                 }
             }
             //剩下的SWAP无视掉(hot bar的快捷键)
-        } else if (pSlotId >= 41 && pSlotId <= 49 && pContainerInput.equals(ContainerInput.QUICK_MOVE)) {
+        } else if (pSlotId >= CRAFT_START && pSlotId < CRAFT_END && pContainerInput.equals(ContainerInput.QUICK_MOVE)) {
             //合成格
             ItemStack itemStack = slots.get(pSlotId).getItem();
             if (pButton == 0) {
-                moveItemStackTo(itemStack, 9, 36, false);
-                if (!itemStack.isEmpty()) moveItemStackTo(itemStack, 0, 9, false);
+                moveItemStackTo(itemStack, PLAYER_START, PLAYER_END - 9, false);
+                if (!itemStack.isEmpty()) moveItemStackTo(itemStack, PLAYER_END - 9, PLAYER_END, false);
                 slotsChanged(craftSlots);
             } else if (pButton == 1) {
                 channel.addItem(itemStack);
                 slotsChanged(craftSlots);
             } else super.clicked(pSlotId, pButton, pContainerInput, pPlayer);
-        } else if (pSlotId != panelItemSlotIndex) super.clicked(pSlotId, pButton, pContainerInput, pPlayer);
+        } else if (pSlotId != panelMenuSlotIndex) super.clicked(pSlotId, pButton, pContainerInput, pPlayer);
     }
 
     @Override
@@ -997,28 +955,28 @@ public class TesseractMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             ItemStack movingStack = slot.getItem();
             itemStack = movingStack.copy();
-            if (slotId >= 0 && slotId <= 35) {
+            if (slotId >= PLAYER_START && slotId < PLAYER_END) {
                 if (craftingMode) {
-                    if (!this.moveItemStackTo(movingStack, 41, 50, false)) {
+                    if (!this.moveItemStackTo(movingStack, CRAFT_START, RESULT_SLOT, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else {
                     channel.addItem(movingStack);
                     return ItemStack.EMPTY;
                 }
-            } else if (slotId == 50) {
+            } else if (slotId == RESULT_SLOT) {
                 movingStack.getItem().onCraftedBy(movingStack, player);
-                if (!this.moveItemStackTo(movingStack, 0, 36, true)) {
+                if (!this.moveItemStackTo(movingStack, PLAYER_START, PLAYER_END, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(movingStack, itemStack);
-            } else if (slotId >= 41 && slotId <= 49) {
+            } else if (slotId >= CRAFT_START && slotId < CRAFT_END) {
                 //正常情况不会运行这里，因为上面已经拦下来了。
-                if (!this.moveItemStackTo(movingStack, 0, 36, false)) {
+                if (!this.moveItemStackTo(movingStack, PLAYER_START, PLAYER_END, false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= 51 in server side ?");
+                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= " + CHANNEL_START + " in server side ?");
             }
             if (movingStack.isEmpty()) {
                 slot.set(ItemStack.EMPTY);
@@ -1029,7 +987,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
             slot.onTake(player, movingStack);
-            if (slotId == 50) {
+            if (slotId == RESULT_SLOT) {
                 player.drop(movingStack, false, Prediction.PREDICTED);
             }
         }
@@ -1419,7 +1377,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                     }
                 }
                 //合成一次
-                slots.get(50).onTake(player, resultItem);
+                slots.get(RESULT_SLOT).onTake(player, resultItem);
                 remainingCraftTry--;
                 if (!isSameResul(resultItem)) {
                     if (!fixItems(resultItem, beforeItems)) break;
@@ -1488,8 +1446,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (ItemStack.isSameItemSameComponents(craftingStack, needStack)) continue;
             if (!craftingStack.isEmpty()) {
                 channel.addItem(craftingStack);
-                if (!craftingStack.isEmpty()) moveItemStackTo(craftingStack, 9, 36, false);
-                if (!craftingStack.isEmpty()) moveItemStackTo(craftingStack, 0, 9, false);
+                if (!craftingStack.isEmpty()) moveItemStackTo(craftingStack, PLAYER_START, PLAYER_END - 9, false);
+                if (!craftingStack.isEmpty()) moveItemStackTo(craftingStack, PLAYER_END - 9, PLAYER_END, false);
                 if (!craftingStack.isEmpty()) return false;
             }
             if (!needStack.isEmpty()) {
@@ -1587,8 +1545,8 @@ public class TesseractMenu extends AbstractContainerMenu {
     }
 
     private void pushToInventory(ItemStack itemStack) {
-        moveItemStackTo(itemStack, 9, 36, false);
-        if (!itemStack.isEmpty()) moveItemStackTo(itemStack, 0, 9, false);
+        moveItemStackTo(itemStack, PLAYER_START, PLAYER_END - 9, false);
+        if (!itemStack.isEmpty()) moveItemStackTo(itemStack, PLAYER_END - 9, PLAYER_END, false);
         if (!itemStack.isEmpty()) player.drop(itemStack, false, Prediction.SERVER_ONLY);
     }
 

@@ -66,6 +66,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
         this.chestContainer = new InfinityChestContainer(this);
         this.chest = ClientChestManager.getInstance().getChest(chestContainer);
+        //打开界面前服务端已推送全量同步，注册监听后需主动重建一次视图
+        chestContainer.refreshContainer(true);
         //???????41 ~ 118
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 15; j++) {

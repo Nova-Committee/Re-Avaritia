@@ -125,6 +125,16 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
         }
     }
 
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super：默认实现检测到本类是 Container
+     * （NativeInventory）会调用 Containers.dropContents，把虚拟频道存储中每种物品
+     * 最多散落一组（64 个）到世界；频道数据在 ServerChannelManager 中不受影响，
+     * 散落纯属复制。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
+    }
+
     @Override
     public @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory, @NotNull Player pPlayer) {
         return new TesseractMenu(pContainerId, pInventory.player, this, slotIndex);

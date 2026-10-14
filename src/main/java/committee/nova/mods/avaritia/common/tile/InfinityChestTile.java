@@ -79,6 +79,16 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity,
         net.minecraft.world.item.BlockItem.setBlockEntityData(stack, this.getType(), output);
     }
 
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super：默认实现检测到本类是 Container
+     * （NativeInventory）会调用 Containers.dropContents，把虚拟存储中每种物品
+     * 最多散落一组（64 个）到世界，而物品本体仍在 ServerChestManager 虚拟存储中，
+     * 由掉落物携带的 channelID 在重放时整体恢复，散落纯属复制/吞物品。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
+    }
+
     @Override
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);

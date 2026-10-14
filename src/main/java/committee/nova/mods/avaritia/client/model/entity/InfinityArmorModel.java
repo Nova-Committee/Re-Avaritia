@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.model.entity;
 
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.client.AvaritiaClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -159,9 +160,16 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         double pulse = Math.sin(time / 10.0D) * 0.5D + 0.5D;
         double pulseMagSqr = pulse * pulse * pulse * pulse * pulse * pulse;
 
-        float yaw = (float) ((state.yRot * 2.0F) * Math.PI / 360.0D);
-        float pitch = -((float) ((state.xRot * 2.0F) * Math.PI / 360.0D));
+        float yaw = 0.0F;
+        float pitch = 0.0F;
         float scale = 1.0F;
+
+        if (AvaritiaClient.inventoryRender) {
+            scale = 100.0F;
+        } else {
+            yaw = (float) ((state.yRot * 2.0F) * Math.PI / 360.0D);
+            pitch = -((float) ((state.xRot * 2.0F) * Math.PI / 360.0D));
+        }
 
         AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
 

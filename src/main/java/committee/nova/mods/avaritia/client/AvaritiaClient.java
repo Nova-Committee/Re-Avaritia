@@ -19,6 +19,13 @@ public final class AvaritiaClient {
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, KEY_CATEGORY);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYBOARD, InputConstants.KEY_N, KEY_CATEGORY);
 
+    /**
+     * 标记当前是否处于物品栏/GUI 内的实体渲染（如背包玩家模型预览）。
+     * InfinityArmorModel 据此把 cosmic 盔甲的 scale 提到 100.0F 并锁定 yaw/pitch，
+     * 避免 GUI 内渲染时把星空材质糊满全身。
+     */
+    public static boolean inventoryRender = false;
+
     private AvaritiaClient() {}
 
     public static void register() {

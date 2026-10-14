@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +48,14 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
 
     public @NotNull Identifier getTextureLocation(@NotNull GapingVoidEntity p_114482_) {
         return Res.VOID;
+    }
+
+    @Override
+    protected @NotNull AABB getBoundingBoxForCulling(@NotNull GapingVoidEntity entity, float partialTicks) {
+        final double radius = GapingVoidEntity.getVoidScale(entity.getAge() + partialTicks) * 1.35 + 0.5;
+        return new AABB(
+                entity.getX() - radius, entity.getY() - radius, entity.getZ() - radius,
+                entity.getX() + radius, entity.getY() + radius, entity.getZ() + radius);
     }
 
     @Override
