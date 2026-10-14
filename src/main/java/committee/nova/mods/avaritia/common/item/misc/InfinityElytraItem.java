@@ -6,22 +6,32 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.NotNull;
 
 public class InfinityElytraItem extends Item {
     public InfinityElytraItem() {
-        super(ModItems.applyId(new Item.Properties()
+        super(ModItems.properties()
                 .rarity(ModRarities.COSMIC)
                 .fireResistant()
                 .stacksTo(1)
-                .component(DataComponents.GLIDER, Unit.INSTANCE)));
+                .component(DataComponents.GLIDER, Unit.INSTANCE)
+                // 26.3 中能否放进装备槽完全由 EQUIPPABLE 组件决定：缺失时连原版胸甲槽都放不进去
+                // （且 Trinkets 的饰品位校验也依赖它）。参数与原版鞘翅/Neo 版一致。
+                .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                        .setEquipSound(SoundEvents.ARMOR_EQUIP_ELYTRA)
+                        .setAsset(EquipmentAssets.ELYTRA)
+                        .setDamageOnHurt(false)
+                        .build()));
     }
 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
