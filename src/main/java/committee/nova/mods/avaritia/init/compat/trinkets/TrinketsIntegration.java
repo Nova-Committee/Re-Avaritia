@@ -6,8 +6,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Predicate;
 
-/** Common code never links the optional Trinkets API when the mod is absent.
- *  TrinketsCompat is excluded from compilation (optional integration); all access goes through reflection. */
+/** Common code must not link the optional Trinkets API when the mod is absent.
+ *  TrinketsCompat is compiled but only touched through reflection so the mod loads fine without Trinkets. */
 public final class TrinketsIntegration {
     private static final boolean AVAILABLE = FabricLoader.getInstance().isModLoaded("trinkets");
     private static final String TRINKETS_COMPAT = "committee.nova.mods.avaritia.init.compat.trinkets.TrinketsCompat";

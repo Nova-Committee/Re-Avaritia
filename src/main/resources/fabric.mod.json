@@ -11,7 +11,8 @@
   "entrypoints": {
     "main": ["committee.nova.mods.avaritia.Avaritia"],
     "client": ["committee.nova.mods.avaritia.client.AvaritiaModClient"],
-    "jei_mod_plugin": ["committee.nova.mods.avaritia.init.compat.jei.AvaritiaJeiPlugin"]
+    "jei_mod_plugin": ["committee.nova.mods.avaritia.init.compat.jei.AvaritiaJeiPlugin"],
+    "jade": ["committee.nova.mods.avaritia.init.compat.JadeCompat"]
   },
   "mixins": ["avaritia.mixins.json"],
   "accessWidener": "avaritia.accesswidener",

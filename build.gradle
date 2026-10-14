@@ -13,6 +13,17 @@ repositories {
         name = "BlameJared"
         url = "https://maven.blamejared.com/"
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -22,6 +33,10 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     // JEI (compile only, not bundled; optional at runtime)
     compileOnly "mezz.jei:jei-${mc_version}-fabric-api:${jei_version}"
+    // Optional mod integrations (compile-time API only; the mod works without them).
+    // 26.3 无混淆无 mappings，mod 无需重映射，与 JEI 一样用纯 compileOnly 即可。
+    compileOnly "maven.modrinth:XaT8sLP6:lVR1OKgV" // Trinkets Updated
+    compileOnly "maven.modrinth:nvQzSEkH:71CTWqdE" // Jade
     compileOnly "org.projectlombok:lombok:${lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${lombok_version}"
     compileOnly "org.jetbrains:annotations:${annotations_version}"
@@ -39,13 +54,12 @@ sourceSets {
 }
 
 // Optional compat integrations kept in source but excluded from compilation until their 26.3 Fabric
-// dependencies are available (JEI stays compiled). TrinketsCompat is accessed reflectively instead.
+// dependencies are available (JEI/Jade compiled directly; Trinkets stays runtime-optional, accessed
+// reflectively via TrinketsIntegration so the mod loads fine without it).
 def excludedCompat = [
         'committee/nova/mods/avaritia/init/compat/emi/**',
         'committee/nova/mods/avaritia/init/compat/kubejs/**',
-        'committee/nova/mods/avaritia/init/compat/crafttweaker/**',
-        'committee/nova/mods/avaritia/init/compat/trinkets/TrinketsCompat.java',
-        'committee/nova/mods/avaritia/init/compat/JadeCompat.java'
+        'committee/nova/mods/avaritia/init/compat/crafttweaker/**'
 ]
 sourceSets.main.java {
     excludedCompat.each { exclude it }

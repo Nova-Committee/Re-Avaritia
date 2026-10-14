@@ -1,9 +1,11 @@
 package committee.nova.mods.avaritia.init.compat.trinkets;
 
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.Trinket;
-import dev.emi.trinkets.api.TrinketsApi;
+import eu.pb4.trinkets.api.TrinketSlotAccess;
+import eu.pb4.trinkets.api.TrinketsApi;
+import eu.pb4.trinkets.api.callback.TrinketCallback;
+import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,30 +13,28 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Predicate;
 
-/** Loaded only after Trinkets is present; passive item behavior uses the native gameplay hooks. */
+/** Loaded only after Trinkets is present; passive item behavior uses the native gameplay hooks.
+ *  适配 Trinkets Updated（eu.pb4.trinkets）：
+ *  - 无尽鞘翅可装备性由 data/trinkets/tags/item/chest/back.json 标签驱动（仅能进背饰槽）；
+ *  - 装备音效通过 TrinketCallback.getEquipSound 提供；
+ *  - 饰品栏查询走 TrinketAttachment（TrinketInventory 实现 Container，可直接复用遍历）。 */
 final class TrinketsCompat {
     private TrinketsCompat() {}
 
     static void initialize() {
-        TrinketsApi.registerTrinket(ModItems.infinity_elytra.get(), new Trinket() {
+        TrinketCallback.setCallback(ModItems.infinity_elytra.get(), new TrinketCallback() {
             @Override
-            public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-                var type = slot.inventory().getSlotType();
-                return "chest".equals(type.getGroup()) && "back".equals(type.getName());
-            }
-
-            @Override
-            public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-                entity.playSound(SoundEvents.ARMOR_EQUIP_ELYTRA, 1, 1);
+            public Holder<SoundEvent> getEquipSound(ItemStack stack, TrinketSlotAccess slot, LivingEntity entity) {
+                return SoundEvents.ARMOR_EQUIP_ELYTRA;
             }
         });
     }
 
     static ItemStack find(LivingEntity entity, Predicate<ItemStack> predicate) {
-        var component = TrinketsApi.getTrinketComponent(entity).orElse(null);
-        if (component == null) return ItemStack.EMPTY;
+        var attachment = TrinketsApi.getAttachment(entity);
+        if (attachment == null) return ItemStack.EMPTY;
         // Read live inventories without allocating the API's equipped-pair list every tick.
-        for (var group : component.getInventory().values()) {
+        for (var group : attachment.getInventory().values()) {
             for (var inventory : group.values()) {
                 ItemStack stack = findIn(inventory, predicate);
                 if (!stack.isEmpty()) return stack;
@@ -44,9 +44,9 @@ final class TrinketsCompat {
     }
 
     static ItemStack findBack(LivingEntity entity, Predicate<ItemStack> predicate) {
-        var component = TrinketsApi.getTrinketComponent(entity).orElse(null);
-        if (component == null) return ItemStack.EMPTY;
-        var chest = component.getInventory().get("chest");
+        var attachment = TrinketsApi.getAttachment(entity);
+        if (attachment == null) return ItemStack.EMPTY;
+        var chest = attachment.getInventory().get("chest");
         if (chest == null) return ItemStack.EMPTY;
         var back = chest.get("back");
         return back == null ? ItemStack.EMPTY : findIn(back, predicate);
