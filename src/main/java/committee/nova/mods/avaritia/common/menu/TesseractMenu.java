@@ -81,6 +81,37 @@ public class TesseractMenu extends AbstractContainerMenu {
     public byte sortType;
     public byte viewType;
     public boolean LShifting = false;
+    //对齐 Neo 版 terminalData：把 locked/craftingMode/sortType/viewType 通过 DataSlot 同步到客户端
+    private final ContainerData terminalData = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> locked ? 1 : 0;
+                case 1 -> craftingMode ? 1 : 0;
+                case 2 -> sortType;
+                case 3 -> viewType;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0 -> locked = value != 0;
+                case 1 -> craftingMode = value != 0;
+                case 2 -> sortType = (byte) value;
+                case 3 -> viewType = (byte) value;
+                default -> { }
+            }
+            //仅客户端会收到 set；refreshContainer 内部本身也只在客户端生效
+            dummyChannelContainer.refreshContainer(true);
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+    };
     public Runnable craftModeSetter = () -> {
     };
     private RecipeHolder<CraftingRecipe> lastCraftingRecipe = null;
@@ -136,6 +167,7 @@ public class TesseractMenu extends AbstractContainerMenu {
         else this.panelItem = ItemStack.EMPTY;
 
         addSlots(playerInv.player, playerInv);
+        addDataSlots(terminalData);
         this.channel = ClientChannelManager.getInstance().getChannel(dummyChannelContainer);
         //打开界面前服务端已推送全量同步，注册监听后需主动重建一次视图
         dummyChannelContainer.refreshContainer(true);
@@ -198,6 +230,7 @@ public class TesseractMenu extends AbstractContainerMenu {
         if (!channel.isRemoved()) ((ServerChannel) this.channel).addListener((ServerPlayer) player);
 
         addSlots(player, player.getInventory());
+        addDataSlots(terminalData);
     }
 
     //按钮相关
@@ -229,7 +262,10 @@ public class TesseractMenu extends AbstractContainerMenu {
             case 2 -> nextSort();
             case 3 -> reverseSort();
             case 4 -> changeViewType();
-            case 5 -> openChannelScreen();
+            case 5 -> {
+                openChannelScreen();
+                return true;
+            }
             case 6 -> craftToChannel(1);
             case 7 -> craftToChannel(8);
             case 8 -> craftToChannel(64);
@@ -243,6 +279,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             case 16 -> craftAndDrop(64);
             case 17 -> craftAndDrop(512);
         }
+        //立即把 terminalData（locked/craftingMode/sortType/viewType）推给客户端，对齐 Neo 版
+        broadcastChanges();
         return pId < 18;
     }
 

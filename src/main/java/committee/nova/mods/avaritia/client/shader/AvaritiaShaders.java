@@ -21,10 +21,14 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
  * （fabric-transitive-access-wideners 已拓宽），替代 Neo 的 RegisterRenderPipelinesEvent。</p>
  */
 public class AvaritiaShaders {
+    // 26.3 RenderPearl 使用 reversed-Z 深度（近处片元深度值更大，DepthStencilState.DEFAULT 即
+    // GREATER_THAN_OR_EQUAL）。必须用 GEQUAL：LEQUAL 只在已有相等/更近深度时通过——GUI 与有基础
+    // 模型的手持物品恰好满足（基础层先写同平面深度），但手持三叉戟跳过 wrapped.update 后遮罩平面
+    // 无基础深度，"Item in hand" pass 深度清为 0.0（远平面），LEQUAL 全部丢弃导致星空不可见。
     private static final DepthStencilState TRANSLUCENT_EFFECT_DEPTH =
-            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+            new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false);
     static final DepthStencilState ITEM_EFFECT_OVERLAY_DEPTH =
-            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+            new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false);
 
     public static final float[] COSMIC_UVS = new float[40];
     public static TextureAtlasSprite[] COSMIC_SPRITES = new TextureAtlasSprite[10];

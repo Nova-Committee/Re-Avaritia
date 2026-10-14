@@ -100,7 +100,9 @@ public class ClientChannelManager {
         my.keySet().forEach(s -> myChannels.put(Integer.parseInt(s), my.getStringOr(s, "")));
         other.keySet().forEach(s -> otherChannels.put(Integer.parseInt(s), other.getStringOr(s, "")));
         pub.keySet().forEach(s -> publicChannels.put(Integer.parseInt(s), pub.getStringOr(s, "")));
-        //if (screen != null) screen.updateChannelList();
+        //对齐 Neo 版 replaceLists：全量列表更新后刷新选择器界面
+        if (screen != null) screen.refreshChannels();
+        selectorListener.run();
     }
 
     public void addChannel(byte type, int id, String name) {
@@ -127,6 +129,8 @@ public class ClientChannelManager {
         selectedChannelType = type;
         selectedChannelID = ID;
         selectedChannelName = name;
+        //对齐 Neo 版 applyAction：SET 动作也触发选择器刷新
+        selectorListener.run();
     }
 
     /** Neo 版同款只读视图：我的 / 终端所有者 / 共享频道列表。 */
