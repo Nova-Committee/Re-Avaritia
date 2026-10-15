@@ -3,11 +3,10 @@ package committee.nova.mods.avaritia.common.tile;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.CompressedChestMenu;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
@@ -148,29 +146,22 @@ public class CompressedChestTile extends ChestBlockEntity {
 
     /**
      * 26.3 中方块实体移除前钩子。不调用 super（默认会把 Container 内容物散落一地），
-     * 改为把内容物序列化进 chestTag，由 CompressedChestBlock.playerDestroy 写入掉落物。
+     * 改为把内容物（含全部组件）序列化进 chestTag，由 CompressedChestBlock.playerDestroy 写入掉落物。
      */
     @Override
     public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
         CompoundTag tag = new CompoundTag();
-        CompoundTag nameTag = new CompoundTag();
-        CompoundTag countTag = new CompoundTag();
-        CompoundTag nbtTag = new CompoundTag();
+        CompoundTag stacksTag = new CompoundTag();
         int stackCount = 0;
         for (int i = 0; i < this.getContainerSize(); ++i) {
             ItemStack item = this.getItem(i);
             if (item.isEmpty()) continue;
+            CompoundTag snapshot = StorageUtils.saveStack(item);
+            if (snapshot == null) continue;
             stackCount++;
-            nameTag.putString(String.valueOf(i), String.valueOf(BuiltInRegistries.ITEM.getKey(item.getItem())));
-            countTag.putInt(String.valueOf(i), item.getCount());
-            CustomData data = item.get(DataComponents.CUSTOM_DATA);
-            if (data != null) {
-                nbtTag.put(String.valueOf(i), data.copyTag());
-            }
+            stacksTag.put(String.valueOf(i), snapshot);
         }
-        tag.put("name", nameTag);
-        tag.put("count", countTag);
-        tag.put("nbt", nbtTag);
+        tag.put("stacks", stacksTag);
         tag.putInt("stackCount", stackCount);
         this.setChestTag(tag);
     }

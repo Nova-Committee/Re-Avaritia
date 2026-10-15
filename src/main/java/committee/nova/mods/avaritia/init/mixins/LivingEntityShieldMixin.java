@@ -21,21 +21,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class LivingEntityShieldMixin {
     // Instant, all-angle blocking for the infinity shield.
     // 26.3 replaced isDamageSourceBlocked with the BlocksAttacks-component driven applyItemBlocking.
+    // The reflection callback must run here: setReturnValue cancels the method, so a RETURN
+    // injection would never fire on the infinity-shield branch (Neo gets this via
+    // LivingShieldBlockEvent, fired from inside the blocking logic).
     @Inject(method = "applyItemBlocking", at = @At("HEAD"), cancellable = true)
     private void avaritia$infinityShieldBlocksImmediately(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Float> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.isUsingItem() && entity.getUseItem().getItem() instanceof InfinityShieldItem) {
             boolean piercing = source.getDirectEntity() instanceof AbstractArrow arrow && arrow.getPierceLevel() > 0;
-            cir.setReturnValue(source.is(DamageTypeTags.BYPASSES_SHIELD) || piercing ? 0.0F : damage);
-        }
-    }
-
-    // Reflection callback for blocked hits (replaces the 1.20.1 hurtCurrentlyUsedShield redirect).
-    @Inject(method = "applyItemBlocking", at = @At("RETURN"))
-    private void avaritia$reflectBlocked(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Float> cir) {
-        LivingEntity entity = (LivingEntity) (Object) this;
-        if (cir.getReturnValue() > 0.0F && entity.getUseItem().getItem() instanceof InfinityShieldItem) {
-            InfinityShieldHandler.onShieldBlock(entity, source, cir.getReturnValue());
+            float blocked = source.is(DamageTypeTags.BYPASSES_SHIELD) || piercing ? 0.0F : damage;
+            if (blocked > 0.0F) InfinityShieldHandler.onShieldBlock(entity, source, blocked);
+            cir.setReturnValue(blocked);
         }
     }
 

@@ -191,12 +191,17 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
         if (channelOwner == null) return;
         if (channelOwner.equals(actor.getUUID()) || channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             if (!ServerChannelManager.getInstance().tryRemoveChannel(channelOwner, channelID)) return;
-            this.channelID = -1;
-            this.channelOwner = null;
-            this.setChanged();
-            channelSelectors.forEach(player -> NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1)));
-            this.channel = NullChannel.INSTANCE;
+            clearChannel();
         }
+    }
+
+    @Override
+    public void clearChannel() {
+        this.channelID = -1;
+        this.channelOwner = null;
+        this.setChanged();
+        channelSelectors.forEach(player -> NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1)));
+        this.channel = NullChannel.INSTANCE;
     }
 
     @Override

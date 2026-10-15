@@ -18,6 +18,7 @@
   "accessWidener": "avaritia.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
     "minecraft": "~26.3",
     "java": ">=${java_version}"
   },

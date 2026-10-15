@@ -19,8 +19,9 @@ public abstract class SingularityIngredientMixin implements NbtIngredientAccess 
     @Override
     public void avaritia$setAlternatives(Ingredient[] alternatives) { this.avaritia$alternatives = alternatives; }
 
-    // TODO(26.3): Ingredient 已是 CODEC 驱动的 final 类，fromJson/toJson/fromNetwork/toNetwork 均不存在；
-    //  avaritia:nbt 配料的 JSON/网络编解码需迁移到 Fabric CustomIngredient API（CustomIngredientSerializer）。
+    // 数据包 JSON/网络编解码已由 Fabric 内建的 fabric:components 配料承担
+    // （RecipeCodecs 会把旧式 avaritia:nbt 配料转换过去）；本 mixin 仅保留对
+    // NbtIngredients.of(...) 程序化配料的运行时匹配。
     @Inject(method = "test(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     private void avaritia$matchNbt(ItemStack stack, CallbackInfoReturnable<Boolean> callback) {
         if (this.avaritia$nbtStack != null) {

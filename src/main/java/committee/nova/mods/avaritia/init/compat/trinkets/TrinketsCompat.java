@@ -18,10 +18,10 @@ import java.util.function.Predicate;
  *  - 无尽鞘翅可装备性由 data/trinkets/tags/item/chest/back.json 标签驱动（仅能进背饰槽）；
  *  - 装备音效通过 TrinketCallback.getEquipSound 提供；
  *  - 饰品栏查询走 TrinketAttachment（TrinketInventory 实现 Container，可直接复用遍历）。 */
-final class TrinketsCompat {
+public final class TrinketsCompat {
     private TrinketsCompat() {}
 
-    static void initialize() {
+    public static void initialize() {
         TrinketCallback.setCallback(ModItems.infinity_elytra.get(), new TrinketCallback() {
             @Override
             public Holder<SoundEvent> getEquipSound(ItemStack stack, TrinketSlotAccess slot, LivingEntity entity) {
@@ -30,7 +30,7 @@ final class TrinketsCompat {
         });
     }
 
-    static ItemStack find(LivingEntity entity, Predicate<ItemStack> predicate) {
+    public static ItemStack find(LivingEntity entity, Predicate<ItemStack> predicate) {
         var attachment = TrinketsApi.getAttachment(entity);
         if (attachment == null) return ItemStack.EMPTY;
         // Read live inventories without allocating the API's equipped-pair list every tick.
@@ -43,7 +43,7 @@ final class TrinketsCompat {
         return ItemStack.EMPTY;
     }
 
-    static ItemStack findBack(LivingEntity entity, Predicate<ItemStack> predicate) {
+    public static ItemStack findBack(LivingEntity entity, Predicate<ItemStack> predicate) {
         var attachment = TrinketsApi.getAttachment(entity);
         if (attachment == null) return ItemStack.EMPTY;
         var chest = attachment.getInventory().get("chest");

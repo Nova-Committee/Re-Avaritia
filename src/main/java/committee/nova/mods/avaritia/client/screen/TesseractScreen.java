@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
 import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
@@ -202,6 +203,22 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
             }
         }
         super.extractTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int visibleSlots = menu.isCraftingMode() ? 77 : 99;
+        if (PortableLayout.contains(storageBounds(), mouseX, mouseY)
+                && menu.projected().sortedObject.size() > visibleSlots) {
+            menu.projected().onMouseScrolled(scrollY > 0);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    private ScreenRectangle storageBounds() {
+        return PortableLayout.translate(
+                new ScreenRectangle(5, 17, 210, menu.isCraftingMode() ? 120 : 154), leftPos, topPos);
     }
 
     @Override

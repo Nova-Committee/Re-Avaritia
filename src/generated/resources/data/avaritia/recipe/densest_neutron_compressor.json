@@ -15,10 +15,13 @@
       "item": "avaritia:denser_neutron_compressor"
     },
     "Y": {
-      "type": "avaritia:nbt",
-      "count": 1,
-      "item": "avaritia:singularity",
-      "nbt": "{Id:\"avaritia:redstone\"}"
+      "fabric:type": "fabric:components",
+      "base": "avaritia:singularity",
+      "components": {
+        "minecraft:custom_data": {
+          "Id": "avaritia:redstone"
+        }
+      }
     }
   },
   "pattern": [

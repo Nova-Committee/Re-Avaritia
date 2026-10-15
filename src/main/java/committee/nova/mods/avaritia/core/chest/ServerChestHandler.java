@@ -33,6 +33,7 @@ public class ServerChestHandler extends ChestHandler {
 
     public void initialize(CompoundTag dat) {
         storageItems.clear();
+        componentDataCache.clear();
         nbtDataCache.clear();
 
         if (dat.contains("items")) {
@@ -45,12 +46,22 @@ public class ServerChestHandler extends ChestHandler {
             });
         }
 
-        // 加载NBT数据（如果有）
+        // 加载完整组件快照（新格式）
+        if (dat.contains("components")) {
+            CompoundTag components = dat.getCompoundOrEmpty("components");
+            components.keySet().forEach(itemId -> {
+                if (components.get(itemId) instanceof CompoundTag snapshot) {
+                    componentDataCache.put(itemId, snapshot);
+                }
+            });
+        }
+
+        // 加载旧版NBT数据（向后兼容旧存档，仅含 CUSTOM_DATA 的条目）
         if (dat.contains("nbtData")) {
             CompoundTag nbtData = dat.getCompoundOrEmpty("nbtData");
             nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
-                if (nbtTag instanceof CompoundTag compoundTag) {
+                if (nbtTag instanceof CompoundTag compoundTag && !componentDataCache.containsKey(itemId)) {
                     nbtDataCache.put(itemId, compoundTag);
                 }
             });
@@ -73,21 +84,24 @@ public class ServerChestHandler extends ChestHandler {
         if (!players.isEmpty()) {
             CompoundTag tag = new CompoundTag();
             CompoundTag items = new CompoundTag();
+            CompoundTag components = new CompoundTag();
             CompoundTag nbtData = new CompoundTag();
 
             changedItems.forEach(itemId -> {
                 items.putLong(itemId, storageItems.getOrDefault(itemId, 0L));
 
-                // 发送NBT数据（如果是NBT物品）
-                if (itemId.contains("#") && nbtDataCache.containsKey(itemId)) {
-                    Tag nbtTag = nbtDataCache.get(itemId);
-                    if (nbtTag instanceof CompoundTag compoundTag) {
-                        nbtData.put(itemId, compoundTag);
-                    }
+                // 发送完整组件快照（如果是带组件物品）
+                CompoundTag snapshot = componentDataCache.get(itemId);
+                if (snapshot != null) {
+                    components.put(itemId, snapshot);
+                } else if (nbtDataCache.get(itemId) instanceof CompoundTag compoundTag) {
+                    // 旧版 CUSTOM_DATA 条目
+                    nbtData.put(itemId, compoundTag);
                 }
             });
 
             tag.put("items", items);
+            tag.put("components", components);
             tag.put("nbtData", nbtData);
 
             players.forEach(player -> NetworkHandler.CHANNEL.sendTo(player, new S2CInfinityChestStatePack(ChannelState.COMMON, tag)));
@@ -113,22 +127,25 @@ public class ServerChestHandler extends ChestHandler {
 
     public CompoundTag buildData() {
         CompoundTag items = new CompoundTag();
+        CompoundTag components = new CompoundTag();
         CompoundTag nbtData = new CompoundTag();
 
         storageItems.forEach((itemId, count) -> {
             items.putLong(itemId, count);
 
-            // 发送NBT数据（如果是NBT物品）
-            if (itemId.contains("#") && nbtDataCache.containsKey(itemId)) {
-                Tag nbtTag = nbtDataCache.get(itemId);
-                if (nbtTag instanceof CompoundTag compoundTag) {
-                    nbtData.put(itemId, compoundTag);
-                }
+            // 写入完整组件快照（如果是带组件物品）
+            CompoundTag snapshot = componentDataCache.get(itemId);
+            if (snapshot != null) {
+                components.put(itemId, snapshot);
+            } else if (nbtDataCache.get(itemId) instanceof CompoundTag compoundTag) {
+                // 旧版 CUSTOM_DATA 条目（保持旧格式，避免兼容数据丢失）
+                nbtData.put(itemId, compoundTag);
             }
         });
 
         CompoundTag data = new CompoundTag();
         data.put("items", items);
+        data.put("components", components);
         data.put("nbtData", nbtData);
         return data;
     }

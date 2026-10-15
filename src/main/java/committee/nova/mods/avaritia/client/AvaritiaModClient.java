@@ -49,6 +49,11 @@ public final class AvaritiaModClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         NetworkClientPackets.initialize();
+        // 供 StorageUtils 在连接专用服务器时解析注册表感知组件（附魔等）。
+        committee.nova.mods.avaritia.util.StorageUtils.setClientRegistryProvider(() -> {
+            var level = Minecraft.getInstance().level;
+            return level != null ? level.registryAccess() : null;
+        });
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
         ClientPacketProxy.updateDimensions = InfinityRingControlScreen::applyKnownLevels;
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;

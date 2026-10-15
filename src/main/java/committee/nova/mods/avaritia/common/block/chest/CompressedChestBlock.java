@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.block.chest;
 import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -105,14 +106,24 @@ public class CompressedChestBlock extends ChestBlock {
     public void onPlace(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pOldState, boolean pMovedByPiston) {
         if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        CompoundTag chestTag, nameTag = null, countTag = null, nbtTag = null;
+        CompoundTag chestTag, stacksTag = null, nameTag = null, countTag = null, nbtTag = null;
         if (blockentity instanceof CompressedChestTile chestTile && chestTile.getChestTag() != null) {
             chestTag = chestTile.getChestTag();
+            if (chestTag.contains("stacks")) stacksTag = chestTag.getCompoundOrEmpty("stacks");
             if (chestTag.contains("name")) nameTag = chestTag.getCompoundOrEmpty("name");
             if (chestTag.contains("count")) countTag = chestTag.getCompoundOrEmpty("count");
             if (chestTag.contains("nbt")) nbtTag = chestTag.getCompoundOrEmpty("nbt");
         }
-        if (nameTag != null && countTag != null) {
+        if (stacksTag != null) {
+            // 新格式：完整组件快照
+            Container container = (Container) blockentity;
+            for (String index : stacksTag.keySet()) {
+                ItemStack is = StorageUtils.parseStack(stacksTag.get(index));
+                if (is.isEmpty()) continue;
+                container.setItem(Integer.parseInt(index), is);
+            }
+        } else if (nameTag != null && countTag != null) {
+            // 旧格式回退：name/count/nbt（仅 CUSTOM_DATA）
             Container container = (Container) blockentity;
             for (String index : nameTag.keySet()) {
                 var name = nameTag.getStringOr(index, "");

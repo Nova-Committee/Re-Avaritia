@@ -21,6 +21,8 @@ public interface IChannelTerminal {
 
     void removeChannel(ServerPlayer actor);
 
+    void clearChannel();
+
     void renameChannel(ServerPlayer actor, String name);
 
     void addChannelSelector(ServerPlayer player);

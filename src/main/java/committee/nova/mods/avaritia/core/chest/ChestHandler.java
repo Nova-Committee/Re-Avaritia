@@ -18,7 +18,9 @@ import java.util.Map;
  */
 public abstract class ChestHandler implements ItemHandler {
     public final HashMap<String, Long> storageItems = new HashMap<>();
-    // 缓存NBT数据，键为NBT物品ID，值为NBT标签
+    // 缓存完整物品快照（数量为1的ItemStack序列化标签），键为身份键
+    protected final Map<String, CompoundTag> componentDataCache = new HashMap<>();
+    // 旧版存档的 CUSTOM_DATA 缓存（向后兼容，仅用于无完整快照的旧条目）
     protected final Map<String, Tag> nbtDataCache = new HashMap<>();
     private ItemStack[] slotItemTemp = {ItemStack.EMPTY};
     private String[] itemKeys = new String[]{};
@@ -27,9 +29,40 @@ public abstract class ChestHandler implements ItemHandler {
 
     public abstract boolean isRemoved();
 
+    /**
+     * 按身份键重建完整物品：优先完整组件快照，其次旧版 CUSTOM_DATA 缓存（旧存档回退）。
+     */
+    protected ItemStack buildStack(String itemId) {
+        CompoundTag snapshot = componentDataCache.get(itemId);
+        if (snapshot != null) {
+            ItemStack stack = StorageUtils.parseStack(snapshot);
+            if (!stack.isEmpty()) return stack;
+        }
+        ItemStack stack = new ItemStack(StorageUtils.getItem(itemId));
+        if (nbtDataCache.get(itemId) instanceof CompoundTag tag) {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
+        }
+        return stack;
+    }
+
+    /**
+     * 新物品种类入库时缓存其完整组件快照。
+     */
+    protected void cacheSnapshot(String itemId, ItemStack stack) {
+        if (componentDataCache.containsKey(itemId) || stack.getComponentsPatch().isEmpty()) return;
+        CompoundTag snapshot = StorageUtils.saveStackSnapshot(stack);
+        if (snapshot != null) componentDataCache.put(itemId, snapshot);
+    }
+
+    protected void dropCaches(String itemId) {
+        componentDataCache.remove(itemId);
+        nbtDataCache.remove(itemId);
+    }
+
     public ItemStack getItemTemplate(String itemId, int count) {
-        ItemStack stack = new ItemStack(StorageUtils.getItem(itemId), count);
-        if (nbtDataCache.get(itemId) instanceof CompoundTag tag) stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
+        ItemStack stack = buildStack(itemId);
+        if (stack.isEmpty()) return ItemStack.EMPTY;
+        stack.setCount(count);
         return stack;
     }
 
@@ -41,18 +74,7 @@ public abstract class ChestHandler implements ItemHandler {
         itemKeys = storageItems.keySet().toArray(new String[]{});
         slotItemTemp = new ItemStack[itemKeys.length];
         for (int i = 0; i < itemKeys.length; i++) {
-            String key = itemKeys[i];
-            ItemStack stack = new ItemStack(StorageUtils.getItem(key));
-
-            // 如果键包含NBT哈希，恢复NBT数据
-            if (key.contains("#")) {
-                Tag nbtData = nbtDataCache.get(key);
-                if (nbtData instanceof CompoundTag tag) {
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.copy()));
-                }
-            }
-
-            slotItemTemp[i] = stack;
+            slotItemTemp[i] = buildStack(itemKeys[i]);
         }
     }
 
@@ -115,10 +137,8 @@ public abstract class ChestHandler implements ItemHandler {
         String itemId = StorageUtils.getNbtItemId(itemStack);
         int count = itemStack.getCount();
 
-        // 如果是新的NBT物品，保存NBT数据
-        if (itemStack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId)) {
-            nbtDataCache.put(itemId, itemStack.get(DataComponents.CUSTOM_DATA).copyTag());
-        }
+        // 如果是新的带组件物品，保存完整组件快照
+        cacheSnapshot(itemId, itemStack);
 
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
@@ -176,19 +196,15 @@ public abstract class ChestHandler implements ItemHandler {
         if (itemStack.isEmpty() || count == 0) return;
         String itemId = StorageUtils.getNbtItemId(itemStack);
 
-        // 如果是新的NBT物品，保存NBT数据
-        if (itemStack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId) && count < 0) {
-            nbtDataCache.put(itemId, itemStack.get(DataComponents.CUSTOM_DATA).copyTag());
-        }
+        // 如果是新的带组件物品，保存完整组件快照
+        if (count < 0) cacheSnapshot(itemId, itemStack);
 
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (count >= storageCount) {
                 storageItems.remove(itemId);
-                if (nbtDataCache.containsKey(itemId)) {
-                    nbtDataCache.remove(itemId);
-                }
+                dropCaches(itemId);
                 itemStack.setCount(itemStack.getCount() + (int) storageCount);
                 onItemChanged(itemId, true);
             } else if (remainingSpaces < -count) {
@@ -223,16 +239,9 @@ public abstract class ChestHandler implements ItemHandler {
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
-        ItemStack result = new ItemStack(StorageUtils.getItem(itemId), count);
-
-        // 如果有NBT数据，恢复它
-        if (nbtDataCache.containsKey(itemId)) {
-            Tag nbtData = nbtDataCache.get(itemId);
-            if (nbtData instanceof CompoundTag compoundTag) {
-                result.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
-            }
-            if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
-        }
+        ItemStack result = buildStack(itemId);
+        if (!result.isEmpty()) result.setCount(count);
+        if (!storageItems.containsKey(itemId)) dropCaches(itemId);
 
         return result;
     }
@@ -242,7 +251,8 @@ public abstract class ChestHandler implements ItemHandler {
      */
     public ItemStack saveTakeItem(String itemId, int count) {
         if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
+        ItemStack itemStack = buildStack(itemId);
+        if (itemStack.isEmpty()) return ItemStack.EMPTY;
         count = Integer.min(count, itemStack.getMaxStackSize());
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -255,21 +265,15 @@ public abstract class ChestHandler implements ItemHandler {
         }
         itemStack.setCount(count);
 
-        // 如果有NBT数据，恢复它
-        if (nbtDataCache.containsKey(itemId)) {
-            Tag nbtData = nbtDataCache.get(itemId);
-            if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
-            }
-            if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
-        }
+        if (!storageItems.containsKey(itemId)) dropCaches(itemId);
 
         return itemStack;
     }
 
     public ItemStack saveTakeItem(String itemId, boolean half) {
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
+        ItemStack itemStack = buildStack(itemId);
+        if (itemStack.isEmpty()) return ItemStack.EMPTY;
         int count = half ? (itemStack.getMaxStackSize() + 1) / 2 : itemStack.getMaxStackSize();
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -282,14 +286,7 @@ public abstract class ChestHandler implements ItemHandler {
         }
         itemStack.setCount(count);
 
-        // 如果有NBT数据，恢复它
-        if (nbtDataCache.containsKey(itemId)) {
-            Tag nbtData = nbtDataCache.get(itemId);
-            if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
-            }
-            if (!storageItems.containsKey(itemId)) nbtDataCache.remove(itemId);
-        }
+        if (!storageItems.containsKey(itemId)) dropCaches(itemId);
 
         return itemStack;
     }
@@ -304,9 +301,7 @@ public abstract class ChestHandler implements ItemHandler {
             onItemChanged(itemId, false);
         } else {
             storageItems.remove(itemId);
-            if (nbtDataCache.containsKey(itemId)) {
-                nbtDataCache.remove(itemId);
-            }
+            dropCaches(itemId);
             onItemChanged(itemId, true);
         }
     }
@@ -319,9 +314,7 @@ public abstract class ChestHandler implements ItemHandler {
             onItemChanged(itemId, false);
         } else {
             storageItems.remove(itemId);
-            if (nbtDataCache.containsKey(itemId)) {
-                nbtDataCache.remove(itemId);
-            }
+            dropCaches(itemId);
             onItemChanged(itemId, true);
         }
     }
@@ -343,14 +336,6 @@ public abstract class ChestHandler implements ItemHandler {
         ItemStack itemStack = slotItemTemp[slot - 27].copy();
         itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(itemKey)));
 
-        // 恢复NBT数据（如果是NBT物品）
-        if (itemKey.contains("#") && nbtDataCache.containsKey(itemKey)) {
-            Tag nbtData = nbtDataCache.get(itemKey);
-            if (nbtData instanceof CompoundTag compoundTag) {
-                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag.copy()));
-            }
-        }
-
         return itemStack;
     }
 
@@ -360,10 +345,8 @@ public abstract class ChestHandler implements ItemHandler {
         String itemId = StorageUtils.getNbtItemId(stack);
         ItemStack remainingStack = ItemStack.EMPTY;
 
-        // 如果是新的NBT物品，保存NBT数据
-        if (!simulate && stack.has(DataComponents.CUSTOM_DATA) && !nbtDataCache.containsKey(itemId)) {
-            nbtDataCache.put(itemId, stack.get(DataComponents.CUSTOM_DATA).copyTag());
-        }
+        // 如果是新的带组件物品，保存完整组件快照
+        if (!simulate) cacheSnapshot(itemId, stack);
 
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
@@ -392,8 +375,8 @@ public abstract class ChestHandler implements ItemHandler {
         if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
         String itemId = itemKeys[slot - 27];
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
-        if (nbtDataCache.get(itemId) instanceof CompoundTag itemTag) itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(itemTag.copy()));
+        ItemStack itemStack = buildStack(itemId);
+        if (itemStack.isEmpty()) return ItemStack.EMPTY;
         int count = Math.min(itemStack.getMaxStackSize(), amount);
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -404,9 +387,7 @@ public abstract class ChestHandler implements ItemHandler {
         } else {
             if (!simulate) {
                 storageItems.remove(itemId);
-                if (nbtDataCache.containsKey(itemId)) {
-                    nbtDataCache.remove(itemId);
-                }
+                dropCaches(itemId);
                 onItemChanged(itemId, true);
             }
             count = (int) storageCount;

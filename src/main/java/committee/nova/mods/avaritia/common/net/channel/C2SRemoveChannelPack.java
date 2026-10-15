@@ -41,11 +41,12 @@ public class C2SRemoveChannelPack {
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
             if (player == null) return;
-            if (!(player.containerMenu instanceof TesseractChannelMenu) || player.containerMenu.containerId != containerId || type < 0 || type > 2 || id < 0) return;
-            if (!player.containerMenu.stillValid(player)) {
+            if (!(player.containerMenu instanceof TesseractChannelMenu menu) || menu.containerId != containerId || type < 0 || type > 2 || id < 0 || id > 9_999) return;
+            if (!menu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
             } else {
-                ((TesseractChannelMenu) player.containerMenu).removeChannel();
+                // 按包内携带的频道身份解析待删除目标，不能使用终端当前绑定的频道
+                menu.removeChannel(player, type, id);
             }
         });
         context.get().setPacketHandled(true);

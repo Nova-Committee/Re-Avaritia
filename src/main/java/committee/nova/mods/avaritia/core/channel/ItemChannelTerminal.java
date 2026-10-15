@@ -89,11 +89,16 @@ public class ItemChannelTerminal implements IChannelTerminal {
         if (info == null) return;
         if (info.owner().equals(actor.getUUID()) || info.owner().equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             if (!ServerChannelManager.getInstance().tryRemoveChannel(info.owner(), info.id())) return;
-            NetworkHandler.CHANNEL.sendTo((ServerPlayer) inventory.player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1));
-            CompoundTag root = terminal.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            root.remove("channel");
-            terminal.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
+            clearChannel();
         }
+    }
+
+    @Override
+    public void clearChannel() {
+        NetworkHandler.CHANNEL.sendTo((ServerPlayer) inventory.player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1));
+        CompoundTag root = terminal.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        root.remove("channel");
+        terminal.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
     }
 
     @Override

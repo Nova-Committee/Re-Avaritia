@@ -12,10 +12,13 @@
       "item": "avaritia:blaze_cube"
     },
     "D": {
-      "type": "avaritia:nbt",
-      "count": 1,
-      "item": "avaritia:singularity",
-      "nbt": "{Id:\"avaritia:gold\"}"
+      "fabric:type": "fabric:components",
+      "base": "avaritia:singularity",
+      "components": {
+        "minecraft:custom_data": {
+          "Id": "avaritia:gold"
+        }
+      }
     },
     "E": {
       "item": "avaritia:blaze_cube_block"

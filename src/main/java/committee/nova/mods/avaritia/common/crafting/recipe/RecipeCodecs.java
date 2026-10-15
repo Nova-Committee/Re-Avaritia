@@ -12,6 +12,9 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -59,7 +62,11 @@ public final class RecipeCodecs {
         if (input.getValue() instanceof JsonElement json) {
             @SuppressWarnings("unchecked")
             DynamicOps<JsonElement> ops = (DynamicOps<JsonElement>) input.getOps();
-            return Ingredient.CODEC.parse(ops, normalizeLegacyIngredient(json));
+            try {
+                return Ingredient.CODEC.parse(ops, normalizeLegacyIngredient(json));
+            } catch (JsonSyntaxException exception) {
+                return DataResult.error(exception::getMessage);
+            }
         }
         return Ingredient.CODEC.parse(input);
     }
@@ -97,6 +104,9 @@ public final class RecipeCodecs {
         }
         if (element.isJsonObject()) {
             JsonObject object = element.getAsJsonObject();
+            if (isLegacyNbtIngredient(object)) {
+                return convertLegacyNbtIngredient(object);
+            }
             if (object.has("item")) {
                 return new JsonPrimitive(object.get("item").getAsString());
             }
@@ -105,6 +115,48 @@ public final class RecipeCodecs {
             }
         }
         return element;
+    }
+
+    private static boolean isLegacyNbtIngredient(JsonObject object) {
+        return object.has("item")
+                && object.has("nbt")
+                && object.get("type") instanceof JsonPrimitive type
+                && type.isString()
+                && "avaritia:nbt".equals(type.getAsString());
+    }
+
+    /**
+     * Converts a legacy {@code avaritia:nbt} ingredient into a Fabric {@code fabric:components}
+     * ingredient so the component condition (e.g. the singularity id in {@code minecraft:custom_data})
+     * is preserved instead of being silently dropped.
+     */
+    private static JsonElement convertLegacyNbtIngredient(JsonObject object) {
+        JsonObject customData = object.get("nbt").isJsonObject()
+                ? object.getAsJsonObject("nbt").deepCopy()
+                : snbtToJson(object.get("nbt").getAsString());
+
+        JsonObject components = new JsonObject();
+        components.add("minecraft:custom_data", customData);
+
+        JsonObject normalized = new JsonObject();
+        normalized.addProperty("fabric:type", "fabric:components");
+        normalized.addProperty("base", object.get("item").getAsString());
+        normalized.add("components", components);
+        return normalized;
+    }
+
+    private static JsonObject snbtToJson(String snbt) {
+        CompoundTag tag;
+        try {
+            tag = TagParser.parseCompoundFully(snbt);
+        } catch (Exception exception) {
+            throw new JsonSyntaxException("Invalid avaritia:nbt ingredient NBT: " + snbt, exception);
+        }
+        JsonElement json = new Dynamic<>(NbtOps.INSTANCE, tag).convert(JsonOps.INSTANCE).getValue();
+        if (!json.isJsonObject()) {
+            throw new JsonSyntaxException("avaritia:nbt ingredient NBT must be a compound: " + snbt);
+        }
+        return json.getAsJsonObject();
     }
 
     private static JsonElement normalizeLegacyItemStack(JsonElement element) {
