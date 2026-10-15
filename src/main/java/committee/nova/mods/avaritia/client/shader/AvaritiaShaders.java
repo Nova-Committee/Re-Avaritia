@@ -48,7 +48,8 @@ public class AvaritiaShaders {
         HELL_SHADER = registerItemPipeline("hell", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
         ETERNAL_SHADER = registerItemPipeline("eternal", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
         UNSTABLE_SHADER = registerItemPipeline("unstable", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
-        BLACK_HOLE_SHADER = registerPipeline("black_hole", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
+        BLACK_HOLE_SHADER = registerPipeline("black_hole", "black_hole", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS,
+                new DepthStencilState(CompareOp.ALWAYS_PASS, false));
         AvaritiaRenderTypes.reloadEffectTypes();
     }
 

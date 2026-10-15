@@ -8,22 +8,28 @@
 
 const int cosmiccount = 10;
 const int cosmicoutof = 101;
-const float lightmix = 0.2f;
+const float lightmix = 0.2;
 
 uniform sampler2D Sampler0;
 
-// 26.3: custom uniforms are an std140 block bound by name (see AvaritiaShaders/AvaritiaShaderUniforms)
 layout(std140) uniform AvaritiaCosmic {
-    vec4 CosmicParams1;   // x: time, y: yaw, z: pitch, w: externalScale
-    vec4 CosmicParams2;   // x: opacity, y: substrateAlpha, z/w: padding
-    vec4 cosmicuvs[10];
+    vec4 CosmicParams0;
+    vec4 CosmicParams1;
+    vec4 CosmicUvs[cosmiccount];
 };
+
+#define time CosmicParams0.x
+#define yaw CosmicParams0.y
+#define pitch CosmicParams0.z
+#define externalScale CosmicParams0.w
+#define opacity CosmicParams1.x
 
 layout(location = 0) in float sphericalVertexDistance;
 layout(location = 1) in float cylindricalVertexDistance;
 layout(location = 2) in vec4 vertexColor;
 layout(location = 3) in vec2 texCoord0;
-layout(location = 4) in vec3 fPos;
+layout(location = 4) in vec4 normal;
+layout(location = 5) in vec3 fPos;
 
 layout(location = 0) out vec4 fragColor;
 
@@ -36,20 +42,17 @@ mat4 rotationMatrix(vec3 axis, float angle)
     float oc = 1.0 - c;
 
     return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-                0.0,                                0.0,                                0.0,                                1.0);
+    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+    0.0,                                0.0,                                0.0,                                1.0);
 }
 
 void main (void)
 {
-    float time = CosmicParams1.x;
-    float yaw = CosmicParams1.y;
-    float pitch = CosmicParams1.z;
-    float externalScale = CosmicParams1.w;
-    float opacity = CosmicParams2.x;
-
     vec4 mask = texture(Sampler0, texCoord0.xy);
+    if (mask.r <= 0.01) {
+        discard;
+    }
 
     float oneOverExternalScale = 1.0/externalScale;
 
@@ -80,9 +83,9 @@ void main (void)
 
         // get semi-random stuff
         int j = i + 7;
-        float rand1 = (j * j * 4321 + j * 8) * 2.0F;
+        float rand1 = (j * j * 4321 + j * 8) * 2.0;
         int k = j + 1;
-        float rand2 = (k * k * k * 239 + k * 37) * 3.6F;
+        float rand2 = (k * k * k * 239 + k * 37) * 3.6;
         float rand3 = rand1 * 347.4 + rand2 * 63.4;
 
         // random rotation matrix by random rotation around random axis
@@ -98,6 +101,7 @@ void main (void)
         // get UV scaled for layers and offset by time;
         float scale = mult*0.5 + 2.75;
         float u = rawu * scale * externalScale;
+        //float v = (rawv + time * 0.00006) * scale * 0.6;
         float v = (rawv + time * 0.0002 * oneOverExternalScale) * scale * 0.6 * externalScale;
 
         vec2 tex = vec2( u, v );
@@ -107,6 +111,7 @@ void main (void)
         int tv = int(mod(floor(v*uvtiles),uvtiles));
 
         // get pseudorandom variants
+        //int position = ((1777541 * tu) + (7649689 * tv) + (3612703 * (i+31)) + 1723609 ) ^ 50943779;
         int position = ((171 * tu) + (489 * tv) + (303 * (i+31)) + 17209 ) ^ 50943779;
         int symbol = int(mod(position, cosmicoutof));
         int rotation = int(mod(pow(tu,float(tv)) + tu + 3 + tv*i, 8));
@@ -145,11 +150,12 @@ void main (void)
                 orv = 1.0-ru;
             }
 
-            // get the icon uvs for the tile (U0,V0,U1,V1 packed in one vec4)
-            float umin = cosmicuvs[symbol].x;
-            float vmin = cosmicuvs[symbol].y;
-            float umax = cosmicuvs[symbol].z;
-            float vmax = cosmicuvs[symbol].w;
+            // get the iicon uvs for the tile
+            vec4 uv = CosmicUvs[symbol];
+            float umin = uv.x;
+            float vmin = uv.y;
+            float umax = uv.z;
+            float vmax = uv.w;
 
             // interpolate based on tile uvs
             cosmictex.x = umin * (1.0-oru) + umax * oru;
@@ -179,6 +185,5 @@ void main (void)
 
     col = clamp(col,0.0,1.0);
 
-    fragColor = apply_fog(col * ColorModulator, sphericalVertexDistance, cylindricalVertexDistance,
-                          FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
+    fragColor = apply_fog(col * ColorModulator, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 }

@@ -96,8 +96,9 @@ public final class LayeredEffectItemModel implements ItemModel {
         }
 
         // effectQuads 由 mask 烘焙而来，只在 mask 区域绘制动态星空/永恒等效果。
-        // 手持态同样叠加星空遮罩（对齐 1.20.1 CosmicArcBakeModel：OBJ 几何 + 星空遮罩同时渲染）。
-        if (shouldRenderEffectLayer()) {
+        // 手持三叉戟走 OBJ 实体层（block 单位 + swapYZ + 内部硬编码姿态），
+        // 与 0..1 物品平面的 effectQuads 坐标空间不一致，叠加必然错位，故三叉戟几何态不渲染 effect 层。
+        if (shouldRenderEffectLayer(tridentGeometry)) {
             appendEffectLayer(renderState, displayContext,
                     this.effect.createArgument(this.effectQuads, this.baseQuads, level, owner, displayContext, stack),
                     this.effectExtents);
@@ -144,9 +145,10 @@ public final class LayeredEffectItemModel implements ItemModel {
                 && displayContext != ItemDisplayContext.GROUND;
     }
 
-    private boolean shouldRenderEffectLayer() {
+    private boolean shouldRenderEffectLayer(boolean tridentGeometry) {
         return this.effect != null
-                && !this.effectQuads.isEmpty();
+                && !this.effectQuads.isEmpty()
+                && !tridentGeometry;
     }
 
     private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
