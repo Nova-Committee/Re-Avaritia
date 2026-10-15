@@ -71,39 +71,43 @@ public final class NeutronRingPreviewRenderer {
         }
         SubmitNodeCollector collector = ctx.submitNodeCollector();
         PoseStack pose = ctx.poseStack();
+        // 26.3 的 RenderTypes.lines() 使用 POSITION_COLOR_NORMAL_LINE_WIDTH 格式，缺少 LineWidth
+        // 元素会抛 IllegalStateException("Missing elements in vertex")（Neo #388 崩溃根因）。
+        float width = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.appropriateLineWidth;
         if (boxes.capture() != null) {
             collector.submitCustomGeometry(pose, RenderTypes.lines(),
-                    (entry, buffer) -> draw(entry, buffer, boxes.capture(), 0.2F, 0.8F, 1.0F, 1.0F));
+                    (entry, buffer) -> draw(entry, buffer, boxes.capture(), 0.2F, 0.8F, 1.0F, 1.0F, width));
         }
         if (boxes.place() != null) {
             collector.submitCustomGeometry(pose, RenderTypes.lines(),
-                    (entry, buffer) -> draw(entry, buffer, boxes.place(), 1.0F, 0.85F, 0.2F, 1.0F));
+                    (entry, buffer) -> draw(entry, buffer, boxes.place(), 1.0F, 0.85F, 0.2F, 1.0F, width));
         }
     }
 
-    private static void draw(PoseStack.Pose pose, VertexConsumer lines, AABB box, float r, float g, float b, float a) {
+    private static void draw(PoseStack.Pose pose, VertexConsumer lines, AABB box, float r, float g, float b, float a,
+                             float width) {
         float x0 = (float) box.minX;
         float y0 = (float) box.minY;
         float z0 = (float) box.minZ;
         float x1 = (float) box.maxX;
         float y1 = (float) box.maxY;
         float z1 = (float) box.maxZ;
-        line(pose, lines, x0, y0, z0, x1, y0, z0, r, g, b, a);
-        line(pose, lines, x0, y0, z1, x1, y0, z1, r, g, b, a);
-        line(pose, lines, x0, y1, z0, x1, y1, z0, r, g, b, a);
-        line(pose, lines, x0, y1, z1, x1, y1, z1, r, g, b, a);
-        line(pose, lines, x0, y0, z0, x0, y0, z1, r, g, b, a);
-        line(pose, lines, x1, y0, z0, x1, y0, z1, r, g, b, a);
-        line(pose, lines, x0, y1, z0, x0, y1, z1, r, g, b, a);
-        line(pose, lines, x1, y1, z0, x1, y1, z1, r, g, b, a);
-        line(pose, lines, x0, y0, z0, x0, y1, z0, r, g, b, a);
-        line(pose, lines, x1, y0, z0, x1, y1, z0, r, g, b, a);
-        line(pose, lines, x0, y0, z1, x0, y1, z1, r, g, b, a);
-        line(pose, lines, x1, y0, z1, x1, y1, z1, r, g, b, a);
+        line(pose, lines, x0, y0, z0, x1, y0, z0, r, g, b, a, width);
+        line(pose, lines, x0, y0, z1, x1, y0, z1, r, g, b, a, width);
+        line(pose, lines, x0, y1, z0, x1, y1, z0, r, g, b, a, width);
+        line(pose, lines, x0, y1, z1, x1, y1, z1, r, g, b, a, width);
+        line(pose, lines, x0, y0, z0, x0, y0, z1, r, g, b, a, width);
+        line(pose, lines, x1, y0, z0, x1, y0, z1, r, g, b, a, width);
+        line(pose, lines, x0, y1, z0, x0, y1, z1, r, g, b, a, width);
+        line(pose, lines, x1, y1, z0, x1, y1, z1, r, g, b, a, width);
+        line(pose, lines, x0, y0, z0, x0, y1, z0, r, g, b, a, width);
+        line(pose, lines, x1, y0, z0, x1, y1, z0, r, g, b, a, width);
+        line(pose, lines, x0, y0, z1, x0, y1, z1, r, g, b, a, width);
+        line(pose, lines, x1, y0, z1, x1, y1, z1, r, g, b, a, width);
     }
 
     private static void line(PoseStack.Pose pose, VertexConsumer lines, float x0, float y0, float z0,
-                             float x1, float y1, float z1, float r, float g, float b, float a) {
+                             float x1, float y1, float z1, float r, float g, float b, float a, float width) {
         float dx = x1 - x0;
         float dy = y1 - y0;
         float dz = z1 - z0;
@@ -114,8 +118,8 @@ public final class NeutronRingPreviewRenderer {
         dx /= len;
         dy /= len;
         dz /= len;
-        lines.addVertex(pose, x0, y0, z0).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
-        lines.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setNormal(pose, dx, dy, dz);
+        lines.addVertex(pose, x0, y0, z0).setColor(r, g, b, a).setNormal(pose, dx, dy, dz).setLineWidth(width);
+        lines.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setNormal(pose, dx, dy, dz).setLineWidth(width);
     }
 
     private static ItemStack ring(Player player) {

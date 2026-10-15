@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiPlayerGameMode.class)
 public abstract class DimensionClientGameModeMixin {
-    @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
+    // 必须注入 performUseItemOn 而非外层 useItemOn：useItemOn 通过 startPrediction 包裹执行并负责
+    // 发送 ServerboundUseItemOnPacket，在其 HEAD 取消会导致服务端永远收不到右键交互（戒指无法选中）。
+    // performUseItemOn 仍在 startPrediction 回调内执行，取消它既保留发包又让戒指优先于方块/useOn。
+    @Inject(method = "performUseItemOn", at = @At("HEAD"), cancellable = true)
     private void avaritia$ringBeforeContainer(LocalPlayer player, InteractionHand hand, BlockHitResult hit,
                                             CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = player.getItemInHand(hand);
