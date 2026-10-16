@@ -43,6 +43,7 @@ public class AvaritiaRenderTypes {
     public static RenderType BLACK_HOLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("black_hole", Res.VOID);
 
     public static RenderType TRIDENT = AvaritiaRenderTypeHelper.entityCutoutNoCull("infinity_trident", Res.TRIDENT_TEX);
+    public static RenderType SHIELD_OBJ = AvaritiaRenderTypeHelper.entityCutoutNoCull("shield_obj", Res.INFINITY_SHIELD_MODEL_TEX);
 
     public static void reloadEffectTypes() {
         COSMIC = AvaritiaRenderTypeHelper.textured("cosmic", AvaritiaShaders.COSMIC_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);

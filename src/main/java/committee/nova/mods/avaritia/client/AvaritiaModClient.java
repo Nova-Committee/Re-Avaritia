@@ -10,9 +10,11 @@ import committee.nova.mods.avaritia.client.model.loader.AvaritiaItemModelLoaders
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
 import committee.nova.mods.avaritia.client.render.NeutronRingPreviewRenderer;
+import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityShieldRender;
+import committee.nova.mods.avaritia.client.render.item.ShieldObjRender;
 import committee.nova.mods.avaritia.client.render.tile.*;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.*;
@@ -67,6 +69,7 @@ public final class AvaritiaModClient implements ClientModInitializer {
         AvaritiaClient.register();
         UiInspector.register();
         NeutronRingPreviewRenderer.register();
+        NeutronSpacePreviewRenderer.registerPip();
         // 自定义 item model type（对应 datagen 输出的 items/*.json type 字段）。
         ItemModels.ID_MAPPER.put(Const.rl("cosmic"), AvaritiaItemModelLoaders.Cosmic.MAP_CODEC);
         ItemModels.ID_MAPPER.put(Const.rl("cosmic_arc"), AvaritiaItemModelLoaders.CosmicArc.MAP_CODEC);
@@ -83,6 +86,7 @@ public final class AvaritiaModClient implements ClientModInitializer {
         // 自定义 special model renderer。
         SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
         SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_chest"), InfinityChestItemRender.Unbaked.MAP_CODEC);
+        SpecialModelRenderers.ID_MAPPER.put(Const.rl("shield_obj"), ShieldObjRender.Unbaked.MAP_CODEC);
         // 世界提交阶段的宇宙渲染队列（Neo 版对应 SubmitCustomGeometryEvent）。
         LevelRenderEvents.COLLECT_SUBMITS.register(context -> CosmicRenderQueue.renderAll(context.submitNodeCollector()));
         MenuScreens.register(ModMenus.sculk_crafting_tile_table.get(), SculkCraftScreen::new);

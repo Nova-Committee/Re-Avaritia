@@ -24,6 +24,7 @@ public class Res {
     public static final Identifier STORM_PRO_TEX = Const.rl("textures/entity/storm_pro.png");
     public static final Identifier TRIDENT_TEX = Const.rl("textures/entity/infinity_trident_model.png");
     public static final Identifier SHIELD_TEX = Const.rl("textures/item/tools/infinity_shield/layer_0.png");
+    public static final Identifier INFINITY_SHIELD_MODEL_TEX = Const.rl("textures/item/tools/infinity_shield/infinity_shield_model.png");
 
     public static final Identifier NEUTRON_HORSE_ARMOR = Const.rl("textures/item/armor/horse/neutron_horse_armor.png");
 
