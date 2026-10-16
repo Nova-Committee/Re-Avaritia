@@ -167,13 +167,15 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         if (AvaritiaClient.inventoryRender) {
             scale = 100.0F;
         } else {
-            yaw = (float) ((state.yRot * 2.0F) * Math.PI / 360.0D);
-            pitch = -((float) ((state.xRot * 2.0F) * Math.PI / 360.0D));
+            float absoluteYaw = state.getDataOrDefault(AvaritiaClient.COSMIC_ABSOLUTE_YAW, state.yRot);
+            float absolutePitch = state.getDataOrDefault(AvaritiaClient.COSMIC_ABSOLUTE_PITCH, state.xRot);
+            yaw = (float) ((absoluteYaw * 2.0F) * Math.PI / 360.0D);
+            pitch = -((float) ((absolutePitch * 2.0F) * Math.PI / 360.0D));
         }
 
         AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
 
-        boolean flying = state.isFallFlying;
+        boolean flying = Boolean.TRUE.equals(state.getData(AvaritiaClient.INFINITY_ARMOR_FLYING)) || state.isFallFlying;
         if (fullInfinityArmor && flying) {
             poseStack.pushPose();
             ModelPart leftWing = root.getChild("left_wing");

@@ -7,8 +7,9 @@ import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
@@ -18,6 +19,12 @@ public final class AvaritiaClient {
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.Type.KEYBOARD, InputConstants.KEY_O, KEY_CATEGORY);
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, KEY_CATEGORY);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYBOARD, InputConstants.KEY_N, KEY_CATEGORY);
+
+    /** Render state key: true when the player is flying (creative/spectator). Used by InfinityArmorModel. */
+    public static final RenderStateDataKey<Boolean> INFINITY_ARMOR_FLYING = RenderStateDataKey.create(() -> "avaritia:infinity_armor_flying");
+    /** Render state keys: absolute entity yaw/pitch for cosmic shader rotation, avoiding the [-180,180] wrap of state.yRot. */
+    public static final RenderStateDataKey<Float> COSMIC_ABSOLUTE_YAW = RenderStateDataKey.create(() -> "avaritia:cosmic_absolute_yaw");
+    public static final RenderStateDataKey<Float> COSMIC_ABSOLUTE_PITCH = RenderStateDataKey.create(() -> "avaritia:cosmic_absolute_pitch");
 
     /**
      * 标记当前是否处于物品栏/GUI 内的实体渲染（如背包玩家模型预览）。

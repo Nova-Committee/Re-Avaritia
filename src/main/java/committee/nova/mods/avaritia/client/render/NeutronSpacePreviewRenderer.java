@@ -167,6 +167,8 @@ public final class NeutronSpacePreviewRenderer {
             poseStack.rotate(Axis.XP.rotationDegrees(state.pitch()));
             poseStack.rotate(Axis.YP.rotationDegrees(state.yaw()));
             poseStack.translate(-sizeX / 2.0F, -sizeY / 2.0F, -sizeZ / 2.0F);
+            // PiP 纹理的 Y 轴朝向与屏幕空间相反，翻转 Y 避免上下颠倒。
+            poseStack.scale(1.0F, -1.0F, 1.0F);
 
             SnapshotTintGetter getter = new SnapshotTintGetter(snapshot);
             BlockStateModelSet models = minecraft.getModelManager().getBlockStateModelSet();
