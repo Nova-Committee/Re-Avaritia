@@ -1,16 +1,19 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import net.minecraft.Util;
-import net.minecraft.sounds.SoundEvent;
+import committee.nova.mods.avaritia.Const;
+import net.minecraft.util.Util;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.LazyLoadedValue;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 
 import java.util.EnumMap;
-import java.util.function.Supplier;
 
 
 /**
@@ -21,84 +24,36 @@ import java.util.function.Supplier;
  */
 public class ModArmorMaterial {
 
-    public static final ArmorMaterial INFINITY_ARMOR =
-            new SimpleArmorMaterial("infinity_armor", 15, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266655_) -> {
-                p_266655_.put(ArmorItem.Type.BOOTS, 3);
-                p_266655_.put(ArmorItem.Type.LEGGINGS, 6);
-                p_266655_.put(ArmorItem.Type.CHESTPLATE, 8);
-                p_266655_.put(ArmorItem.Type.HELMET, 3);
-            }), 1000,
-                    SoundEvents.ARMOR_EQUIP_DIAMOND, 1.0f, 1.0f, () -> Ingredient.of(ModItems.infinity_ingot.get()));
+    public static final TagKey<Item> REPAIRS_INFINITY_ARMOR = TagKey.create(Registries.ITEM,
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "repairs_infinity_armor"));
+    public static final ResourceKey<EquipmentAsset> INFINITY_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_armor"));
 
+    public static final ArmorMaterial infinity_armor = new ArmorMaterial(15, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BOOTS, 3);
+        map.put(ArmorType.LEGGINGS, 6);
+        map.put(ArmorType.CHESTPLATE, 8);
+        map.put(ArmorType.HELMET, 3);
+    }), 1000, SoundEvents.ARMOR_EQUIP_DIAMOND, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, INFINITY_ARMOR_ASSET);
 
-    public static class SimpleArmorMaterial implements ArmorMaterial {
-        private final String name;
-        private final int durabilityMultiplier;
-        private final EnumMap<ArmorItem.Type, Integer> protectionFunctionForType;
-        private final int enchantmentValue;
-        private final SoundEvent sound;
-        private final float toughness;
-        private final float knockbackResistance;
-        private final LazyLoadedValue<Ingredient> repairIngredient;
-        private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {
-            p_266653_.put(ArmorItem.Type.BOOTS, 13);
-            p_266653_.put(ArmorItem.Type.LEGGINGS, 15);
-            p_266653_.put(ArmorItem.Type.CHESTPLATE, 16);
-            p_266653_.put(ArmorItem.Type.HELMET, 11);
-        });
+    /** @deprecated 兼容旧引用，等价于 {@link #infinity_armor} */
+    @Deprecated
+    public static final ArmorMaterial INFINITY_ARMOR = infinity_armor;
 
+    public static final ArmorMaterial infinity_horse_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BOOTS, 5);
+        map.put(ArmorType.LEGGINGS, 5);
+        map.put(ArmorType.CHESTPLATE, 5);
+        map.put(ArmorType.HELMET, 5);
+        map.put(ArmorType.BODY, 50);
+    }), 10, SoundEvents.ARMOR_EQUIP_DIAMOND, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, INFINITY_ARMOR_ASSET);
 
-        public SimpleArmorMaterial(String name, int durabilityMultiplier, EnumMap<ArmorItem.Type, Integer> protectionFunctionForType, int enchantmentValue, SoundEvent sound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredient) {
-            this.name = name;
-            this.durabilityMultiplier = durabilityMultiplier;
-            this.protectionFunctionForType = protectionFunctionForType;
-            this.enchantmentValue = enchantmentValue;
-            this.sound = sound;
-            this.toughness = toughness;
-            this.knockbackResistance = knockbackResistance;
-            this.repairIngredient = new LazyLoadedValue<>(repairIngredient);
-        }
+    public static final ResourceKey<EquipmentAsset> NEUTRON_WOLF_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "neutron_wolf_armor"));
+    public static final ResourceKey<EquipmentAsset> NEUTRON_HARNESS_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "neutron_harness"));
 
-        @Override
-        public int getDurabilityForType(ArmorItem.@NotNull Type slot) {
-            return HEALTH_FUNCTION_FOR_TYPE.get(slot) * this.durabilityMultiplier;
-        }
-
-        @Override
-        public int getDefenseForType(ArmorItem.@NotNull Type slot) {
-            return this.protectionFunctionForType.get(slot);
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return this.enchantmentValue;
-        }
-
-        @Override
-        public @NotNull SoundEvent getEquipSound() {
-            return this.sound;
-        }
-
-        @Override
-        public @NotNull Ingredient getRepairIngredient() {
-            return this.repairIngredient.get();
-        }
-
-        @Override
-        public @NotNull String getName() {
-            return name;
-        }
-
-        @Override
-        public float getToughness() {
-            return toughness;
-        }
-
-        @Override
-        public float getKnockbackResistance() {
-            return knockbackResistance;
-        }
-
-    }
-
+    public static final ArmorMaterial neutron_wolf_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BODY, 50);
+    }), 10, SoundEvents.ARMOR_EQUIP_WOLF, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, NEUTRON_WOLF_ARMOR_ASSET);
 }

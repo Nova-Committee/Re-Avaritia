@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.core.channel.ChannelInfo;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.core.channel.IChannelTerminal;
 import committee.nova.mods.avaritia.core.channel.ServerChannelManager;
@@ -12,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 /**
  * @Project: Avaritia
@@ -56,12 +59,30 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
         switch (type) {
             case (byte) 0 -> terminal.setChannel(player.getUUID(), id);
             case (byte) 1 -> terminal.setChannel(terminal.getTerminalOwner(), id);
-            case (byte) 2 -> terminal.setChannel(Const.AVARITIA_FAKE_PLAYER.getId(), id);
+            case (byte) 2 -> terminal.setChannel(Const.AVARITIA_FAKE_PLAYER.id(), id);
         }
     }
 
     public void removeChannel() {
         terminal.removeChannel((ServerPlayer) player);
+    }
+
+    /**
+     * 按包内携带的频道身份（type + id）解析并删除目标频道。
+     * 归属校验：只能删除本人或公共频道；删除成功后若目标正是终端当前绑定频道，则解除绑定。
+     */
+    public void removeChannel(ServerPlayer actor, byte type, int id) {
+        UUID owner = switch (type) {
+            case 0 -> actor.getUUID();
+            case 1 -> terminal.getTerminalOwner();
+            case 2 -> Const.AVARITIA_FAKE_PLAYER.id();
+            default -> null;
+        };
+        if (owner == null) return;
+        if (!owner.equals(actor.getUUID()) && !owner.equals(Const.AVARITIA_FAKE_PLAYER.id())) return;
+        if (!ServerChannelManager.getInstance().tryRemoveChannel(owner, id)) return;
+        ChannelInfo bound = terminal.getChannelInfo();
+        if (bound != null && bound.owner().equals(owner) && bound.id() == id) terminal.clearChannel();
     }
 
     public void renameChannel(String name) {
@@ -86,7 +107,7 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
     public void removed(@NotNull Player pPlayer) {
         super.removed(pPlayer);
 
-        if (pPlayer.level().isClientSide) {
+        if (pPlayer.level().isClientSide()) {
             ClientChannelManager.getInstance().onScreenClose();
         } else {
             terminal.removeChannelSelector((ServerPlayer) player);

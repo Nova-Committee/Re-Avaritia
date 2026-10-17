@@ -3,20 +3,22 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class HeavenArrowEntity extends Arrow {
 
@@ -33,7 +35,7 @@ public class HeavenArrowEntity extends Arrow {
     public HeavenArrowEntity(Level world, Entity pShooter) {
         this(world, pShooter, pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         if (pShooter instanceof Player) {
-            this.pickup = Pickup.DISALLOWED;
+            this.pickup = AbstractArrow.Pickup.DISALLOWED;
         }
     }
 
@@ -45,9 +47,9 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         var pos = result.getBlockPos();
-        var randy = level().random;
+        var randy = level().getRandom();
         if (getOwner() != null) {
-            ToolUtils.arrowBarrage(this.getOwner(), level(), piercedAndKilledEntities, pickup, randy, pos);
+            ToolUtils.arrowBarrage(this.getOwner(), level(), List.of(), pickup, randy, pos);
         }
         this.remove(RemovalReason.KILLED);
     }
@@ -60,30 +62,22 @@ public class HeavenArrowEntity extends Arrow {
             if (entity == getOwner()) {
                 return;
             }
-            entity.hurt(ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                entity.hurtServer(serverLevel, ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            }
         }
     }
 
     @Override
-    protected float getWaterInertia() {
-        return 1.0F;
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putDouble("damage", Float.POSITIVE_INFINITY);
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putDouble("damage", Float.POSITIVE_INFINITY);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : Float.POSITIVE_INFINITY);
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setBaseDamage(input.getDoubleOr("damage", Float.POSITIVE_INFINITY));
     }
 
     @Override

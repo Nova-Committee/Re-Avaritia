@@ -1,8 +1,11 @@
 package committee.nova.mods.avaritia.common.dimension;
 
+import com.mojang.serialization.Dynamic;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 
 import java.util.LinkedHashMap;
@@ -74,14 +77,14 @@ public final class InfinityRingSettings {
         ListTag playerList = new ListTag();
         players.forEach((id, role) -> {
             CompoundTag entry = new CompoundTag();
-            entry.put("Id", NbtUtils.createUUID(id));
+            entry.put("Id", new IntArrayTag(UUIDUtil.uuidToIntArray(id)));
             entry.putInt("Role", role.ordinal());
             playerList.add(entry);
         });
         tag.put("Players", playerList);
         ListTag bannedList = new ListTag();
         for (UUID id : banned) {
-            bannedList.add(NbtUtils.createUUID(id));
+            bannedList.add(new IntArrayTag(UUIDUtil.uuidToIntArray(id)));
         }
         tag.put("Banned", bannedList);
         return tag;
@@ -89,22 +92,25 @@ public final class InfinityRingSettings {
 
     public static InfinityRingSettings load(CompoundTag tag) {
         InfinityRingSettings settings = new InfinityRingSettings();
-        settings.terrain = Terrain.byId(tag.getInt("Terrain"));
-        settings.time = TimeMode.byId(tag.getInt("Time"));
-        settings.weather = WeatherMode.byId(tag.getInt("Weather"));
-        settings.access = Access.byId(tag.getInt("Access"));
-        ListTag playerList = tag.getList("Players", Tag.TAG_COMPOUND);
+        settings.terrain = Terrain.byId(tag.getIntOr("Terrain", 0));
+        settings.time = TimeMode.byId(tag.getIntOr("Time", 1));
+        settings.weather = WeatherMode.byId(tag.getIntOr("Weather", 0));
+        settings.access = Access.byId(tag.getIntOr("Access", 0));
+        ListTag playerList = tag.getListOrEmpty("Players");
         for (int i = 0; i < playerList.size(); i++) {
-            CompoundTag entry = playerList.getCompound(i);
-            settings.players.put(NbtUtils.loadUUID(entry.get("Id")), Role.byId(entry.getInt("Role")));
+            CompoundTag entry = playerList.getCompoundOrEmpty(i);
+            Tag idTag = entry.get("Id");
+            if (idTag != null) {
+                settings.players.put(UUIDUtil.readUUID(new Dynamic<>(NbtOps.INSTANCE, idTag)), Role.byId(entry.getIntOr("Role", 0)));
+            }
         }
-        ListTag legacy = tag.getList("Friends", Tag.TAG_INT_ARRAY);
+        ListTag legacy = tag.getListOrEmpty("Friends");
         for (Tag friendTag : legacy) {
-            settings.players.putIfAbsent(NbtUtils.loadUUID(friendTag), Role.MEMBER);
+            settings.players.putIfAbsent(UUIDUtil.readUUID(new Dynamic<>(NbtOps.INSTANCE, friendTag)), Role.MEMBER);
         }
-        ListTag bannedList = tag.getList("Banned", Tag.TAG_INT_ARRAY);
+        ListTag bannedList = tag.getListOrEmpty("Banned");
         for (Tag bannedTag : bannedList) {
-            settings.banned.add(NbtUtils.loadUUID(bannedTag));
+            settings.banned.add(UUIDUtil.readUUID(new Dynamic<>(NbtOps.INSTANCE, bannedTag)));
         }
         return settings;
     }

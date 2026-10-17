@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.mixins;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +21,7 @@ public abstract class GameplayItemEntityMixin {
     private void avaritia$immortality(CallbackInfo ci) {
         ItemEntity entity = (ItemEntity) (Object) this;
         if (!InfinityHandler.isImmortal(entity.getItem())) return;
-        entity.setInvulnerable(true);
+        entity.setPermanentlyInvulnerable(true);
         entity.setUnlimitedLifetime();
         if (!entity.level().isClientSide && !(entity instanceof ImmortalItemEntity)) {
             ImmortalItemEntity replacement = ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), entity.level(), entity, entity.getItem());
@@ -31,8 +32,9 @@ public abstract class GameplayItemEntityMixin {
             }
         }
     }
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
-    private void avaritia$noItemDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    // 26.3: entity damage entry point is hurtServer (hurt() was removed).
+    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+    private void avaritia$noItemDamage(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (InfinityHandler.isImmortal(((ItemEntity) (Object) this).getItem())) cir.setReturnValue(false);
     }
     @Inject(method = "playerTouch", at = @At("HEAD"))

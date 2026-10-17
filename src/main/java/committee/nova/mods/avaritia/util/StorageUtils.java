@@ -1,20 +1,28 @@
 package committee.nova.mods.avaritia.util;
 
+import committee.nova.mods.avaritia.core.io.StorageLifecycle;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.registries.BuiltInRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * @Project: Avaritia
@@ -67,7 +75,7 @@ public class StorageUtils {
         id = getBaseItemId(id);
         if (ID_ITEM_MAP.containsKey(id)) return ID_ITEM_MAP.get(id);
         else {
-            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(id));
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(id));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
             // Storage variant keys must never replace an item's canonical registry ID.
@@ -89,7 +97,7 @@ public class StorageUtils {
     public static Fluid getFluid(String id) {
         if (ID_FLUID_MAP.containsKey(id)) return ID_FLUID_MAP.get(id);
         else {
-            Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(id));
+            Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(id));
             if (fluid == null) return Fluids.EMPTY;
             ID_FLUID_MAP.put(id, fluid);
             FLUID_ID_MAP.put(fluid, id);
@@ -97,18 +105,81 @@ public class StorageUtils {
         }
     }
 
+    // === 完整组件序列化（26.3 数据组件物品） ===
+
+    private static final RegistryOps<Tag> FALLBACK_OPS = RegistryAccess
+            .fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)
+            .createSerializationContext(NbtOps.INSTANCE);
+    @Nullable
+    private static volatile Supplier<HolderLookup.Provider> clientRegistryProvider;
+
     /**
-     * 为NBT物品生成唯一标识符
-     * 格式: itemId#hash (带NBT) 或 itemId (无NBT)
+     * 由客户端入口注册，供连接专用服务器的客户端解析注册表感知组件（附魔等）。
+     */
+    public static void setClientRegistryProvider(Supplier<HolderLookup.Provider> provider) {
+        clientRegistryProvider = provider;
+    }
+
+    /**
+     * 当前可用的注册表序列化上下文：优先服务端，其次客户端世界，最后内置注册表。
+     */
+    public static RegistryOps<Tag> registryOps() {
+        MinecraftServer server = StorageLifecycle.getServer();
+        if (server != null) {
+            return server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        }
+        Supplier<HolderLookup.Provider> supplier = clientRegistryProvider;
+        if (supplier != null) {
+            HolderLookup.Provider provider = supplier.get();
+            if (provider != null) return provider.createSerializationContext(NbtOps.INSTANCE);
+        }
+        return FALLBACK_OPS;
+    }
+
+    /**
+     * 序列化完整 ItemStack（含全部组件与数量）。失败返回 null。
+     */
+    @Nullable
+    public static CompoundTag saveStack(ItemStack stack) {
+        if (stack.isEmpty()) return null;
+        Tag tag = ItemStack.CODEC.encodeStart(registryOps(), stack).result().orElse(null);
+        return tag instanceof CompoundTag compound ? compound : null;
+    }
+
+    /**
+     * 序列化物品身份快照（数量固定为 1），用于身份键与重建模板。
+     */
+    @Nullable
+    public static CompoundTag saveStackSnapshot(ItemStack stack) {
+        return saveStack(stack.copyWithCount(1));
+    }
+
+    /**
+     * 从完整快照重建物品（含全部组件与快照中的数量）。失败返回 EMPTY。
+     */
+    public static ItemStack parseStack(@Nullable Tag tag) {
+        if (!(tag instanceof CompoundTag)) return ItemStack.EMPTY;
+        return ItemStack.CODEC.parse(registryOps(), tag).result().orElse(ItemStack.EMPTY);
+    }
+
+    /**
+     * 为带组件物品生成唯一身份键。
+     * 格式: itemId#hash (带任意非默认组件) 或 itemId (与原型一致)。
+     * 哈希基于数量为 1 的完整 ItemStack 快照，与
+     * {@link ItemStack#isSameItemSameComponents} 语义一致：
+     * 同 id 但组件不同（附魔、命名、潜影盒内容等）的物品不会合并。
      */
     public static String getNbtItemId(ItemStack item) {
         if (item.isEmpty()) return "minecraft:air";
         String itemId = getItemId(item.getItem());
-        if (!item.hasTag()) {
+        if (item.getComponentsPatch().isEmpty()) {
             return itemId;
         }
-        String nbtHash = hashNbt(item.getTag());
-        return itemId + "#" + nbtHash;
+        CompoundTag snapshot = saveStackSnapshot(item);
+        if (snapshot == null) {
+            return itemId + "#error";
+        }
+        return itemId + "#" + hashNbt(snapshot);
     }
 
     /**

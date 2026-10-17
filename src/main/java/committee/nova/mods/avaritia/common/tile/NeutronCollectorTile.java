@@ -20,10 +20,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,13 +77,13 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         }
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            var stack = tile.tier.production.getItems()[0];
+            var stack = tile.tier.createProductionStack();
             tile.progress++;
             tile.data.set(0, tile.progress);
             if (tile.progress >= tile.tier.production_ticks) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, stack.copyWithCount(1));
-                } else if (result.is(stack.getItem())) {
+                } else if (ItemStack.isSameItemSameComponents(result, stack)) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, ItemUtils.grow(result, 1));
                     }
@@ -107,21 +108,19 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        this.progress = tag.getInt("progress");
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.progress = input.getIntOr("progress", 0);
         // 加载IO配置
-        if (tag.contains("SideConfig")) {
-            this.sideConfig = SideConfiguration.fromNBT(tag.getCompound("SideConfig"));
-        }
+        input.read("SideConfig", CompoundTag.CODEC).ifPresent(tag -> this.sideConfig = SideConfiguration.fromNBT(tag));
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putInt("progress", progress);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("progress", progress);
         // 保存IO配置
-        tag.put("SideConfig", sideConfig.toNBT());
+        output.store("SideConfig", CompoundTag.CODEC, sideConfig.toNBT());
     }
 
     @Override
@@ -163,8 +162,8 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         return tier.production_ticks;
     }
 
-    public Item getProduction() {
-        return tier.production.getItems()[0].getItem();
+    public ItemStack getProduction() {
+        return tier.createProductionStack();
     }
 
 

@@ -3,8 +3,7 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModMobEffects;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,13 +11,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,8 +54,8 @@ public class ExplosionsArrowEntity extends Arrow {
         if (getOwner() != null) {
             this.level().explode(this, this.getX(), this.getY(0.0625D), this.getZ(), 8.0F, Level.ExplosionInteraction.MOB);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(pos.getCenter(), 10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
-                    .forEach(entityx -> entityx.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), -1)));
+            level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(Vec3.atCenterOf(pos), 10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
+                    .forEach(entityx -> entityx.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ModMobEffects.BURNING.get()), -1)));
         }
         this.remove(RemovalReason.KILLED);
     }
@@ -68,9 +68,11 @@ public class ExplosionsArrowEntity extends Arrow {
             if (entity == getOwner()) {
                 return;
             }
-            entity.hurt(ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                entity.hurtServer(serverLevel, ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            }
             level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
-                    .forEach(entityx -> entityx.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), -1)));
+                    .forEach(entityx -> entityx.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ModMobEffects.BURNING.get()), -1)));
         }
         this.remove(RemovalReason.KILLED);
     }
@@ -78,12 +80,6 @@ public class ExplosionsArrowEntity extends Arrow {
     @Override
     protected float getWaterInertia() {
         return 1.0F;
-    }
-
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
     }
 
     @Override

@@ -2,15 +2,11 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageScaling;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -30,26 +26,23 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModDamageTypes {
 
-    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Const.MOD_ID, "infinity"));
-
-    public static final RegistrySetBuilder DAMAGE_BUILDER = new RegistrySetBuilder()
-            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
-
-    public static HolderLookup.Provider append(HolderLookup.Provider original) {
-        return DAMAGE_BUILDER.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), original);
-    }
+    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity"));
 
     // 注册
-    public static void bootstrap(BootstapContext<DamageType> context) {
+    public static void bootstrap(BootstrapContext<DamageType> context) {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
     }
 
+    private static Holder<DamageType> holder(Level level) {
+        return level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(INFINITY);
+    }
+
     public static DamageSource causeRandomDamage(Level level, @Nullable Entity itemEntity, @Nullable Entity owner) {
-        return new DamageSourceRandomMessages(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), itemEntity, owner);
+        return new DamageSourceRandomMessages(holder(level), itemEntity, owner);
     }
 
     public static DamageSource causeRandomDamage(Level level, @Nullable Entity owner) {
-        return new DamageSourceRandomMessages(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), owner, owner);
+        return new DamageSourceRandomMessages(holder(level), owner, owner);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {

@@ -1,19 +1,16 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
-
-import org.lwjgl.glfw.GLFW;
-
 import java.util.List;
 
 /** Viewport-clamped modal popup shared by portable-item actions and name suggestions. */
-
 public final class OperationMenu {
     public record Entry(Component label, Runnable action) {
         public static Entry of(String translationKey, Runnable action) {
@@ -88,7 +85,7 @@ public final class OperationMenu {
         lastMouseY = mouseY;
     }
 
-    public void render(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+    public void render(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
         if (!isOpen()) {
             return;
         }
@@ -97,9 +94,7 @@ public final class OperationMenu {
             lastMouseX = mouseX;
             lastMouseY = mouseY;
         }
-        graphics.flush();
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 600);
+        graphics.nextStratum();
         int x = bounds.left();
         int y = bounds.top();
         int width = bounds.width();
@@ -124,10 +119,8 @@ public final class OperationMenu {
         }
         int hovered = rowAt(mouseX, mouseY);
         if (hovered >= 0 && font.width(entries.get(hovered).label()) > width - PAD * 2 - 8) {
-            graphics.renderTooltip(font, entries.get(hovered).label(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, entries.get(hovered).label(), mouseX, mouseY);
         }
-        graphics.flush();
-        graphics.pose().popPose();
     }
 
     private int rowAt(double mouseX, double mouseY) {
@@ -148,7 +141,7 @@ public final class OperationMenu {
             return false;
         }
         int row = rowAt(mouseX, mouseY);
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && row >= 0) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && row >= 0) {
             activate(row);
         } else {
             close();
@@ -171,12 +164,12 @@ public final class OperationMenu {
             return false;
         }
         switch (keyCode) {
-            case GLFW.GLFW_KEY_ESCAPE -> close();
-            case GLFW.GLFW_KEY_UP -> selected = selected < 0 ? entries.size() - 1 : Math.floorMod(selected - 1, entries.size());
-            case GLFW.GLFW_KEY_DOWN -> selected = (selected + 1) % entries.size();
-            case GLFW.GLFW_KEY_HOME -> selected = 0;
-            case GLFW.GLFW_KEY_END -> selected = entries.size() - 1;
-            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> {
+            case InputConstants.KEY_ESCAPE -> close();
+            case InputConstants.KEY_UP -> selected = selected < 0 ? entries.size() - 1 : Math.floorMod(selected - 1, entries.size());
+            case InputConstants.KEY_DOWN -> selected = (selected + 1) % entries.size();
+            case InputConstants.KEY_HOME -> selected = 0;
+            case InputConstants.KEY_END -> selected = entries.size() - 1;
+            case InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER -> {
                 if (selected >= 0) {
                     activate(selected);
                 }

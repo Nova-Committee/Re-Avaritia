@@ -1,14 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
-import com.google.gson.*;
-import committee.nova.mods.avaritia.client.model.loader.base.NativeModelGeometry;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-@Mixin(BlockModel.Deserializer.class)
+
+/**
+ * 已在 26.3 升级中废弃：BlockModel.Deserializer 已随 BlockModel 接口化删除，
+ * 自定义几何反序列化走 AvaritiaItemModelCodecs/AvaritiaItemModelLoaders codec 体系。
+ * 条目已从 avaritia.mixins.json 移除。
+ */
 public abstract class ClientBlockModelDeserializerMixin {
- @Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/renderer/block/model/BlockModel;",at=@At("HEAD"),cancellable=true)
- private void avaritia$geometry(JsonElement json,java.lang.reflect.Type type,JsonDeserializationContext context,CallbackInfoReturnable<BlockModel> cir) {
-  BlockModel model=NativeModelGeometry.deserialize(json,context); if(model!=null)cir.setReturnValue(model);
- }
 }

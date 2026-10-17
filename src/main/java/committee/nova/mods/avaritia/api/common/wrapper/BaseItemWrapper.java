@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.api.common.wrapper;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import committee.nova.mods.avaritia.api.common.wrapper.ModifiableItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
@@ -10,6 +11,7 @@ import committee.nova.mods.avaritia.api.common.wrapper.ModifiableItemHandler;
  * @Description:
  */
 public interface BaseItemWrapper extends ModifiableItemHandler {
-    CompoundTag serializeNBT();
-    void deserializeNBT(CompoundTag tag);
+    @NotNull CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider);
+
+    void deserializeNBT(HolderLookup.@NotNull Provider provider, CompoundTag tag);
 }

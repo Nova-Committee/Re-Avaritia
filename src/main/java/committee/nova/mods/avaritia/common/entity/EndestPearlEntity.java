@@ -4,22 +4,18 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,14 +31,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         super(entityType, level);
     }
 
-    public EndestPearlEntity(Level level, LivingEntity shooter) {
-        this(ModEntities.ENDER_PEARL.get(), level);
-        setOwner(shooter);
-        setPos(shooter.getX(), shooter.getY() + shooter.getEyeHeight() - 0.10000000149011612D, shooter.getZ());
-        setDeltaMovement(shooter.getDeltaMovement());
-        this.shooter = shooter;
-    }
-
     public EndestPearlEntity(Level level, double x, double y, double z) {
         this(ModEntities.ENDER_PEARL.get(), level);
         setPos(x, y, z);
@@ -53,16 +41,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         return ModItems.endest_pearl.get();
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
-    }
-
-    private ParticleOptions getParticle() {
-        ItemStack itemstack = this.getItemRaw();
-        return itemstack.isEmpty() ? ParticleTypes.PORTAL : new ItemParticleOption(ParticleTypes.ITEM, itemstack);
-    }
-
     public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
     }
@@ -70,39 +48,33 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     @Override
     public void handleEntityEvent(byte pId) {
         if (pId == 3) {
-            ParticleOptions particleoptions = this.getParticle();
-
             for (int i = 0; i < 8; ++i) {
-                this.level().addParticle(particleoptions, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ParticleTypes.PORTAL, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult pos) {
+    protected void onHitEntity(@NotNull EntityHitResult pos) {
         super.onHitEntity(pos);
         Entity entity = pos.getEntity();
 
-        if (entity != null) {
-            entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
-        }
+        damageEntity(entity, this.damageSources().thrown(this, getOwner()), 0.0F);
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             GapingVoidEntity ent;
             if (shooter != null) {
                 ent = new GapingVoidEntity(level(), shooter);
             } else ent = new GapingVoidEntity(level());
 
             Direction dir = entity.getDirection();
-            Vec3 offset = Vec3.ZERO;
-            if (dir != null) {
-                offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
-            }
+            Vec3 offset;
+            offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
             if (shooter != null) {
                 ent.setUser(shooter);
             }
-            ent.moveTo(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25, entity.getYRot(), 0.0F);
+            ent.moveOrInterpolateTo(new Vec3(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25), entity.getYRot(), 0.0F);
             level().addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);
@@ -114,7 +86,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         super.onHitBlock(result);
         BlockPos pos = result.getBlockPos();
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
 
             GapingVoidEntity ent;
             if (shooter != null) {
@@ -122,17 +94,23 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
 
             } else ent = new GapingVoidEntity(level());
             Direction dir = result.getDirection();
-            Vec3 offset = Vec3.ZERO;
-            if (dir != null) {
-                offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
-            }
+            Vec3 offset;
+            offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
             if (shooter != null) {
                 ent.setUser(shooter);
             }
-            ent.moveTo(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25, getYRot(), 0.0F);
+            ent.moveOrInterpolateTo(new Vec3(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25), getYRot(), 0.0F);
             level().addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);
+        }
+    }
+
+    private void damageEntity(Entity entity, DamageSource source, float amount) {
+        if (level() instanceof ServerLevel serverLevel) {
+            entity.hurtServer(serverLevel, source, amount);
+        } else {
+            entity.hurtOrSimulate(source, amount);
         }
     }
 }

@@ -25,7 +25,7 @@ public class PlayerUtils {
     }
 
     public static boolean hasEditPermission(ServerPlayer player, BlockPos pos) {
-        return !player.server.isUnderSpawnProtection((ServerLevel) player.level(), pos, player)
+        return !player.level().getServer().isUnderSpawnProtection((ServerLevel) player.level(), pos, player)
                 && player.level().mayInteract(player, pos)
                 && Arrays.stream(Direction.values()).allMatch((e) -> player.mayUseItemAt(pos, e, ItemStack.EMPTY));
     }

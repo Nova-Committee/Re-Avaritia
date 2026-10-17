@@ -5,11 +5,12 @@ import committee.nova.mods.avaritia.api.common.wrapper.StrictItemStack;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +29,7 @@ public class ClustersUtils {
 
 
     public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
             for (ItemStack cluster : clusters) {
                 Containers.dropItemStack(world, player.getX(), player.getY() + 0.5F, player.getZ(), cluster);
@@ -37,7 +38,7 @@ public class ClustersUtils {
     }
 
     public static void spawnClusters(Level world, Player player, Map<ItemStack, Integer> map) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             HashSet<ItemStack> stacks = new HashSet<>();
             map.forEach((stack, integer) -> stacks.add(stack.copyWithCount(map.get(stack))));
             List<ItemStack> clusters = MatterClusterItem.makeClusters(stacks);
@@ -74,7 +75,9 @@ public class ClustersUtils {
     private static boolean isTrash(ItemStack suspect, Set<String> defaultTrashOres) {
         boolean isTrash = false;
         for (String ore : defaultTrashOres) {
-            if (suspect.is(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(ore)))) {
+            Identifier id = Identifier.tryParse(ore);
+            Item item = id == null ? null : BuiltInRegistries.ITEM.getValue(id);
+            if (item != null && suspect.is(item)) {
                 return true;
             }
         }

@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +28,7 @@ public class InfinityUpgradeItem extends ResourceItem {
         super(ModRarities.LEGEND, true,
                 new Properties()
                         .durability(16)
+                        .repairable(ModItems.star_fuel.get())
 
         );
     }
@@ -34,11 +36,6 @@ public class InfinityUpgradeItem extends ResourceItem {
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
-    }
-
-    @Override
-    public boolean isValidRepairItem(@NotNull ItemStack pStack, @NotNull ItemStack pRepairCandidate) {
-        return pRepairCandidate.is(ModItems.star_fuel.get());
     }
 
     @Override
@@ -56,25 +53,25 @@ public class InfinityUpgradeItem extends ResourceItem {
                     case DEFAULT -> {
                         collectorTile.setTier(CollectorTier.DENSE);
                         level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
-                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     case DENSE -> {
                         collectorTile.setTier(CollectorTier.DENSER);
                         level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
-                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     case DENSER -> {
                         collectorTile.setTier(CollectorTier.DENSEST);
                         level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
-                        itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(4, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     default -> {
@@ -86,25 +83,25 @@ public class InfinityUpgradeItem extends ResourceItem {
                     case DEFAULT -> {
                         compressorTile.setTier(CompressorTier.DENSE);
                         level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_compressor.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
-                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     case DENSE -> {
                         compressorTile.setTier(CompressorTier.DENSER);
                         level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_compressor.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
-                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     case DENSER -> {
                         compressorTile.setTier(CompressorTier.DENSEST);
                         level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_compressor.get().withPropertiesOf(blockstate));
-                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
-                        itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
+                        itemInHand.hurtAndBreak(4, serverPlayer, EquipmentSlot.MAINHAND);
                         return InteractionResult.SUCCESS;
                     }
                     default -> {
@@ -112,39 +109,6 @@ public class InfinityUpgradeItem extends ResourceItem {
                     }
                 }
             }
-            //else if (Const.isLoad("mekanism")){
-//            if (tile instanceof TileEntityFactory tileEntityFactory && player instanceof ServerPlayer serverPlayer && serverPlayer.isShiftKeyDown()) {
-//                switch (tileEntityFactory.tier) {
-//                    case BASIC -> {
-//                        tileEntityFactory.tier = FactoryTier.ADVANCED;
-//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
-//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
-//                        return InteractionResult.SUCCESS;
-//                    }
-//                    case ADVANCED -> {
-//                        tileEntityFactory.tier = FactoryTier.ELITE;
-//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
-//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
-//                        return InteractionResult.SUCCESS;
-//                    }
-//                    case ELITE -> {
-//                        tileEntityFactory.tier = FactoryTier.ULTIMATE;
-//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
-//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
-//                        return InteractionResult.SUCCESS;
-//                    }
-//                    default -> {
-//                        return InteractionResult.PASS;
-//                    }
-//                }
-//            }
-//            else {
-//                return super.useOn(pContext);
-//            }
-//        }
             else {
                 return super.useOn(pContext);
             }

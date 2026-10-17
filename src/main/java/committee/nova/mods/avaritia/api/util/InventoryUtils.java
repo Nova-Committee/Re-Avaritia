@@ -32,9 +32,14 @@ public class InventoryUtils {
     }
 
     public static ItemStack findFirstItem(Player player, Item consumeFrom) {
-        return player.getInventory().items.stream()
-                .filter(stack -> !stack.isEmpty() && stack.getItem() == consumeFrom)
-                .findFirst().orElse(ItemStack.EMPTY);
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < Inventory.INVENTORY_SIZE; slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty() && stack.getItem() == consumeFrom) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     public static int getFirstSlotWithStack(ItemStack itemInv, ItemStack stack) {

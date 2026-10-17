@@ -23,6 +23,7 @@ public class ClientChestHandler extends ChestHandler {
     public void removeListener() {
         this.container = null;
         storageItems.clear();
+        componentDataCache.clear();
         nbtDataCache.clear();
     }
 
@@ -34,16 +35,18 @@ public class ClientChestHandler extends ChestHandler {
 
     public void update(CompoundTag tag) {
         if (container == null) return;
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag components = tag.contains("components") ? tag.getCompoundOrEmpty("components") : null;
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
 
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
-        items.getAllKeys().forEach(itemId -> {
-            long count = items.getLong(itemId);
+        items.keySet().forEach(itemId -> {
+            long count = items.getLongOr(itemId, 0L);
             if (count <= 0L) {
                 if (storageItems.containsKey(itemId)) {
                     storageItems.remove(itemId);
+                    componentDataCache.remove(itemId);
                     nbtDataCache.remove(itemId);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
@@ -62,9 +65,18 @@ public class ClientChestHandler extends ChestHandler {
             }
         });
 
-        // 处理NBT数据
+        // 处理完整组件快照
+        if (components != null) {
+            components.keySet().forEach(itemId -> {
+                if (components.get(itemId) instanceof CompoundTag snapshot) {
+                    componentDataCache.put(itemId, snapshot);
+                }
+            });
+        }
+
+        // 处理旧版NBT数据
         if (nbtData != null) {
-            nbtData.getAllKeys().forEach(itemId -> {
+            nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
                 if (nbtTag instanceof CompoundTag) {
                     nbtDataCache.put(itemId, nbtTag);
@@ -77,16 +89,26 @@ public class ClientChestHandler extends ChestHandler {
     }
 
     public void fullUpdate(CompoundTag tag) {
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag components = tag.contains("components") ? tag.getCompoundOrEmpty("components") : null;
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
 
         storageItems.clear();
+        componentDataCache.clear();
         nbtDataCache.clear();
 
-        items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
+        items.keySet().forEach(itemId -> storageItems.put(itemId, items.getLongOr(itemId, 0L)));
+
+        if (components != null) {
+            components.keySet().forEach(itemId -> {
+                if (components.get(itemId) instanceof CompoundTag snapshot) {
+                    componentDataCache.put(itemId, snapshot);
+                }
+            });
+        }
 
         if (nbtData != null) {
-            nbtData.getAllKeys().forEach(itemId -> {
+            nbtData.keySet().forEach(itemId -> {
                 Tag nbtTag = nbtData.get(itemId);
                 if (nbtTag instanceof CompoundTag) {
                     nbtDataCache.put(itemId, nbtTag);

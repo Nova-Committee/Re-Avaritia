@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
@@ -8,9 +9,10 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
+import committee.nova.mods.avaritia.common.net.S2CUpdateDimensionsPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -19,15 +21,20 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -38,6 +45,8 @@ public final class InfinityRingControlScreen extends Screen {
     private static final int FOOTER_H = 24;
     private static final int BTN_H = 20;
     private static final int GAP = 3;
+    /** SDL 扫描码 key.keyboard.menu（原 GLFW_KEY_MENU），InputConstants 未提供该常量 */
+    private static final int KEY_MENU = 118;
 
     private int time;
     private int weather;
@@ -78,18 +87,31 @@ public final class InfinityRingControlScreen extends Screen {
     public static void open(S2CInfinityRingOpenPack packet) {
         Minecraft minecraft = Minecraft.getInstance();
         if (packet.create()) {
-            minecraft.setScreen(new InfinityRingCreateScreen(
+            minecraft.gui.setScreen(new InfinityRingCreateScreen(
                     packet.terrain(), packet.time(), packet.weather(), packet.access()));
             return;
         }
-        Screen root = PortableUi.root(minecraft.screen);
+        Screen root = PortableUi.root(minecraft.gui.screen());
         if (root instanceof InfinityRingControlScreen screen && screen.owner.equals(packet.owner())) {
             screen.apply(packet);
             return;
         }
-        minecraft.setScreen(new InfinityRingControlScreen(
+        minecraft.gui.setScreen(new InfinityRingControlScreen(
                 packet.time(), packet.weather(), packet.access(), packet.friends(),
                 packet.owner(), packet.canDelete()));
+    }
+
+    public static void applyKnownLevels(S2CUpdateDimensionsPack packet) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        Set<ResourceKey<Level>> levels = player.connection.levels();
+        if (levels == null) {
+            return;
+        }
+        Consumer<ResourceKey<Level>> op = packet.add() ? levels::add : levels::remove;
+        packet.keys().forEach(op);
     }
 
     private void apply(S2CInfinityRingOpenPack packet) {
@@ -112,10 +134,10 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     @Override
-    public void resize(@NotNull Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         captureTransientState();
         menu.close();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
     }
 
     private void captureTransientState() {
@@ -123,7 +145,7 @@ public final class InfinityRingControlScreen extends Screen {
             filter = searchBox.getValue().trim();
         }
         if (playerList != null) {
-            listScroll = playerList.getScrollAmount();
+            listScroll = playerList.scrollAmount();
             PlayerList.PlayerEntry selected = playerList.getSelected();
             if (selected != null) {
                 selectedName = selected.name;
@@ -212,13 +234,8 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
-        PortableUi.panel(graphics, panel);
-        UiInspector.region("ring.control.panel", panel, null, false);
-        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
-        PortableUi.inset(graphics, roster);
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         if (playerList != null && playerList.children().isEmpty()) {
             int textY = playerList.getY() + 6;
             int textW = Math.max(40, playerList.getWidth() - 8);
@@ -231,40 +248,48 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (searchBox != null && searchBox.isFocused() && !searchBox.isMouseOver(mouseX, mouseY)) {
+    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
+        PortableUi.panel(graphics, panel);
+        UiInspector.region("ring.control.panel", panel, null, false);
+        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
+        PortableUi.inset(graphics, roster);
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (searchBox != null && searchBox.isFocused() && !searchBox.isMouseOver(event.x(), event.y())) {
             searchBox.setFocused(false);
             if (getFocused() == searchBox) {
                 setFocused(null);
             }
         }
-        if (menu.mouseClicked(mouseX, mouseY, button)) {
+        if (menu.mouseClicked(event.x(), event.y(), event.button())) {
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (menu.isOpen() && menu.mouseScrolled(delta)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (menu.isOpen() && menu.mouseScrolled(scrollY)) {
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (menu.isOpen()) {
-            if (menu.keyPressed(keyCode)) {
+            if (menu.keyPressed(event.key())) {
                 return true;
             }
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (event.isEscape()) {
                 menu.close();
                 return true;
             }
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && Screen.hasShiftDown())) {
+        if (event.key() == KEY_MENU || (event.key() == InputConstants.KEY_F10 && event.hasShiftDown())) {
             PlayerList.PlayerEntry selected = playerList == null ? null : playerList.getSelected();
             if (selected != null) {
                 if (selected.addCandidate) {
@@ -275,7 +300,7 @@ public final class InfinityRingControlScreen extends Screen {
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
@@ -284,7 +309,7 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     private void sendModes() {
-        NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.SET_MODES, access, ""));
+        NetworkHandler.sendToServer(pack(C2SInfinityRingPack.SET_MODES, access, ""));
     }
 
     private C2SInfinityRingPack pack(int action, int extra, String name) {
@@ -296,7 +321,7 @@ public final class InfinityRingControlScreen extends Screen {
             return;
         }
         nameInput = name;
-        NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.ADD_FRIEND, access, name));
+        NetworkHandler.sendToServer(pack(C2SInfinityRingPack.ADD_FRIEND, access, name));
     }
 
     private void confirmDelete() {
@@ -307,7 +332,7 @@ public final class InfinityRingControlScreen extends Screen {
                 Component.translatable("gui.avaritia.infinity_ring.delete"),
                 Component.translatable("gui.avaritia.infinity_ring.delete_message"),
                 () -> {
-                    NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.DELETE, access, ""));
+                    NetworkHandler.sendToServer(pack(C2SInfinityRingPack.DELETE, access, ""));
                     onClose();
                 });
     }
@@ -320,14 +345,14 @@ public final class InfinityRingControlScreen extends Screen {
         PortableUi.confirm(this,
                 Component.translatable("gui.avaritia.infinity_ring.ban"),
                 Component.translatable("gui.avaritia.infinity_ring.ban_confirm", name),
-                () -> NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.BAN, access, name)));
+                () -> NetworkHandler.sendToServer(pack(C2SInfinityRingPack.BAN, access, name)));
     }
 
     private void confirmRemove(String name) {
         PortableUi.confirm(this,
                 Component.translatable("gui.avaritia.infinity_ring.remove_friend"),
                 Component.translatable("gui.avaritia.infinity_ring.remove_confirm", name),
-                () -> NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.REMOVE_FRIEND, access, name)));
+                () -> NetworkHandler.sendToServer(pack(C2SInfinityRingPack.REMOVE_FRIEND, access, name)));
     }
 
     private void selectPlayer(PlayerList.PlayerEntry entry) {
@@ -343,7 +368,7 @@ public final class InfinityRingControlScreen extends Screen {
         if ("BANNED".equals(role)) {
             entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.unban",
                     () -> runIfCurrent(expectedOwner, name, role,
-                            () -> NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.UNBAN, access, name)))));
+                            () -> NetworkHandler.sendToServer(pack(C2SInfinityRingPack.UNBAN, access, name)))));
         } else {
             for (InfinityRingSettings.Role next : InfinityRingSettings.Role.values()) {
                 if (next.name().equals(role)) {
@@ -352,14 +377,14 @@ public final class InfinityRingControlScreen extends Screen {
                 entries.add(new OperationMenu.Entry(
                         Component.translatable("gui.avaritia.infinity_ring.role." + next.name().toLowerCase(Locale.ROOT)),
                         () -> runIfCurrent(expectedOwner, name, role,
-                                () -> NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.SET_ROLE, next.ordinal(), name)))));
+                                () -> NetworkHandler.sendToServer(pack(C2SInfinityRingPack.SET_ROLE, next.ordinal(), name)))));
             }
             entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_ring.remove_friend",
                     () -> runIfCurrent(expectedOwner, name, role, () -> confirmRemove(name))));
             entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_ring.ban",
                     () -> runIfCurrent(expectedOwner, name, role, () -> confirmBan(name))));
             entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.visit", () -> runIfCurrent(expectedOwner, name, role, () -> {
-                NetworkHandler.CHANNEL.sendToServer(pack(C2SInfinityRingPack.VISIT, access, name));
+                NetworkHandler.sendToServer(pack(C2SInfinityRingPack.VISIT, access, name));
                 onClose();
             })));
         }
@@ -409,9 +434,8 @@ public final class InfinityRingControlScreen extends Screen {
     private <T extends Enum<T>> CycleButton<T> addCycle(int w, String optionKey, String valuePrefix,
                                               T[] values, T current, Consumer<T> changed) {
         CycleButton<T> cycle = CycleButton.builder((T value) -> Component.translatable(
-                        valuePrefix + value.name().toLowerCase(Locale.ROOT)))
+                        valuePrefix + value.name().toLowerCase(Locale.ROOT)), current)
                 .withValues(values)
-                .withInitialValue(current)
                 .withTooltip(value -> Tooltip.create(Component.translatable(
                         valuePrefix + value.name().toLowerCase(Locale.ROOT) + ".info")))
                 .create(0, 0, w, BTN_H, Component.translatable(optionKey),
@@ -472,45 +496,47 @@ public final class InfinityRingControlScreen extends Screen {
             }
 
             @Override
-            public void render(@NotNull GuiGraphics graphics, int index, int top, int left, int width, int height,
-                               int mouseX, int mouseY, boolean hovering, float partialTick) {
-                lastLeft = left;
-                lastTop = top;
+            public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                       boolean hovering, float partialTick) {
+                lastLeft = getX();
+                lastTop = getY();
+                int width = getWidth();
+                int height = getHeight();
                 boolean selected = !addCandidate && name.equals(selectedName);
-                PortableUi.row(graphics, left, top, width, height, hovering, selected);
+                PortableUi.row(graphics, lastLeft, lastTop, width, height, hovering, selected);
                 if (UiInspector.enabled()) {
-                    UiInspector.row("ring.control.players", name.toLowerCase(Locale.ROOT), index,
-                            left, top, width, height, PlayerList.this.getRectangle(), true);
+                    UiInspector.row("ring.control.players", name.toLowerCase(Locale.ROOT), PlayerList.this.children().indexOf(this),
+                            lastLeft, lastTop, width, height, PlayerList.this.getRectangle(), true);
                 }
                 if (addCandidate) {
                     PortableUi.text(graphics, font,
                             Component.translatable("gui.avaritia.infinity_ring.add_candidate", name),
-                            left + 4, top + 4, Math.max(20, width - 8), PortableUi.TEXT);
+                            lastLeft + 4, lastTop + 4, Math.max(20, width - 8), PortableUi.TEXT);
                     return;
                 }
                 int nameW = Math.max(20, width - 8 - font.width(roleLabel(role)) - 6);
-                PortableUi.text(graphics, font, Component.literal(name), left + 4, top + 4, nameW, PortableUi.TEXT);
+                PortableUi.text(graphics, font, Component.literal(name), lastLeft + 4, lastTop + 4, nameW, PortableUi.TEXT);
                 PortableUi.text(graphics, font, roleLabel(role),
-                        left + 4 + nameW + 2, top + 4, Math.max(16, width - nameW - 8),
+                        lastLeft + 4 + nameW + 2, lastTop + 4, Math.max(16, width - nameW - 8),
                         "BANNED".equals(role) ? PortableUi.DANGER : PortableUi.MUTED);
             }
 
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 if (addCandidate) {
-                    if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                    if (event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
                         addFriend(name);
                         return true;
                     }
                     return false;
                 }
-                if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
                     selectPlayer(this);
                     return true;
                 }
-                if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
                     selectPlayer(this);
-                    openPlayerMenu(name, role, mouseX, mouseY);
+                    openPlayerMenu(name, role, event.x(), event.y());
                     return true;
                 }
                 return false;

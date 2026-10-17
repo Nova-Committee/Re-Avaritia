@@ -89,7 +89,7 @@ public class C2SElytraSpeedUpPacket {
                 currentVelocity.z + forward.z * forwardSpeed
         );
         player.resetFallDistance();
-        player.hurtMarked = true;
+        player.syncVelocity = true;
 
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(
@@ -113,7 +113,7 @@ public class C2SElytraSpeedUpPacket {
         Vec3 nextVelocity = player.getDeltaMovement().lerp(targetVelocity, 0.35D);
 
         player.setDeltaMovement(nextVelocity);
-        player.hurtMarked = true;
+        player.syncVelocity = true;
 
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(

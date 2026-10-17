@@ -6,7 +6,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.level.block.Blocks;
 
@@ -88,21 +91,22 @@ class NeutronRingSavedDataTest {
         preview.putIntArray("Height", new int[]{1});
 
         CompoundTag entry = new CompoundTag();
-        entry.putString("Id", "space-1");
-        entry.putString("Name", "Chest");
-        entry.put("Template", template);
-        entry.put("Preview", preview);
+        entry.putString("id", "space-1");
+        entry.putString("name", "Chest");
+        entry.put("template", template);
+        // 旧版 RGB 预览字段：Codec 解析必须忽略未知键
+        entry.put("preview", preview);
         ListTag spaces = new ListTag();
         spaces.add(entry);
         CompoundTag library = new CompoundTag();
-        library.put("Id", NbtUtils.createUUID(storageId));
-        library.put("Spaces", spaces);
+        library.put("id", new IntArrayTag(UUIDUtil.uuidToIntArray(storageId)));
+        library.put("spaces", spaces);
         ListTag libraries = new ListTag();
         libraries.add(library);
         CompoundTag root = new CompoundTag();
-        root.put("Libraries", libraries);
+        root.put("libraries", libraries);
 
-        NeutronRingSavedData data = NeutronRingSavedData.load(root);
+        NeutronRingSavedData data = NeutronRingSavedData.CODEC.parse(NbtOps.INSTANCE, root).getOrThrow();
         assertEquals(1, data.list(storageId).size());
         assertEquals("Chest", data.list(storageId).get(0).name());
         assertEquals("space-1", data.list(storageId).get(0).id());

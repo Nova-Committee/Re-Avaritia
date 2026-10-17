@@ -40,7 +40,7 @@ public class C2SInfinityChestActionPack {
             if (player == null) return;
             if (!(player.containerMenu instanceof InfinityChestMenu menu) || menu.containerId != containerId) return;
             if (actionId < 0 || actionId > 9
-                    || net.minecraft.resources.ResourceLocation.tryParse(committee.nova.mods.avaritia.util.StorageUtils.getBaseItemId(id)) == null) return;
+                    || net.minecraft.resources.Identifier.tryParse(committee.nova.mods.avaritia.util.StorageUtils.getBaseItemId(id)) == null) return;
             if (!menu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, menu);
             } else {

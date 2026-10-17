@@ -3,11 +3,13 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,12 +45,18 @@ public final class RecipeIngredients {
 
     /** Retains the source datapack result's optional SNBT/object NBT extension. */
     public static ItemStack resultFromJson(JsonObject json) {
-        ItemStack stack = ShapedRecipe.itemStackFromJson(json);
+        var normalized = json.deepCopy();
+        if (json.has("item")) {
+            normalized.remove("item");
+            normalized.addProperty("id", GsonHelper.getAsString(json, "item"));
+        }
+        ItemStack stack = ItemStack.CODEC.parse(JsonOps.INSTANCE, normalized)
+                .getOrThrow(message -> new JsonSyntaxException("Invalid recipe result: " + message));
         if (json.has("nbt")) {
             String nbt = json.get("nbt").isJsonObject() ? json.get("nbt").toString()
                     : GsonHelper.getAsString(json, "nbt");
             try {
-                stack.setTag(TagParser.parseTag(nbt));
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(TagParser.parseCompoundFully(nbt)));
             } catch (CommandSyntaxException exception) {
                 throw new JsonSyntaxException("Invalid recipe result NBT", exception);
             }

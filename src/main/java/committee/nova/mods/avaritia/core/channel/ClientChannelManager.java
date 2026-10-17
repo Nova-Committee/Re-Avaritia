@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -53,6 +54,7 @@ public class ClientChannelManager {
     public byte selectedChannelType = -1;
     public int selectedChannelID = -1;
     public String selectedChannelName = "";
+    private Runnable selectorListener = () -> { };
     @Nullable
     private TesseractChannelScreen screen;
 
@@ -69,7 +71,7 @@ public class ClientChannelManager {
     }
 
     public String getUserName(UUID uuid) {
-        String userName = userCache.getCompound("nameCache").getString(uuid.toString());
+        String userName = userCache.getCompoundOrEmpty("nameCache").getStringOr(uuid.toString(), "");
         if (userName.equals("")) return "unknownUser";
         return userName;
     }
@@ -95,10 +97,12 @@ public class ClientChannelManager {
         myChannels.clear();
         otherChannels.clear();
         publicChannels.clear();
-        my.getAllKeys().forEach(s -> myChannels.put(Integer.parseInt(s), my.getString(s)));
-        other.getAllKeys().forEach(s -> otherChannels.put(Integer.parseInt(s), other.getString(s)));
-        pub.getAllKeys().forEach(s -> publicChannels.put(Integer.parseInt(s), pub.getString(s)));
-        //if (screen != null) screen.updateChannelList();
+        my.keySet().forEach(s -> myChannels.put(Integer.parseInt(s), my.getStringOr(s, "")));
+        other.keySet().forEach(s -> otherChannels.put(Integer.parseInt(s), other.getStringOr(s, "")));
+        pub.keySet().forEach(s -> publicChannels.put(Integer.parseInt(s), pub.getStringOr(s, "")));
+        //对齐 Neo 版 replaceLists：全量列表更新后刷新选择器界面
+        if (screen != null) screen.refreshChannels();
+        selectorListener.run();
     }
 
     public void addChannel(byte type, int id, String name) {
@@ -107,7 +111,8 @@ public class ClientChannelManager {
             case (byte) 1 -> otherChannels.put(id, name);
             case (byte) 2 -> publicChannels.put(id, name);
         }
-        if (screen != null) screen.updateChannelList();
+        if (screen != null) screen.refreshChannels();
+        selectorListener.run();
     }
 
     public void removeChannel(byte type, int id, String name) {
@@ -116,13 +121,48 @@ public class ClientChannelManager {
             case (byte) 1 -> otherChannels.remove(id);
             case (byte) 2 -> publicChannels.remove(id);
         }
-        if (screen != null) screen.updateChannelList();
+        if (screen != null) screen.refreshChannels();
+        selectorListener.run();
     }
 
     public void setSelectedChannel(byte type, int ID, String name) {
         selectedChannelType = type;
         selectedChannelID = ID;
         selectedChannelName = name;
+        //对齐 Neo 版 applyAction：SET 动作也触发选择器刷新
+        selectorListener.run();
+    }
+
+    /** Neo 版同款只读视图：我的 / 终端所有者 / 共享频道列表。 */
+    public Map<Integer, String> mine() {
+        return Map.copyOf(myChannels);
+    }
+
+    public Map<Integer, String> terminalOwner() {
+        return Map.copyOf(otherChannels);
+    }
+
+    public Map<Integer, String> shared() {
+        return Map.copyOf(publicChannels);
+    }
+
+    public byte selectedType() {
+        return selectedChannelType;
+    }
+
+    public int selectedId() {
+        return selectedChannelID;
+    }
+
+    public void listenSelector(Runnable listener) {
+        this.selectorListener = listener == null ? () -> { } : listener;
+    }
+
+    public void closeSelector() {
+        this.selectorListener = () -> { };
+        this.selectedChannelType = -1;
+        this.selectedChannelID = -1;
+        this.selectedChannelName = "";
     }
 
     public void addScreen(TesseractChannelScreen screen) {

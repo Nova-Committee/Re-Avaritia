@@ -1,22 +1,20 @@
 package committee.nova.mods.avaritia.common.dimension;
 
-import com.mojang.serialization.Lifecycle;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.S2CUpdateDimensionsPack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.RandomSequences;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
@@ -61,11 +59,11 @@ public final class DynamicDimensions {
 
     private static LevelStem stem(MinecraftServer server, List<FlatLayerInfo> layers) {
         Holder<net.minecraft.world.level.dimension.DimensionType> type = server.registryAccess()
-                .registryOrThrow(Registries.DIMENSION_TYPE)
-                .getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
+                .lookupOrThrow(Registries.DIMENSION_TYPE)
+                .get(BuiltinDimensionTypes.OVERWORLD).orElseThrow();
         Holder<net.minecraft.world.level.biome.Biome> biome = server.registryAccess()
-                .registryOrThrow(Registries.BIOME)
-                .getHolderOrThrow(Biomes.PLAINS);
+                .lookupOrThrow(Registries.BIOME)
+                .get(Biomes.PLAINS).orElseThrow();
         FlatLevelGeneratorSettings settings = new FlatLevelGeneratorSettings(Optional.empty(), biome, List.of());
         settings.getLayersInfo().clear();
         settings.getLayersInfo().addAll(layers);
@@ -99,23 +97,22 @@ public final class DynamicDimensions {
     @SuppressWarnings("deprecation")
     private static ServerLevel create(MinecraftServer server, Map<ResourceKey<Level>, ServerLevel> levels,
                                       ResourceKey<Level> key, Supplier<LevelStem> stemFactory) {
-        ResourceKey<LevelStem> stemKey = ResourceKey.create(Registries.LEVEL_STEM, key.location());
+        ResourceKey<LevelStem> stemKey = ResourceKey.create(Registries.LEVEL_STEM, key.identifier());
         LevelStem stem = stemFactory.get();
-        Registry<LevelStem> registry = server.registryAccess().registryOrThrow(Registries.LEVEL_STEM);
+        Registry<LevelStem> registry = server.registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
         if (registry instanceof MappedRegistry<LevelStem> mapped && !registry.containsKey(stemKey)) {
             boolean frozen = mapped.frozen;
             mapped.frozen = false;
             try {
                 // Runtime additions do not pass through MappedRegistry.freeze's value-binding step.
-                mapped.register(stemKey, stem, Lifecycle.stable()).bindValue(stem);
+                mapped.register(stemKey, stem, RegistrationInfo.BUILT_IN).bindValue(stem);
             } finally {
                 mapped.frozen = frozen;
             }
-        } else if (registry.containsKey(stemKey)) {
-            stem = registry.get(stemKey);
+        } else {
+            stem = registry.get(stemKey).map(Holder::value).orElse(stem);
         }
         ServerLevel overworld = server.overworld();
-        ChunkProgressListener listener = server.progressListenerFactory.create(11);
         Executor executor = server.executor;
         WorldData worldData = server.getWorldData();
         ServerLevel level = new ServerLevel(
@@ -125,16 +122,15 @@ public final class DynamicDimensions {
                 new PersonalLevelData(worldData, worldData.overworldData()),
                 key,
                 stem,
-                listener,
                 worldData.isDebugWorld(),
                 overworld.getSeed(),
                 List.of(),
-                true,
-                (RandomSequences) null);
-        overworld.getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(level.getWorldBorder()));
+                true);
+        // 26.3 no longer cross-syncs level borders (BorderChangeListener.DelegateBorderChangeListener is gone);
+        // personal dimensions keep their own default border, matching vanilla's per-level borders.
         levels.put(key, level);
         S2CUpdateDimensionsPack.addToAll(server, key);
-        Const.LOGGER.info("Created Infinity Ring dimension {}", key.location());
+        Const.LOGGER.info("Created Infinity Ring dimension {}", key.identifier());
         return level;
     }
 
@@ -167,7 +163,7 @@ public final class DynamicDimensions {
             return started;
         }
         if (!level.players().isEmpty()) {
-            Const.LOGGER.warn("Refusing to delete occupied personal dimension {}", key.location());
+            Const.LOGGER.warn("Refusing to delete occupied personal dimension {}", key.identifier());
             CLOSING.remove(key, started);
             started.complete(false);
             return started;
@@ -175,7 +171,7 @@ public final class DynamicDimensions {
         level.save(null, true, false);
         level.getPoiManager().tick(() -> true);
         levels.remove(key);
-        server.tell(new TickTask(server.getTickCount(), () -> closeAndFinish(server, key, level, started)));
+        server.schedule(new TickTask(server.getTickCount(), () -> closeAndFinish(server, key, level, started)));
         return started;
     }
 
@@ -189,7 +185,7 @@ public final class DynamicDimensions {
         try {
             level.close();
         } catch (IOException e) {
-            Const.LOGGER.error("Failed to close personal dimension {}", key.location(), e);
+            Const.LOGGER.error("Failed to close personal dimension {}", key.identifier(), e);
             CLOSING.remove(key, started);
             started.complete(false);
             return;
@@ -220,18 +216,18 @@ public final class DynamicDimensions {
             started.complete(false);
             return;
         }
-        Const.LOGGER.info("Deleted Infinity Ring dimension {}", key.location());
+        Const.LOGGER.info("Deleted Infinity Ring dimension {}", key.identifier());
         CLOSING.remove(key, started);
         started.complete(true);
     }
 
     private static void unregisterStem(MinecraftServer server, ResourceKey<Level> key) {
-        ResourceKey<LevelStem> stemKey = ResourceKey.create(Registries.LEVEL_STEM, key.location());
-        Registry<LevelStem> registry = server.registryAccess().registryOrThrow(Registries.LEVEL_STEM);
+        ResourceKey<LevelStem> stemKey = ResourceKey.create(Registries.LEVEL_STEM, key.identifier());
+        Registry<LevelStem> registry = server.registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
         if (!(registry instanceof MappedRegistry<LevelStem> mapped) || !mapped.containsKey(stemKey)) {
             return;
         }
-        LevelStem stem = mapped.get(stemKey);
+        LevelStem stem = mapped.get(stemKey).map(Holder::value).orElse(null);
         if (stem == null) {
             return;
         }
@@ -248,11 +244,9 @@ public final class DynamicDimensions {
             mapped.byId.remove(last);
         }
         mapped.toId.removeInt(stem);
-        mapped.byLocation.remove(stemKey.location());
+        mapped.byLocation.remove(stemKey.identifier());
         mapped.byKey.remove(stemKey);
         mapped.byValue.remove(stem);
-        mapped.lifecycles.remove(stem);
-        mapped.holdersInOrder = null;
-        mapped.nextId = mapped.byId.size();
+        mapped.registrationInfos.remove(stemKey);
     }
 }

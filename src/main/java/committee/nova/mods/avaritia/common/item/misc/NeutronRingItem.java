@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.util.InventoryUtils;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.common.net.S2CNeutronRingOpenPack;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -8,15 +9,16 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -71,11 +73,11 @@ public class NeutronRingItem extends ResourceItem {
 
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(NeutronRingContents.TAG);
-        if (tag == null) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.contains(NeutronRingContents.TAG)) {
             return false;
         }
-        return NeutronRingContents.load(tag).selectedId().isPresent();
+        return NeutronRingContents.load(tag.getCompoundOrEmpty(NeutronRingContents.TAG)).selectedId().isPresent();
     }
 
     public static void openGui(ServerPlayer player) {
@@ -103,21 +105,21 @@ public class NeutronRingItem extends ResourceItem {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
-                                                           @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player,
+                                          @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             if (player instanceof ServerPlayer serverPlayer) {
                 openGui(serverPlayer, stack, hand);
             }
-            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+            return InteractionResult.SUCCESS;
         }
         if (level.isClientSide()) {
-            return InteractionResultHolder.sidedSuccess(stack, true);
+            return InteractionResult.SUCCESS;
         }
         return execute(stack, player, level)
-                ? InteractionResultHolder.sidedSuccess(stack, false)
-                : InteractionResultHolder.fail(stack);
+                ? InteractionResult.SUCCESS
+                : InteractionResult.FAIL;
     }
 
     private InteractionResult handleBlockUse(ItemStack stack, UseOnContext context) {
@@ -144,9 +146,9 @@ public class NeutronRingItem extends ResourceItem {
         GlobalPos current = placing ? data.placeBase().orElse(null) : data.captureBase().orElse(null);
         if (current == null || !current.equals(clicked)) {
             (placing ? data.withPlace(clicked) : data.withCapture(clicked)).save(stack);
-            player.displayClientMessage(Component.translatable(placing
+            ItemUtils.sendActionbar(player, Component.translatable(placing
                     ? "message.avaritia.neutron_ring.place_preview"
-                    : "message.avaritia.neutron_ring.base_set"), true);
+                    : "message.avaritia.neutron_ring.base_set"));
             return InteractionResult.SUCCESS;
         }
         return execute(stack, serverPlayer, level) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
@@ -161,31 +163,31 @@ public class NeutronRingItem extends ResourceItem {
         UUID library = data.storageId();
         if (data.selectedId().isPresent()) {
             if (data.placeBase().isEmpty() || !NeutronRingSpaces.sameDimension(level, data.placeBase().get())) {
-                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.no_place"), true);
+                ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.no_place"));
                 return false;
             }
             var space = store.get(library, data.selectedId().get());
             if (space.isEmpty()) {
-                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.missing"), true);
+                ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.missing"));
                 return false;
             }
             if (!NeutronRingSpaces.canModify(serverPlayer, serverLevel, stack, data.placeBase().get().pos(),
                     NeutronRingSpaces.sizeOf(space.get().template()), false)
                     || !NeutronRingSpaces.place(serverLevel, data.placeBase().get().pos(), space.get().template())) {
-                player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.place_failed"), true);
+                ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.place_failed"));
                 return false;
             }
             store.remove(library, data.selectedId().get());
             data.deselect().save(stack);
-            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.placed"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.placed"));
             return true;
         }
         if (data.captureBase().isEmpty() || !NeutronRingSpaces.sameDimension(level, data.captureBase().get())) {
-            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.no_base"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.no_base"));
             return false;
         }
         if (store.list(library).size() >= NeutronRingSavedData.MAX_SPACES) {
-            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.full"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.full"));
             return false;
         }
         BlockPos base = data.captureBase().get().pos();
@@ -196,12 +198,12 @@ public class NeutronRingItem extends ResourceItem {
         String name = Component.translatable("gui.avaritia.neutron_ring.default_name", store.list(library).size() + 1)
                 .getString();
         if (!store.add(library, name, NeutronRingSpaces.capture(serverLevel, base, captureSize))) {
-            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.full"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.full"));
             return false;
         }
         NeutronRingSpaces.clear(serverLevel, base, captureSize);
         data.clearCapture().save(stack);
-        player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.saved", name), true);
+        ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.saved", name));
         return true;
     }
 

@@ -1,9 +1,13 @@
 package committee.nova.mods.avaritia.api.util;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 /**
  * Description:
@@ -13,38 +17,42 @@ import net.minecraft.world.item.ItemStack;
  */
 public class NBTUtils {
     public static String getString(ItemStack stack, String key) {
-        return stack.hasTag() ? getTagCompound(stack).getString(key) : "";
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null ? data.copyTag().getString(key).orElse("") : "";
     }
 
     public static CompoundTag getTagCompound(ItemStack stack) {
         validateCompound(stack);
-        return stack.getTag();
+        return stack.get(DataComponents.CUSTOM_DATA).copyTag();
     }
 
     public static void validateCompound(ItemStack stack) {
-        if (!stack.hasTag()) {
-            CompoundTag tag = new CompoundTag();
-            stack.setTag(tag);
+        if (!stack.has(DataComponents.CUSTOM_DATA)) {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag()));
         }
     }
 
     public static Tag getTag(ItemStack stack, String key) {
-        return stack.hasTag() ? getTagCompound(stack).get(key) : null;
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null ? data.copyTag().get(key) : null;
     }
 
-    public static ListTag writeToTag(ItemStack[] items) {
+    public static ListTag writeToTag(HolderLookup.Provider provider, ItemStack[] items) {
         ListTag tagList = new ListTag();
+        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
         for (ItemStack item : items) {
             if (!item.isEmpty()) {
-                tagList.add(item.save(new CompoundTag()));
+                ItemStack.CODEC.encodeStart(ops, item).result().ifPresent(tagList::add);
             }
         }
         return tagList;
     }
 
-    public static void readFromTag(ItemStack[] items, ListTag tagList) {
+    public static void readFromTag(HolderLookup.Provider provider, ItemStack[] items, ListTag tagList) {
+        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
         for (int i = 0; i < tagList.size(); ++i) {
-            items[i] = ItemStack.of(tagList.getCompound(i));
+            int index = i;
+            ItemStack.CODEC.parse(ops, tagList.get(i)).result().ifPresent(stack -> items[index] = stack);
         }
     }
 

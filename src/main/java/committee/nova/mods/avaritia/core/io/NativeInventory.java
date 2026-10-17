@@ -27,7 +27,7 @@ public interface NativeInventory extends WorldlyContainer, ItemStorageProvider {
         if (handler instanceof ModifiableItemHandler modifiable) modifiable.setStackInSlot(slot, stack);
         else {
             ItemStack previous = getItem(slot);
-            if (ItemStack.isSameItemSameTags(previous, stack)) {
+            if (ItemStack.isSameItemSameComponents(previous, stack)) {
                 int difference = stack.getCount() - previous.getCount();
                 if (difference > 0) handler.insertItem(slot, stack.copyWithCount(difference), false);
                 else if (difference < 0) handler.extractItem(slot, -difference, false);

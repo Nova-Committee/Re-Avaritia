@@ -1,14 +1,19 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import committee.nova.mods.avaritia.core.io.FluidStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +31,7 @@ import java.util.Objects;
  * with a one-way reader for legacy {@code Id}/{@code Amount} entries. Creature
  * payloads keep {@code Id}/{@code Data} and fold legacy {@code Bucketable} into
  * {@code Data.BucketableData}. Unrelated root item NBT is merged, never replaced.
+ * <p>26.3: 物品 NBT 全部经由 {@link DataComponents#CUSTOM_DATA} 组件读写。</p>
  */
 public final class InfinityBucketContents {
     public static final String FLUIDS_NBT = "Fluids";
@@ -61,15 +67,15 @@ public final class InfinityBucketContents {
 
     @NotNull
     public static List<FluidStack> getFluids(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
-        if (nbt == null || !nbt.contains(FLUIDS_NBT, Tag.TAG_LIST)) {
+        CompoundTag nbt = getData(stack);
+        if (nbt == null || !(nbt.get(FLUIDS_NBT) instanceof ListTag)) {
             return new ArrayList<>();
         }
         List<FluidStack> fluids = new ArrayList<>();
-        ListTag list = nbt.getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
+        ListTag list = nbt.getListOrEmpty(FLUIDS_NBT);
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            if (encodedSize(entry) == Integer.MAX_VALUE) {
+            CompoundTag entry = list.getCompoundOrEmpty(i);
+            if (entry.isEmpty() || encodedSize(entry) == Integer.MAX_VALUE) {
                 continue;
             }
             FluidStack fluid = loadFluidStack(entry);
@@ -114,18 +120,18 @@ public final class InfinityBucketContents {
         if (nbt == null || nbt.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        if (nbt.contains("FluidName", Tag.TAG_STRING)) {
+        if (nbt.get("FluidName") instanceof StringTag) {
             return FluidStack.loadFluidStackFromNBT(nbt);
         }
-        if (!nbt.contains(LEGACY_FLUID_ID_KEY, Tag.TAG_STRING)) {
+        if (!(nbt.get(LEGACY_FLUID_ID_KEY) instanceof StringTag)) {
             return FluidStack.EMPTY;
         }
-        ResourceLocation fluidName = new ResourceLocation(nbt.getString(LEGACY_FLUID_ID_KEY));
+        Identifier fluidName = Identifier.parse(nbt.getStringOr(LEGACY_FLUID_ID_KEY, ""));
         var fluid = BuiltInRegistries.FLUID.getOptional(fluidName).orElse(null);
         if (fluid == null) {
             return FluidStack.EMPTY;
         }
-        int amount = nbt.getInt(LEGACY_FLUID_AMOUNT_KEY);
+        int amount = nbt.getIntOr(LEGACY_FLUID_AMOUNT_KEY, 0);
         if (amount <= 0) {
             return FluidStack.EMPTY;
         }
@@ -134,15 +140,15 @@ public final class InfinityBucketContents {
 
     @NotNull
     public static List<CreatureRecord> getCreatures(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
-        if (nbt == null || !nbt.contains(CREATURES_NBT, Tag.TAG_LIST)) {
+        CompoundTag nbt = getData(stack);
+        if (nbt == null || !(nbt.get(CREATURES_NBT) instanceof ListTag)) {
             return new ArrayList<>();
         }
         List<CreatureRecord> creatures = new ArrayList<>();
-        ListTag list = nbt.getList(CREATURES_NBT, Tag.TAG_COMPOUND);
+        ListTag list = nbt.getListOrEmpty(CREATURES_NBT);
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            if (encodedSize(entry) == Integer.MAX_VALUE) {
+            CompoundTag entry = list.getCompoundOrEmpty(i);
+            if (entry.isEmpty() || encodedSize(entry) == Integer.MAX_VALUE) {
                 continue;
             }
             CreatureRecord record = CreatureRecord.load(entry);
@@ -255,14 +261,13 @@ public final class InfinityBucketContents {
     }
 
     public static Control getControl(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(CONTROL_NBT, Tag.TAG_COMPOUND)) {
-            CompoundTag control = tag.getCompound(CONTROL_NBT);
-            return new Control(control.getBoolean(CONTROL_CREATURE_KEY), control.getInt(CONTROL_INDEX_KEY))
+        CompoundTag tag = getData(stack);
+        if (tag != null && tag.get(CONTROL_NBT) instanceof CompoundTag) {
+            CompoundTag control = tag.getCompoundOrEmpty(CONTROL_NBT);
+            return new Control(control.getBooleanOr(CONTROL_CREATURE_KEY, false), control.getIntOr(CONTROL_INDEX_KEY, 0))
                     .clamp(getFluids(stack).size(), getCreatures(stack).size());
         }
-        if (tag != null && tag.contains(OUTPUT_KIND_NBT, Tag.TAG_BYTE)
-                && tag.getByte(OUTPUT_KIND_NBT) == OUTPUT_CREATURE) {
+        if (tag != null && tag.getByteOr(OUTPUT_KIND_NBT, OUTPUT_FLUID) == OUTPUT_CREATURE) {
             return new Control(true, 0).clamp(getFluids(stack).size(), getCreatures(stack).size());
         }
         return Control.DEFAULT.clamp(getFluids(stack).size(), getCreatures(stack).size());
@@ -270,14 +275,14 @@ public final class InfinityBucketContents {
 
     public static void setControl(ItemStack stack, Control control) {
         Control clamped = control.clamp(getFluids(stack).size(), getCreatures(stack).size());
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = copyData(stack);
         CompoundTag stored = new CompoundTag();
         stored.putBoolean(CONTROL_CREATURE_KEY, clamped.creatureSelected());
         stored.putInt(CONTROL_INDEX_KEY, clamped.selectedIndex());
         tag.put(CONTROL_NBT, stored);
         tag.remove(FORCE_PLACEMENT_NBT);
         tag.remove(OUTPUT_KIND_NBT);
-        stripEmptyTag(stack, tag);
+        writeData(stack, tag);
     }
 
     public static FluidStack getSelectedFluid(ItemStack stack) {
@@ -323,11 +328,11 @@ public final class InfinityBucketContents {
         copyOrRemove(from, to, FLUIDS_NBT);
         copyOrRemove(from, to, CREATURES_NBT);
         copyOrRemove(from, to, CONTROL_NBT);
-        CompoundTag tag = to.getTag();
+        CompoundTag tag = getData(to);
         if (tag != null) {
             tag.remove(FORCE_PLACEMENT_NBT);
             tag.remove(OUTPUT_KIND_NBT);
-            stripEmptyTag(to, tag);
+            writeData(to, tag);
         }
     }
 
@@ -351,6 +356,25 @@ public final class InfinityBucketContents {
         }
     }
 
+    @Nullable
+    private static CompoundTag getData(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data == null ? null : data.copyTag();
+    }
+
+    private static CompoundTag copyData(ItemStack stack) {
+        CompoundTag tag = getData(stack);
+        return tag == null ? new CompoundTag() : tag;
+    }
+
+    private static void writeData(ItemStack stack, CompoundTag tag) {
+        if (tag.isEmpty()) {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        }
+    }
+
     private static boolean allowed(ItemStack stack, CompoundTag proposed, int fluidCount, int creatureCount) {
         int proposedBytes = encodedSize(proposed);
         int currentBytes = encodedSize(storageSnapshot(stack));
@@ -366,33 +390,39 @@ public final class InfinityBucketContents {
     }
 
     private static void copyRaw(ItemStack stack, String key, CompoundTag proposed) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getData(stack);
         if (tag != null && tag.contains(key)) {
-            proposed.put(key, tag.get(key).copy());
+            Tag value = tag.get(key);
+            if (value != null) {
+                proposed.put(key, value.copy());
+            }
         }
     }
 
     private static void copyOrRemove(ItemStack from, ItemStack to, String key) {
-        CompoundTag source = from.getTag();
-        if (source != null && source.contains(key)) {
-            to.getOrCreateTag().put(key, source.get(key).copy());
+        CompoundTag source = getData(from);
+        Tag sourceValue = source != null ? source.get(key) : null;
+        if (sourceValue != null) {
+            CompoundTag tag = copyData(to);
+            tag.put(key, sourceValue.copy());
+            writeData(to, tag);
             return;
         }
-        CompoundTag dest = to.getTag();
+        CompoundTag dest = getData(to);
         if (dest != null) {
             dest.remove(key);
-            stripEmptyTag(to, dest);
+            writeData(to, dest);
         }
     }
 
     private static boolean writeList(ItemStack stack, String key, ListTag list) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = copyData(stack);
         if (list.isEmpty()) {
             tag.remove(key);
-            stripEmptyTag(stack, tag);
         } else {
             tag.put(key, list);
         }
+        writeData(stack, tag);
         return true;
     }
 
@@ -424,25 +454,27 @@ public final class InfinityBucketContents {
 
     private static CompoundTag storageSnapshot(ItemStack stack) {
         CompoundTag storage = new CompoundTag();
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getData(stack);
         if (tag == null) {
             return storage;
         }
-        if (tag.contains(FLUIDS_NBT)) {
-            storage.put(FLUIDS_NBT, tag.get(FLUIDS_NBT).copy());
+        Tag fluids = tag.get(FLUIDS_NBT);
+        if (fluids != null) {
+            storage.put(FLUIDS_NBT, fluids.copy());
         }
-        if (tag.contains(CREATURES_NBT)) {
-            storage.put(CREATURES_NBT, tag.get(CREATURES_NBT).copy());
+        Tag creatures = tag.get(CREATURES_NBT);
+        if (creatures != null) {
+            storage.put(CREATURES_NBT, creatures.copy());
         }
         return storage;
     }
 
     private static int rawCount(ItemStack stack, String key) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains(key, Tag.TAG_LIST)) {
+        CompoundTag tag = getData(stack);
+        if (tag == null || !(tag.get(key) instanceof ListTag)) {
             return 0;
         }
-        return tag.getList(key, Tag.TAG_COMPOUND).size();
+        return tag.getListOrEmpty(key).size();
     }
 
     private static boolean containsCreature(List<CreatureRecord> existing, CreatureRecord candidate) {
@@ -452,12 +484,6 @@ public final class InfinityBucketContents {
             }
         }
         return false;
-    }
-
-    private static void stripEmptyTag(ItemStack stack, CompoundTag tag) {
-        if (tag.isEmpty()) {
-            stack.setTag(null);
-        }
     }
 
     public record Control(boolean creatureSelected, int selectedIndex) {
@@ -486,10 +512,10 @@ public final class InfinityBucketContents {
     }
 
     public static final class CreatureRecord {
-        public final ResourceLocation typeId;
+        public final Identifier typeId;
         public final CompoundTag entityData;
 
-        public CreatureRecord(ResourceLocation typeId, CompoundTag entityData) {
+        public CreatureRecord(Identifier typeId, CompoundTag entityData) {
             this.typeId = Objects.requireNonNull(typeId, "typeId");
             this.entityData = entityData == null ? new CompoundTag() : entityData.copy();
         }
@@ -502,19 +528,19 @@ public final class InfinityBucketContents {
         }
 
         public static CreatureRecord load(CompoundTag tag) {
-            if (tag == null || !tag.contains(CREATURE_ID_KEY, Tag.TAG_STRING)) {
+            if (tag == null || !(tag.get(CREATURE_ID_KEY) instanceof StringTag)) {
                 return null;
             }
-            ResourceLocation id = ResourceLocation.tryParse(tag.getString(CREATURE_ID_KEY));
+            Identifier id = Identifier.tryParse(tag.getStringOr(CREATURE_ID_KEY, ""));
             if (id == null) {
                 return null;
             }
-            CompoundTag data = tag.contains(CREATURE_DATA_KEY, Tag.TAG_COMPOUND)
-                    ? tag.getCompound(CREATURE_DATA_KEY).copy()
+            CompoundTag data = tag.get(CREATURE_DATA_KEY) instanceof CompoundTag
+                    ? tag.getCompoundOrEmpty(CREATURE_DATA_KEY).copy()
                     : new CompoundTag();
-            if (tag.contains(CREATURE_BUCKETABLE_KEY, Tag.TAG_COMPOUND)
-                    && !data.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
-                data.put(BUCKETABLE_DATA_KEY, tag.getCompound(CREATURE_BUCKETABLE_KEY).copy());
+            if (tag.get(CREATURE_BUCKETABLE_KEY) instanceof CompoundTag
+                    && !(data.get(BUCKETABLE_DATA_KEY) instanceof CompoundTag)) {
+                data.put(BUCKETABLE_DATA_KEY, tag.getCompoundOrEmpty(CREATURE_BUCKETABLE_KEY).copy());
             }
             return new CreatureRecord(id, data);
         }
@@ -525,13 +551,28 @@ public final class InfinityBucketContents {
         }
 
         public Component displayName() {
-            if (entityData.contains("CustomName", Tag.TAG_STRING)) {
+            if (entityData.contains("CustomName")) {
                 try {
-                    Component parsed = Component.Serializer.fromJson(entityData.getString("CustomName"));
-                    if (parsed != null) {
-                        return parsed;
+                    Tag raw = entityData.get("CustomName");
+                    if (raw != null) {
+                        Component parsed = ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, raw).result().orElse(null);
+                        if (parsed != null) {
+                            return parsed;
+                        }
                     }
                 } catch (RuntimeException ignored) {
+                }
+                String json = entityData.getStringOr("CustomName", "");
+                if (!json.isEmpty()) {
+                    try {
+                        Component parsed = ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, StringTag.valueOf(json))
+                                .result()
+                                .orElse(null);
+                        if (parsed != null) {
+                            return parsed;
+                        }
+                    } catch (RuntimeException ignored) {
+                    }
                 }
             }
             EntityType<?> type = entityType();

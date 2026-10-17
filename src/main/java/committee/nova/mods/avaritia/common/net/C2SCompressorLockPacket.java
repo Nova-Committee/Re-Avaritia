@@ -42,7 +42,7 @@ public class C2SCompressorLockPacket {
             ServerPlayer player = ctx.get().getSender();
             if (player == null || !(player.containerMenu instanceof committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu menu)
                     || !menu.getBlockPos().equals(pos) || !menu.stillValid(player)
-                    || !player.level().hasChunkAt(pos) || !player.mayInteract(player.level(), pos)) return;
+                    || !player.level().hasChunkAt(pos) || !player.level().mayInteract(player, pos)) return;
 
             Level level = player.level();
             BlockEntity tile = level.getBlockEntity(this.pos);

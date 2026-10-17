@@ -6,20 +6,18 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-
-
-
-import java.util.HashMap;
+import java.util.Map;
 
 public class AcceleratorDisplayEntity extends Entity {
 
@@ -48,9 +46,9 @@ public class AcceleratorDisplayEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(SPEED_MULTIPLIER, 1);
-        entityData.define(FACE, Direction.NORTH.get3DDataValue());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(SPEED_MULTIPLIER, 1);
+        builder.define(FACE, Direction.NORTH.get3DDataValue());
     }
 
     // 获取加速倍数
@@ -97,18 +95,22 @@ public class AcceleratorDisplayEntity extends Entity {
     public void tick() {
         super.tick();
         // 如果方块被移除或不在加速列表中，删除实体
-        if (!level().isClientSide && (targetPos == null ||
-                !InfinityClockItem.acceleratedBlocks.getOrDefault(level().dimension(), new HashMap<>()).containsKey(targetPos))) {
+        if (!level().isClientSide() && (targetPos == null || !isTargetStillAccelerated())) {
             this.remove(RemovalReason.KILLED);
         }
 
         // 客户端粒子效果
-        if (level().isClientSide && targetPos != null) {
+        if (level().isClientSide() && targetPos != null) {
             renderEffects();
         }
     }
 
-    
+    private boolean isTargetStillAccelerated() {
+        return InfinityClockItem.acceleratedBlocks
+                .getOrDefault(level().dimension(), Map.of())
+                .containsKey(targetPos);
+    }
+
     private void renderEffects() {
         if (targetPos == null) return;
 
@@ -145,21 +147,21 @@ public class AcceleratorDisplayEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag nbt) {
-        targetPos = BlockPos.of(nbt.getLong("TargetPos"));
-        entityData.set(SPEED_MULTIPLIER, nbt.getInt("Speed"));
-        entityData.set(FACE, nbt.getInt("Face"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        targetPos = BlockPos.of(input.getLongOr("TargetPos", 0L));
+        entityData.set(SPEED_MULTIPLIER, input.getIntOr("Speed", 1));
+        entityData.set(FACE, input.getIntOr("Face", Direction.NORTH.get3DDataValue()));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag nbt) {
-        nbt.putLong("TargetPos", targetPos.asLong());
-        nbt.putInt("Speed", getSpeedMultiplier());
-        nbt.putInt("Face", getFace().get3DDataValue());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putLong("TargetPos", targetPos.asLong());
+        output.putInt("Speed", getSpeedMultiplier());
+        output.putInt("Face", getFace().get3DDataValue());
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        return false;
     }
 }

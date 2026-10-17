@@ -8,3 +8,14 @@ run/
 .settings/
 .vscode/
 .codegraph/
+bin/
+logs/
+specs/
+hs_err_pid*.log
+replay_pid*.log
+
+# 26.3 升级参考资源（体积巨大，不属于模组源码）
+mc263-sources/
+minecraftMaven/
+Re-Avaritia-neo-26.3/
+template-mod-template-26.3/

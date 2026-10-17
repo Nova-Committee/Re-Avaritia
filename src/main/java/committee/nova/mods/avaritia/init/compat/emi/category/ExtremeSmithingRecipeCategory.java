@@ -12,7 +12,7 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -22,9 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public record ExtremeSmithingRecipeCategory(ExtremeSmithingRecipe recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png"), 0, 0, 169, 63);
+    private static final EmiTexture TEXTURE = new EmiTexture(Identifier.tryBuild(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png"), 0, 0, 169, 63);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.extreme_smithing_table.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "extreme_smithing_table"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(Identifier.tryBuild(Const.MOD_ID, "extreme_smithing_table"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {
@@ -32,7 +32,7 @@ public record ExtremeSmithingRecipeCategory(ExtremeSmithingRecipe recipe) implem
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
+    public @NotNull Identifier getId() {
         return this.recipe.getId();
     }
 
