@@ -164,11 +164,12 @@ public final class NeutronSpacePreviewRenderer {
             float view = Math.min(Math.max(1, state.x1() - state.x0()), Math.max(1, state.y1() - state.y0()));
             float scale = state.zoom() * view / Math.max(1.0F, state.fitSpan());
             poseStack.scale(scale, scale, scale);
+            // PiP 管线的净效果是一次 Y 翻转（与 vanilla 实体 PiP 相同）；
+            // 绕 Z 轴旋转 180° 校正朝向，行列式为正以保持 winding/面剔除正确。
+            poseStack.rotate(Axis.ZP.rotationDegrees(180.0F));
             poseStack.rotate(Axis.XP.rotationDegrees(state.pitch()));
             poseStack.rotate(Axis.YP.rotationDegrees(state.yaw()));
             poseStack.translate(-sizeX / 2.0F, -sizeY / 2.0F, -sizeZ / 2.0F);
-            // PiP 纹理的 Y 轴朝向与屏幕空间相反，翻转 Y 避免上下颠倒。
-            poseStack.scale(1.0F, -1.0F, 1.0F);
 
             SnapshotTintGetter getter = new SnapshotTintGetter(snapshot);
             BlockStateModelSet models = minecraft.getModelManager().getBlockStateModelSet();

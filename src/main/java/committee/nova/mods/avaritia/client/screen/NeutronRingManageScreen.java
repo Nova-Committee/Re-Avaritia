@@ -446,8 +446,9 @@ public final class NeutronRingManageScreen extends Screen {
     private void orbitPreview(double dragX, double dragY) {
         float viewW = Math.max(1.0F, previewContent.width());
         float viewH = Math.max(1.0F, previewOuter.height() - 4);
-        yaw = Mth.wrapDegrees(yaw + (float) (dragX * 180.0 / viewW));
-        pitch = Mth.clamp(pitch + (float) (dragY * 90.0 / viewH), -PITCH_LIMIT, PITCH_LIMIT);
+        // PiP 渲染侧绕 Z 轴翻转了 180°，yaw/pitch 的视觉方向与屏幕拖动相反，取反补偿。
+        yaw = Mth.wrapDegrees(yaw - (float) (dragX * 180.0 / viewW));
+        pitch = Mth.clamp(pitch - (float) (dragY * 90.0 / viewH), -PITCH_LIMIT, PITCH_LIMIT);
     }
 
     private void panPreview(double dragX, double dragY) {

@@ -177,35 +177,6 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull ItemHandler inv) {
-        var remaining = super.getRemainingItems(inv);
-
-        if ("default".equals(group)) {
-            var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
-            if (singularities != null && !singularities.isEmpty()) {
-                for (int i = 0; i < remaining.size(); i++) {
-                    var stack = inv.getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        for (var singularity : singularities.values()) {
-                            if (singularity.hasIngredient()) {
-                                var singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                                if (ItemStack.isSameItemSameComponents(stack, singularityStack)) {
-                                    var rem = singularityStack.copy();
-                                    rem.setCount(1);
-                                    remaining.set(i, rem);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return remaining;
-    }
-
-    @Override
     public @NotNull RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<CraftingInput>> getSerializer() {
         return (RecipeSerializer<InfinityCatalystCraftRecipe>) ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
     }
