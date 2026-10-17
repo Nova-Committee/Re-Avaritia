@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.init.handler;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.misc.NeutronHorseArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingDimensions;
@@ -37,6 +36,7 @@ import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -45,7 +45,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.util.ToolUtils.isPlayerWearing;
 import static net.minecraft.world.entity.EquipmentSlot.*;
@@ -63,7 +62,7 @@ public class AbilityHandler {
     public static final Set<String> entitiesWithLeggings = new HashSet<>();
     public static final Set<String> entitiesWithBoots = new HashSet<>();
     public static final Set<String> entitiesWithHands = new HashSet<>();
-    public static final Map<String, FlightInfo> entitiesWithFlight = new ConcurrentHashMap<>();
+    private static final ResourceLocation FLIGHT_MODIFIER = Const.rl("infinity_chest_flight");
     private static final Set<Integer> ARMORED_HORSES = new HashSet<>();
 
     @SubscribeEvent
@@ -86,43 +85,20 @@ public class AbilityHandler {
     }
 
     private static void handleChestStateChange(Player player, String key, boolean hasChest) {
-        boolean isFlyingGameMode = !PlayerUtils.isPlayingMode(player);
         boolean personalFlight = InfinityRingDimensions.isPersonal(player.level());
-        FlightInfo flightInfo = entitiesWithFlight.computeIfAbsent(key, uuid -> new FlightInfo());
-        if (isFlyingGameMode || hasChest || personalFlight) {
-            boolean ownedSource = hasChest || personalFlight;
-            if (!flightInfo.hadFlightItem) {
-                if (ownedSource && !player.getAbilities().mayfly) {
-                    updateClientServerFlight(player, true);
-                    flightInfo.grantedByUs = true;
-                }
-                flightInfo.hadFlightItem = true;
-            } else if (flightInfo.wasFlyingGameMode && !isFlyingGameMode && ownedSource) {
-                updateClientServerFlight(player, true, flightInfo.wasFlying);
-                flightInfo.grantedByUs = true;
-            } else if (flightInfo.grantedByUs && flightInfo.wasFlyingAllowed && !player.getAbilities().mayfly && ownedSource) {
-                updateClientServerFlight(player, true, flightInfo.wasFlying);
+        AttributeInstance flight = player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
+        if (flight != null) {
+            if (hasChest || personalFlight) {
+                flight.addOrUpdateTransientModifier(new AttributeModifier(FLIGHT_MODIFIER, 1.0D, AttributeModifier.Operation.ADD_VALUE));
+            } else {
+                flight.removeModifier(FLIGHT_MODIFIER);
             }
-            flightInfo.wasFlyingGameMode = isFlyingGameMode;
-            flightInfo.wasFlying = player.getAbilities().flying;
-            flightInfo.wasFlyingAllowed = player.getAbilities().mayfly;
-            if (hasChest) {
-                List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().value().isBeneficial())) {
-                    player.removeEffect(potion.getEffect());
-                }
+        }
+        if (hasChest) {
+            List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+            for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().value().isBeneficial())) {
+                player.removeEffect(potion.getEffect());
             }
-        } else {
-            if (flightInfo.hadFlightItem) {
-                if (flightInfo.grantedByUs && player.getAbilities().mayfly) {
-                    updateClientServerFlight(player, false);
-                }
-                flightInfo.hadFlightItem = false;
-                flightInfo.grantedByUs = false;
-            }
-            flightInfo.wasFlyingGameMode = false;
-            flightInfo.wasFlying = player.getAbilities().flying;
-            flightInfo.wasFlyingAllowed = player.getAbilities().mayfly;
         }
     }
 
@@ -220,11 +196,6 @@ public class AbilityHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
-        reapplyFly(event.getEntity());
-    }
-
-    @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         stripAbilities(event.getEntity());
     }
@@ -232,7 +203,6 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         stripAbilities(event.getEntity());
-        clearFly(event.getEntity());
     }
 
     @SubscribeEvent
@@ -286,41 +256,8 @@ public class AbilityHandler {
     private static void stripAbilities(Player player) {
         String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
         entitiesWithHelmets.remove(key);
-        entitiesWithFlight.remove(key);
         entitiesWithLeggings.remove(key);
         entitiesWithBoots.remove(key);
-    }
-
-    private static void clearFly(Player player) {
-        entitiesWithFlight.remove(player.getGameProfile().getName() + ":" + player.level().isClientSide);
-    }
-
-    private static void reapplyFly(Player player) {
-        //For when the dimension changes/we need to reapply the flight info values to the client
-        FlightInfo flightInfo = entitiesWithFlight.get(player.getGameProfile().getName() + ":" + player.level().isClientSide);
-        if (flightInfo != null) {
-            if (flightInfo.wasFlyingAllowed || flightInfo.wasFlying) {
-                updateClientServerFlight(player, flightInfo.wasFlyingAllowed, flightInfo.wasFlying);
-            }
-        }
-    }
-
-    private static void updateClientServerFlight(Player player, boolean allowFlying) {
-        updateClientServerFlight(player, allowFlying, allowFlying && player.getAbilities().flying);
-    }
-
-    private static void updateClientServerFlight(Player player, boolean allowFlying, boolean isFlying) {
-        player.getAbilities().mayfly = allowFlying;
-        player.getAbilities().flying = isFlying;
-        player.onUpdateAbilities(); 
-    }
-
-    public static class FlightInfo {
-        public boolean hadFlightItem;
-        public boolean grantedByUs;
-        public boolean wasFlyingGameMode;
-        public boolean wasFlyingAllowed;
-        public boolean wasFlying;
     }
 
 }
