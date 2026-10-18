@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "key": "infinity_clock_up",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "avaritia:item/infinity_clock"
+    },
+    "on_true": {
+      "type": "avaritia:halo",
+      "color": -872415232,
+      "model": "avaritia:item/infinity_clock_up",
+      "size": 6,
+      "texture": "avaritia:misc/halo"
+    },
+    "property": "avaritia:mode_flag"
+  },
+  "oversized_in_gui": true
+}

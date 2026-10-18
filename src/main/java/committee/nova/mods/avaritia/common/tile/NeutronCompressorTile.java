@@ -17,23 +17,24 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +54,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
-    private final SimpleContainerData data = new SimpleContainerData(1);
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case NeutronCompressorMenu.DATA_PROGRESS -> progress;
+                case NeutronCompressorMenu.DATA_MATERIAL_COUNT -> materialCount;
+                case NeutronCompressorMenu.DATA_MATERIALS_REQUIRED -> getMaterialsRequired();
+                case NeutronCompressorMenu.DATA_TIME_REQUIRED -> getTimeRequired();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == NeutronCompressorMenu.DATA_PROGRESS) {
+                progress = value;
+            } else if (index == NeutronCompressorMenu.DATA_MATERIAL_COUNT) {
+                materialCount = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NeutronCompressorMenu.DATA_COUNT;
+        }
+    };
     private ICompressorRecipe recipe;
     private ItemStack materialStack = ItemStack.EMPTY;
     private int materialCount;
@@ -106,18 +132,24 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
         if (tile.recipeLocked && tile.lockedRecipe != null) {
             // 锁定状态下使用锁定的配方
-            tile.recipe = tile.lockedRecipe.matches(tile.recipeInventory.toIInventory(), level) ? tile.lockedRecipe : null;
+            tile.recipe = tile.lockedRecipe.matches(tile.toCraftingInput(), level) ? tile.lockedRecipe : null;
         } else {
             // 正常状态查找配方
-            if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-                tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+            if (tile.recipe == null || !tile.recipe.matches(tile.toCraftingInput(), level)) {
+                tile.recipe = level.recipeAccess().getSynchronizedRecipes()
+                        .getFirstMatch(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.toCraftingInput(), level)
+                        .map(RecipeHolder::value)
+                        .orElse(null);
             }
         }
 
         if (!level.isClientSide()) {
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
-                    tile.materialStack = input.copy();
+                    // 外部存储可能绕过槽位上限直接塞入 >64 的堆叠；materialStack 只用于
+                    // 配方匹配/显示，数量由 materialCount 单独记录，因此这里必须夹到合法堆叠数，
+                    // 否则 saveAdditional 的 ItemStack.OPTIONAL_CODEC 会因 count>99 抛错。
+                    tile.materialStack = tile.legalMaterialStack(input);
 
                     tile.setChangedFast();
                 }
@@ -142,10 +174,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
                 if (tile.materialCount >= tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
                     tile.setProgress(tile.progress + 1);
                     if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
-                        var result = tile.recipe.assemble(tile.inventory.toIInventory(), level.registryAccess());
+                        var result = tile.recipe.assemble(tile.toCraftingInput());
+                        int produced = tile.producedCount(result);
 
-                        if (ItemUtils.canCombineStacks(result, output)) {
-                            tile.updateResult(result, tile.tier.outputAmplifier);
+                        // 输出槽容量必须按“放大后的实际产出”判断，否则 result.getCount()=1、
+                        // outputAmplifier=2、输出槽已有 63 个时会通过检查并 grow 到 65，产生
+                        // 超过最大堆叠/超过 99 的非法 ItemStack（保存/网络同步时崩溃）。
+                        if (produced > 0 && ItemUtils.canCombineStacks(result.copyWithCount(produced), output)) {
+                            tile.updateResult(result.copyWithCount(produced));
                             tile.setProgress(0);
                             tile.materialCount -= Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier);
 
@@ -170,29 +206,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        this.materialCount = tag.getInt("MaterialCount");
-        this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
-        this.setProgress(tag.getInt("Progress"));
-        this.recipeLocked = tag.getBoolean("RecipeLocked");
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.materialCount = input.getIntOr("MaterialCount", 0);
+        this.materialStack = input.read("MaterialStack", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        this.setProgress(input.getIntOr("Progress", 0));
+        this.recipeLocked = input.getBooleanOr("RecipeLocked", false);
         // 加载面配置
-        if (tag.contains("SideConfig")) {
-            this.sideConfig = SideConfiguration.fromNBT(tag.getCompound("SideConfig"));
-        }
+        input.read("SideConfig", CompoundTag.CODEC).ifPresent(tag -> this.sideConfig = SideConfiguration.fromNBT(tag));
         this.lockedRecipe = null;
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putInt("MaterialCount", this.materialCount);
-        tag.put("MaterialStack", this.materialStack.save(new CompoundTag()));
-        tag.putInt("Progress", this.progress);
-        tag.putBoolean("RecipeLocked", this.recipeLocked);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("MaterialCount", this.materialCount);
+        output.store("MaterialStack", ItemStack.OPTIONAL_CODEC, this.materialStack);
+        output.putInt("Progress", this.progress);
+        output.putBoolean("RecipeLocked", this.recipeLocked);
 
         // 保存面配置
-        tag.put("SideConfig", sideConfig.toNBT());
+        output.store("SideConfig", CompoundTag.CODEC, sideConfig.toNBT());
+    }
+
+    /** 单格 CraftingInput，包装当前材料栈以驱动配方匹配/组装。 */
+    private CraftingInput toCraftingInput() {
+        return new CraftingInput(1, 1, List.of(this.recipeInventory.getStackInSlot(0)));
     }
 
     @Override
@@ -253,14 +292,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     }
 
 
-    private void updateResult(ItemStack stack, int outputAmplifier) {
+    private void updateResult(ItemStack produced) {
         var result = this.inventory.getStackInSlot(0);
 
         if (result.isEmpty()) {
-            this.inventory.setStackInSlot(0, stack.copyWithCount(outputAmplifier));
+            this.inventory.setStackInSlot(0, produced.copy());
         } else {
-            this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount() * outputAmplifier));
+            this.inventory.setStackInSlot(0, ItemUtils.grow(result, produced.getCount()));
         }
+    }
+
+    /**
+     * 按机器等级计算单次实际产出数量，并夹到物品自身的最大堆叠数。
+     */
+    private int producedCount(ItemStack result) {
+        if (result.isEmpty()) {
+            return 0;
+        }
+        long count = (long) result.getCount() * this.tier.outputAmplifier;
+        return (int) Math.min(result.getMaxStackSize(), Math.max(1L, count));
+    }
+
+    private ItemStack legalMaterialStack(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return stack.copyWithCount(Math.min(stack.getCount(), stack.getMaxStackSize()));
     }
 
     // 新增方法：配方锁定相关
@@ -387,7 +444,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
             if (!extractedStack.isEmpty()) {
                 if (materialStack.isEmpty()) {
-                    materialStack = extractedStack.copy();
+                    materialStack = legalMaterialStack(extractedStack);
                 }
 
                 // 将物品放入输入槽
@@ -428,23 +485,20 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         }
     }
 
-    /** progress的setter，确保一旦设置progress，就同步更新SimpleContainerData */
+    /** progress的setter；ContainerData 实时读取字段，无需手动写入数据槽 */
     private void setProgress(int progress)
     {
         this.progress = progress;
-        this.data.set(0, this.progress);
     }
 
     public boolean canInsertItem(ItemStack stack) {
         if (this.recipeLocked && this.lockedRecipe != null) {
             return doesItemMatchRecipeIngredient(stack, this.lockedRecipe);
-        } else {
-            var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-            if (!recipes.isEmpty()) {
-                for (var recipe : recipes) {
-                    if (doesItemMatchRecipeIngredient(stack, recipe)) {
-                        return true;
-                    }
+        } else if (this.level != null) {
+            var recipes = this.level.recipeAccess().getSynchronizedRecipes().getAllOfType(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+            for (var holder : recipes) {
+                if (doesItemMatchRecipeIngredient(stack, holder.value())) {
+                    return true;
                 }
             }
         }

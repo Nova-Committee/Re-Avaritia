@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.item.misc.InfinityElytraItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,7 @@ public final class InfinityElytraUtils {
 
     /** Infinity elytra has no durability; all other elytra keep vanilla's damage limit. */
     public static boolean isFlyEnabled(ItemStack stack) {
-        return stack.getItem() instanceof InfinityElytraItem || ElytraItem.isFlyEnabled(stack);
+        return stack.getItem() instanceof InfinityElytraItem || stack.has(DataComponents.GLIDER) && !stack.nextDamageWillBreak();
     }
 
     public static boolean hasInfinityElytraEquipped(Player player) {

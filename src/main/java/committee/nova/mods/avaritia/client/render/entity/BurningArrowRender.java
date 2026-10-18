@@ -2,24 +2,10 @@ package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.entity.arrow.BurningArrowEntity;
-import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 
-
-import org.jetbrains.annotations.NotNull;
-
-/**
- * @author cnlimiter
- */
-
-public class BurningArrowRender extends ArrowRenderer<BurningArrowEntity> {
+public class BurningArrowRender extends TexturedArrowRender<BurningArrowEntity> {
     public BurningArrowRender(EntityRendererProvider.Context context) {
-        super(context);
-    }
-
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull BurningArrowEntity entity) {
-        return Res.BURNING_ARROW;
+        super(context, Res.BURNING_ARROW);
     }
 }

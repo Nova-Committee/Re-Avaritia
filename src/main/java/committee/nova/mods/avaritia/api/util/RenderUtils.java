@@ -1,28 +1,16 @@
 package committee.nova.mods.avaritia.api.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.world.inventory.InventoryMenu;
-import org.lwjgl.opengl.GL13;
+import net.minecraft.resources.Identifier;
 
 public class RenderUtils {
-    public static final TextureStateShard COSMIC_TEXTURE_ISOLATED = new TextureStateShard(InventoryMenu.BLOCK_ATLAS,false,false){
-        @Override
-        public void setupRenderState() {
-            super.setupRenderState();
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0);
 
-            Minecraft mc = Minecraft.getInstance();
-            TextureAtlas textureAtlas = mc.getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+    public static final Identifier COSMIC_TEXTURE_ISOLATED = TextureAtlas.LOCATION_BLOCKS;
 
-            RenderSystem.bindTexture(textureAtlas.getId());
-        }
-
-        @Override
-        public void clearRenderState() {
-            super.clearRenderState();
-        }
-    };
+    public static final LayeringTransform POLYGON_OFFSET_LAYERING =
+            new LayeringTransform(
+                    "polygon_offset_layering",
+                    matrix -> matrix.translate(0.0F, 0.0F, -0.001F)
+            );
 }

@@ -1,106 +1,86 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import committee.nova.mods.avaritia.api.util.java.TriFunction;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierRecipe;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.api.util.java.TriFunction;
 import lombok.Getter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.level.Level;
-import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
-import committee.nova.mods.avaritia.api.common.wrapper.ContainerItemHandler;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Description:
- * @author cnlimiter
+ * Author: cnlimiter
  * Date: 2022/4/2 9:16
  * Version: 1.0
  * from <a href="https://github.com/BlakeBr0/ExtendedCrafting/blob/1.20/src/main/java/com/blakebr0/extendedcrafting/crafting/recipe/ShapedTableRecipe.java">...</a>
  */
 public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
-    private final ResourceLocation recipeId;
-    private final NonNullList<Ingredient> inputs;
-    final ItemStack output;
-    private final int width;
-    private final int height;
-    private final int tier;
-    @Getter private final boolean compatible;
+    public final ShapedRecipePattern pattern;
+    public final ItemStackTemplate result;
+    public final int tier;
+    @Getter
+    private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
-    public ShapedTableCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output) {
-        this(recipeId, width, height, inputs, output, 0, false);
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result) {
+        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), 0, false);
     }
 
-    public ShapedTableCraftingRecipe(ResourceLocation recipeId, int width, int height,
-                                     NonNullList<Ingredient> inputs, ItemStack output,
-                                     int tier, boolean compatible) {
-        this.recipeId = recipeId;
-        this.inputs = inputs;
-        this.output = output;
-        this.width = width;
-        this.height = height;
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result) {
+        this(pattern, result, 0, false);
+    }
+
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {
+        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), tier, compatible);
+    }
+
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result, int tier, boolean compatible) {
+        this.pattern = pattern;
+        this.result = result;
         this.tier = tier;
         this.compatible = compatible;
     }
 
-    private static String[] patternFromJson(JsonArray jsonArr) {
-        var astring = new String[jsonArr.size()];
-        for (int i = 0; i < astring.length; ++i) {
-            var s = GsonHelper.convertToString(jsonArr.get(i), "pattern[" + i + "]");
-
-            if (i > 0 && astring[0].length() != s.length()) {
-                throw new JsonSyntaxException("Invalid pattern: each row must be the same width");
-            }
-
-            astring[i] = s;
-        }
-
-        return astring;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+        return this.result.create();
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
-        return this.output;
+    public @NotNull ItemStack assemble(@NotNull ItemHandler inventory) {
+        return this.result.create();
     }
 
     @Override
-    public ItemStack assemble(ItemHandler inventory) {
-        return this.output.copy();
-    }
-
-    @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return this.output.copy();
-    }
-
-    @Override
-    public boolean matches(ItemHandler inventory) {
+    public boolean matches(@NotNull ItemHandler inventory) {
         if (this.tier != 0 && this.tier != this.getTierFromGridSize(inventory))
             return false;
         int size = (int) Math.sqrt(inventory.getSlots());
-        for (int i = 0; i <= size - this.width; i++) {
-            for (int j = 0; j <= size - this.height; j++) {
+        for (int i = 0; i <= size - this.pattern.width(); i++) {
+            for (int j = 0; j <= size - this.pattern.height(); j++) {
                 if (this.checkMatch(inventory, i, j, true)) {
                     return true;
                 }
@@ -115,33 +95,41 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new ContainerItemHandler(inv));
-    }
-
-    @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return this.inputs;
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        this.pattern.ingredients().forEach(ingredient -> ingredient.ifPresent(ingredients::add));
+        return ingredients;
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
-        return this.recipeId;
+    public @NotNull RecipeSerializer<? extends Recipe<CraftingInput>> getSerializer() {
+        return (RecipeSerializer<ShapedTableCraftingRecipe>) ModRecipeSerializers.SHAPED_CRAFT_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.SHAPED_CRAFT_SERIALIZER.get();
-    }
-
-    @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<? extends Recipe<CraftingInput>> getType() {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width >= this.width && height >= this.height;
+        return width >= this.pattern.width() && height >= this.pattern.height();
+    }
+
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.createFromOptionals(this.pattern.ingredients());
+    }
+
+    @Override
+    public @NotNull List<RecipeDisplay> display() {
+        return List.of(new ShapedCraftingRecipeDisplay(
+                this.pattern.width(),
+                this.pattern.height(),
+                this.pattern.ingredients().stream().map(Ingredient::optionalIngredientToDisplay).toList(),
+                new SlotDisplay.ItemStackSlotDisplay(this.result),
+                new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+        ));
     }
 
     @Override
@@ -150,12 +138,12 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
             var remaining = NonNullList.withSize(inventory.getSlots(), ItemStack.EMPTY);
             int size = (int) Math.sqrt(inventory.getSlots());
 
-            for (int i = 0; i <= size - this.width; i++) {
-                for (int j = 0; j <= size - this.height; j++) {
+            for (int i = 0; i <= size - this.pattern.width(); i++) {
+                for (int j = 0; j <= size - this.pattern.height(); j++) {
                     if (this.checkMatch(inventory, i, j, true)) {
-                        for (int k = 0; k < this.height; k++) {
-                            for (int l = 0; l < this.width; l++) {
-                                int index = (this.width - 1 - l) + i + (k + j) * size;
+                        for (int k = 0; k < this.pattern.height(); k++) {
+                            for (int l = 0; l < this.pattern.width(); l++) {
+                                int index = (this.pattern.width() - 1 - l) + i + (k + j) * size;
                                 var stack = inventory.getStackInSlot(index);
 
                                 remaining.set(index, this.transformers.apply(l, k, stack));
@@ -166,8 +154,8 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
                     }
 
                     if (this.checkMatch(inventory, i, j, false)) {
-                        for (int k = 0; k < this.height; k++) {
-                            for (int l = 0; l < this.width; l++) {
+                        for (int k = 0; k < this.pattern.height(); k++) {
+                            for (int l = 0; l < this.pattern.width(); l++) {
                                 int index = l + i + (k + j) * size;
                                 var stack = inventory.getStackInSlot(index);
 
@@ -188,16 +176,25 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     @Override
     public int getTier() {
         if (this.tier > 0) return this.tier;
-
-        return this.width < 4 && this.height < 4 ? 1
-                : this.width < 6 && this.height < 6 ? 2
-                : this.width < 8 && this.height < 8 ? 3
+        var width = this.pattern.width();
+        var height = this.pattern.height();
+        return width < 4 && height < 4 ? 1
+                : width < 6 && height < 6 ? 2
+                : width < 8 && height < 8 ? 3
                 : 4;
     }
 
     @Override
     public boolean hasRequiredTier() {
         return this.tier > 0;
+    }
+
+    public int getWidth() {
+        return this.pattern.width();
+    }
+
+    public int getHeight() {
+        return this.pattern.height();
     }
 
     private int getTierFromGridSize(ItemHandler inv) {
@@ -210,21 +207,24 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
     private boolean checkMatch(ItemHandler inventory, int x, int y, boolean mirror) {
         int size = (int) Math.sqrt(inventory.getSlots());
+        var width = this.pattern.width();
+        var height = this.pattern.height();
+        var ingredients = this.pattern.ingredients();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int k = i - x;
                 int l = j - y;
-                var ingredient = Ingredient.EMPTY;
+                var ingredient = java.util.Optional.<Ingredient>empty();
 
-                if (k >= 0 && l >= 0 && k < this.width && l < this.height) {
+                if (k >= 0 && l >= 0 && k < width && l < height) {
                     if (mirror) {
-                        ingredient = this.inputs.get(this.width - k - 1 + l * this.width);
+                        ingredient = ingredients.get(width - k - 1 + l * width);
                     } else {
-                        ingredient = this.inputs.get(k + l * this.width);
+                        ingredient = ingredients.get(k + l * width);
                     }
                 }
 
-                if (!ingredient.test(inventory.getStackInSlot(i + j * size))) {
+                if (!Ingredient.testOptionalIngredient(ingredient, inventory.getStackInSlot(i + j * size))) {
                     return false;
                 }
             }
@@ -237,49 +237,32 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
         this.transformers = transformers;
     }
 
-    public static class Serializer implements RecipeSerializer<ShapedTableCraftingRecipe> {
-        @Override
-        public @NotNull ShapedTableCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-            var pattern = ShapedTableCraftingRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
-            int width = pattern[0].length();
-            int height = pattern.length;
-            var inputs = ShapedRecipe.dissolvePattern(pattern, map, width, height);
-            var output = RecipeIngredients.resultFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            var compatible = GsonHelper.getAsBoolean(json, "compatible", false);
-            int tier = GsonHelper.getAsInt(json, "tier", 0);
-            int size = tier * 2 + 1;
+    public static class Serializer {
+        public static final MapCodec<ShapedTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
+                        RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
+                        Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier),
+                        Codec.BOOL.optionalFieldOf("compatible", false).forGetter(recipe -> recipe.compatible)
+                        ).apply(builder, ShapedTableCraftingRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, ShapedTableCraftingRecipe> STREAM_CODEC = StreamCodec.of(
+                ShapedTableCraftingRecipe.Serializer::toNetwork, ShapedTableCraftingRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<ShapedTableCraftingRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
-            if (tier != 0 && (width > size || height > size))
-                throw new JsonSyntaxException("The pattern size is larger than the specified tier can support");
-
-            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier, compatible);
-        }
-
-        @Override
-        public ShapedTableCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            int width = buffer.readVarInt();
-            int height = buffer.readVarInt();
-            var inputs = NonNullList.withSize(width * height, Ingredient.EMPTY);
-
-            inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
-
-            var output = buffer.readItem();
-            var tier = buffer.readVarInt();
+        private static ShapedTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
+            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            int tier = buffer.readVarInt();
             var compatible = buffer.readBoolean();
-            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier, compatible);
+
+            return new ShapedTableCraftingRecipe(pattern, result, tier, compatible);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, ShapedTableCraftingRecipe recipe) {
-            buffer.writeVarInt(recipe.width);
-            buffer.writeVarInt(recipe.height);
-
-            for (var ingredient : recipe.inputs) {
-                ingredient.toNetwork(buffer);
-            }
-
-            buffer.writeItem(recipe.output);
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, ShapedTableCraftingRecipe recipe) {
+            ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
             buffer.writeBoolean(recipe.compatible);
         }

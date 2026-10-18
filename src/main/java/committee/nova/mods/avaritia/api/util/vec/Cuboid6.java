@@ -39,7 +39,7 @@ public class Cuboid6 implements Copyable<Cuboid6> {
     }
 
     public Cuboid6(CompoundTag tag) {
-        this(Vector3.fromNBT(tag.getCompound("min")), Vector3.fromNBT(tag.getCompound("max")));
+        this(Vector3.fromNBT(tag.getCompound("min").orElseGet(CompoundTag::new)), Vector3.fromNBT(tag.getCompound("max").orElseGet(CompoundTag::new)));
     }
 
     public Cuboid6(Cuboid6 cuboid) {
@@ -152,8 +152,8 @@ public class Cuboid6 implements Copyable<Cuboid6> {
 
     public Cuboid6 expandSide(Direction side, int amount) {
         switch (side.getAxisDirection()) {
-            case NEGATIVE -> min.add(Vector3.fromVec3i(side.getNormal()).multiply(amount));
-            case POSITIVE -> max.add(Vector3.fromVec3i(side.getNormal()).multiply(amount));
+            case NEGATIVE -> min.add(Vector3.fromVec3i(side.getUnitVec3i()).multiply(amount));
+            case POSITIVE -> max.add(Vector3.fromVec3i(side.getUnitVec3i()).multiply(amount));
         }
         return this;
     }

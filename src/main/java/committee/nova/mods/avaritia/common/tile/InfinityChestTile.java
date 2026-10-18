@@ -9,7 +9,7 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -20,6 +20,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestLidController;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,26 +65,46 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity,
         return new InfinityChestMenu(containerId, player, this);
     }
 
-    public void handleUpdateTag(CompoundTag tag) {
-        readChestData(tag);
+    public void handleUpdateTag(ValueInput input) {
+        readChestData(input);
+    }
+
+    /**
+     * 将方块实体数据写入掉落物的 BLOCK_ENTITY_DATA 组件（放置时由 BlockItem 自动还原）。
+     */
+    public void saveToItem(net.minecraft.world.item.ItemStack stack) {
+        if (this.level == null) return;
+        TagValueOutput output = TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, this.level.registryAccess());
+        this.saveAdditional(output);
+        net.minecraft.world.item.BlockItem.setBlockEntityData(stack, this.getType(), output);
+    }
+
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super：默认实现检测到本类是 Container
+     * （NativeInventory）会调用 Containers.dropContents，把虚拟存储中每种物品
+     * 最多散落一组（64 个）到世界，而物品本体仍在 ServerChestManager 虚拟存储中，
+     * 由掉落物携带的 channelID 在重放时整体恢复，散落纯属复制/吞物品。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
-        super.load(pTag);
-        readChestData(pTag);
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        readChestData(input);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
         if (owner != null) {
-            pTag.putUUID("owner", owner);
-            pTag.putBoolean("locked", locked);
+            output.store("owner", UUIDUtil.CODEC, owner);
+            output.putBoolean("locked", locked);
         }
-        pTag.putString("filter", filter);
-        pTag.putByte("sortType", sortType);
-        pTag.putUUID("channelID", channelID);
+        output.putString("filter", filter);
+        output.putByte("sortType", sortType);
+        output.store("channelID", UUIDUtil.CODEC, channelID);
     }
 
     @Override
@@ -131,14 +154,14 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity,
         return channel;
     }
 
-    private void readChestData(CompoundTag tag) {
-        if (tag.contains("owner")) {
-            owner = tag.getUUID("owner");
-            locked = tag.getBoolean("locked");
-        }
-        if (tag.contains("filter")) filter = tag.getString("filter");
-        if (tag.contains("sortType")) sortType = tag.getByte("sortType");
-        if (tag.contains("channelID")) channelID = tag.getUUID("channelID");
+    private void readChestData(ValueInput input) {
+        input.read("owner", UUIDUtil.CODEC).ifPresent(uuid -> {
+            owner = uuid;
+            locked = input.getBooleanOr("locked", false);
+        });
+        filter = input.getStringOr("filter", filter);
+        sortType = input.getByteOr("sortType", sortType);
+        channelID = input.read("channelID", UUIDUtil.CODEC).orElse(channelID);
         resetChannelBinding();
     }
 
@@ -185,6 +208,6 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity,
         double d0 = (double) pPos.getX() + 0.5;
         double d1 = (double) pPos.getY() + 0.5;
         double d2 = (double) pPos.getZ() + 0.5;
-        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.getRandom().nextFloat() * 0.1F + 0.9F);
     }
 }

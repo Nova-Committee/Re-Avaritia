@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -130,9 +130,9 @@ public class InfinityBucketMenu extends BaseMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player clicker) {
+    public void clicked(int slotId, int button, @NotNull ContainerInput clickType, @NotNull Player clicker) {
         if (clicker != player || slotId == offhandSyncSlot
-                || (clickType == ClickType.SWAP && button == bucketSlot)) {
+                || (clickType == ContainerInput.SWAP && button == bucketSlot)) {
             return;
         }
         super.clicked(slotId, button, clickType, clicker);
@@ -268,7 +268,7 @@ public class InfinityBucketMenu extends BaseMenu {
         } else {
             setCarried(carried);
             if (!result.isEmpty()) {
-                player.getInventory().placeItemBackInInventory(result);
+                player.getInventory().placeItemBackInInventory(result, net.minecraft.util.Prediction.PREDICTED);
             }
         }
     }

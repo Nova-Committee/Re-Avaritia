@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "minecraft:breeze_rod",
+    "I": "avaritia:infinity_nugget",
+    "M": "minecraft:heavy_core",
+    "N": "avaritia:neutron_ingot"
+  },
+  "pattern": [
+    "     CC C",
+    "    CIIC ",
+    "    CIMIC",
+    "     CIIC",
+    "    N CC ",
+    "   D     ",
+    "  N      ",
+    " N       ",
+    "C        "
+  ],
+  "result": {
+    "id": "avaritia:infinity_mace"
+  },
+  "tier": 4
+}

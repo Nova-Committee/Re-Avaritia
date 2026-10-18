@@ -5,14 +5,22 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import lombok.Getter;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -26,19 +34,29 @@ public class Singularity {
     // Match Loader's startup property without requiring a launched game for data-model consumers.
     private static final boolean DEVELOPMENT = !"false".equalsIgnoreCase(System.getProperty("fabric.development", "false"));
 
-    @Getter private final ResourceLocation registryName;
+    // Fabric 的网络桥（NetBaseHandler）使用普通 FriendlyByteBuf，这里用内置注册表的
+    // RegistryOps 以 NBT 形式编解码 Ingredient，等价于 Neo 版 OPTIONAL_CONTENTS_STREAM_CODEC。
+    private static final RegistryOps<Tag> INGREDIENT_OPS = RegistryAccess
+            .fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)
+            .createSerializationContext(NbtOps.INSTANCE);
+
+    public static final StreamCodec<FriendlyByteBuf, Singularity> STREAM_CODEC = StreamCodec.of(
+            Singularity::write, Singularity::read
+    );
+
+    @Getter private final Identifier registryName;
     @Getter private String displayName;
     @Getter private int overlayColor = 0x3B2754;
     @Getter private int underlayColor = 0x3B2754;
     private int count = 1000;
     @Getter private int timeCost = DEVELOPMENT ? 240 : ModConfig.singularityTimeRequired.get();
-    @Getter private Ingredient ingredient = Ingredient.EMPTY;
+    @Getter private Ingredient ingredient;
     @Getter private boolean enabled = true;
     @Getter private boolean recipeEnabled  = true;
     private final List<JsonObject> conditions = new CopyOnWriteArrayList<>();
 
 
-    public Singularity(ResourceLocation registryName, String displayName, int overlayColor, int underlayColor,
+    public Singularity(Identifier registryName, String displayName, int overlayColor, int underlayColor,
                        int count, int timeCost, Ingredient ingredient, boolean enabled, boolean recipeEnable) {
         this.registryName = Objects.requireNonNull(registryName, "registryName");
         this.setDisplayName(displayName);
@@ -50,7 +68,7 @@ public class Singularity {
         this.setRecipeEnabled(recipeEnable);
     }
 
-    public Singularity(ResourceLocation registryName) {
+    public Singularity(Identifier registryName) {
         this.registryName = Objects.requireNonNull(registryName, "registryName");
         this.displayName = registryName.toString();
     }
@@ -77,16 +95,20 @@ public class Singularity {
     }
 
     public Singularity setIngredient(Ingredient ingredient) {
-        this.ingredient = Objects.requireNonNull(ingredient, "ingredient");
+        this.ingredient = ingredient;
         return this;
     }
 
+    /**
+     * 26.3 不再有 Ingredient.of(TagKey)，标签配料需要通过 HolderGetter 解析成 HolderSet.Named。
+     */
     public Singularity setTag(String tag) {
-        ResourceLocation tagId = ResourceLocation.tryParse(tag);
+        Identifier tagId = Identifier.tryParse(tag);
         if (tagId == null) {
             throw new SingularityValidationException("Invalid item tag: " + tag);
         }
-        return this.setIngredient(Ingredient.of(TagKey.create(Registries.ITEM, tagId)));
+        TagKey<net.minecraft.world.item.Item> tagKey = TagKey.create(Registries.ITEM, tagId);
+        return this.setIngredient(Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(tagKey)));
     }
 
     public Singularity setEnabled(boolean enabled) {
@@ -112,10 +134,20 @@ public class Singularity {
         return this.conditions.stream().map(JsonObject::deepCopy).toList();
     }
 
+    /**
+     * 序列化时保留已经声明的输入；标签类 Ingredient 在 datagen 阶段可能暂时没有实际物品。
+     */
+    public Optional<Ingredient> getOptionalIngredient() {
+        return this.ingredient != null ? Optional.of(this.ingredient) : Optional.empty();
+    }
+
+    public boolean hasIngredient() {
+        return this.ingredient != null && !this.ingredient.isEmpty();
+    }
+
     public Singularity validate() {
         Objects.requireNonNull(this.registryName, "registryName");
         Objects.requireNonNull(this.displayName, "displayName");
-        Objects.requireNonNull(this.ingredient, "ingredient");
         requirePositive("count", this.count);
         requirePositive("timeCost", this.timeCost);
         return this;
@@ -136,11 +168,11 @@ public class Singularity {
         return value;
     }
 
-    public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient, JsonObject condition) {
+    public static Singularity create(Identifier registryName, String displayName, int[] colors, Ingredient ingredient, JsonObject condition) {
         return create(registryName, displayName, colors, ingredient).addCondition(condition);
     }
 
-    public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient) {
+    public static Singularity create(Identifier registryName, String displayName, int[] colors, Ingredient ingredient) {
         Singularity singularity = new Singularity(registryName);
         singularity.setDisplayName(displayName);
         singularity.setColors(colors[0], colors[1]);
@@ -165,12 +197,12 @@ public class Singularity {
 
 
     public static Singularity read(FriendlyByteBuf buffer) {
-        var id = buffer.readResourceLocation();
+        var id = buffer.readIdentifier();
         var displayName = buffer.readUtf();
         int overlayColor = buffer.readInt();
         int underlayColor = buffer.readInt();
 
-        var ingredient = Ingredient.fromNetwork(buffer);
+        Ingredient ingredient = readIngredient(buffer);
         int timeCost = buffer.readVarInt();
         int count = buffer.readVarInt();
         var enabled = buffer.readBoolean();
@@ -182,15 +214,32 @@ public class Singularity {
 
     public static void write(FriendlyByteBuf buffer, Singularity singularity) {
         Singularity validated = singularity.validate();
-        buffer.writeResourceLocation(validated.registryName);
+        buffer.writeIdentifier(validated.registryName);
         buffer.writeUtf(validated.displayName);
         buffer.writeInt(validated.overlayColor);
         buffer.writeInt(validated.underlayColor);
-        validated.ingredient.toNetwork(buffer);
+        writeIngredient(buffer, validated.ingredient);
         buffer.writeVarInt(validated.timeCost);
         buffer.writeVarInt(validated.getRealCount());
         buffer.writeBoolean(validated.enabled);
         buffer.writeBoolean(validated.recipeEnabled);
+    }
+
+    private static Ingredient readIngredient(FriendlyByteBuf buffer) {
+        CompoundTag wrapper = buffer.readNbt();
+        if (wrapper == null) return null;
+        Tag tag = wrapper.get("ingredient");
+        if (tag == null) return null;
+        return Ingredient.CODEC.parse(INGREDIENT_OPS, tag).result().orElse(null);
+    }
+
+    private static void writeIngredient(FriendlyByteBuf buffer, Ingredient ingredient) {
+        CompoundTag wrapper = new CompoundTag();
+        if (ingredient != null) {
+            wrapper.put("ingredient",
+                    Ingredient.CODEC.encodeStart(INGREDIENT_OPS, ingredient).getOrThrow(IllegalArgumentException::new));
+        }
+        buffer.writeNbt(wrapper);
     }
 
 
@@ -199,10 +248,10 @@ public class Singularity {
             return null;
         } else if (object instanceof Singularity) {
             return (Singularity) object;
-        } else if (object instanceof ResourceLocation) {
-            return SingularityReloadListener.INSTANCE.getSingularity((ResourceLocation) object);
+        } else if (object instanceof Identifier) {
+            return SingularityReloadListener.INSTANCE.getSingularity((Identifier) object);
         }else if (object instanceof String) {
-            return SingularityReloadListener.INSTANCE.getSingularity(ResourceLocation.tryParse((String) object));
+            return SingularityReloadListener.INSTANCE.getSingularity(Identifier.tryParse((String) object));
         }else {
             throw new IllegalArgumentException("Cannot convert object to Singularity: " + object);
         }

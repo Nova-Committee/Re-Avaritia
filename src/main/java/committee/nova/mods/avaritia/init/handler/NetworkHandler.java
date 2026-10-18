@@ -37,6 +37,7 @@ public final class NetworkHandler {
         CHANNEL.register(C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, NetBaseHandler.Direction.SERVERBOUND);
+        CHANNEL.register(C2SRemoveChannelPack.class, C2SRemoveChannelPack::write, C2SRemoveChannelPack::new, C2SRemoveChannelPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(C2SOpenRingPack.class, C2SOpenRingPack::write, C2SOpenRingPack::new, C2SOpenRingPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(C2SSetTimePacket.class, C2SSetTimePacket::write, C2SSetTimePacket::new, C2SSetTimePacket::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(C2SCompressorLockPacket.class, C2SCompressorLockPacket::write, C2SCompressorLockPacket::new, C2SCompressorLockPacket::run, NetBaseHandler.Direction.SERVERBOUND);
@@ -55,6 +56,7 @@ public final class NetworkHandler {
         CHANNEL.register(C2SInfinityBucketActionPack.class, C2SInfinityBucketActionPack::write, C2SInfinityBucketActionPack::new, C2SInfinityBucketActionPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(S2CMenuDataPack.class, S2CMenuDataPack::write, S2CMenuDataPack::new, S2CMenuDataPack::run, NetBaseHandler.Direction.CLIENTBOUND);
     }
+    public static <T> void sendToServer(T message) { CHANNEL.sendToServer(message); }
     public static void openScreen(ServerPlayer player, MenuProvider provider, BlockPos pos) {
         openScreen(player, provider, buffer -> buffer.writeBlockPos(pos));
     }

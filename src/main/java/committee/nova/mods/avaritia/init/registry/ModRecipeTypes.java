@@ -4,8 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
@@ -29,7 +28,7 @@ public class ModRecipeTypes {
     public static final @NotNull RegistryEntry<RecipeType<ExtremeSmithingRecipe>> EXTREME_SMITHING_RECIPE = recipe("extreme_smithing_recipe", () -> named("extreme_smithing_recipe"));
 
 
-    public static <T extends Recipe<Container>> RegistryEntry<RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
+    public static <T extends Recipe<?>> RegistryEntry<RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
         return RECIPES.register(name, type);
     }
     private static <T extends Recipe<?>> RecipeType<T> named(String path) {

@@ -105,7 +105,8 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
     }
 
     public int canStorageAmount(ItemStack itemStack) {
-        if (itemStack.hasTag()) return 0;
+        // 频道存储仅支持默认组件物品，拒绝任何带非默认组件的物品（附魔、命名、潜影盒等）
+        if (!itemStack.getComponentsPatch().isEmpty()) return 0;
         long a = storageItems.getOrDefault(StorageUtils.getItemId(itemStack.getItem()), 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
@@ -186,7 +187,7 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
      * @return 存进去的量
      */
     public int addItem(ItemStack itemStack) {
-        if (itemStack.hasTag() || itemStack.isEmpty()) return 0;
+        if (itemStack.isEmpty() || !itemStack.getComponentsPatch().isEmpty()) return 0;
         String itemId = StorageUtils.getItemId(itemStack.getItem());
         int count = itemStack.getCount();
         if (storageItems.containsKey(itemId)) {
@@ -373,7 +374,7 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
      * @param count     要填充的数量，负数为扣除。
      */
     public void fillItemStack(ItemStack itemStack, int count) {
-        if (itemStack.isEmpty() || count == 0 || itemStack.hasTag()) return;
+        if (itemStack.isEmpty() || count == 0 || !itemStack.getComponentsPatch().isEmpty()) return;
         String itemId = StorageUtils.getItemId(itemStack.getItem());
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
@@ -500,7 +501,7 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
     }
 
     public void removeItem(ItemStack itemStack) {
-        if (itemStack.isEmpty()) return;
+        if (itemStack.isEmpty() || !itemStack.getComponentsPatch().isEmpty()) return;
         String itemId = StorageUtils.getItemId(itemStack.getItem());
         if (!storageItems.containsKey(itemId)) return;
         long storageCount = storageItems.get(itemId);
@@ -579,7 +580,7 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
 
     @Override
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (stack.isEmpty() || stack.hasTag()) return stack;
+        if (stack.isEmpty() || !stack.getComponentsPatch().isEmpty()) return stack;
         String itemId = StorageUtils.getItemId(stack.getItem());
         ItemStack remainingStack = ItemStack.EMPTY;
         if (storageItems.containsKey(itemId)) {
@@ -635,7 +636,7 @@ public abstract class Channel implements ItemHandler, FluidHandler, EnergyStorag
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return !stack.isEmpty() && !stack.hasTag();
+        return !stack.isEmpty() && stack.getComponentsPatch().isEmpty();
     }
 
 

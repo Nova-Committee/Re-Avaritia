@@ -1,13 +1,8 @@
 package committee.nova.mods.avaritia.init.mixins;
-import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
-import net.minecraft.world.item.*;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.chat.Component;
-import java.util.List;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-@Mixin(ItemStack.class)
+
+/**
+ * 已在 26.3 升级中废弃：AvaritiaForgeClient.getTooltip/onItemTooltip（tooltip 重排）已删除，
+ * 26.3 下无对应实现。条目已从 avaritia.mixins.json 移除。
+ */
 public abstract class ClientItemTooltipMixin {
- @Inject(method="getTooltipLines",at=@At("RETURN")) private void avaritia$tooltip(Player player,TooltipFlag flag,CallbackInfoReturnable<List<Component>> cir) { AvaritiaForgeClient.getTooltip(cir.getReturnValue()); AvaritiaForgeClient.onItemTooltip((ItemStack)(Object)this,cir.getReturnValue()); }
 }

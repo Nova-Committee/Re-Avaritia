@@ -4,21 +4,15 @@ import committee.nova.mods.avaritia.common.item.tools.blaze.BlazeSwordItem;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityAxeItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinitySwordItem;
-import committee.nova.mods.avaritia.util.InfinityElytraUtils;
-import net.minecraft.world.entity.EquipmentSlot;
-import committee.nova.mods.avaritia.common.item.misc.InfinityElytraItem;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -42,21 +36,6 @@ public abstract class GameplayPlayerMixin {
     private void avaritia$miningSpeed(BlockState state, CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(InfinityHandler.digging((Player) (Object) this, cir.getReturnValue()));
     }
-    @Redirect(method = "tryToStartFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"))
-    private boolean avaritia$nativeElytra(ItemStack stack, Item item) {
-        return stack.is(item) || item == Items.ELYTRA && stack.getItem() instanceof InfinityElytraItem;
-    }
-    @Redirect(method = "tryToStartFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ElytraItem;isFlyEnabled(Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean avaritia$elytraFlightEnabled(ItemStack stack) {
-        return InfinityElytraUtils.isFlyEnabled(stack);
-    }
-    @Redirect(method = "tryToStartFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getItemBySlot(Lnet/minecraft/world/entity/EquipmentSlot;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack avaritia$equippedElytra(Player player, EquipmentSlot slot) {
-        ItemStack elytra = InfinityElytraUtils.getInfinityElytraStack(player);
-        return slot == EquipmentSlot.CHEST && !elytra.isEmpty() ? elytra : player.getItemBySlot(slot);
-    }
-    @Inject(method = "hurtCurrentlyUsedShield", at = @At("HEAD"), cancellable = true)
-    private void avaritia$unbreakableShield(float amount, CallbackInfo ci) {
-        if (((Player) (Object) this).getUseItem().is(ModItems.infinity_shield.get())) ci.cancel();
-    }
+    // 26.3: elytra flight checks route through LivingEntity.canGlideUsing (see GameplayLivingEntityMixin),
+    // and shield durability loss is handled by the BlocksAttacks component + ItemStackMixin.
 }

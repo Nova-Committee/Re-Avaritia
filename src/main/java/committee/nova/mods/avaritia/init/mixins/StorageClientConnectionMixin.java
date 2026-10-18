@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public abstract class StorageClientConnectionMixin {
-    @Inject(method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
+    @Inject(method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
     private void avaritia$resetStorage(CallbackInfo ci) { ClientChannelManager.onLoggingOutServer(); ClientChestManager.onLoggingOutServer(); }
 }

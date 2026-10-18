@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.api.iface.IInfinityClockSwitchable;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
@@ -8,38 +11,45 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
     private static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
+
+    private static final String SPEED_MULTIPLIER_TAG = "SpeedMultiplier";
 
     public InfinityClockItem() {
         super(ModRarities.COSMIC, true, new Properties().stacksTo(1));
@@ -50,23 +60,30 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         return false;
     }
 
+    private static int getSpeedMultiplier(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getIntOr(SPEED_MULTIPLIER_TAG, 0);
+    }
 
+    private static void setSpeedMultiplier(ItemStack stack, int multiplier) {
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                data -> data.update(tag -> tag.putInt(SPEED_MULTIPLIER_TAG, multiplier)));
+    }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (level.isClientSide) return InteractionResultHolder.pass(stack);
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         boolean upMode = isActive(stack, "infinity_clock_up");
 
         if (player.isShiftKeyDown()) {
             switchClockMode(level, player, hand, "infinity_clock_up");
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
 
         if (upMode) {
-            int current = stack.getOrCreateTag().getInt("SpeedMultiplier");
+            int current = getSpeedMultiplier(stack);
             int next;
 
             switch (current) {
@@ -78,9 +95,9 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 default -> next = 1;
             }
 
-            stack.getOrCreateTag().putInt("SpeedMultiplier", next);
-            player.displayClientMessage(Component.literal(next + "x"), true);
-            return InteractionResultHolder.success(stack);
+            setSpeedMultiplier(stack, next);
+            ItemUtils.sendActionbar(player, Component.literal(next + "x"));
+            return InteractionResult.SUCCESS;
         }
 
 
@@ -91,16 +108,16 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 )
         );
 
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext ctx) {
+    public @NotNull InteractionResult useOn(@NotNull UseOnContext ctx) {
         ItemStack stack = ctx.getItemInHand();
         Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         Direction face = ctx.getClickedFace(); // 获取点击的面
-        if (level.isClientSide) return InteractionResult.SUCCESS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         if (!isActive(stack, "infinity_clock_up")) {
 
@@ -109,12 +126,11 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         }
 
 
-        CompoundTag tag = stack.getOrCreateTag();
-        int multiplier = tag.getInt("SpeedMultiplier");
+        int multiplier = getSpeedMultiplier(stack);
 
         if (multiplier == 0) {
             multiplier = 1;
-            tag.putInt("SpeedMultiplier", multiplier);
+            setSpeedMultiplier(stack, multiplier);
         }
 
 
@@ -164,7 +180,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         if (displayEntities.containsKey(dimension)) {
             AcceleratorDisplayEntity entity = displayEntities.get(dimension).get(pos);
             if (entity != null && !entity.isRemoved()) {
-                entity.remove(AcceleratorDisplayEntity.RemovalReason.DISCARDED);
+                entity.remove(Entity.RemovalReason.DISCARDED);
             }
             displayEntities.get(dimension).remove(pos);
 
@@ -176,54 +192,49 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
 
     public static class AcceleratedBlocksSavedData extends SavedData {
         public static final String NAME = "avaritia_accelerated_blocks";
+        private static final Codec<BlockEntry> BLOCK_ENTRY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                BlockPos.CODEC.fieldOf("pos").forGetter(BlockEntry::pos),
+                Codec.INT.fieldOf("multiplier").forGetter(BlockEntry::multiplier)
+        ).apply(instance, BlockEntry::new));
+        private static final Codec<DimensionEntry> DIMENSION_ENTRY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceKey.codec(Registries.DIMENSION).fieldOf("dimension").forGetter(DimensionEntry::dimension),
+                BLOCK_ENTRY_CODEC.listOf().fieldOf("blocks").forGetter(DimensionEntry::blocks)
+        ).apply(instance, DimensionEntry::new));
+        public static final Codec<AcceleratedBlocksSavedData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                DIMENSION_ENTRY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(AcceleratedBlocksSavedData::toEntries)
+        ).apply(instance, AcceleratedBlocksSavedData::fromEntries));
+        //26.3 SavedDataType 需要 4 参（含 DataFixTypes）；自定义数据没有对应 fixer，任意选择一个（无匹配规则即恒等）
+        public static final SavedDataType<AcceleratedBlocksSavedData> TYPE = new SavedDataType<>(
+                Identifier.fromNamespaceAndPath("avaritia", NAME), AcceleratedBlocksSavedData::new, CODEC,
+                DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
+
         private final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
 
         public AcceleratedBlocksSavedData() {
         }
 
-        public AcceleratedBlocksSavedData(CompoundTag nbt) {
-            ListTag dimensionsList = nbt.getList("Dimensions", Tag.TAG_COMPOUND);
-            for (int i = 0; i < dimensionsList.size(); i++) {
-                CompoundTag dimensionTag = dimensionsList.getCompound(i);
-                ResourceLocation dimensionLocation = new ResourceLocation(dimensionTag.getString("Dimension"));
-                ResourceKey<Level> dimensionKey = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimensionLocation);
-
-                Map<BlockPos, Integer> blocksMap = new HashMap<>();
-                ListTag blocksList = dimensionTag.getList("Blocks", Tag.TAG_COMPOUND);
-
-                for (int j = 0; j < blocksList.size(); j++) {
-                    CompoundTag blockTag = blocksList.getCompound(j);
-                    BlockPos pos = BlockPos.of(blockTag.getLong("Pos"));
-                    int multiplier = blockTag.getInt("Multiplier");
-                    blocksMap.put(pos, multiplier);
+        private static AcceleratedBlocksSavedData fromEntries(List<DimensionEntry> entries) {
+            AcceleratedBlocksSavedData savedData = new AcceleratedBlocksSavedData();
+            for (DimensionEntry dimensionEntry : entries) {
+                Map<BlockPos, Integer> blocks = new HashMap<>();
+                for (BlockEntry blockEntry : dimensionEntry.blocks()) {
+                    blocks.put(blockEntry.pos().immutable(), blockEntry.multiplier());
                 }
-
-                this.acceleratedBlocks.put(dimensionKey, blocksMap);
+                savedData.acceleratedBlocks.put(dimensionEntry.dimension(), blocks);
             }
+            return savedData;
         }
 
-        @Override
-        public CompoundTag save(CompoundTag compound) {
-            ListTag dimensionsList = new ListTag();
-
+        private List<DimensionEntry> toEntries() {
+            List<DimensionEntry> entries = new ArrayList<>();
             for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
-                CompoundTag dimensionTag = new CompoundTag();
-                dimensionTag.putString("Dimension", dimensionEntry.getKey().location().toString());
-
-                ListTag blocksList = new ListTag();
+                List<BlockEntry> blocks = new ArrayList<>();
                 for (Map.Entry<BlockPos, Integer> blockEntry : dimensionEntry.getValue().entrySet()) {
-                    CompoundTag blockTag = new CompoundTag();
-                    blockTag.putLong("Pos", blockEntry.getKey().asLong());
-                    blockTag.putInt("Multiplier", blockEntry.getValue());
-                    blocksList.add(blockTag);
+                    blocks.add(new BlockEntry(blockEntry.getKey(), blockEntry.getValue()));
                 }
-
-                dimensionTag.put("Blocks", blocksList);
-                dimensionsList.add(dimensionTag);
+                entries.add(new DimensionEntry(dimensionEntry.getKey(), blocks));
             }
-
-            compound.put("Dimensions", dimensionsList);
-            return compound;
+            return entries;
         }
 
         public Map<ResourceKey<Level>, Map<BlockPos, Integer>> getAcceleratedBlocks() {
@@ -235,14 +246,16 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
             this.acceleratedBlocks.putAll(blocks);
             setDirty();
         }
+
+        private record DimensionEntry(ResourceKey<Level> dimension, List<BlockEntry> blocks) {
+        }
+
+        private record BlockEntry(BlockPos pos, int multiplier) {
+        }
     }
 
     public static AcceleratedBlocksSavedData getSavedData(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(
-                AcceleratedBlocksSavedData::new,
-                AcceleratedBlocksSavedData::new,
-                AcceleratedBlocksSavedData.NAME
-        );
+        return level.getDataStorage().computeIfAbsent(AcceleratedBlocksSavedData.TYPE);
     }
 
     public static void loadAcceleratedBlocksFromSavedData(ServerLevel level) {
@@ -308,12 +321,11 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 if (block instanceof BonemealableBlock growable) {
                     RandomSource random = level.getRandom();
                     for (int i = 0; i < times; i++) {
-                        if (!growable.isValidBonemealTarget(level, pos, state, false)) break;
-                        if (growable.isBonemealSuccess(level, random, pos, state)) {
+                        if (!growable.isValidBonemealTarget(level, pos, state, BonemealSource.MOB)) break;
+                        if (growable.isBonemealSuccess(level, random, pos, state, BonemealSource.MOB)) {
                             try {
-                                growable.performBonemeal(level, random, pos, state);
+                                growable.performBonemeal(level, random, pos, state, BonemealSource.MOB);
                             } catch (Exception e) {
-                                e.printStackTrace();
                                 break;
                             }
                             state = level.getBlockState(pos);
@@ -384,7 +396,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
             if (displayEntities.containsKey(dimension)) {
                 AcceleratorDisplayEntity entity = displayEntities.get(dimension).get(pos);
                 if (entity != null && !entity.isRemoved()) {
-                    entity.remove(AcceleratorDisplayEntity.RemovalReason.DISCARDED);
+                    entity.remove(Entity.RemovalReason.DISCARDED);
                 }
                 displayEntities.get(dimension).remove(pos);
                 if (displayEntities.get(dimension).isEmpty()) {

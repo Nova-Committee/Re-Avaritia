@@ -14,6 +14,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -44,7 +46,7 @@ public class AbilityHandler {
     
     public static void updateAbilities(LivingEntity entity) {
         if (entity instanceof Player player) {
-            String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
+            String key = player.getGameProfile().name() + ":" + player.level().isClientSide;
 
             boolean hasHelmet = isPlayerWearing(player, HEAD, item -> item instanceof InfinityArmorItem);
             boolean hasChest = isPlayerWearing(player, CHEST, item -> item instanceof InfinityArmorItem);
@@ -86,7 +88,7 @@ public class AbilityHandler {
             flightInfo.wasFlyingAllowed = player.getAbilities().mayfly;
             if (hasChest) {
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
+                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().value().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
                 }
             }
@@ -143,7 +145,7 @@ public class AbilityHandler {
     private static void handleBootsStateChange(Player player, String key, boolean hasBoots) {
         if (hasBoots) {
             if (entitiesWithBoots.contains(key)) {
-                player.setMaxUpStep(1.0625F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
+                setStepHeight(player, 1.0625D);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
                 boolean sneaking = player.isShiftKeyDown();
@@ -173,22 +175,28 @@ public class AbilityHandler {
                 entitiesWithBoots.add(key);
             }
         } else {
-            player.setMaxUpStep(0.6F);
+            setStepHeight(player, 0.6D);
             entitiesWithBoots.remove(key);
         }
+    }
+
+    /** 26.3 起台阶高度由 {@link Attributes#STEP_HEIGHT} 属性驱动，{@code setMaxUpStep} 已移除。 */
+    private static void setStepHeight(Player player, double value) {
+        AttributeInstance stepHeight = player.getAttribute(Attributes.STEP_HEIGHT);
+        if (stepHeight != null) stepHeight.setBaseValue(value);
     }
 
     //跳跃增强
     
     public static void jumpBoost(LivingEntity entity) {
-        if (entity instanceof Player player && entitiesWithLeggings.contains(player.getGameProfile().getName() + ":" + player.level().isClientSide) && player.isSprinting())
+        if (entity instanceof Player player && entitiesWithLeggings.contains(player.getGameProfile().name() + ":" + player.level().isClientSide) && player.isSprinting())
             player.setDeltaMovement(player.getDeltaMovement().add(0F, 0.305F, 0F));
     }
 
 
 
     public static void stripAbilities(Player player) {
-        String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
+        String key = player.getGameProfile().name() + ":" + player.level().isClientSide;
         entitiesWithHelmets.remove(key);
         entitiesWithFlight.remove(key);
         entitiesWithLeggings.remove(key);
@@ -196,12 +204,12 @@ public class AbilityHandler {
     }
 
     private static void clearFly(Player player) {
-        entitiesWithFlight.remove(player.getGameProfile().getName() + ":" + player.level().isClientSide);
+        entitiesWithFlight.remove(player.getGameProfile().name() + ":" + player.level().isClientSide);
     }
 
     public static void reapplyFly(Player player) {
         //For when the dimension changes/we need to reapply the flight info values to the client
-        FlightInfo flightInfo = entitiesWithFlight.get(player.getGameProfile().getName() + ":" + player.level().isClientSide);
+        FlightInfo flightInfo = entitiesWithFlight.get(player.getGameProfile().name() + ":" + player.level().isClientSide);
         if (flightInfo != null) {
             if (flightInfo.wasFlyingAllowed || flightInfo.wasFlying) {
                 updateClientServerFlight(player, flightInfo.wasFlyingAllowed, flightInfo.wasFlying);

@@ -36,7 +36,8 @@ public class WorldUtils {
             int skyLight = world.getBrightness(LightLayer.SKY, pos);
             int blockLight = world.getBrightness(LightLayer.BLOCK, pos);
             // 获取世界时间、天气和维度的影响
-            boolean isDay = world.isDay();
+            long dayTime = world.getOverworldClockTime();
+            boolean isDay = Math.floorMod(dayTime, 24000L) < 13000L;
             boolean isRaining = world.isRaining();
             boolean isThundering = world.isThundering();
             boolean isUnderground = !world.canSeeSky(pos);
@@ -50,7 +51,7 @@ public class WorldUtils {
                     } else {
                         // 夜晚地表
                         // 获取月相，0表示满月，4表示新月
-                        int moonPhase = world.getMoonPhase();
+                        int moonPhase = (int) Math.floorMod(dayTime / 24000L, 8L);
                         result = getMoonBrightness(moonPhase, isThundering, isRaining);
                     }
                 } else {

@@ -1,22 +1,25 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.common.crafting.input.ExtremeSmithingRecipeInput;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,38 +31,67 @@ import java.util.Optional;
  * @Description:
  */
 public class ExtremeSmithingMenu extends ItemCombinerMenu {
-    @Nullable
-    private SmithingRecipe selectedRecipe;
+    public static final int TEMPLATE_SLOT = 0;
+    public static final int BASE_SLOT = 1;
+    public static final int RIGHT_ADDITION_SLOT = 2;
+    public static final int TOP_ADDITION_SLOT = 3;
+    public static final int BOTTOM_ADDITION_SLOT = 4;
+    public static final int INPUT_SLOT_COUNT = 5;
+    public static final int RESULT_SLOT = 5;
+
     private final Level level;
     private final List<ExtremeSmithingRecipe> recipes;
+    private final DataSlot hasRecipeError = DataSlot.standalone();
 
     public ExtremeSmithingMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(id, playerInventory, ContainerLevelAccess.NULL);
     }
 
     public ExtremeSmithingMenu(int pContainerId, Inventory pPlayerInventory, ContainerLevelAccess access) {
-        super(ModMenus.extreme_smithing_table.get(), pContainerId, pPlayerInventory, access);
-        this.level = pPlayerInventory.player.level();
-        this.recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get());
+        this(pContainerId, pPlayerInventory, access, findRecipes(pPlayerInventory.player.level()));
     }
 
-    @Override
-    protected boolean mayPickup(@NotNull Player pPlayer, boolean pHasStack) {
-        return this.selectedRecipe != null && this.selectedRecipe.matches(this.inputSlots, this.level);
+    private ExtremeSmithingMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access,
+                                List<ExtremeSmithingRecipe> recipes) {
+        super(ModMenus.extreme_smithing_table.get(), containerId, playerInventory, access, createInputSlotDefinitions(recipes));
+        this.level = playerInventory.player.level();
+        this.recipes = recipes;
+        this.addDataSlot(this.hasRecipeError);
     }
 
-    @Override
-    protected void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
-        pStack.onCraftedBy(pPlayer.level(), pPlayer, pStack.getCount());
-        this.resultSlots.awardUsedRecipes(pPlayer, this.getRelevantItems());
-        this.shrinkStackInSlot(0);
-        this.shrinkStackInSlot(1);
-        this.shrinkStackInSlot(2);
-        this.shrinkStackInSlot(3);
-        this.shrinkStackInSlot(4);
-        this.access.execute((level, pos) -> {
-            level.levelEvent(1044, pos, 0);
-        });
+    private static List<ExtremeSmithingRecipe> findRecipes(Level level) {
+        if (level instanceof ServerLevel serverLevel) {
+            return serverLevel.recipeAccess().getSynchronizedRecipes().getAllOfType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get())
+                    .stream()
+                    .map(RecipeHolder::value)
+                    .toList();
+        }
+
+        // 客户端不直接读取配方；保持槽位开放，由服务端菜单执行同一配方校验。
+        return List.of();
+    }
+
+    private static ItemCombinerMenuSlotDefinition createInputSlotDefinitions(List<ExtremeSmithingRecipe> recipes) {
+        return ItemCombinerMenuSlotDefinition.create()
+                .withSlot(TEMPLATE_SLOT, 31, 35, stack -> acceptsTemplate(recipes, stack))
+                .withSlot(BASE_SLOT, 49, 35, stack -> acceptsBase(recipes, stack))
+                .withSlot(RIGHT_ADDITION_SLOT, 67, 35, stack -> acceptsAddition(recipes, stack))
+                .withSlot(TOP_ADDITION_SLOT, 49, 17, stack -> acceptsAddition(recipes, stack))
+                .withSlot(BOTTOM_ADDITION_SLOT, 49, 53, stack -> acceptsAddition(recipes, stack))
+                .withResultSlot(RESULT_SLOT, 121, 35)
+                .build();
+    }
+
+    static boolean acceptsTemplate(List<ExtremeSmithingRecipe> recipes, ItemStack stack) {
+        return recipes.isEmpty() || recipes.stream().anyMatch(recipe -> recipe.isTemplateIngredient(stack));
+    }
+
+    static boolean acceptsBase(List<ExtremeSmithingRecipe> recipes, ItemStack stack) {
+        return recipes.isEmpty() || recipes.stream().anyMatch(recipe -> recipe.isBaseIngredient(stack));
+    }
+
+    static boolean acceptsAddition(List<ExtremeSmithingRecipe> recipes, ItemStack stack) {
+        return recipes.isEmpty() || recipes.stream().anyMatch(recipe -> recipe.isAdditionIngredient(stack));
     }
 
     @Override
@@ -73,87 +105,91 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
     }
 
     @Override
-    public void createResult() {
-        List<ExtremeSmithingRecipe> list = this.level.getRecipeManager().getRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get(), this.inputSlots, this.level);
-        if (list.isEmpty()) {
-            this.resultSlots.setItem(0, ItemStack.EMPTY);
-        } else {
-            ExtremeSmithingRecipe smithingrecipe = list.get(0);
-            ItemStack itemstack = smithingrecipe.assemble(this.inputSlots, this.level.registryAccess());
-            //todo 检测无瑕核心...合成给予tag交给你了,我不会)
-
-            if (itemstack.isItemEnabled(this.level.enabledFeatures())) {
-                this.selectedRecipe = smithingrecipe;
-                this.resultSlots.setRecipeUsed(smithingrecipe);
-                this.resultSlots.setItem(0, itemstack);
-            }
+    protected void onTake(@NotNull Player player, @NotNull ItemStack carried) {
+        carried.onCraftedBy(player, carried.getCount());
+        this.resultSlots.awardUsedRecipes(player, this.getRelevantItems());
+        for (int slot = 0; slot < INPUT_SLOT_COUNT; slot++) {
+            this.shrinkStackInSlot(slot);
         }
-    }
-
-    @Override
-    protected @NotNull ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
-        return ItemCombinerMenuSlotDefinition.create().withSlot(0, 31, 35, (stack) -> {
-            return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isTemplateIngredient(stack);
-            });
-        }).withSlot(1, 49, 35, (stack) -> {
-            return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isBaseIngredient(stack);
-            });
-        }).withSlot(2, 67, 35, (stack) -> {
-            return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
-            });
-        }).withSlot(3, 49, 17, (stack) -> {
-            return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
-            });
-        }).withSlot(4, 49, 53, (stack) -> {
-            return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
-            });
-        }).withResultSlot(5, 121, 35).build();
+        this.access.execute((level, pos) -> level.levelEvent(1044, pos, 0));
     }
 
     private List<ItemStack> getRelevantItems() {
-        return List.of(this.inputSlots.getItem(0), this.inputSlots.getItem(1), this.inputSlots.getItem(2), this.inputSlots.getItem(3), this.inputSlots.getItem(4));
+        return List.of(
+                this.inputSlots.getItem(TEMPLATE_SLOT),
+                this.inputSlots.getItem(BASE_SLOT),
+                this.inputSlots.getItem(RIGHT_ADDITION_SLOT),
+                this.inputSlots.getItem(TOP_ADDITION_SLOT),
+                this.inputSlots.getItem(BOTTOM_ADDITION_SLOT)
+        );
     }
 
-    private void shrinkStackInSlot(int pIndex) {
-        ItemStack itemstack = this.inputSlots.getItem(pIndex);
-        if (!itemstack.isEmpty()) {
-            itemstack.shrink(1);
-            this.inputSlots.setItem(pIndex, itemstack);
+    private ExtremeSmithingRecipeInput createRecipeInput() {
+        return new ExtremeSmithingRecipeInput(
+                this.inputSlots.getItem(TEMPLATE_SLOT),
+                this.inputSlots.getItem(BASE_SLOT),
+                this.inputSlots.getItem(RIGHT_ADDITION_SLOT),
+                this.inputSlots.getItem(TOP_ADDITION_SLOT),
+                this.inputSlots.getItem(BOTTOM_ADDITION_SLOT)
+        );
+    }
+
+    private void shrinkStackInSlot(int slot) {
+        ItemStack stack = this.inputSlots.getItem(slot);
+        if (!stack.isEmpty()) {
+            stack.shrink(1);
+            this.inputSlots.setItem(slot, stack);
         }
     }
 
     @Override
-    public int getSlotToQuickMoveTo(@NotNull ItemStack pStack) {
-        return this.recipes.stream().map((smithingRecipe) -> {
-            return findSlotMatchingIngredient(smithingRecipe, pStack);
-        }).filter(Optional::isPresent).findFirst().orElse(Optional.of(List.of(0))).get().get(0);
+    public void slotsChanged(@NotNull Container container) {
+        super.slotsChanged(container);
+        if (this.level instanceof ServerLevel) {
+            boolean error = this.getSlot(TEMPLATE_SLOT).hasItem()
+                    && this.getSlot(BASE_SLOT).hasItem()
+                    && this.getSlot(RIGHT_ADDITION_SLOT).hasItem()
+                    && this.getSlot(TOP_ADDITION_SLOT).hasItem()
+                    && this.getSlot(BOTTOM_ADDITION_SLOT).hasItem()
+                    && !this.getSlot(RESULT_SLOT).hasItem();
+            this.hasRecipeError.set(error ? 1 : 0);
+        }
     }
 
-    private static Optional<List<Integer>> findSlotMatchingIngredient(SmithingRecipe pRecipe, ItemStack pStack) {
-        if (pRecipe.isTemplateIngredient(pStack)) {
-            return Optional.of(List.of(0));
-        } else if (pRecipe.isBaseIngredient(pStack)) {
-            return Optional.of(List.of(1));
+    @Override
+    public void createResult() {
+        ExtremeSmithingRecipeInput input = this.createRecipeInput();
+        Optional<RecipeHolder<ExtremeSmithingRecipe>> foundRecipe;
+        if (this.level instanceof ServerLevel serverLevel) {
+            foundRecipe = serverLevel.recipeAccess().getSynchronizedRecipes().getFirstMatch(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get(), input, serverLevel);
         } else {
-            return pRecipe.isAdditionIngredient(pStack) ? Optional.of(List.of(2, 3, 4)) : Optional.empty();
+            foundRecipe = Optional.empty();
         }
+
+        foundRecipe.ifPresentOrElse(recipe -> {
+            ItemStack result = recipe.value().assemble(input);
+            //todo 检测无瑕核心...合成给予tag交给你了,我不会)
+            this.resultSlots.setRecipeUsed(recipe);
+            this.resultSlots.setItem(0, result);
+        }, () -> {
+            this.resultSlots.setRecipeUsed(null);
+            this.resultSlots.setItem(0, ItemStack.EMPTY);
+        });
     }
 
     @Override
-    public boolean canTakeItemForPickAll(@NotNull ItemStack pStack, Slot pSlot) {
-        return pSlot.container != this.resultSlots && super.canTakeItemForPickAll(pStack, pSlot);
+    public boolean canTakeItemForPickAll(@NotNull ItemStack carried, @NotNull Slot target) {
+        return target.container != this.resultSlots && super.canTakeItemForPickAll(carried, target);
     }
 
     @Override
-    public boolean canMoveIntoInputSlots(@NotNull ItemStack pStack) {
-        return this.recipes.stream().map((smithingRecipe) -> {
-            return findSlotMatchingIngredient(smithingRecipe, pStack);
-        }).anyMatch(Optional::isPresent);
+    public boolean canMoveIntoInputSlots(@NotNull ItemStack stack) {
+        return acceptsTemplate(this.recipes, stack)
+                || acceptsBase(this.recipes, stack)
+                || acceptsAddition(this.recipes, stack);
     }
 
+    public boolean hasRecipeError() {
+        return this.hasRecipeError.get() > 0;
+    }
 }

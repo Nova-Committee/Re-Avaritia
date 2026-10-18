@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:potion"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "minecraft:bone_block"
+    }
+  ],
+  "base": {
+    "item": "minecraft:wolf_armor"
+  },
+  "result": {
+    "item": "avaritia:neutron_wolf_armor"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

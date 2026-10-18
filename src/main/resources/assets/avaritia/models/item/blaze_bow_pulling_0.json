@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:item/blaze_bow",
+  "parent": "minecraft:item/bow",
   "textures": {
     "layer0": "avaritia:item/tools/blaze_bow/blaze_bow_pulling_0"
   }

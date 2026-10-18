@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "avaritia:hell",
+    "mask": [
+      "avaritia:mask/item/test_sword_mask"
+    ],
+    "model": "avaritia:item/test_sword"
+  }
+}

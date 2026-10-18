@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.effects;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,17 +12,19 @@ public class BurningEffect extends MobEffect {
     public BurningEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
+
     @Override
-    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.05f);
-        livingEntity.invulnerableTime = 10;
+    public boolean applyEffectTick(ServerLevel level, LivingEntity livingEntity, int amplifier) {
+        livingEntity.hurtServer(level, livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.05f);
+        livingEntity.setInvulnerableTime(10);
+        return true;
     }
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-        int i = 20 >> pAmplifier;
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        int i = 20 >> amplifier;
         if (i > 0) {
-            return pDuration % i == 0;
+            return duration % i == 0;
         } else {
             return true;
         }

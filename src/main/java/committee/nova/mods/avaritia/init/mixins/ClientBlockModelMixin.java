@@ -1,15 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.client.model.loader.base.BaseGeometry;
-import committee.nova.mods.avaritia.client.model.loader.base.NativeModelGeometry;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-
-/** Geometry lives with its vanilla model and is released with the resource-reload generation. */
-@Mixin(BlockModel.class)
-public abstract class ClientBlockModelMixin implements NativeModelGeometry.GeometryHolder {
-    @Unique private BaseGeometry<?> avaritia$geometry;
-    @Override public BaseGeometry<?> avaritia$getGeometry() { return avaritia$geometry; }
-    @Override public void avaritia$setGeometry(BaseGeometry<?> geometry) { avaritia$geometry = geometry; }
+/**
+ * 已在 26.3 升级中废弃：BlockModel 改为接口无法 @Mixin 附加字段，
+ * NativeModelGeometry/BaseGeometry 已删除，模型数据改由 codec（AvaritiaItemModelLoaders）承载。
+ * 条目已从 avaritia.mixins.json 移除。
+ */
+public abstract class ClientBlockModelMixin {
 }

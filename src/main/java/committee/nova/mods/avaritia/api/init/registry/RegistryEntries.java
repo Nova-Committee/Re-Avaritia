@@ -1,20 +1,21 @@
 package committee.nova.mods.avaritia.api.init.registry;
 
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** Ordered project registrations backed directly by a vanilla registry. */
 public final class RegistryEntries<T> {
     private final Registry<T> registry;
     private final String namespace;
-    private final Map<ResourceLocation, RegistryEntry<? extends T>> entries = new LinkedHashMap<>();
+    private final Map<Identifier, RegistryEntry<? extends T>> entries = new LinkedHashMap<>();
     private boolean registered;
 
     private RegistryEntries(Registry<T> registry, String namespace) {
@@ -27,8 +28,13 @@ public final class RegistryEntries<T> {
     }
 
     public <V extends T> RegistryEntry<V> register(String path, Supplier<? extends V> factory) {
+        return register(path, id -> factory.get());
+    }
+
+    /** The factory receives the registration id, e.g. to apply it to Item/Block properties via setId. */
+    public <V extends T> RegistryEntry<V> register(String path, Function<Identifier, ? extends V> factory) {
         if (registered) throw new IllegalStateException("Registry already initialized: " + registry.key());
-        ResourceLocation id = new ResourceLocation(namespace, path);
+        Identifier id = Identifier.fromNamespaceAndPath(namespace, path);
         RegistryEntry<V> entry = new RegistryEntry<>(id, factory);
         if (entries.putIfAbsent(id, entry) != null) throw new IllegalArgumentException("Duplicate registration: " + id);
         return entry;

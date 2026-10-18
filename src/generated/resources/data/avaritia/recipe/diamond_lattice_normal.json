@@ -1,0 +1,15 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": "minecraft:netherite_scrap",
+    "i": "minecraft:diamond"
+  },
+  "pattern": [
+    "iii",
+    "iai",
+    "iii"
+  ],
+  "result": "avaritia:diamond_lattice",
+  "show_notification": true
+}

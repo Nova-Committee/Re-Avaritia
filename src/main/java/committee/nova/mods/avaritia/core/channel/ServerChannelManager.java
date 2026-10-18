@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -100,7 +101,7 @@ public class ServerChannelManager {
                     if (channels == null) continue;
                     HashMap<Integer, ServerChannel> playerChannels = new HashMap<>();
                     for (File channelFile : channels) {
-                        CompoundTag channelDat = NbtIo.readCompressed(channelFile);
+                        CompoundTag channelDat = NbtIo.readCompressed(channelFile.toPath(), NbtAccounter.unlimitedHeap());
                         int channelID = Integer.parseInt(channelFile.getName().substring(0, channelFile.getName().length() - 4));
                         ServerChannel channel = new ServerChannel(channelDat);
                         playerChannels.put(channelID, channel);
@@ -127,7 +128,7 @@ public class ServerChannelManager {
                     File channelDat = new File(user, id + ".dat");
                     try {
                         if (!channelDat.exists()) channelDat.createNewFile();
-                        NbtIo.writeCompressed(channel.buildData(), channelDat);
+                        NbtIo.writeCompressed(channel.buildData(), channelDat.toPath());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -167,8 +168,8 @@ public class ServerChannelManager {
         if (!player.getUUID().equals(otherUUID) && channelList.containsKey(otherUUID))
             channelList.get(otherUUID).forEach((id, channel) -> otherChannels.putString(String.valueOf(id), channel.getName()));
 
-        if (channelList.containsKey(Const.AVARITIA_FAKE_PLAYER.getId()))
-            channelList.get(Const.AVARITIA_FAKE_PLAYER.getId()).forEach((id, channel) -> publicChannels.putString(String.valueOf(id), channel.getName()));
+        if (channelList.containsKey(Const.AVARITIA_FAKE_PLAYER.id()))
+            channelList.get(Const.AVARITIA_FAKE_PLAYER.id()).forEach((id, channel) -> publicChannels.putString(String.valueOf(id), channel.getName()));
 
         if (!myChannels.isEmpty() || !otherChannels.isEmpty() || !publicChannels.isEmpty())
             NetworkHandler.CHANNEL.sendTo(player, new S2CChannelListPack(myChannels, otherChannels, publicChannels));
@@ -177,7 +178,7 @@ public class ServerChannelManager {
     public void tryAddChannel(ServerPlayer player, String name, boolean pub) {
         //int slotId = player.getInventory().findSlotMatchingItem(new ItemStack(ModItems.STORAGE_CORE.get()));
         // if (slotId <= -1) return;
-        UUID uuid = pub ? Const.AVARITIA_FAKE_PLAYER.getId() : player.getUUID();
+        UUID uuid = pub ? Const.AVARITIA_FAKE_PLAYER.id() : player.getUUID();
         int max = pub ? ModConfig.MAX_PUBLIC_CHANNELS.get() : ModConfig.MAX_CHANNELS_PRE_PLAYER.get();
         HashMap<Integer, ServerChannel> playerChannels;
         if (channelList.containsKey(uuid)) playerChannels = channelList.get(uuid);
@@ -200,7 +201,7 @@ public class ServerChannelManager {
     }
 
     private void sendChannelAdd(UUID channelOwner, String name, int id) {
-        if (channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+        if (channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             channelSelector.forEach((player, other) ->
                     NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.ADD, (byte) 2, name, id)));
         } else {
@@ -231,7 +232,7 @@ public class ServerChannelManager {
     }
 
     private void sandChannelRemove(UUID channelOwner, int id) {
-        if (channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+        if (channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             channelSelector.forEach((player, other) ->
                     NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.REMOVE, (byte) 2, "", id)));
         } else {
@@ -265,7 +266,7 @@ public class ServerChannelManager {
             NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) 0, name, channelId));
         } else if (terminalOwner.equals(channelOwner)) {
             NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) 1, name, channelId));
-        } else if (Const.AVARITIA_FAKE_PLAYER.getId().equals(channelOwner)) {
+        } else if (Const.AVARITIA_FAKE_PLAYER.id().equals(channelOwner)) {
             NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) 2, name, channelId));
         } else if (!name.isEmpty()) {
             //频道名不为空，代表选择的频道是非用户非设备所有人非公有的其他人

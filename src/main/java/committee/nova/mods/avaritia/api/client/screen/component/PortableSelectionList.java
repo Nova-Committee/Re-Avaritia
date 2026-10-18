@@ -1,10 +1,11 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 
 /** Shared portable framing; selection, scrolling and keyboard navigation remain vanilla-owned. */
 public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<E>> extends ObjectSelectionList<E> {
@@ -14,39 +15,10 @@ public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<
 
     protected PortableSelectionList(Minecraft minecraft, int width, int height, int y, int rowHeight,
                                     int rowInset, int scrollbarInset, boolean drawInset) {
-        super(minecraft, width, height, y, y + height, rowHeight);
+        super(minecraft, width, height, y, rowHeight);
         this.rowInset = rowInset;
         this.scrollbarInset = scrollbarInset;
         this.drawInset = drawInset;
-        setRenderBackground(false);
-        setRenderTopAndBottom(false);
-        setRenderSelection(false);
-    }
-
-    public int getX() {
-        return this.x0;
-    }
-
-    public int getY() {
-        return this.y0;
-    }
-
-    public int getWidth() {
-        return this.x1 - this.x0;
-    }
-
-    public int getHeight() {
-        return this.y1 - this.y0;
-    }
-
-    public void setX(int x) {
-        setLeftPos(x);
-    }
-
-    public void setY(int y) {
-        int height = this.y1 - this.y0;
-        this.y0 = y;
-        this.y1 = y + height;
     }
 
     @Override
@@ -55,32 +27,37 @@ public abstract class PortableSelectionList<E extends ObjectSelectionList.Entry<
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         return getX() + getWidth() - scrollbarInset;
     }
 
     @Override
-    protected void renderBackground(@NotNull GuiGraphics graphics) {
+    protected void extractListBackground(@NotNull GuiGraphicsExtractor graphics) {
         if (drawInset) {
             PortableUi.inset(graphics, getX(), getY(), getWidth(), getHeight());
         }
     }
 
     @Override
-    protected void renderSelection(@NotNull GuiGraphics graphics, int top, int width, int height, int outerColor, int innerColor) {
+    protected void extractListSeparators(@NotNull GuiGraphicsExtractor graphics) {
+        // Portable lists draw their own framing, no vanilla separators.
+    }
+
+    @Override
+    protected void extractSelection(@NotNull GuiGraphicsExtractor graphics, E entry, int outlineColor) {
         // Entries draw their own hover and selection state with PortableUi.row.
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT && event.button() != InputConstants.MOUSE_BUTTON_RIGHT) {
             return false;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return isMouseOver(mouseX, mouseY) && super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        return isMouseOver(mouseX, mouseY) && super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 }

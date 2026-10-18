@@ -2,26 +2,42 @@ package committee.nova.mods.avaritia.client;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.util.ColorUtils;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
+import committee.nova.mods.avaritia.client.model.loader.AvaritiaItemModelLoaders;
+import committee.nova.mods.avaritia.client.particle.ChargeParticle;
+import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
+import committee.nova.mods.avaritia.client.render.NeutronRingPreviewRenderer;
+import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
 import committee.nova.mods.avaritia.client.render.entity.*;
+import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
+import committee.nova.mods.avaritia.client.render.item.InfinityShieldRender;
+import committee.nova.mods.avaritia.client.render.item.ShieldObjRender;
 import committee.nova.mods.avaritia.client.render.tile.*;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.*;
+import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
+import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.common.net.client.NetworkClientPackets;
-import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.item.ItemModels;
+import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.inventory.InventoryMenu;
+
 import java.util.Map;
 
 /** Loader-only client bootstrap. Vanilla lifecycle hooks perform instance-bound setup. */
@@ -35,11 +51,44 @@ public final class AvaritiaModClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         NetworkClientPackets.initialize();
+        // 供 StorageUtils 在连接专用服务器时解析注册表感知组件（附魔等）。
+        committee.nova.mods.avaritia.util.StorageUtils.setClientRegistryProvider(() -> {
+            var level = Minecraft.getInstance().level;
+            return level != null ? level.registryAccess() : null;
+        });
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
-        ClientPacketProxy.updateDimensions = InfinityRingClient::applyDimensions;
+        ClientPacketProxy.updateDimensions = InfinityRingControlScreen::applyKnownLevels;
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
         ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
         committee.nova.mods.avaritia.init.handler.ItemOverrideHandler.init();
+        AvaritiaShaders.register();
+        // 粒子供应商：26.3 ParticleResources 的注册接口为私有，改经 Fabric ParticleProviderRegistry。
+        ParticleProviderRegistry.getInstance().register(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
+        ParticleProviderRegistry.getInstance().register(ModParticles.SHOCKWAVE_PARTICLE.get(), ShockwaveParticle.Provider::new);
+        // 按键（SDL3 InputConstants）与自注册调试/预览组件。
+        AvaritiaClient.register();
+        UiInspector.register();
+        NeutronRingPreviewRenderer.register();
+        NeutronSpacePreviewRenderer.registerPip();
+        // 自定义 item model type（对应 datagen 输出的 items/*.json type 字段）。
+        ItemModels.ID_MAPPER.put(Const.rl("cosmic"), AvaritiaItemModelLoaders.Cosmic.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("cosmic_arc"), AvaritiaItemModelLoaders.CosmicArc.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("hell"), AvaritiaItemModelLoaders.Hell.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("eternal"), AvaritiaItemModelLoaders.Eternal.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("unstable"), AvaritiaItemModelLoaders.Unstable.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("halo"), AvaritiaItemModelLoaders.Halo.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("halo_cosmic"), AvaritiaItemModelLoaders.HaloCosmic.MAP_CODEC);
+        ItemModels.ID_MAPPER.put(Const.rl("halo_eternal"), AvaritiaItemModelLoaders.HaloEternal.MAP_CODEC);
+        // 自定义 item tint source。
+        ItemTintSources.ID_MAPPER.put(Const.rl("item_color"), IColored.ItemColors.CODEC);
+        ItemTintSources.ID_MAPPER.put(Const.rl("item_block_color"), IColored.ItemBlockColors.CODEC);
+        ItemTintSources.ID_MAPPER.put(Const.rl("rainbow"), RainbowTintSource.CODEC);
+        // 自定义 special model renderer。
+        SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
+        SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_chest"), InfinityChestItemRender.Unbaked.MAP_CODEC);
+        SpecialModelRenderers.ID_MAPPER.put(Const.rl("shield_obj"), ShieldObjRender.Unbaked.MAP_CODEC);
+        // 世界提交阶段的宇宙渲染队列（Neo 版对应 SubmitCustomGeometryEvent）。
+        LevelRenderEvents.COLLECT_SUBMITS.register(context -> CosmicRenderQueue.renderAll(context.submitNodeCollector()));
         MenuScreens.register(ModMenus.sculk_crafting_tile_table.get(), SculkCraftScreen::new);
         MenuScreens.register(ModMenus.nether_crafting_tile_table.get(), NetherCraftScreen::new);
         MenuScreens.register(ModMenus.end_crafting_tile_table.get(), EndCraftScreen::new);
@@ -72,27 +121,25 @@ public final class AvaritiaModClient implements ClientModInitializer {
         EntityRenderers.register(ModEntities.ACCELERATOR_DISPLAY_ENTITY.get(), AcceleratorDisplayRender::new);
         EntityRenderers.register(ModEntities.TNT_PRO_ENTITY.get(), TNTProEntityRender::new);
         EntityRenderers.register(ModEntities.INFINITY_THROWN_TRIDENT.get(), InfinityThrownTridentRender::new);
-        BlockEntityRenderers.register(ModTileEntities.compressed_chest_tile.get(), CompressedChestRender::new);
+        BlockEntityRenderers.register(ModTileEntities.compressed_chest_tile.get(), CompressedChestRenderer::new);
         BlockEntityRenderers.register(ModTileEntities.tesseract_tile.get(), TesseractRender::new);
         BlockEntityRenderers.register(ModTileEntities.infinity_chest_tile.get(), InfinityChestBlockRender::new);
     }
 
     public static void finishClientSetup(Minecraft minecraft) {
-        minecraft.itemColors.register(new IColored.ItemColors(), ModItems.singularity.get());
-        minecraft.itemColors.register((stack, tint) -> getCurrentRainbowColor(), ModItems.eternal_singularity.get());
         ModSearches.onClientSetup();
     }
 
     public static void addLayers(Map<ModelLayerLocation, LayerDefinition> roots) {
-        roots.put(COMPRESSED_CHEST, CompressedChestRender.createSingleBodyLayer());
-        roots.put(COMPRESSED_CHEST_LEFT, CompressedChestRender.createDoubleBodyLeftLayer());
-        roots.put(COMPRESSED_CHEST_RIGHT, CompressedChestRender.createDoubleBodyRightLayer());
+        roots.put(COMPRESSED_CHEST, CompressedChestRenderer.createSingleBodyLayer());
+        roots.put(COMPRESSED_CHEST_LEFT, CompressedChestRenderer.createDoubleBodyLeftLayer());
+        roots.put(COMPRESSED_CHEST_RIGHT, CompressedChestRenderer.createDoubleBodyRightLayer());
         roots.put(INFINITY_CHEST, InfinityChestBlockRender.createLayer());
         roots.put(INFINITY_SHIELD, InfinityShieldModel.createLayer());
     }
 
     public static void texturesUploaded(TextureAtlas atlas) {
-        if (!atlas.location().equals(InventoryMenu.BLOCK_ATLAS)) return;
+        if (!atlas.location().equals(TextureAtlas.LOCATION_BLOCKS)) return;
         for (int i = 0; i < 10; i++) {
             var cosmic = atlas.getSprite(Const.rl("misc/cosmic/cosmic_" + i));
             AvaritiaShaders.COSMIC_SPRITES[i] = cosmic;
@@ -111,11 +158,5 @@ public final class AvaritiaModClient implements ClientModInitializer {
         Res.ARMOR_MASK = atlas.getSprite(Const.rl("mask/armor/infinity_armor_mask"));
         Res.ARMOR_MASK_INV = atlas.getSprite(Const.rl("mask/armor/infinity_armor_mask_inv"));
         Res.ARMOR_WING_MASK = atlas.getSprite(Const.rl("mask/armor/infinity_armor_mask_wings"));
-        committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer.invalidate();
-        committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel.clearMaskCache();
-    }
-
-    public static int getCurrentRainbowColor() {
-        return ColorUtils.HSBToRGB((System.currentTimeMillis() % 18000) / 18000F, 1, 1);
     }
 }

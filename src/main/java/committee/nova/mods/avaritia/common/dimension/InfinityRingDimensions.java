@@ -9,16 +9,19 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.server.players.NameAndId;
+import net.minecraft.server.players.UserNameToIdResolver;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -116,12 +119,15 @@ public final class InfinityRingDimensions {
             data.removeOwner(player.getUUID());
             return false;
         }
-        if (level.getLevelData() instanceof PersonalLevelData personal) {
+        PersonalLevelData personal = level.getLevelData() instanceof PersonalLevelData data2 ? data2 : null;
+        if (personal != null) {
             personal.apply(settings, player.server.overworld());
         }
         BlockPos spawn = buildSpawn(level, terrain);
         // Initialize this dimension without a permanent spawn-region ticket or a global broadcast.
-        level.serverLevelData.setSpawn(spawn, 0.0F);
+        if (personal != null) {
+            personal.setSpawn(LevelData.RespawnData.of(level.dimension(), spawn, 0.0F, 0.0F));
+        }
         rememberReturn(player);
         teleportToPersonalSpawn(player, level);
         return true;
@@ -302,9 +308,9 @@ public final class InfinityRingDimensions {
             }
             if (!level.players().isEmpty()) {
                 ServerLevel overworld = owner.server.overworld();
-                BlockPos spawn = overworld.getSharedSpawnPos();
+                BlockPos spawn = overworld.getLevelData().getRespawnData().pos();
                 for (ServerPlayer occupant : List.copyOf(level.players())) {
-                    occupant.teleportTo(overworld, spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5, 0.0F, 0.0F);
+                    occupant.teleportTo(overworld, spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5, Set.of(), 0.0F, 0.0F, true);
                 }
             }
             if (!level.players().isEmpty()) {
@@ -357,15 +363,12 @@ public final class InfinityRingDimensions {
     }
 
     public static List<String> friendNames(MinecraftServer server, InfinityRingSettings settings) {
-        GameProfileCache cache = server.getProfileCache();
+        UserNameToIdResolver cache = server.services().nameToIdCache();
         List<String> names = new ArrayList<>();
-        if (cache == null) {
-            return names;
-        }
         settings.players.forEach((id, role) -> cache.get(id).ifPresent(profile ->
-                names.add(profile.getName() + "|" + role.name())));
+                names.add(profile.name() + "|" + role.name())));
         for (UUID banned : settings.banned) {
-            cache.get(banned).ifPresent(profile -> names.add(profile.getName() + "|BANNED"));
+            cache.get(banned).ifPresent(profile -> names.add(profile.name() + "|BANNED"));
         }
         return names;
     }
@@ -407,11 +410,11 @@ public final class InfinityRingDimensions {
             dest = player.server.overworld();
         }
         if (point == null || player.server.getLevel(point.dimension()) == null || InfinityRingKeys.isPersonal(point.dimension())) {
-            BlockPos spawn = dest.getSharedSpawnPos();
-            player.teleportTo(dest, spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5, player.getYRot(), player.getXRot());
+            BlockPos spawn = dest.getLevelData().getRespawnData().pos();
+            player.teleportTo(dest, spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5, Set.of(), player.getYRot(), player.getXRot(), true);
             return;
         }
-        player.teleportTo(dest, point.x(), point.y(), point.z(), point.yRot(), point.xRot());
+        player.teleportTo(dest, point.x(), point.y(), point.z(), Set.of(), point.yRot(), point.xRot(), true);
     }
 
     private static Optional<UUID> resolvePlayer(MinecraftServer server, String name) {
@@ -425,24 +428,20 @@ public final class InfinityRingDimensions {
         }
         for (ServerLevel level : server.getAllLevels()) {
             for (ServerPlayer occupant : level.players()) {
-                if (occupant.getGameProfile().getName().equalsIgnoreCase(trimmed)) {
+                if (occupant.nameAndId().name().equalsIgnoreCase(trimmed)) {
                     return Optional.of(occupant.getUUID());
                 }
             }
         }
-        GameProfileCache cache = server.getProfileCache();
-        if (cache == null) {
-            return Optional.empty();
-        }
-        return cache.get(trimmed).map(profile -> profile.getId());
+        return server.services().nameToIdCache().get(trimmed).map(NameAndId::id);
     }
 
     public static double standingFeetY(ServerLevel level, BlockPos spawn) {
         int x = spawn.getX();
         int z = spawn.getZ();
         level.getChunkAt(spawn);
-        int min = level.getMinBuildHeight() + 1;
-        int max = level.getMaxBuildHeight() - 2;
+        int min = level.getMinY() + 1;
+        int max = level.getMaxY() - 2;
         int start = Math.max(min, Math.min(max, spawn.getY()));
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(x, start, z);
         if (!level.getBlockState(cursor).getCollisionShape(level, cursor).isEmpty()) {
@@ -475,10 +474,10 @@ public final class InfinityRingDimensions {
     }
 
     private static void teleportToPersonalSpawn(ServerPlayer player, ServerLevel level) {
-        BlockPos spawn = level.getSharedSpawnPos();
+        BlockPos spawn = level.getLevelData().getRespawnData().pos();
         double y = standingFeetY(level, spawn);
         player.server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, y, spawn.getZ() + 0.5,
-                player.getYRot(), player.getXRot()));
+                Set.of(), player.getYRot(), player.getXRot(), true));
     }
 
     private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
@@ -486,7 +485,7 @@ public final class InfinityRingDimensions {
             BlockPos origin = BlockPos.ZERO;
             level.getChunkAt(origin);
             int feet = (int) Math.floor(standingFeetY(level, origin));
-            return new BlockPos(0, Math.max(level.getMinBuildHeight(), feet - 1), 0);
+            return new BlockPos(0, Math.max(level.getMinY(), feet - 1), 0);
         }
         BlockPos origin = SPAWN_ORIGIN;
         if (terrain == InfinityRingSettings.Terrain.VOID) {
@@ -498,7 +497,7 @@ public final class InfinityRingDimensions {
         BlockState oak = Blocks.OAK_SAPLING.defaultBlockState();
         level.setBlock(sapling, oak, 3);
         if (oak.getBlock() instanceof SaplingBlock saplingBlock) {
-            saplingBlock.advanceTree(level, sapling, oak, level.random);
+            saplingBlock.advanceTree(level, sapling, oak, level.getRandom());
         }
         return origin;
     }

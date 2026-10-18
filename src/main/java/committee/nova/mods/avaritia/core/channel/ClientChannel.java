@@ -50,14 +50,14 @@ public class ClientChannel extends Channel {
 
     public void update(CompoundTag tag) {
         if (container == null) return;
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag fluids = tag.getCompound("fluids");
-        CompoundTag energies = tag.getCompound("energies");
-        String name = tag.getString("name");
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag fluids = tag.getCompoundOrEmpty("fluids");
+        CompoundTag energies = tag.getCompoundOrEmpty("energies");
+        String name = tag.getStringOr("name", "");
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
-        items.getAllKeys().forEach(itemId -> {
-            long count = items.getLong(itemId);
+        items.keySet().forEach(itemId -> {
+            long count = items.getLongOr(itemId, 0L);
             if (count <= 0L) {
                 if (storageItems.containsKey(itemId)) {
                     storageItems.remove(itemId);
@@ -77,8 +77,8 @@ public class ClientChannel extends Channel {
                 }
             }
         });
-        fluids.getAllKeys().forEach(fluidId -> {
-            long count = fluids.getLong(fluidId);
+        fluids.keySet().forEach(fluidId -> {
+            long count = fluids.getLongOr(fluidId, 0L);
             if (count <= 0L) {
                 if (storageFluids.containsKey(fluidId)) {
                     storageFluids.remove(fluidId);
@@ -98,8 +98,8 @@ public class ClientChannel extends Channel {
                 }
             }
         });
-        energies.getAllKeys().forEach(energyId -> {
-            long count = energies.getLong(energyId);
+        energies.keySet().forEach(energyId -> {
+            long count = energies.getLongOr(energyId, 0L);
             if (count <= 0L) {
                 if (storageEnergies.containsKey(energyId)) {
                     storageEnergies.remove(energyId);
@@ -128,16 +128,16 @@ public class ClientChannel extends Channel {
     }
 
     public void fullUpdate(CompoundTag tag) {
-        CompoundTag items = tag.getCompound("items");
-        CompoundTag fluids = tag.getCompound("fluids");
-        CompoundTag energies = tag.getCompound("energies");
-        String name = tag.getString("name");
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag fluids = tag.getCompoundOrEmpty("fluids");
+        CompoundTag energies = tag.getCompoundOrEmpty("energies");
+        String name = tag.getStringOr("name", "");
         storageItems.clear();
         storageFluids.clear();
         storageEnergies.clear();
-        items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
-        fluids.getAllKeys().forEach(fluidId -> storageFluids.put(fluidId, fluids.getLong(fluidId)));
-        energies.getAllKeys().forEach(energyId -> storageEnergies.put(energyId, energies.getLong(energyId)));
+        items.keySet().forEach(itemId -> storageItems.put(itemId, items.getLongOr(itemId, 0L)));
+        fluids.keySet().forEach(fluidId -> storageFluids.put(fluidId, fluids.getLongOr(fluidId, 0L)));
+        energies.keySet().forEach(energyId -> storageEnergies.put(energyId, energies.getLongOr(energyId, 0L)));
         updateItemKeys();
         updateFluidKeys();
         setName(name);
