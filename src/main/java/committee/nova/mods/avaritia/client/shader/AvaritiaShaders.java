@@ -51,6 +51,9 @@ public class AvaritiaShaders {
         BLACK_HOLE_SHADER = registerPipeline("black_hole", "black_hole", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS,
                 new DepthStencilState(CompareOp.ALWAYS_PASS, false));
         AvaritiaRenderTypes.reloadEffectTypes();
+        // Iris 必须在管线首次编译前建立 override 映射，否则开启光影时会报
+        // “Missing program avaritia:cosmic in override list”，手部 pass 还可能直接崩溃。
+        committee.nova.mods.avaritia.client.compat.IrisCompat.assignPipelines();
     }
 
     private static RenderPipeline registerPipeline(String name, VertexFormat vertexFormat, PrimitiveTopology mode) {

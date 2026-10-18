@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:builtin/entity",
+  "parent": "minecraft:item/generated",
   "display": {
     "firstperson_righthand": {
       "rotation": [
@@ -105,6 +105,7 @@
     }
   },
   "textures": {
+    "layer0": "avaritia:item/infinity_chest",
     "particle": "avaritia:block/resource/infinity"
   }
 }

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.model.item;
 
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.model.loader.AvaritiaItemModelRenderers;
 import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloLayer;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
@@ -98,7 +99,7 @@ public final class LayeredEffectItemModel implements ItemModel {
         // effectQuads 由 mask 烘焙而来，只在 mask 区域绘制动态星空/永恒等效果。
         // 手持三叉戟走 OBJ 实体层（block 单位 + swapYZ + 内部硬编码姿态），
         // 与 0..1 物品平面的 effectQuads 坐标空间不一致，叠加必然错位，故三叉戟几何态不渲染 effect 层。
-        if (shouldRenderEffectLayer(tridentGeometry)) {
+        if (shouldRenderEffectLayer(tridentGeometry, displayContext)) {
             appendEffectLayer(renderState, displayContext,
                     this.effect.createArgument(this.effectQuads, this.baseQuads, level, owner, displayContext, stack),
                     this.effectExtents);
@@ -145,7 +146,12 @@ public final class LayeredEffectItemModel implements ItemModel {
                 && displayContext != ItemDisplayContext.GROUND;
     }
 
-    private boolean shouldRenderEffectLayer(boolean tridentGeometry) {
+    private boolean shouldRenderEffectLayer(boolean tridentGeometry, ItemDisplayContext displayContext) {
+        // Iris 的手部 pass 会用自己的 shader program 重写管线；第三方自定义管线在手持态
+        // 既无法正确显示星空，也曾在 Adreno/D3D12 驱动上触发原生崩溃，故光影下跳过手部效果层。
+        if (IrisCompat.shouldDefer(displayContext)) {
+            return false;
+        }
         return this.effect != null
                 && !this.effectQuads.isEmpty()
                 && !tridentGeometry;

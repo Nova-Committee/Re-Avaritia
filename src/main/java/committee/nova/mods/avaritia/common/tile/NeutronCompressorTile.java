@@ -146,7 +146,10 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         if (!level.isClientSide()) {
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
-                    tile.materialStack = input.copy();
+                    // 外部存储可能绕过槽位上限直接塞入 >64 的堆叠；materialStack 只用于
+                    // 配方匹配/显示，数量由 materialCount 单独记录，因此这里必须夹到合法堆叠数，
+                    // 否则 saveAdditional 的 ItemStack.OPTIONAL_CODEC 会因 count>99 抛错。
+                    tile.materialStack = tile.legalMaterialStack(input);
 
                     tile.setChangedFast();
                 }
@@ -172,9 +175,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
                     tile.setProgress(tile.progress + 1);
                     if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
                         var result = tile.recipe.assemble(tile.toCraftingInput());
+                        int produced = tile.producedCount(result);
 
-                        if (ItemUtils.canCombineStacks(result, output)) {
-                            tile.updateResult(result, tile.tier.outputAmplifier);
+                        // 输出槽容量必须按“放大后的实际产出”判断，否则 result.getCount()=1、
+                        // outputAmplifier=2、输出槽已有 63 个时会通过检查并 grow 到 65，产生
+                        // 超过最大堆叠/超过 99 的非法 ItemStack（保存/网络同步时崩溃）。
+                        if (produced > 0 && ItemUtils.canCombineStacks(result.copyWithCount(produced), output)) {
+                            tile.updateResult(result.copyWithCount(produced));
                             tile.setProgress(0);
                             tile.materialCount -= Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier);
 
@@ -285,14 +292,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     }
 
 
-    private void updateResult(ItemStack stack, int outputAmplifier) {
+    private void updateResult(ItemStack produced) {
         var result = this.inventory.getStackInSlot(0);
 
         if (result.isEmpty()) {
-            this.inventory.setStackInSlot(0, stack.copyWithCount(outputAmplifier));
+            this.inventory.setStackInSlot(0, produced.copy());
         } else {
-            this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount() * outputAmplifier));
+            this.inventory.setStackInSlot(0, ItemUtils.grow(result, produced.getCount()));
         }
+    }
+
+    /**
+     * 按机器等级计算单次实际产出数量，并夹到物品自身的最大堆叠数。
+     */
+    private int producedCount(ItemStack result) {
+        if (result.isEmpty()) {
+            return 0;
+        }
+        long count = (long) result.getCount() * this.tier.outputAmplifier;
+        return (int) Math.min(result.getMaxStackSize(), Math.max(1L, count));
+    }
+
+    private ItemStack legalMaterialStack(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return stack.copyWithCount(Math.min(stack.getCount(), stack.getMaxStackSize()));
     }
 
     // 新增方法：配方锁定相关
@@ -419,7 +444,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
             if (!extractedStack.isEmpty()) {
                 if (materialStack.isEmpty()) {
-                    materialStack = extractedStack.copy();
+                    materialStack = legalMaterialStack(extractedStack);
                 }
 
                 // 将物品放入输入槽
