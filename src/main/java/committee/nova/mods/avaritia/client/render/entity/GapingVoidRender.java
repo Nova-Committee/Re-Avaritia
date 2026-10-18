@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
@@ -79,7 +80,10 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
         AvaritiaShaderUniforms.set(AvaritiaRenderTypes.BLACK_HOLE, AvaritiaShaderUniforms.Effect.BLACK_HOLE,
                 age, yaw, pitch, absorption, evaporation, null);
         SimpleMesh mesh = this.blackHoleModel();
-        output.submitCustomGeometry(stack, AvaritiaRenderTypes.BLACK_HOLE,
+        // 光影下自定义 black_hole 管线没有 Iris shadow 映射，回退到普通实体贴图，
+        // 避免黑洞在 shadow pass 中渲染成异常黑块。
+        var renderType = IrisCompat.shouldDisableCosmicEffects() ? AvaritiaRenderTypes.VOID : AvaritiaRenderTypes.BLACK_HOLE;
+        output.submitCustomGeometry(stack, renderType,
                 (poseState, vertexConsumer) -> mesh.render(poseState, vertexConsumer, WHITE_RGBA, FULL_BRIGHT, OverlayTexture.NO_OVERLAY));
 
         stack.popPose();

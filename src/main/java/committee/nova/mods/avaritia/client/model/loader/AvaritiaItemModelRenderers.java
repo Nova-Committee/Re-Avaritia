@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.model.loader;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloSetting;
 import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloUtils;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
@@ -284,7 +285,7 @@ public final class AvaritiaItemModelRenderers {
         @Override
         public void submit(@Nullable EffectLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
-            if (argument == null || argument.quads().isEmpty()) {
+            if (argument == null || argument.quads().isEmpty() || IrisCompat.shouldDisableCosmicEffects()) {
                 return;
             }
 

@@ -133,7 +133,7 @@
 | 9 | 预览渲染成反面 3 面（正面被剔除） | 上轮修复用的 `scale(1,-1,1)` 行列式 -1，叠加 PiP 自带 `scale(s,s,-s)` 后 winding 反转 | 改用 `rotateZ(180°)`（vanilla 实体 PiP 约定，保持 winding） | 727a9b5 / 5d113e0 |
 | 10 | 预览鼠标拖动方向反 | Z 翻转后 yaw/pitch 视觉方向与屏幕拖动相反 | `orbitPreview` 增量取反补偿 | 727a9b5 / 5d113e0 |
 | 11 | 全部奇点合成催化剂不消耗（消耗后又回来） | Fabric 版多出 Neo 没有的 `getRemainingItems` 覆写，把每个奇点槽位返还副本 | 删除该覆写，奇点按默认逻辑正常消耗（永恒奇点/非默认组不受影响） | 727a9b5 / 5d113e0 |
-| 12 | 开启 Iris 光影后手部渲染崩溃（`hs_err` 落在 OpenGLOn12.dll），日志先报 `Missing program avaritia:cosmic in override list` | 自定义 RenderPipeline 未通过 Iris API 登记；手部 pass 用自定义管线与光影包程序混用 | `IrisCompat.assignPipelines()` 把 6 条自定义管线映射到 `IrisProgram.ENTITIES_TRANSLUCENT`；光影下手持/第三人称跳过星空效果层（`shouldDefer`）避免手部 pass 冲突 | 本轮 |
+| 12 | 开启 Iris 光影后手部/掉落物/展示框渲染异常（物品被黑色遮罩，严重时 `hs_err` 落在 OpenGLOn12.dll），日志报 `Missing program avaritia:cosmic in override list` | 自定义 RenderPipeline 未通过 Iris API 登记；Iris 的 shadow pass 不走主映射，继续提交 cosmic/black_hole 管线会回退到错误程序 | 光影下统一关闭所有自定义星空效果层（物品所有 display context、盔甲 cosmic 层、黑洞回退 `VOID` 贴图）；同时 `IrisCompat.assignPipelines()` 仍把管线登记到 `ENTITIES_TRANSLUCENT` 作为兜底 | 本轮 |
 | 13 | 启动日志 `Missing block model: minecraft:builtin/entity` | 26.3 已移除 `builtin/entity`，无尽箱物品模型仍以它为 parent | 改为 `minecraft:item/generated` + `layer0: avaritia:item/infinity_chest`；`minecraft:special` 的 `base` 只用于 display/particle，不影响特殊渲染 | 本轮 |
 | 14 | 压缩机输出槽可能出现 >99 / 超过最大堆叠的非法 ItemStack（上游 #386 同类问题） | 输出容量检查只比较 `result.getCount()`，未乘 `outputAmplifier`；`materialStack` 直接复制外部存储的 128 堆叠 | 产出按 `outputAmplifier` 计算并夹到 `getMaxStackSize()`；`materialStack` 复制时夹到合法堆叠数 | 本轮 |
 
@@ -146,7 +146,8 @@
 - **PR 状态**：PR #387（Fabric）、PR #389（Neo）均处于等待官方审阅状态；后续更新流程保持
   "main 提交 → cherry-pick → push fork"。
 - **实测建议**：预览默认视角（应看到顶面+正面）、拖动旋转方向、全部奇点合成催化剂的消耗、
-  无尽套星空连续转动、创造飞行翅膀渲染；开启 Iris 光影后手持星空物品不应崩溃（效果层会被跳过），
+  无尽套星空连续转动、创造飞行翅膀渲染；开启 Iris 光影后手持/掉落/展示框中的星空物品与无尽套
+  都不应出现黑色遮罩或崩溃（自定义星空层会被跳过，黑洞回退普通贴图），
   高速运行压缩机时输出槽不应出现超过最大堆叠的堆叠。
 - **调试工具**：sources jar 解压到 `%TEMP%\mc-src` 用于查阅 vanilla 源码；
   构建命令 `.\gradlew.bat build -x test`。

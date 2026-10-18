@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.model.entity;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.client.AvaritiaClient;
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -142,7 +143,10 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
     }
 
     public void render(S state, PoseStack poseStack, SubmitNodeCollector output, RenderType wingRenderType, int packedLight, int packedOverlay) {
-        RenderType cosmicArmorRenderType = AvaritiaRenderTypes.COSMIC_ARMOR;
+        // 光影下关闭自定义 cosmic 盔甲层：Iris 的 shadow pass 不走 assignPipeline 主映射，
+        // 继续提交会把盔甲/物品盖成黑色。盔甲本体与发光层仍正常渲染。
+        boolean cosmicEnabled = !IrisCompat.shouldDisableCosmicEffects();
+        RenderType cosmicArmorRenderType = cosmicEnabled ? AvaritiaRenderTypes.COSMIC_ARMOR : null;
 
         Minecraft mc = Minecraft.getInstance();
 
@@ -173,7 +177,9 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
             pitch = -((float) ((absolutePitch * 2.0F) * Math.PI / 360.0D));
         }
 
-        AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
+        if (cosmicEnabled) {
+            AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
+        }
 
         boolean flying = Boolean.TRUE.equals(state.getData(AvaritiaClient.INFINITY_ARMOR_FLYING)) || state.isFallFlying;
         if (fullInfinityArmor && flying) {
@@ -249,6 +255,9 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
     }
 
     private void submitBodyParts(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
+        if (renderType == null) {
+            return;
+        }
         output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);
@@ -262,6 +271,9 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
     }
 
     private void submitPart(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, ModelPart part, int packedLight, int packedOverlay, int color) {
+        if (renderType == null) {
+            return;
+        }
         output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);
@@ -270,6 +282,9 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
     }
 
     private void submitPart(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, ModelPart part, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
+        if (renderType == null) {
+            return;
+        }
         output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);

@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.client.compat;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import net.minecraft.world.item.ItemDisplayContext;
 
 import java.lang.reflect.Method;
 
@@ -86,21 +85,13 @@ public final class IrisCompat {
         }
     }
 
-    public static boolean shouldDefer(ItemDisplayContext ctx) {
-
-        if (!isShaderPackEnabled()) {
-            return false;
-        }
-
-        return switch (ctx) {
-
-            case FIRST_PERSON_LEFT_HAND,
-                 FIRST_PERSON_RIGHT_HAND,
-                 THIRD_PERSON_LEFT_HAND,
-                 THIRD_PERSON_RIGHT_HAND -> true;
-
-            default -> false;
-        };
+    /**
+     * 光影开启时关闭所有自定义星空/黑洞管线绘制（手部、掉落物、展示框、盔甲）。
+     * Iris 的 shadow pass 不会走 {@code assignPipeline} 的主映射，继续提交自定义
+     * RenderType 会报 “Missing program” 并把物品盖成黑色贴图，因此统一禁用。
+     */
+    public static boolean shouldDisableCosmicEffects() {
+        return isShaderPackEnabled();
     }
 
     private static boolean isLoaded() {
