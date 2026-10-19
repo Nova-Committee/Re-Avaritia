@@ -77,28 +77,37 @@ public class AbilityHandler {
 
 
             handleHelmetStateChange(player, key, hasHelmet);
-            handleChestStateChange(player, key, hasChest);
+            handleChestStateChange(player, hasChest);
             handleLeggingsStateChange(player, key, hasLeggings);
             handleBootsStateChange(player, key, hasBoots);
 
         }
     }
 
-    private static void handleChestStateChange(Player player, String key, boolean hasChest) {
+    private static void handleChestStateChange(Player player, boolean hasChest) {
         boolean personalFlight = InfinityRingDimensions.isPersonal(player.level());
         AttributeInstance flight = player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
-        if (flight != null) {
-            if (hasChest || personalFlight) {
-                flight.addOrUpdateTransientModifier(new AttributeModifier(FLIGHT_MODIFIER, 1.0D, AttributeModifier.Operation.ADD_VALUE));
-            } else {
-                flight.removeModifier(FLIGHT_MODIFIER);
-            }
-        }
+        updateFlightModifier(flight, hasChest, personalFlight);
         if (hasChest) {
             List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
             for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().value().isBeneficial())) {
                 player.removeEffect(potion.getEffect());
             }
+        }
+    }
+
+    static void updateFlightModifier(AttributeInstance flight, boolean hasChest, boolean personalFlight) {
+        if (flight == null) {
+            return;
+        }
+        boolean hasModifier = flight.hasModifier(FLIGHT_MODIFIER);
+        if (hasChest || personalFlight) {
+            // Replacing an unchanged modifier dirties this syncable attribute every tick.
+            if (!hasModifier) {
+                flight.addTransientModifier(new AttributeModifier(FLIGHT_MODIFIER, 1.0D, AttributeModifier.Operation.ADD_VALUE));
+            }
+        } else if (hasModifier) {
+            flight.removeModifier(FLIGHT_MODIFIER);
         }
     }
 
