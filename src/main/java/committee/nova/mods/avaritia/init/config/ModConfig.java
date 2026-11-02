@@ -57,6 +57,15 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue bootSpeedStrafingMultiplier;
     public static final ModConfigSpec.DoubleValue bootSpeedSprintingMultiplier;
 
+    public static final ModConfigSpec.BooleanValue neutronWolfArmorEnabled;
+    public static final ModConfigSpec.DoubleValue neutronWolfBondRadius;
+    public static final ModConfigSpec.DoubleValue neutronWolfMaxRange;
+    public static final ModConfigSpec.DoubleValue neutronWolfMinReduction;
+    public static final ModConfigSpec.DoubleValue neutronWolfHaxReduction;
+    public static final ModConfigSpec.IntValue neutronWolfTotemDurabilityCost;
+    public static final ModConfigSpec.IntValue neutronWolfBondCooldownSeconds;
+    public static final ModConfigSpec.DoubleValue neutronWolfHealthBonus;
+
     //SERVER
     static {
         final var common = new ModConfigSpec.Builder();
@@ -110,6 +119,14 @@ public class ModConfig {
         bootSpeedBackwardMultiplier = buildDouble(common, "config.avaritia.boot_speed_backward_multiplier", 0.25, 0.01, 1.0, "config.avaritia.boot_speed_backward_multiplier.tooltip");
         bootSpeedStrafingMultiplier = buildDouble(common, "config.avaritia.boot_speed_strafing_multiplier", 0.45, 0.01, 1.0, "config.avaritia.boot_speed_strafing_multiplier");
         bootSpeedSprintingMultiplier = buildDouble(common, "config.avaritia.boot_speed_sprinting_multiplier", 0.2, 0.01, 1.0, "config.avaritia.boot_speed_sprinting_multiplier");
+        neutronWolfArmorEnabled = buildBoolean(common, "config.avaritia.wolf_enabled", true, "Whether the Neutron Wolf Armor grants its guard, bond and totem mechanics");
+        neutronWolfBondRadius = buildDouble(common, "config.avaritia.wolf_bond_radius", 5.0, 0.0, 64.0, "Radius around its owner in which the wolf is unharmed and can absorb a lethal hit");
+        neutronWolfMaxRange = buildDouble(common, "config.avaritia.wolf_max_range", 25.0, 1.0, 128.0, "Distance at which damage reduction stops decaying");
+        neutronWolfMinReduction = buildDouble(common, "config.avaritia.wolf_min_reduction", 0.5, 0.0, 1.0, "Damage reduction kept at and beyond wolf_max_range");
+        neutronWolfHaxReduction = buildDouble(common, "config.avaritia.wolf_hax_reduction", 0.3, 0.0, 1.0, "Damage reduction cap against armor-bypassing or invulnerability-bypassing damage");
+        neutronWolfTotemDurabilityCost = buildInt(common, "config.avaritia.wolf_totem_durability_cost", 500, 0, 100000, "Durability the wolf armor must pay to refuse a lethal hit");
+        neutronWolfBondCooldownSeconds = buildInt(common, "config.avaritia.wolf_bond_cooldown_seconds", 3, 0, 3600, "Cooldown of the bond that absorbs a lethal hit aimed at the owner");
+        neutronWolfHealthBonus = buildDouble(common, "config.avaritia.wolf_health_bonus", 100.0, 0.0, 1024.0, "Extra max health granted to a wolf wearing the armor");
         common.pop();
         COMMON = common.build();
     }

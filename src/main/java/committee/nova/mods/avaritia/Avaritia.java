@@ -29,6 +29,7 @@ public class Avaritia {
 
 
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModArmorMaterial.ARMOR_MATERIALS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);

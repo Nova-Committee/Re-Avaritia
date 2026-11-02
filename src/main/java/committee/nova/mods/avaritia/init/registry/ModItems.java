@@ -74,6 +74,7 @@ public class ModItems {
     public static DeferredItem<Item> infinity_pants = item("infinity_pants", () -> new InfinityArmorItem(ArmorItem.Type.LEGGINGS));
     public static DeferredItem<Item> infinity_boots = item("infinity_boots", () -> new InfinityArmorItem(ArmorItem.Type.BOOTS));
     public static DeferredItem<Item> neutron_horse_armor = item("neutron_horse_armor", NeutronHorseArmorItem::new);
+    public static DeferredItem<Item> neutron_wolf_armor = item("neutron_wolf_armor", NeutronWolfArmorItem::new);
     public static DeferredItem<Item> infinity_elytra = item("infinity_elytra", InfinityElytraItem::new);
 
     /**

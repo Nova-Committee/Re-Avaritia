@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/armor/wolf/neutron_wolf_armor",
+    "halo": "avaritia:misc/halo_noise"
+  },
+  "loader": "avaritia:halo",
+  "halo": {
+    "texture": "#halo",
+    "color": -1711276033,
+    "size": 6,
+    "pulse": false
+  }
+}

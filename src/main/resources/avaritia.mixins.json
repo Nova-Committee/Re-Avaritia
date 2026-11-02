@@ -12,6 +12,7 @@
     "NetherWartBlockMixin",
     "PlayerMixin",
     "RecipeManagerMixin",
+    "WolfMixin",
     "ReloadableServerResourcesMixin",
     "accessor.MappedRegistryAccessor"
   ],
