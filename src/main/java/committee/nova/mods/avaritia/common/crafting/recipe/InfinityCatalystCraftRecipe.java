@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -8,16 +11,14 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-
-import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,11 +31,15 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     // 存储原始输入配料（用于非默认组）
     private final NonNullList<Ingredient> originalInputs;
 
-    public InfinityCatalystCraftRecipe(ResourceLocation recipeId, String pGroup, NonNullList<Ingredient> inputs, int count) {
-        super(recipeId, NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get(), count), 4);
+    public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
+        super(NonNullList.create(), new ItemStackTemplate(ModItems.infinity_catalyst.get(), count), 4);
         this.group = pGroup;
         this.count = count;
         this.originalInputs = inputs;
+    }
+
+    public static void invalidate() {
+        INGREDIENTS_LOADED.clear();
     }
 
     @Override
@@ -45,7 +50,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if ("default".equals(group)) {
                 SingularityReloadListener.INSTANCE.getAllSingularities().values()
                         .stream()
-                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                        .filter(singularity -> singularity.hasIngredient())
                         .map(SingularityUtils::getItemForSingularity)
                         .map(NbtIngredients::of)
                         .forEach(super.getIngredients()::add);
@@ -56,12 +61,12 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull String getGroup() {
+    public @NotNull String group() {
         return this.group;
     }
 
     @Override
-    public boolean matches(@NotNull Container input, @NotNull Level level) {
+    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
         // 如果是默认组，需要特殊处理（包含所有奇点）
         if ("default".equals(group)) {
             return matchesSingularityRecipe(input);
@@ -76,7 +81,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
      * 要求玩家必须放置所有已注册的奇点（每个奇点只能使用一次），
      * 以及 originalInputs 中的物品
      */
-    private boolean matchesSingularityRecipe(@NotNull Container input) {
+    private boolean matchesSingularityRecipe(@NotNull CraftingInput input) {
         // 获取配料列表（会加载所有奇点）
         var ingredients = this.getIngredients();
         if (ingredients.isEmpty()) return false;
@@ -90,7 +95,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         // 收集所有有效的奇点对象
         List<Singularity> validSingularities = singularities.values()
                 .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .filter(singularity -> singularity.hasIngredient())
                 .toList();
 
         int singularityCount = validSingularities.size();
@@ -102,7 +107,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
         // 收集容器中的所有非空物品
         List<ItemStack> inputStacks = new ArrayList<>();
-        for (int i = 0; i < input.getContainerSize(); i++) {
+        for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
                 inputStacks.add(stack);
@@ -118,7 +123,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
         List<ItemStack> standardInputs = new ArrayList<>();
 
-        // 检查每个输入物品：优先一对一匹配奇点，其余交给 RecipeMatcher 匹配普通材料
+        // 检查每个输入物品：优先一对一匹配奇点，其余交给匹配器处理普通材料
         for (ItemStack stack : inputStacks) {
             boolean matched = false;
 
@@ -126,7 +131,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             for (int i = 0; i < validSingularities.size(); i++) {
                 var singularity = validSingularities.get(i);
                 ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                if (ItemStack.isSameItemSameComponents(stack, singularityStack)) {
                     // 确保每个奇点只能使用一次
                     if (!found[i]) {
                         found[i] = true;
@@ -153,12 +158,12 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     /**
      * 处理非默认组的标准无形合成匹配逻辑
      */
-    private boolean matchesStandardRecipe(@NotNull Container input) {
+    private boolean matchesStandardRecipe(@NotNull CraftingInput input) {
         List<ItemStack> inputs = new ArrayList<>();
         int matched = 0;
 
         // 收集容器中的所有非空物品
-        for (int i = 0; i < input.getContainerSize(); i++) {
+        for (int i = 0; i < input.size(); i++) {
             var stack = input.getItem(i);
             if (!stack.isEmpty()) {
                 inputs.add(stack);
@@ -166,76 +171,48 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             }
         }
 
-        // 使用RecipeMatcher进行标准匹配
+        // 使用匹配器进行标准匹配
         return matched == this.originalInputs.size() &&
                RecipeIngredients.matches(inputs, this.originalInputs);
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull ItemHandler inv) {
-        var remaining = super.getRemainingItems(inv);
-
-        if ("default".equals(group)) {
-            var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
-            if (singularities != null && !singularities.isEmpty()) {
-                for (int i = 0; i < remaining.size(); i++) {
-                    var stack = inv.getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        for (var singularity : singularities.values()) {
-                            if (singularity.getIngredient() != Ingredient.EMPTY) {
-                                var singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                                if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                                    var rem = singularityStack.copy();
-                                    rem.setCount(1);
-                                    remaining.set(i, rem);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return remaining;
+    public @NotNull RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<CraftingInput>> getSerializer() {
+        return (RecipeSerializer<InfinityCatalystCraftRecipe>) ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
     }
 
-    @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
-    }
+    public static class Serializer {
+        public static final MapCodec<InfinityCatalystCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        Codec.STRING.optionalFieldOf("group", "default").forGetter(recipe -> recipe.group),
+                        RecipeCodecs.ingredientList(81, false, "Combination recipe")
+                                .fieldOf("ingredients")
+                                .forGetter(recipe -> recipe.originalInputs),
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
+                ).apply(builder, InfinityCatalystCraftRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, InfinityCatalystCraftRecipe> STREAM_CODEC = StreamCodec.of(
+                InfinityCatalystCraftRecipe.Serializer::toNetwork, InfinityCatalystCraftRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<InfinityCatalystCraftRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
-    public static class Serializer implements RecipeSerializer<InfinityCatalystCraftRecipe> {
-        @Override
-        public @NotNull InfinityCatalystCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            String group1 = GsonHelper.getAsString(json, "group", "default");
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
-            for (int i = 0; i < ingredients.size(); i++) {
-                inputs.add(Ingredient.fromJson(ingredients.get(i)));
-            }
-            int count = GsonHelper.getAsInt(json, "count", 1);
-            return new InfinityCatalystCraftRecipe(recipeId, group1, inputs, count);
-        }
-
-        @Override
-        public InfinityCatalystCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+        private static InfinityCatalystCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
+
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             int count = buffer.readInt();
-            return new InfinityCatalystCraftRecipe(recipeId, group, inputs, count);
+            return new InfinityCatalystCraftRecipe(group, inputs, count);
         }
 
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull InfinityCatalystCraftRecipe recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, InfinityCatalystCraftRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeVarInt(recipe.originalInputs.size());
             for (var ingredient : recipe.originalInputs) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             buffer.writeInt(recipe.count);
         }

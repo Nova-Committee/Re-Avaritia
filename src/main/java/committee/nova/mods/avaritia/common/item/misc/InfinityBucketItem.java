@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.misc.InfinityBucketContents.Control;
 import committee.nova.mods.avaritia.common.item.misc.InfinityBucketContents.CreatureRecord;
@@ -10,34 +11,43 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Bucketable;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.animal.Bucketable;
-import net.minecraft.world.entity.animal.TropicalFish;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
@@ -50,6 +60,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -66,12 +78,14 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.core.registries.Registries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * @Project: Avaritia
@@ -123,7 +137,7 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
 
     public static void notifyOverCapacity(Player player) {
         if (player != null) {
-            player.displayClientMessage(Component.translatable("gui.avaritia.infinity_bucket.over_capacity"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("gui.avaritia.infinity_bucket.over_capacity"));
         }
     }
 
@@ -148,7 +162,7 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
 
     @NotNull
     public static String getFluidName(FluidStack fluidStack) {
-        ResourceLocation key = BuiltInRegistries.FLUID.getKey(fluidStack.getFluid());
+        Identifier key = BuiltInRegistries.FLUID.getKey(fluidStack.getFluid());
         return key == null ? "minecraft:empty" : key.toString();
     }
 
@@ -160,19 +174,20 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             return false;
         }
         EntityType<?> type = living.getType();
-        if (type.is(TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c", "bosses")))
-                || type == EntityType.ENDER_DRAGON || type == EntityType.WITHER
-                || type.is(ModTags.CAPTURING_NOT_SUPPORTED)) {
+        Holder<EntityType<?>> typeHolder = BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type);
+        if (typeHolder.is(TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", "bosses")))
+                || type == EntityTypes.ENDER_DRAGON || type == EntityTypes.WITHER
+                || typeHolder.is(ModTags.CAPTURING_NOT_SUPPORTED)) {
             return false;
         }
         if (living.isPassenger() || living.isVehicle() || !living.getPassengers().isEmpty()) {
             return false;
         }
-        return living instanceof Bucketable || type.is(ModTags.AQUATIC_CAPTURABLE);
+        return living instanceof Bucketable || typeHolder.is(ModTags.AQUATIC_CAPTURABLE);
     }
 
     public static boolean isEntityInWater(LivingEntity entity) {
-        return entity.isInWaterOrBubble() || entity.level().getFluidState(entity.blockPosition()).is(FluidTags.WATER);
+        return entity.isInWater() || entity.level().getFluidState(entity.blockPosition()).is(FluidTags.WATER);
     }
 
     public static boolean canCaptureAt(Player player, ItemStack stack, LivingEntity target) {
@@ -192,8 +207,9 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    public void appendHoverText(@NotNull ItemStack pStack, @NotNull TooltipContext context, @NonNull TooltipDisplay display,
+                                @NotNull Consumer<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, context, display, pTooltipComponents, pIsAdvanced);
         Control control = getControl(pStack);
         NumberFormat formater = DecimalFormat.getInstance();
         List<FluidStack> fluids = getFluids(pStack);
@@ -204,7 +220,7 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             if (!control.creatureSelected() && i == control.selectedIndex()) {
                 component.append(" ").append(Component.translatable("tooltip.avaritia.infinity_bucket.selected"));
             }
-            pTooltipComponents.add(component);
+            pTooltipComponents.accept(component);
         }
         List<CreatureRecord> creatures = getCreatures(pStack);
         for (int i = 0; i < creatures.size(); i++) {
@@ -214,67 +230,67 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             if (control.creatureSelected() && i == control.selectedIndex()) {
                 component.append(" ").append(Component.translatable("tooltip.avaritia.infinity_bucket.selected"));
             }
-            pTooltipComponents.add(component);
+            pTooltipComponents.accept(component);
         }
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (pLevel.isClientSide && pEntity instanceof Player player && player.getInventory().getSelected() == pStack) {
+    public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity, @Nullable EquipmentSlot pSlot) {
+        super.inventoryTick(pStack, pLevel, pEntity, pSlot);
+        if (pEntity instanceof Player player && player.getInventory().getSelectedItem() == pStack) {
             NumberFormat formater = DecimalFormat.getInstance();
             CreatureRecord creature = getSelectedCreature(pStack);
             if (creature != null) {
-                player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message_creature", creature.displayName()), true);
+                ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.infinity_bucket.message_creature", creature.displayName()));
                 return;
             }
             FluidStack selected = getSelectedFluid(pStack);
             String displayName = selected.getDisplayName().getString();
             String amount = formater.format(selected.getAmount());
-            player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message", displayName, amount), true);
+            ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.infinity_bucket.message", displayName, amount));
         }
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
+    public @NotNull InteractionResult use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
         if (pPlayer.isShiftKeyDown()) {
-            if (!pLevel.isClientSide && pPlayer instanceof ServerPlayer serverPlayer) {
-                int slot = pUsedHand == InteractionHand.MAIN_HAND ? serverPlayer.getInventory().selected : 40;
+            if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
+                int slot = pUsedHand == InteractionHand.MAIN_HAND ? serverPlayer.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
                 serverPlayer.openMenu(new SimpleMenuProvider(
                         (id, inventory, player) -> new InfinityBucketMenu(id, inventory, slot),
                         Component.translatable("container.avaritia.infinity_bucket")));
             }
-            return InteractionResultHolder.sidedSuccess(itemStack, pLevel.isClientSide);
+            return InteractionResult.SUCCESS;
         }
-        if (pLevel.isClientSide) {
-            return InteractionResultHolder.consume(itemStack);
+        if (pLevel.isClientSide()) {
+            return InteractionResult.CONSUME;
         }
 
         BlockHitResult hitResult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.SOURCE_ONLY);
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            return InteractionResultHolder.pass(itemStack);
+            return InteractionResult.PASS;
         }
         BlockPos hitPos = hitResult.getBlockPos();
         Direction side = hitResult.getDirection();
         if (!pLevel.mayInteract(pPlayer, hitPos) || !pPlayer.mayUseItemAt(hitPos, side, itemStack)) {
-            return InteractionResultHolder.fail(itemStack);
+            return InteractionResult.FAIL;
         }
         if (!getControl(itemStack).creatureSelected() && pLevel.getFluidState(hitPos).isSource()) {
             if (tryCollectFromWorld(pPlayer, pLevel, itemStack, hitPos, side)) {
-                return InteractionResultHolder.success(itemStack);
+                return InteractionResult.SUCCESS;
             }
-            return InteractionResultHolder.fail(itemStack);
+            return InteractionResult.FAIL;
         }
         if (tryOutputToWorld(pPlayer, pLevel, pUsedHand, itemStack, hitResult)) {
-            return InteractionResultHolder.success(itemStack);
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResultHolder.fail(itemStack);
+        return InteractionResult.FAIL;
     }
 
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull LivingEntity target, @NotNull InteractionHand hand) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return canCaptureAt(player, stack, target) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
         return tryCapture(stack, player, target) ? InteractionResult.SUCCESS : InteractionResult.PASS;
@@ -294,7 +310,7 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             notifyOverCapacity(player);
             return false;
         }
-        ItemStack pickedUp = pickup.pickupBlock(level, hitPos, state);
+        ItemStack pickedUp = pickup.pickupBlock(player, level, hitPos, state);
         if (pickedUp.isEmpty()) {
             return false;
         }
@@ -342,15 +358,15 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         }
         FluidStack toPlace = selected.copy();
         toPlace.setAmount(InfinityBucketContents.BUCKET_VOLUME);
-        BlockPos placePos = canBlockContainFluid(level, hitPos, hitState, toPlace.getFluid()) ? hitPos : hitPos.relative(side);
+        BlockPos placePos = canBlockContainFluid(player, level, hitPos, hitState, toPlace.getFluid()) ? hitPos : hitPos.relative(side);
         if (!level.mayInteract(player, placePos) || !player.mayUseItemAt(placePos, side, stack)) {
             return false;
         }
         return placeWorldFluid(player, level, hand, placePos, stack, toPlace);
     }
 
-    private boolean canBlockContainFluid(Level level, BlockPos pos, BlockState state, Fluid fluid) {
-        return state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(level, pos, state, fluid);
+    private boolean canBlockContainFluid(Player player, Level level, BlockPos pos, BlockState state, Fluid fluid) {
+        return state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(player, level, pos, state, fluid);
     }
 
     private boolean placeWorldFluid(Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
@@ -369,11 +385,10 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         BlockPlaceContext context = new BlockPlaceContext(new UseOnContext(player, hand,
                 new BlockHitResult(Vec3.ZERO, Direction.UP, pos, false)));
         BlockState destBlockState = level.getBlockState(pos);
-        boolean isDestNonSolid = !destBlockState.isSolid();
         boolean isDestReplaceable = destBlockState.canBeReplaced(context);
         boolean canDestContainFluid = destBlockState.getBlock() instanceof LiquidBlockContainer
-                && ((LiquidBlockContainer) destBlockState.getBlock()).canPlaceLiquid(level, pos, destBlockState, fluid);
-        if (!level.isEmptyBlock(pos) && !isDestNonSolid && !isDestReplaceable && !canDestContainFluid) {
+                && ((LiquidBlockContainer) destBlockState.getBlock()).canPlaceLiquid(player, level, pos, destBlockState, fluid);
+        if (!destBlockState.isAir() && !isDestReplaceable && !canDestContainFluid) {
             return false;
         }
 
@@ -381,7 +396,7 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         if (!canDestContainFluid && placedState.isAir()) {
             return false;
         }
-        if (!placeFluid(level, pos, destBlockState, placedState, fluid, canDestContainFluid)) {
+        if (!placeFluid(level, pos, destBlockState, placedState, fluid, canDestContainFluid, isDestReplaceable)) {
             return false;
         }
         FluidStack result = source.drain(resource, FluidHandler.FluidAction.EXECUTE);
@@ -389,25 +404,23 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             return false;
         }
         SoundEvent soundevent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-        if (soundevent != null) {
-            level.playSound(player, pos, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }
+        level.playSound(player, pos, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
         return true;
     }
 
     private boolean placeFluid(Level level, BlockPos pos, BlockState dest, BlockState placed,
-                               Fluid fluid, boolean canDestContainFluid) {
+                               Fluid fluid, boolean canDestContainFluid, boolean isDestReplaceable) {
         boolean placedBlock;
         if (canDestContainFluid) {
             placedBlock = ((LiquidBlockContainer) dest.getBlock()).placeLiquid(level, pos, dest, fluid.defaultFluidState());
         } else {
+            if (!level.isClientSide() && isDestReplaceable && !dest.liquid()) {
+                level.destroyBlock(pos, true);
+            }
             placedBlock = level.setBlock(pos, placed, Block.UPDATE_ALL_IMMEDIATE);
         }
-        if (!placedBlock) {
-            return false;
-        }
-        return true;
+        return placedBlock;
     }
 
     /** Stores a mob bucket's creature and fluid together, without spawning or consuming its source stack. */
@@ -422,26 +435,27 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
             notifyOverCapacity(player);
             return false;
         }
-        Entity entity = ((DimensionMobBucketItemAccessor) mobBucket).avaritia$getType().create(level);
-        if (!(entity instanceof LivingEntity living) || !(entity instanceof Bucketable)) {
+        Entity entity = ((DimensionMobBucketItemAccessor) mobBucket).avaritia$getType().create(level, EntitySpawnReason.BUCKET);
+        if (!(entity instanceof LivingEntity living) || !(entity instanceof Bucketable bucketable)) {
             if (entity != null) {
                 entity.discard();
             }
             return false;
         }
         try {
-            CompoundTag bucketData = source.getTag() == null ? new CompoundTag() : source.getTag().copy();
-            EntityType.createDefaultStackConfig(level, source, player).accept(entity);
-            applyMobBucketSpawnData(entity, bucketData, level, true);
+            CompoundTag bucketData = source.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY).copyTag();
+            EntityType.createDefaultStackConfig(level, source, player).apply(entity);
+            bucketable.loadFromBucketTag(bucketData);
+            bucketable.setFromBucket(true);
             if (!isCapturable(living)) {
                 return false;
             }
-            CompoundTag tag = saveCreatureData(living);
+            CompoundTag tag = saveCreatureData(living, level);
             if (tag == null) {
                 return false;
             }
             tag.put(BUCKETABLE_DATA_KEY, bucketData);
-            ResourceLocation typeId = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
+            Identifier typeId = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
             if (typeId == null) {
                 return false;
             }
@@ -506,39 +520,25 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
 
     private static ItemStack toMobBucket(CreatureRecord creature, ServerLevel level) {
         EntityType<?> type = creature.entityType();
-        Entity entity = type == null ? null : type.create(level);
+        if (type == null) {
+            return ItemStack.EMPTY;
+        }
+        CompoundTag tag = creature.entityData().copy();
+        tag.putString("id", creature.typeId.toString());
+        Entity entity = EntityType.create(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag),
+                level, new EntitySpawnRequest(EntitySpawnReason.BUCKET, false))
+                .orElseGet(() -> type.create(level, EntitySpawnReason.BUCKET));
         try {
             if (!(entity instanceof LivingEntity) || !(entity instanceof Bucketable bucketable)) {
                 return ItemStack.EMPTY;
             }
-            CompoundTag tag = creature.entityData();
-            if (tag.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
-                bucketable.loadFromBucketTag(tag.getCompound(BUCKETABLE_DATA_KEY));
+            if (tag.contains(BUCKETABLE_DATA_KEY)) {
+                bucketable.loadFromBucketTag(tag.getCompoundOrEmpty(BUCKETABLE_DATA_KEY));
             }
+            bucketable.setFromBucket(true);
             ItemStack filled = bucketable.getBucketItemStack();
-            if (tag.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
-                CompoundTag data = tag.getCompound(BUCKETABLE_DATA_KEY);
-                if (!data.isEmpty()) {
-                    CompoundTag filledTag = filled.getOrCreateTag();
-                    for (String key : data.getAllKeys()) {
-                        Tag value = data.get(key);
-                        if (value != null) {
-                            filledTag.put(key, value.copy());
-                        }
-                    }
-                }
-            } else {
-                bucketable.saveToBucketTag(filled);
-            }
-            if (tag.contains("CustomName", Tag.TAG_STRING)) {
-                try {
-                    Component name = Component.Serializer.fromJson(tag.getString("CustomName"));
-                    if (name != null) {
-                        filled.setHoverName(name);
-                    }
-                } catch (RuntimeException ignored) {
-                }
-            }
+            bucketable.saveToBucketTag(filled);
+            applyCustomName(tag, filled);
             return filled;
         } finally {
             if (entity != null) {
@@ -547,12 +547,27 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         }
     }
 
+    private static void applyCustomName(CompoundTag tag, ItemStack filled) {
+        if (!tag.contains("CustomName")) {
+            return;
+        }
+        try {
+            Tag raw = tag.get("CustomName");
+            if (raw != null) {
+                ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, raw).result().ifPresent(name ->
+                        filled.set(DataComponents.CUSTOM_NAME, name));
+            }
+        } catch (RuntimeException ignored) {
+        }
+    }
+
     @Nullable
-    private static CompoundTag saveCreatureData(LivingEntity target) {
-        CompoundTag tag = new CompoundTag();
-        if (!target.save(tag)) {
+    private static CompoundTag saveCreatureData(LivingEntity target, ServerLevel level) {
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+        if (!target.save(output)) {
             return null;
         }
+        CompoundTag tag = output.buildResult();
         tag.remove("Passengers");
         tag.remove("UUID");
         tag.remove("UUIDLeast");
@@ -565,22 +580,23 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
     }
 
     private boolean tryCapture(ItemStack stack, Player player, LivingEntity target) {
-        if (!canCaptureAt(player, stack, target) || !(player.level() instanceof ServerLevel)) {
+        if (!canCaptureAt(player, stack, target) || !(player.level() instanceof ServerLevel level)) {
             return false;
         }
-        CompoundTag tag = saveCreatureData(target);
+        CompoundTag tag = saveCreatureData(target, level);
         if (tag == null) {
             return false;
         }
-        ResourceLocation typeId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
+        Identifier typeId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
         if (typeId == null) {
             return false;
         }
         if (target instanceof Bucketable bucketable) {
             ItemStack bucketTag = bucketable.getBucketItemStack();
             bucketable.saveToBucketTag(bucketTag);
-            if (bucketTag.hasTag()) {
-                tag.put(BUCKETABLE_DATA_KEY, bucketTag.getTag().copy());
+            CustomData data = bucketTag.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
+            if (!data.isEmpty()) {
+                tag.put(BUCKETABLE_DATA_KEY, data.copyTag());
             }
         }
         CreatureRecord creature = new CreatureRecord(typeId, tag);
@@ -594,23 +610,10 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         if (target instanceof Bucketable bucketable) {
             target.playSound(bucketable.getPickupSound(), 1.0F, 1.0F);
         } else {
-            player.level().playSound(null, target.blockPosition(), SoundEvents.BUCKET_FILL_FISH, SoundSource.PLAYERS, 1.0F, 1.0F);
+            level.playSound(null, target.blockPosition(), SoundEvents.BUCKET_FILL_FISH, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         target.discard();
         return true;
-    }
-
-    /** 1.20 TropicalFish reads BucketVariantTag in finalizeSpawn(BUCKET), not loadFromBucketTag. */
-    private static void applyMobBucketSpawnData(Entity entity, CompoundTag bucketData, ServerLevel level, boolean applyBucketSpawn) {
-        boolean spawnFromBucket = applyBucketSpawn || bucketData.contains(TropicalFish.BUCKET_VARIANT_TAG, Tag.TAG_INT);
-        if (spawnFromBucket && entity instanceof Mob mob) {
-            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()),
-                    MobSpawnType.BUCKET, null, bucketData);
-        }
-        if (entity instanceof Bucketable bucketable) {
-            bucketable.loadFromBucketTag(bucketData);
-            bucketable.setFromBucket(true);
-        }
     }
 
     private boolean tryRelease(ItemStack stack, Player player, ServerLevel level, BlockPos pos, CreatureRecord selected) {
@@ -642,7 +645,8 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         tag.remove("Pos");
         tag.remove("Motion");
         tag.remove("Dimension");
-        Optional<Entity> created = EntityType.create(tag, level);
+        Optional<Entity> created = EntityType.create(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag),
+                level, new EntitySpawnRequest(EntitySpawnReason.BUCKET, false));
         if (created.isEmpty()) {
             return false;
         }
@@ -651,18 +655,19 @@ public class InfinityBucketItem extends ResourceItem implements FluidStorageProv
         double x = pos.getX() + 0.5D;
         double y = pos.getY();
         double z = pos.getZ() + 0.5D;
-        entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
+        entity.snapTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
         entity.setDeltaMovement(Vec3.ZERO);
         if (entity instanceof Mob mob) {
             mob.setPersistenceRequired();
         }
-        if (tag.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
-            applyMobBucketSpawnData(entity, tag.getCompound(BUCKETABLE_DATA_KEY), level, false);
+        if (entity instanceof Bucketable bucketable && tag.contains(BUCKETABLE_DATA_KEY)) {
+            bucketable.loadFromBucketTag(tag.getCompoundOrEmpty(BUCKETABLE_DATA_KEY));
+            bucketable.setFromBucket(true);
         }
         if (!level.noCollision(entity) || !level.addFreshEntity(entity)) {
             return false;
         }
-        entity.moveTo(x, y, z, entity.getYRot(), entity.getXRot());
+        entity.snapTo(x, y, z, entity.getYRot(), entity.getXRot());
         if (!entity.isAlive() || entity.isRemoved()) {
             entity.discard();
             return false;

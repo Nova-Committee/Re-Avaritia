@@ -1,19 +1,19 @@
 package committee.nova.mods.avaritia.api.client.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import committee.nova.mods.avaritia.Const;
+
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import committee.nova.mods.avaritia.api.client.util.color.Color;
 import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,7 +25,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
@@ -38,14 +37,14 @@ public class TextureUtils {
     /**
      * 自定义贴图缓存
      */
-    private static final Map<ResourceLocation, NativeImage> CACHE = new HashMap<>();
-    private static final Map<ResourceLocation, BufferedImage> BUFFER_CACHE = new HashMap<>();
+    private static final Map<Identifier, NativeImage> CACHE = new HashMap<>();
+    private static final Map<Identifier, BufferedImage> BUFFER_CACHE = new HashMap<>();
 
 
     /**
      * @return an array of ARGB pixel data
      */
-    public static int[] loadTextureData(ResourceLocation resource) {
+    public static int[] loadTextureData(Identifier resource) {
         BufferedImage img = getBufferedImage(resource);
         if (img == null) {
             return new int[0];
@@ -57,7 +56,7 @@ public class TextureUtils {
         return data;
     }
 
-    public static Color[] loadTextureColours(ResourceLocation resource) {
+    public static Color[] loadTextureColours(Identifier resource) {
         int[] idata = loadTextureData(resource);
         Color[] data = new Color[idata.length];
         for (int i = 0; i < data.length; i++) {
@@ -69,10 +68,10 @@ public class TextureUtils {
     /**
      * 从资源中加载纹理并转换为 BufferedImage。
      *
-     * @param texture 纹理的 ResourceLocation
+     * @param texture 纹理的 Identifier
      * @return 纹理对应的 BufferedImage 或 null
      */
-    public static BufferedImage getBufferedImage(ResourceLocation texture) {
+    public static BufferedImage getBufferedImage(Identifier texture) {
         // 优先从缓存中获取
         if (BUFFER_CACHE.containsKey(texture)) {
             return BUFFER_CACHE.get(texture);
@@ -93,10 +92,10 @@ public class TextureUtils {
     /**
      * 从资源中加载纹理并转换为 NativeImage。
      *
-     * @param texture 纹理的 ResourceLocation
+     * @param texture 纹理的 Identifier
      * @return 纹理对应的 NativeImage 或 null
      */
-    public static NativeImage getTextureImage(ResourceLocation texture) {
+    public static NativeImage getTextureImage(Identifier texture) {
         // 优先从缓存中获取
         if (CACHE.containsKey(texture)) {
             return CACHE.get(texture);
@@ -161,7 +160,7 @@ public class TextureUtils {
      * 获取贴图集
      */
     public static TextureAtlas getTextureMap() {
-        return Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS);
     }
 
     /**
@@ -175,13 +174,13 @@ public class TextureUtils {
      * 获取指定命名空间的任意贴图
      */
     public static TextureAtlasSprite getTexture(String location) {
-        return getTextureMap().getSprite(new ResourceLocation(location));
+        return getTextureMap().getSprite(Identifier.tryParse(location));
     }
 
     /**
      * 获取指定命名空间的任意贴图
      */
-    public static TextureAtlasSprite getTexture(ResourceLocation location) {
+    public static TextureAtlasSprite getTexture(Identifier location) {
         return getTextureMap().getSprite(location);
     }
 
@@ -189,31 +188,30 @@ public class TextureUtils {
      * 获取指定命名空间的方块贴图
      */
     public static TextureAtlasSprite getBlockTexture(String string) {
-        return getBlockTexture(new ResourceLocation(string));
+        return getBlockTexture(Identifier.tryParse(string));
     }
 
     /**
      * 获取指定命名空间的方块贴图
-     *
      * @param location 命名空间
      * @return 贴图
      */
-    public static TextureAtlasSprite getBlockTexture(ResourceLocation location) {
-        return getTexture(new ResourceLocation(location.getNamespace(), "block/" + location.getPath()));
+    public static TextureAtlasSprite getBlockTexture(Identifier location) {
+        return getTexture(Identifier.tryBuild(location.getNamespace(), "block/" + location.getPath()));
     }
 
     /**
      * 获取指定命名空间的物品贴图
      */
     public static TextureAtlasSprite getItemTexture(String string) {
-        return getItemTexture(new ResourceLocation(string));
+        return getItemTexture(Identifier.tryParse(string));
     }
 
     /**
      * 获取指定命名空间的物品贴图
      */
-    public static TextureAtlasSprite getItemTexture(ResourceLocation location) {
-        return getTexture(new ResourceLocation(location.getNamespace(), "items/" + location.getPath()));
+    public static TextureAtlasSprite getItemTexture(Identifier location) {
+        return getTexture(Identifier.tryBuild(location.getNamespace(), "items/" + location.getPath()));
     }
 
     /**
@@ -247,18 +245,7 @@ public class TextureUtils {
      */
     @Deprecated
     public static TextureAtlasSprite[] getIconsForBlock(BlockState state, Direction side) {
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        if (model != null) {
-            List<BakedQuad> quads = model.getQuads(state, side, RandomSource.create(0));
-            if (quads != null && quads.size() > 0) {
-                TextureAtlasSprite[] sprites = new TextureAtlasSprite[quads.size()];
-                for (int i = 0; i < quads.size(); i++) {
-                    sprites[i] = quads.get(i).getSprite();
-                }
-                return sprites;
-            }
-        }
-        return new TextureAtlasSprite[0];
+        return new TextureAtlasSprite[]{getParticleIconForBlock(state)};
     }
 
     /**
@@ -266,23 +253,27 @@ public class TextureUtils {
      */
     @Deprecated
     public static TextureAtlasSprite getParticleIconForBlock(BlockState state) {
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        return model.getParticleIcon();
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        if (blockId == null) {
+            return getMissingSprite();
+        }
+        return getBlockTexture(blockId);
     }
 
     /**
      * 获取药水效果图标
      */
-    public static ResourceLocation getEffectTexture(MobEffectInstance mobEffectInstance) {
-        ResourceLocation effectIcon;
-        ResourceLocation registryName = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.getEffect());
+    public static Identifier getEffectTexture(MobEffectInstance mobEffectInstance) {
+        Identifier effectIcon;
+        Identifier registryName = BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.getEffect().value());
         if (registryName != null) {
-            effectIcon = new ResourceLocation(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
+            effectIcon = Identifier.tryBuild(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
         } else {
             effectIcon = null;
         }
         return effectIcon;
     }
+
 
 
 }

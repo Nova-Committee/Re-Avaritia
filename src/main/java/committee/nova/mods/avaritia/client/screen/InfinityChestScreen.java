@@ -1,435 +1,294 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
-import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
-import committee.nova.mods.avaritia.api.client.screen.component.ScreenGuiScale;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
-import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
-import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import lombok.Getter;
-import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_BUTTON_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_BUTTON_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.LOCK_TEXTURE_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SCROLLBAR_HEIGHT;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SCROLLBAR_WIDTH;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SCROLLBAR_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SCROLLBAR_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SEARCH_HEIGHT;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SEARCH_WIDTH;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SEARCH_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SEARCH_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_HEIGHT;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_WIDTH;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_TEXTURE_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.STORAGE_HEIGHT;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.TITLE_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.TITLE_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.lockTextureX;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.sortTextureX;
+
 /**
- * @author cnlimiter
+ * 无尽箱界面（15×9 虚拟库存）。
+ * <p>26.3 Fabric：假槽位交互（左/右键、Shift、拖拽、Q 丢弃、中键克隆）全部由
+ * {@code InfinityChestMenu#clicked} 内部处理并发包，屏幕层只负责布局、搜索、滚动与锁/排序按钮。</p>
  */
-public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
-    private static final int SCREEN_MARGIN = 4;
+public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMenu> {
+    private static final Identifier TEXTURE = Const.rl("textures/gui/chest/infinity_chest1.png");
+    private static final int TEXTURE_SIZE = 550;
+    private static final int LABEL_COLOR = 0xFF404040;
 
-    @Setter
-    @Getter
-    private int blitOffset;
-
-    private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
-    private final String ownerName;
-    private String lastHoveredItem = "";
-    private long lastCount = 0;
-    private String lastFormatCountTemp = "";
-    private SortButton sortButton;
-    private ItemScrollBar scrollBar;
     private EditBox searchBox;
-    private final ScreenGuiScale guiScale = new ScreenGuiScale();
-    private ScreenRectangle storageViewport;
+    private final WidgetSprites legacyButtonSprites = new WidgetSprites(TEXTURE, TEXTURE);
+    private boolean draggingScrollbar;
 
-    public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, null, 302, 274, 550, 550);
-        this.ownerName = ClientChestManager.getInstance().getUserName(this.getMenu().owner);
+    public InfinityChestScreen(InfinityChestMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title, 302, 268);
+        titleLabelX = TITLE_X;
+        titleLabelY = TITLE_Y;
+        inventoryLabelX = 62;
+        inventoryLabelY = 180;
     }
 
     @Override
     protected void init() {
-        if (!guiScale.resizeToFit(minecraft, width, height, imageWidth, imageHeight, SCREEN_MARGIN)) {
-            super.init();
-        }
+        super.init();
+        searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
+                Component.translatable("gui.avaritia.search"));
+        searchBox.setMaxLength(64);
+        searchBox.setBordered(false);
+        searchBox.setValue(menu.filter);
+        searchBox.setResponder(value -> {
+            menu.filter = value;
+            menu.chestContainer.refreshContainer(true);
+            NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, value));
+        });
+        addRenderableWidget(UiInspector.name(searchBox, "chest.search"));
+
+        addRenderableWidget(UiInspector.name(
+                new LegacyLockButton(leftPos + LOCK_BUTTON_X, topPos + LOCK_BUTTON_Y), "chest.lock"));
+
+        addRenderableWidget(UiInspector.name(new LegacySortButton(leftPos + SORT_BUTTON_X, topPos + SORT_BUTTON_Y), "chest.sort"));
     }
 
     @Override
-    protected void subInit() {
-        super.subInit();
-        this.leftPos = Math.max(0, (this.width - this.imageWidth) / 2);
-        this.topPos = Math.max(0, (this.height - this.imageHeight) / 2);
-        int minX = imageWidth;
-        int minY = imageHeight;
-        int maxX = 0;
-        int maxY = 0;
-        for (int i = InfinityChestMenu.CONTAINER_SLOT_START; i < menu.slots.size(); i++) {
-            Slot slot = menu.slots.get(i);
-            minX = Math.min(minX, slot.x - 1);
-            minY = Math.min(minY, slot.y - 1);
-            maxX = Math.max(maxX, slot.x + 17);
-            maxY = Math.max(maxY, slot.y + 17);
-        }
-        storageViewport = new ScreenRectangle(leftPos + minX, topPos + minY, Math.max(0, maxX - minX), Math.max(0, maxY - minY));
-
-        this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
-        this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
-        this.addRenderableWidget(UiInspector.name(scrollBar, "chest.scrollbar"));
-        this.addRenderableWidget(UiInspector.name(new ToggleLockButton(this.leftPos + 231, this.topPos + 187), "chest.lock"));
-        this.sortButton = new SortButton(this.leftPos + 249, this.topPos + 187);
-        this.addRenderableWidget(UiInspector.name(sortButton, "chest.sort"));
-
-        this.searchBox = new EditBox(this.font, leftPos + 187, topPos + 4, 89, 10, Component.translatable("gui.avaritia.search"));
-        this.searchBox.setMaxLength(64);
-        this.searchBox.setBordered(false);
-        this.searchBox.setValue(menu.filter);
-        this.addRenderableWidget(UiInspector.name(searchBox, "chest.search"));
-        menu.chestContainer.refreshContainer(true);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0.0F, 0.0F,
+                imageWidth, STORAGE_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + STORAGE_HEIGHT,
+                0.0F, STORAGE_HEIGHT,
+                imageWidth, imageHeight - STORAGE_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
+        drawScrollbar(graphics);
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 50, this.inventoryLabelY + 108, 4210752, false);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.text(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        int x = this.leftPos;
-        int y = this.topPos;
-        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
-        if (storageViewport != null) {
-            UiInspector.region("chest.storage", storageViewport, null, true);
-        }
-    }
-
-    @Override
-    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderDummyCount(pGuiGraphics);
-    }
-
-    @Override
-    public void renderSlot(@NotNull GuiGraphics guiGraphics, Slot slot) {
-        // ???InfinityChest?????????????????????????????
-        if (slot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
-            // ???????1????????????????
-            ItemStack stack = slot.getItem();
-            int originalCount = stack.getCount();
-            if (stack.getCount() > 1) {
-                stack.setCount(1);
-                super.renderSlot(guiGraphics, slot);
-                stack.setCount(originalCount);
-            } else {
-                super.renderSlot(guiGraphics, slot);
-            }
+    protected void extractSlot(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY) {
+        if (!isFake(slot)) {
+            super.extractSlot(graphics, slot, mouseX, mouseY);
             return;
         }
-        // ???????
-        super.renderSlot(guiGraphics, slot);
-    }
-
-    public void renderDummyCount(GuiGraphics guiGraphics) {
-        PoseStack poseStack = guiGraphics.pose();
-        for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
-            Slot slot = menu.slots.get(i + InfinityChestMenu.CONTAINER_SLOT_START);
-            String count = menu.chestContainer.formatCount.get(i);
-            this.setBlitOffset(100);
-            RenderSystem.enableDepthTest();
-            float fontSize = 0.5F;
-            poseStack.pushPose();
-            poseStack.translate(leftPos + slot.x, topPos + slot.y, 300.0D);
-            poseStack.scale(fontSize, fontSize, 1.0F);
-            guiGraphics.drawString(font, count,
-                    32 - this.font.width(count),
-                    32 - this.font.lineHeight,
-                    16777215, false);
-            poseStack.popPose();
-            this.setBlitOffset(0);
+        ItemStack stack = slot.getItem();
+        if (stack.isEmpty()) {
+            return;
         }
+        String count = slot.getContainerSlot() < menu.chestContainer.formatCount.size()
+                ? menu.chestContainer.formatCount.get(slot.getContainerSlot())
+                : null;
+        graphics.item(stack, slot.x, slot.y);
+        graphics.itemDecorations(font, stack, slot.x, slot.y, count);
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void renderTooltip(GuiGraphics pPoseStack, int pX, int pY) {
-        if (this.hoveredSlot != null) {
-            if (hoveredSlot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
-                if (menu.getCarried().getCount() == 1)
-                    renderObjectStorageTooltip(pPoseStack, pX, pY);
-                else
-                    renderCounterTooltip(pPoseStack, pX, pY);
-            } else if (!hoveredSlot.getItem().isEmpty() && menu.getCarried().isEmpty())
-                pPoseStack.renderTooltip(font, this.hoveredSlot.getItem(), pX, pY);
-        } else {
-            if (searchBox.isHovered()) {
-                List<Component> list = new ArrayList<>();
-                list.add(Component.translatable("gui.avaritia.search.tip1"));
-                list.add(Component.translatable("gui.avaritia.search.tip2"));
-                list.add(Component.translatable("gui.avaritia.search.tip3"));
-                pPoseStack.renderComponentTooltip(font, list, pX, pY);
-            }
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (menu.getCarried().isEmpty() && isFake(hoveredSlot) && hoveredSlot.hasItem()
+                && hoveredSlot.getContainerSlot() < menu.chestContainer.viewingObject.size()) {
+            ItemStack stack = hoveredSlot.getItem();
+            String id = menu.chestContainer.viewingObject.get(hoveredSlot.getContainerSlot());
+            long amount = menu.chest.getRealItemAmount(id);
+            List<Component> tooltip = new ArrayList<>(getTooltipFromContainerItem(stack));
+            tooltip.add(Component.literal(StorageUtils.DECIMAL_FORMAT.format(amount)));
+            graphics.setTooltipForNextFrame(font, tooltip, stack.getTooltipImage(), mouseX, mouseY,
+                    (Identifier) stack.get(DataComponents.TOOLTIP_STYLE), true);
+            return;
         }
-    }
-
-    private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) >= menu.chestContainer.viewingObject.size()) return;
-        var hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START);
-        List<Component> components;
-        long count;
-        components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
-        count = menu.chest.getRealItemAmount(hoveredObject);
-
-        if (!hoveredObject.equals(lastHoveredItem)) {
-            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
-            components.add(Component.literal(formatCount));
-            this.lastHoveredItem = hoveredObject;
-            this.lastCount = count;
-            this.lastFormatCountTemp = formatCount;
-        } else if (count == lastCount) {
-            components.add(Component.literal(lastFormatCountTemp));
-        } else {
-            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
-            long count2 = count - lastCount;
-            String formatCount2 = StorageUtils.DECIMAL_FORMAT.format(count2);
-            if (count2 >= 0) formatCount += "  |  +?a" + formatCount2;
-            else formatCount += "  |  ?c" + formatCount2;
-            components.add(Component.literal(formatCount));
-            lastCount = count;
-            lastFormatCountTemp = formatCount;
-        }
-        pPoseStack.renderTooltip(font, components, hoveredSlot.getItem().getTooltipImage(), pMouseX, pMouseY);
-    }
-
-
-    private void renderObjectStorageTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        ItemStack carried = menu.getCarried();
-        boolean hasCapability = committee.nova.mods.avaritia.core.io.StorageAccess.fluids(carried) != null
-                || committee.nova.mods.avaritia.core.io.StorageAccess.energy(carried) != null
-                || committee.nova.mods.avaritia.core.io.StorageAccess.items(carried) != null;
-        if (hasCapability) {
-            List<Component> components = Lists.newArrayList();
-            if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) < menu.chestContainer.viewingObject.size()) {
-                components.add(Component.translatable("gui.avaritia.capability.tip1", hoveredSlot.getItem().getHoverName()));
-            }
-            components.add(Component.translatable("gui.avaritia.capability.tip2"));
-            components.add(Component.translatable("gui.avaritia.capability.tip3"));
-            pPoseStack.renderTooltip(font, components, ItemStack.EMPTY.getTooltipImage(), pMouseX, pMouseY);
-        } else renderCounterTooltip(pPoseStack, pMouseX, pMouseY);
+        super.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    public void containerTick() {
-        super.containerTick();
-        if (searchBox.isFocused()) searchBox.tick();
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && insideScrollbar(event.x(), event.y()) && canScroll()) {
+            draggingScrollbar = true;
+            updateScrollFromMouse(event.y());
+            return true;
+        }
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && searchBox != null
+                && searchBox.isMouseOver(event.x(), event.y())) {
+            searchBox.setValue("");
+            searchBox.setFocused(true);
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (draggingScrollbar) {
+            updateScrollFromMouse(event.y());
+            return true;
+        }
+        return super.mouseDragged(event, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        draggingScrollbar = false;
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (mouseX >= leftPos + 8 && mouseX < leftPos + SCROLLBAR_X + SCROLLBAR_WIDTH
+                && mouseY >= topPos + SCROLLBAR_Y && mouseY < topPos + SCROLLBAR_Y + SCROLLBAR_HEIGHT
+                && canScroll()) {
+            menu.chestContainer.onMouseScrolled(scrollY > 0);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
     public void onClose() {
         NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
-        ((ClientChestHandler) menu.chest).removeListener();
         super.onClose();
     }
 
-    @Override
-    public void removed() {
-        super.removed();
-        guiScale.restore(minecraft);
+    private void drawScrollbar(GuiGraphicsExtractor graphics) {
+        int x = leftPos + SCROLLBAR_X;
+        int y = topPos + SCROLLBAR_Y;
+        graphics.fill(x, y, x + SCROLLBAR_WIDTH, y + SCROLLBAR_HEIGHT, 0x66000000);
+        int handleHeight = scrollbarHandleHeight();
+        int handleY = y + (int) Math.round(menu.chestContainer.getScrollOn() * (SCROLLBAR_HEIGHT - handleHeight));
+        graphics.fill(x + 2, handleY, x + SCROLLBAR_WIDTH - 2, handleY + handleHeight,
+                canScroll() ? 0xFFC0C0C0 : 0xFF707070);
+        UiInspector.region("chest.scrollbar", x, y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT, null, canScroll());
     }
 
-    @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if (pButton == 1) {
-            //???
-            if (searchBox.isMouseOver(pMouseX, pMouseY)) {
-                menu.filter = "";
-                searchBox.setValue("");
-                menu.chestContainer.refreshContainer(true);
-                searchBox.setFocused(true);
-                searchBox.setEditable(true);
-            }
-        }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    private boolean canScroll() {
+        return menu.chestContainer.sortedObject.size() > InfinityChestContainer.SIZE;
     }
 
-    @Override
-    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        if (scrollBar.isScrolling()) scrollBar.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    private int scrollbarHandleHeight() {
+        int variants = menu.chestContainer.sortedObject.size();
+        int rows = Math.max(InfinityChestContainer.HEIGHT,
+                (variants + InfinityChestContainer.WIDTH - 1) / InfinityChestContainer.WIDTH);
+        return Math.max(16, SCROLLBAR_HEIGHT * InfinityChestContainer.HEIGHT / rows);
     }
 
-    @Override
-    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
-        scrollBar.mouseReleased(pMouseX, pMouseY, pButton);
-        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    private void updateScrollFromMouse(double mouseY) {
+        int handleHeight = scrollbarHandleHeight();
+        double value = (mouseY - topPos - SCROLLBAR_Y - handleHeight / 2.0D)
+                / (SCROLLBAR_HEIGHT - handleHeight);
+        menu.chestContainer.onScrollTo(Mth.clamp(value, 0.0D, 1.0D));
     }
 
-    @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (searchBox.isFocused()) {
-            if (pKeyCode >= InputConstants.KEY_0 && pKeyCode <= InputConstants.KEY_Z) return true;
-        }
-        if (pKeyCode == InputConstants.KEY_LSHIFT) menu.LShifting = true;
-        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    private boolean insideScrollbar(double mouseX, double mouseY) {
+        return mouseX >= leftPos + SCROLLBAR_X && mouseX < leftPos + SCROLLBAR_X + SCROLLBAR_WIDTH
+                && mouseY >= topPos + SCROLLBAR_Y && mouseY < topPos + SCROLLBAR_Y + SCROLLBAR_HEIGHT;
     }
 
-    @Override
-    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
-        if (searchBox.isFocused()) {
-            String s = searchBox.getValue().toLowerCase();
-            if (!s.equals(menu.filter)) {
-                menu.filter = s;
-                menu.chestContainer.refreshContainer(true);
-            }
-        }
-        if (pKeyCode == InputConstants.KEY_LSHIFT) {
-            menu.LShifting = false;
-            menu.chestContainer.refreshContainer(true);
-        }
-        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
-    }
-
-    @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        if (storageViewport != null && PortableLayout.contains(storageViewport, pMouseX, pMouseY) && scrollBar.canScroll()) {
-            if (pDelta <= 0) scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(false));
-            else scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(true));
-            return true;
-        }
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
-    }
-
-    @Override
-    protected boolean isHovering(int pX, int pY, int pWidth, int pHeight, double pMouseX, double pMouseY) {
-        int i = this.leftPos;
-        int j = this.topPos;
-        pMouseX -= i;
-        pMouseY -= j;
-        return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
+    private boolean isFake(Slot slot) {
+        return slot != null && slot.container == menu.chestContainer;
     }
 
     private void toggleLock() {
-        if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
-            this.menu.locked = !this.menu.locked;
-            this.searchBox.setFocused(false);
-            NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
-            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
+        if (minecraft == null || minecraft.player == null || !menu.owner.equals(minecraft.player.getUUID())) {
+            return;
         }
+        menu.locked = !menu.locked;
+        searchBox.setFocused(false);
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
+    }
+
+    private String ownerDisplayName() {
+        if (minecraft != null && minecraft.player != null && menu.owner.equals(minecraft.player.getUUID())) {
+            return minecraft.player.getGameProfile().name();
+        }
+        return menu.owner.toString();
     }
 
     private void cycleSort() {
-        if (InputConstants.isKeyDown(this.minecraft.getWindow().getWindow(), InputConstants.KEY_LSHIFT)) {
+        if (isShiftDown()) {
             menu.reverseSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2);
         } else {
             menu.nextSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1);
         }
     }
 
-    private String getSortKey(int sortType) {
-        return switch (sortType) {
-            case SortUtils.Sort.ID_ASCENDING, SortUtils.Sort.ID_DESCENDING -> "gui.avaritia.sort.id";
-            case SortUtils.Sort.NAMESPACE_ID_ASCENDING, SortUtils.Sort.NAMESPACE_ID_DESCENDING ->
-                    "gui.avaritia.sort.nid";
-            case SortUtils.Sort.MIRROR_ID_ASCENDING, SortUtils.Sort.MIRROR_ID_DESCENDING ->
-                    "gui.avaritia.sort.mirror_id";
-            case SortUtils.Sort.COUNT_ASCENDING, SortUtils.Sort.COUNT_DESCENDING -> "gui.avaritia.sort.count";
-            default -> "";
-        };
+    private boolean isShiftDown() {
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
     }
 
-
-    private class ItemScrollBar extends SimpleScrollBar {
-
-        private int lastObjectListSize;
-
-        public ItemScrollBar(int x, int y, int weight, int height) {
-            super(x, y, weight, height);
-            this.setScrollTagSize();
-            this.lastObjectListSize = menu.chestContainer.sortedItems.size();
-        }
-
-        public void setScrollTagSize() {
-            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedItems.size() / 15.0D));
-            this.setScrollTagSize(v);
+    private final class LegacyLockButton extends ImageButton {
+        private LegacyLockButton(int x, int y) {
+            super(x, y, SORT_BUTTON_WIDTH, SORT_BUTTON_HEIGHT, legacyButtonSprites,
+                    ignored -> toggleLock());
         }
 
         @Override
-        public void draggedTo(double scrolledOn) {
-            menu.chestContainer.onScrollTo(scrolledOn);
-        }
-
-        @Override
-        public void beforeRender() {
-            if (menu.chestContainer.sortedItems.size() != lastObjectListSize) {
-                setScrollTagSize();
-                this.lastObjectListSize = menu.chestContainer.sortedItems.size();
-            }
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            int textureY = LOCK_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
+                    lockTextureX(menu.locked), textureY,
+                    width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+            setTooltip(Tooltip.create(menu.locked
+                    ? Component.translatable("gui.avaritia.owner", "§c" + ownerDisplayName())
+                    : Component.translatable("gui.avaritia.public")));
         }
     }
 
-
-
-    private class ToggleLockButton extends ImageButton {
-
-        public ToggleLockButton(int pX, int pY) {
-            super(pX, pY, 17, 18, 303, 36, GUI_IMG, pButton -> toggleLock());
-            MutableComponent componentB = Component.translatable("gui.avaritia.owner", "?c" + ownerName);
-            MutableComponent componentC = Component.translatable("gui.avaritia.public");
-            if (menu.locked) setTooltip(Tooltip.create(componentB));
-            else setTooltip(Tooltip.create(componentC));
+    private final class LegacySortButton extends ImageButton {
+        private LegacySortButton(int x, int y) {
+            super(x, y, SORT_BUTTON_WIDTH, SORT_BUTTON_HEIGHT, legacyButtonSprites,
+                    ignored -> cycleSort());
         }
 
         @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = menu.locked ? 303 : 320;
-            if (this.isHovered) {
-                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
-            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart, this.width, this.height, 550, 550);
-        }
-    }
-
-
-    private class SortButton extends ImageButton {
-
-        public SortButton(int pX, int pY) {
-            super(pX, pY, 17, 18, 303, 0, GUI_IMG, pButton -> cycleSort());
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            List<FormattedCharSequence> list = new ArrayList<>();
-            int xOffset = menu.sortType * 17 + this.xTexStart;
-            if (this.isHovered) {
-                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
-
-            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart, this.width, this.height, 550, 550);
-            list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
-            if (menu.sortType % 2 == 0)
-                list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
-            else list.add(Component.translatable("gui.avaritia.sort.descending").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
-            if (this.isHovered) setTooltipForNextRenderPass(list);
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            int textureY = SORT_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
+                    sortTextureX(menu.sortType), textureY,
+                    width, height, TEXTURE_SIZE, TEXTURE_SIZE);
         }
     }
 }

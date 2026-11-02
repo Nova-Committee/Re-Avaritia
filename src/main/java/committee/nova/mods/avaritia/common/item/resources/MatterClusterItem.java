@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.api.common.container.NoMenuContainer;
 import committee.nova.mods.avaritia.api.util.ContainerUtils;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
@@ -9,16 +10,20 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -35,19 +41,37 @@ import java.util.List;
  */
 public class MatterClusterItem extends Item {
 
-    public static int CAPACITY = 64 * 64;
+    public static final int CAPACITY = 64 * 64;
+    private static final String ITEMS_NBT = "items";
 
     public MatterClusterItem() {
-        super(new Properties()
+        super(ModItems.properties()
                 .rarity(ModRarities.RARE)
                 .stacksTo(1));
     }
 
+    /** 26.3 无世界上下文时编码 ItemStack 所需的注册表访问（内建注册表实时视图）。 */
+    private static HolderLookup.Provider registryProvider() {
+        return RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+    }
+
+    private static boolean hasClusterItems(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null && data.copyTag().contains(ITEMS_NBT);
+    }
+
     public static int getClusterSize(ItemStack cluster) {
-        if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
-            return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
-        }
-        return 0;
+        if (!hasClusterItems(cluster)) return 0;
+        return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
+    }
+
+    /**
+     * 读取物质团内全部非空物品（供 FullMatterClusterRecipe 等逻辑使用）。
+     */
+    public static List<ItemStack> getClusterItems(ItemStack cluster) {
+        return Arrays.stream(readClusterInventory(cluster).items)
+                .filter(stack -> !stack.isEmpty())
+                .toList();
     }
 
     public static List<ItemStack> makeClusters(Collection<ItemStack> input) {
@@ -118,7 +142,7 @@ public class MatterClusterItem extends Item {
         int spawnClusterRemaining = Arrays.stream(spawnClusterInv.items).mapToInt(ItemStack::getCount).sum();
 
         if (spawnClusterRemaining == 0) {
-            spawnCluster.setTag(null);
+            spawnCluster.remove(DataComponents.CUSTOM_DATA);
             spawnCluster.setCount(0);
         } else {
             writeClusterInventory(spawnCluster, spawnClusterInv);
@@ -129,25 +153,26 @@ public class MatterClusterItem extends Item {
 
 
     private static void writeClusterInventory(ItemStack cluster, NoMenuContainer clusterContents) {
-        CompoundTag nbt = cluster.getOrCreateTag();
-        nbt.put("items", NBTUtils.writeToTag(clusterContents.items));
+        var items = NBTUtils.writeToTag(registryProvider(), clusterContents.items);
+        CustomData.update(DataComponents.CUSTOM_DATA, cluster, tag -> tag.put(ITEMS_NBT, items));
     }
 
     private static NoMenuContainer readClusterInventory(ItemStack cluster) {
         NoMenuContainer clusterInventory = new NoMenuContainer(CAPACITY);
-        if (cluster.hasTag()) {
-            NBTUtils.readFromTag(clusterInventory.items, cluster.getOrCreateTag().getList("items", Tag.TAG_COMPOUND));
+        if (hasClusterItems(cluster)) {
+            CompoundTag tag = cluster.get(DataComponents.CUSTOM_DATA).copyTag();
+            NBTUtils.readFromTag(registryProvider(), clusterInventory.items, tag.getListOrEmpty(ITEMS_NBT));
         }
         return clusterInventory;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        if (stack.hasTag() || !stack.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        if (hasClusterItems(stack)) {
             int total = getClusterSize(stack);
-            tooltip.add(Component.translatable("tooltip.avaritia.matter_cluster.counter", total, Math.max(total, CAPACITY)));
-            tooltip.add(Component.literal(""));
-            if (Screen.hasShiftDown()) {
+            tooltip.accept(Component.translatable("tooltip.avaritia.matter_cluster.counter", total, Math.max(total, CAPACITY)));
+            tooltip.accept(Component.literal(""));
+            if (hasShiftDown()) {
                 Object2IntMap<Item> itemCounts = new Object2IntOpenHashMap<>();
                 for (ItemStack item : readClusterInventory(stack).items) {
                     if (item.isEmpty()) {
@@ -156,27 +181,32 @@ public class MatterClusterItem extends Item {
                     itemCounts.put(item.getItem(), item.getCount() + itemCounts.getOrDefault(item.getItem(), 0));
                 }
 
-                itemCounts.forEach((itemx, count) -> {
-                    tooltip.add((Component.translatable(itemx.getDescriptionId())).withStyle(itemx.getRarity(new ItemStack(itemx)).color).append((Component.literal(" x " + count)).withStyle(ChatFormatting.GRAY)));
-                });
+                itemCounts.forEach((itemx, count) ->
+                        tooltip.accept(Component.translatable(itemx.getDescriptionId())
+                                .withStyle(ChatFormatting.WHITE)
+                                .append(Component.literal(" x " + count).withStyle(ChatFormatting.GRAY))));
             } else {
-                tooltip.add((Component.translatable("tooltip.avaritia.matter_cluster.desc")).withStyle(ChatFormatting.DARK_GRAY));
-                tooltip.add((Component.translatable("tooltip.avaritia.matter_cluster.desc2")).withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
+                tooltip.accept(Component.translatable("tooltip.avaritia.matter_cluster.desc").withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable("tooltip.avaritia.matter_cluster.desc2").withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
             }
 
         }
     }
 
+    private static boolean hasShiftDown() {
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
+    }
+
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ItemUtils.dropInventory(level, player.blockPosition(), readClusterInventory(stack));
-            //if (player.isShiftKeyDown()) player.openMenu(new SimpleMenuProvider((id, playerInventory, playerx) -> ))
         }
 
         player.setItemInHand(hand, ItemStack.EMPTY);
-        return InteractionResultHolder.success(ItemStack.EMPTY);
+        return InteractionResult.SUCCESS;
     }
 
 

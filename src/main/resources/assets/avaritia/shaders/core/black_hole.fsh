@@ -1,185 +1,127 @@
-#version 150
+#version 330
+#extension GL_ARB_separate_shader_objects : require
 
-// Black Hole Fragment Shader
-// Renders the gravitational lensing effect, event horizon, and accretion disk
+#define M_PI 3.1415926535897932384626433832795
 
-uniform float GameTime;
-uniform vec2 ScreenSize;
-uniform float Radius;        // Black hole radius
-uniform float Mass;          // Black hole mass (affects distortion strength)
+#include <minecraft:fog.glsl>
+#include <minecraft:dynamictransforms.glsl>
 
-in vec4 vertexColor;
-in vec2 texCoord0;
-in vec2 texCoord1;
-in vec2 texCoord2;
-in vec3 normal;
+const int cosmiccount = 10;
 
-out vec4 fragColor;
+uniform sampler2D Sampler0;
 
-// Constants
-const float PI = 3.14159265359;
-const float EVENT_HORIZON_FACTOR = 0.15;
-const float ACCRETION_DISK_INNER = 0.16;
-const float ACCRETION_DISK_OUTER = 0.45;
-const float GRAVITATIONAL_LENS_STRENGTH = 0.08;
+layout(std140) uniform AvaritiaCosmic {
+    vec4 CosmicParams0;
+    vec4 CosmicParams1;
+    vec4 CosmicUvs[cosmiccount];
+};
 
-// Hash function for procedural noise
-float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+#define time CosmicParams0.x
+#define yaw CosmicParams0.y
+#define pitch CosmicParams0.z
+#define absorbedMatter CosmicParams0.w
+#define evaporation CosmicParams1.x
+
+layout(location = 0) in float sphericalVertexDistance;
+layout(location = 1) in float cylindricalVertexDistance;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 texCoord0;
+layout(location = 4) in vec4 normal;
+layout(location = 5) in vec3 fPos;
+
+layout(location = 0) out vec4 fragColor;
+
+float hash3(vec3 p) {
+    p = fract(p * vec3(123.34, 456.21, 345.45));
+    p += dot(p, p + 45.32);
+    return fract((p.x + p.y) * p.z);
 }
 
-// Simple noise function for accretion disk texture
-float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
+// 时间作为第三维参与噪声插值，避免二维噪声平移时产生明显闪烁。
+float avaritiaValueNoise(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    vec3 u = f * f * (3.0 - 2.0 * f);
 
-    float a = hash(i);
-    float b = hash(i + vec2(1.0, 0.0));
-    float c = hash(i + vec2(0.0, 1.0));
-    float d = hash(i + vec2(1.0, 1.0));
+    float n000 = hash3(i + vec3(0.0, 0.0, 0.0));
+    float n100 = hash3(i + vec3(1.0, 0.0, 0.0));
+    float n010 = hash3(i + vec3(0.0, 1.0, 0.0));
+    float n110 = hash3(i + vec3(1.0, 1.0, 0.0));
+    float n001 = hash3(i + vec3(0.0, 0.0, 1.0));
+    float n101 = hash3(i + vec3(1.0, 0.0, 1.0));
+    float n011 = hash3(i + vec3(0.0, 1.0, 1.0));
+    float n111 = hash3(i + vec3(1.0, 1.0, 1.0));
 
-    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    float nx00 = mix(n000, n100, u.x);
+    float nx10 = mix(n010, n110, u.x);
+    float nx01 = mix(n001, n101, u.x);
+    float nx11 = mix(n011, n111, u.x);
+    float nxy0 = mix(nx00, nx10, u.y);
+    float nxy1 = mix(nx01, nx11, u.y);
+    return mix(nxy0, nxy1, u.z);
 }
 
-// Fractal Brownian Motion for more complex noise
-float fbm(vec2 p) {
-    float value = 0.0;
-    float amplitude = 0.5;
-    float frequency = 1.0;
+void main(void) {
+    vec2 uv = texCoord0 * 2.0 - 1.0;
+    uv.x *= 1.08;
 
-    for (int i = 0; i < 4; i++) {
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-    }
-
-    return value;
-}
-
-// Calculate gravitational lensing distortion
-vec2 gravitationalLens(vec2 uv, vec2 center, float strength) {
-    vec2 dir = uv - center;
-    float dist = length(dir);
-
-    if (dist < 0.001) {
-        return uv;
-    }
-
-    // Gravitational lensing formula (simplified Schwarzschild metric)
-    // Light bends more as it gets closer to the event horizon
-    float distortion = strength / (dist * dist + 0.01);
-    distortion = min(distortion, 0.5);  // Limit maximum distortion
-
-    // Direction of distortion (toward the black hole center)
-    vec2 offset = -normalize(dir) * distortion;
-
-    return uv + offset;
-}
-
-// Color palette for accretion disk (hot gas)
-vec3 accretionDiskColor(float temperature, float noiseVal) {
-    // Temperature gradient from hot inner to cooler outer
-    vec3 hotColor = vec3(1.0, 0.95, 0.8);      // White-hot center
-    vec3 warmColor = vec3(1.0, 0.6, 0.2);       // Orange
-    vec3 coolColor = vec3(0.8, 0.2, 0.1);       // Dark red
-    vec3 coolOuter = vec3(0.3, 0.05, 0.02);     // Dark red-black outer
-
-    vec3 color;
-    if (temperature > 0.7) {
-        color = mix(warmColor, hotColor, (temperature - 0.7) / 0.3);
-    } else if (temperature > 0.3) {
-        color = mix(coolColor, warmColor, (temperature - 0.3) / 0.4);
-    } else {
-        color = mix(coolOuter, coolColor, temperature / 0.3);
-    }
-
-    // Add some variation from noise
-    color *= (0.7 + 0.3 * noiseVal);
-
-    return color;
-}
-
-void main() {
-    // Center the UV coordinates (0,0 is center of the quad)
-    vec2 uv = texCoord0 - 0.5;
-    float dist = length(uv);
+    float mass = smoothstep(0.0, 1.0, clamp(absorbedMatter, 0.0, 1.0));
+    float evap = clamp(evaporation, 0.0, 1.0);
+    float survival = 1.0 - smoothstep(0.78, 1.0, evap);
+    vec4 legacyMask = texture(Sampler0, texCoord0);
+    float textureFeather = mix(0.82, 1.0, legacyMask.r);
+    float r = length(uv);
     float angle = atan(uv.y, uv.x);
+    float spin = time * (0.018 + mass * 0.014);
+    float edgeFeather = max(fwidth(r) * 1.5, 0.018);
 
-    // Calculate event horizon radius
-    float eventHorizon = EVENT_HORIZON_FACTOR * Radius;
+    float horizonRadius = 0.175 + mass * 0.07;
+    float horizon = 1.0 - smoothstep(horizonRadius, horizonRadius + edgeFeather, r);
+    float photonWidth = max(0.026, edgeFeather * 1.25);
+    float photonRing = exp(-pow((r - horizonRadius * 1.32) / photonWidth, 2.0));
+    float outerLens = exp(-pow((r - horizonRadius * 2.35) / 0.13, 2.0));
 
-    // ==================== EVENT HORIZON ====================
-    // The region where nothing can escape - completely black
-    if (dist < eventHorizon) {
-        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
-        return;
-    }
+    float diskWarp = 0.062 * sin(angle * 2.0 + spin * 1.35) + 0.022 * sin(angle * 4.0 - spin * 0.8);
+    float diskY = uv.y + diskWarp * (1.0 - smoothstep(0.2, 1.0, r));
+    float diskCore = exp(-abs(diskY) / (0.064 + mass * 0.026));
+    float diskMask = smoothstep(horizonRadius * 0.78, horizonRadius * 1.95, abs(uv.x))
+            * (1.0 - smoothstep(0.92, 1.14, r));
+    float diskNoise = avaritiaValueNoise(vec3(angle * 2.3 + spin * 1.8, r * 8.0, time * 0.032));
+    diskNoise = smoothstep(0.12, 0.94, diskNoise);
+    float disk = diskCore * diskMask * (0.68 + diskNoise * 0.34) * (0.72 + mass * 0.65);
 
-    // ==================== ACCRETION DISK ====================
-    // Swirling ring of superheated matter around the black hole
-    if (dist > ACCRETION_DISK_INNER && dist < ACCRETION_DISK_OUTER) {
-        // Calculate rotation for the swirling effect
-        // Inner parts rotate faster (like real black holes)
-        float rotationSpeed = 3.0 / (dist + 0.1);
-        float rotation = angle + GameTime * rotationSpeed;
+    float blueShift = smoothstep(-0.88, 0.76, uv.x);
+    vec3 coldEdge = vec3(0.25, 0.54, 1.0);
+    vec3 hotCore = vec3(1.0, 0.78, 0.28);
+    vec3 redTail = vec3(1.0, 0.26, 0.06);
+    vec3 diskColor = mix(redTail, hotCore, blueShift);
+    diskColor = mix(diskColor, coldEdge, smoothstep(0.45, 1.0, blueShift) * 0.38);
 
-        // Create polar coordinates for the disk texture
-        vec2 polarUV = vec2(rotation / (2.0 * PI), dist * 4.0);
+    float lensPulse = 0.88 + 0.12 * sin(time * 0.055 + angle * 4.0);
+    vec3 color = vec3(0.0);
+    color += diskColor * disk;
+    color += vec3(1.0, 0.88, 0.52) * photonRing * (1.25 + mass * 0.7);
+    color += vec3(0.32, 0.58, 1.0) * outerLens * lensPulse * (0.28 + mass * 0.28);
 
-        // Sample the noise texture
-        float noiseVal = fbm(polarUV * 8.0);
+    float jetColumn = exp(-abs(uv.x) / 0.07) * smoothstep(0.16, 0.88, abs(uv.y)) * (1.0 - smoothstep(0.86, 1.18, abs(uv.y)));
+    float jetSpark = avaritiaValueNoise(vec3(uv.x * 10.0, uv.y * 7.0, time * 0.075 + mass * 0.4));
+    jetSpark = smoothstep(0.2, 0.95, jetSpark);
+    float evaporationFlash = sin(evap * M_PI);
+    float jet = jetColumn * evaporationFlash * (0.72 + jetSpark * 0.38);
+    color += vec3(0.45, 0.78, 1.0) * jet * 2.4;
+    color += vec3(1.0, 0.95, 0.82) * evaporationFlash * exp(-pow((r - horizonRadius * 1.6) / 0.19, 2.0));
 
-        // Calculate temperature based on distance (hotter closer to center)
-        float temperature = 1.0 - smoothstep(ACCRETION_DISK_INNER, ACCRETION_DISK_OUTER, dist);
+    float alpha = max(disk * 0.9, photonRing * 0.95);
+    alpha = max(alpha, outerLens * 0.36);
+    alpha = max(alpha, jet * 0.75);
+    alpha *= (1.0 - smoothstep(1.02, 1.18, r));
+    alpha = max(alpha, horizon * survival);
+    alpha *= survival * textureFeather;
 
-        // Get base color from temperature
-        vec3 diskColor = accretionDiskColor(temperature, noiseVal);
+    color = mix(color, vec3(0.0), horizon);
+    color += legacyMask.rgb * 0.012 * (1.0 - horizon);
+    color *= vertexColor.rgb;
 
-        // Add Doppler beaming effect (one side brighter than the other)
-        float doppler = 0.5 + 0.5 * sin(angle + PI * 0.5);
-        diskColor *= (0.7 + 0.3 * doppler);
-
-        // Calculate alpha (fade out at edges)
-        float innerFade = smoothstep(ACCRETION_DISK_INNER, ACCRETION_DISK_INNER + 0.03, dist);
-        float outerFade = 1.0 - smoothstep(ACCRETION_DISK_OUTER - 0.05, ACCRETION_DISK_OUTER, dist);
-        float alpha = innerFade * outerFade;
-
-        // Add some brightness variation
-        alpha *= (0.8 + 0.4 * noiseVal);
-
-        // Boost emission for glow effect
-        diskColor *= 1.5;
-
-        fragColor = vec4(diskColor, alpha);
-        return;
-    }
-
-    // ==================== GRAVITATIONAL LENSING REGION ====================
-    // The area just outside the event horizon where light bends
-    if (dist > eventHorizon && dist < ACCRETION_DISK_INNER) {
-        // Add a subtle glow near the event horizon
-        float glowIntensity = 1.0 - smoothstep(eventHorizon, ACCRETION_DISK_INNER, dist);
-        vec3 glowColor = vec3(1.0, 0.3, 0.05) * glowIntensity * 0.5;
-
-        // Photon sphere ring - intense light bending region
-        float photonSphere = smoothstep(eventHorizon + 0.02, eventHorizon + 0.03, dist) -
-                           smoothstep(eventHorizon + 0.03, eventHorizon + 0.05, dist);
-        glowColor += vec3(0.5, 0.2, 0.0) * photonSphere * 2.0;
-
-        fragColor = vec4(glowColor, glowIntensity * 0.8);
-        return;
-    }
-
-    // Outside the black hole effect area - make it mostly transparent
-    if (dist > ACCRETION_DISK_OUTER) {
-        // Add a subtle outer glow
-        float outerGlow = 1.0 - smoothstep(ACCRETION_DISK_OUTER, 0.5, dist);
-        vec3 glowColor = vec3(0.4, 0.1, 0.02) * outerGlow * 0.3;
-        fragColor = vec4(glowColor, outerGlow * 0.2);
-        return;
-    }
-
-    // Fallback - should not reach here
-    discard;
+    vec4 col = vec4(clamp(color, 0.0, 5.0), clamp(alpha, 0.0, 1.0));
+    fragColor = apply_fog(col * ColorModulator, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 }

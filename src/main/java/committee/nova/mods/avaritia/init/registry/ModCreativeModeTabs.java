@@ -3,12 +3,14 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
 
@@ -54,7 +56,7 @@ public class ModCreativeModeTabs {
         ItemStack stack = new ItemStack(ModItems.singularity.get());
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("IsCreativeTab", true);
-        stack.setTag(tag);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         return stack;
     }
 }

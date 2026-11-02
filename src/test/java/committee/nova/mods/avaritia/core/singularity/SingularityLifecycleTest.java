@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.util.SingularityUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SingularityLifecycleTest {
-    private static final ResourceLocation DATA_ID = new ResourceLocation("test:data");
-    private static final ResourceLocation PERSISTENT_ID = new ResourceLocation("test:persistent");
-    private static final ResourceLocation SCRIPT_ID = new ResourceLocation("test:script");
+    private static final Identifier DATA_ID = Identifier.parse("test:data");
+    private static final Identifier PERSISTENT_ID = Identifier.parse("test:persistent");
+    private static final Identifier SCRIPT_ID = Identifier.parse("test:script");
 
     @Test
     void rejectsNonPositiveCountAndTimeCost() {
@@ -93,8 +93,8 @@ class SingularityLifecycleTest {
 
     @Test
     void replaysOperationsInOrderWithinEachScriptSource() {
-        ResourceLocation orderedId = new ResourceLocation("test:ordered");
-        ResourceLocation lateId = new ResourceLocation("test:late");
+        Identifier orderedId = Identifier.parse("test:ordered");
+        Identifier lateId = Identifier.parse("test:late");
         SingularityReloadListener listener = new SingularityReloadListener();
         listener.beginReload(Map.of(DATA_ID, new Singularity(DATA_ID)));
 

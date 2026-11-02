@@ -1,24 +1,28 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.iface.ITileIO;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 侧面配置卡
@@ -37,24 +41,25 @@ public class SideConfigurationCardItem extends Item {
     private static final String TAG_SIDE_CONFIG = "SideConfig";
 
     public SideConfigurationCardItem() {
-        super(new Properties()
+        super(ModItems.applyId(new Properties()
                 .stacksTo(1)
-                .rarity(ModRarities.RARE));
+                .rarity(ModRarities.RARE)));
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display,
+                                @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
 
         // 检查是否有保存的配置
         if (hasSavedConfig(stack)) {
-            tooltip.add(Component.translatable("tooltip.avaritia.side_config_card.has_config"));
-            tooltip.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_right_click"));
+            tooltip.accept(Component.translatable("tooltip.avaritia.side_config_card.has_config"));
+            tooltip.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_right_click"));
         } else {
-            tooltip.add(Component.translatable("tooltip.avaritia.side_config_card.no_config"));
-            tooltip.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_right_click"));
+            tooltip.accept(Component.translatable("tooltip.avaritia.side_config_card.no_config"));
+            tooltip.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_right_click"));
         }
-        tooltip.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_air"));
+        tooltip.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_air"));
     }
 
     @Override
@@ -74,53 +79,54 @@ public class SideConfigurationCardItem extends Item {
             if (player.isShiftKeyDown()) {
                 if (!level.isClientSide()) {
                     saveConfigToItem(stack, tileIO.getSideConfiguration());
-                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"), true);
+                    ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.side_config_card.read_success"));
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
 
             if (!hasSavedConfig(stack)) {
                 if (!level.isClientSide()) {
-                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.no_config_to_apply"), true);
+                    ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.side_config_card.no_config_to_apply"));
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
 
             if (!level.isClientSide()) {
                 tileIO.setSideConfiguration(loadConfigFromItem(stack));
-                player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"), true);
+                ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.side_config_card.apply_success"));
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         }
 
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide()) {
                 clearConfig(stack, player);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.isShiftKeyDown()) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
 
         if (!level.isClientSide()) {
             clearConfig(stack, player);
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     /**
      * 将SideConfiguration保存到物品的NBT中
      */
     private void saveConfigToItem(ItemStack stack, SideConfiguration config) {
-        stack.getOrCreateTag().put(TAG_SIDE_CONFIG, config.toNBT());
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                data -> data.update(tag -> tag.put(TAG_SIDE_CONFIG, config.toNBT())));
     }
 
     /**
@@ -130,19 +136,21 @@ public class SideConfigurationCardItem extends Item {
         if (!hasSavedConfig(stack)) {
             return new SideConfiguration();
         }
-        return SideConfiguration.fromNBT(stack.getTag().getCompound(TAG_SIDE_CONFIG));
+        return SideConfiguration.fromNBT(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getCompoundOrEmpty(TAG_SIDE_CONFIG));
     }
 
     private boolean hasSavedConfig(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains(TAG_SIDE_CONFIG);
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null && data.copyTag().contains(TAG_SIDE_CONFIG);
     }
 
     private void clearConfig(ItemStack stack, Player player) {
         if (hasSavedConfig(stack)) {
-            stack.getTag().remove(TAG_SIDE_CONFIG);
-            player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"), true);
+            stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                    data -> data.update(tag -> tag.remove(TAG_SIDE_CONFIG)));
+            ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.side_config_card.cleared"));
         } else {
-            player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"), true);
+            ItemUtils.sendActionbar(player, Component.translatable("tooltip.avaritia.side_config_card.already_empty"));
         }
     }
 

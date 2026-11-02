@@ -1,30 +1,41 @@
 package committee.nova.mods.avaritia.api.common.crafting;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
-import committee.nova.mods.avaritia.api.common.wrapper.ContainerItemHandler;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
-public interface ISpecialRecipe extends Recipe<Container> {
-    @Override
-    default @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return this.assemble(new ContainerItemHandler(inv));
+import java.util.List;
+
+public interface ISpecialRecipe extends Recipe<CraftingInput> {
+
+    static ItemStackHandler toHandler(CraftingInput input) {
+        NonNullList<ItemStack> items = NonNullList.create();
+        items.addAll(input.items());
+        return new ItemStackHandler(items);
     }
 
     @Override
-    default boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new ContainerItemHandler(inv));
+    default @NotNull ItemStack assemble(@NotNull CraftingInput input) {
+        return this.assemble(toHandler(input));
     }
 
     @Override
-    default @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
-        return this.getRemainingItems(new ContainerItemHandler(inv));
+    default boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+        return this.matches(toHandler(input));
     }
+
+    default @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingInput input) {
+        return this.getRemainingItems(toHandler(input));
+    }
+
+    @NotNull NonNullList<Ingredient> getIngredients();
 
     ItemStack assemble(ItemHandler var1);
 
@@ -42,7 +53,7 @@ public interface ISpecialRecipe extends Recipe<Container> {
         return matchesIngredients(inputs, this.getIngredients(), 0, new boolean[inputs.size()]);
     }
 
-    private static boolean matchesIngredients(java.util.List<ItemStack> inputs, java.util.List<net.minecraft.world.item.crafting.Ingredient> ingredients, int index, boolean[] used) {
+    private static boolean matchesIngredients(List<ItemStack> inputs, List<Ingredient> ingredients, int index, boolean[] used) {
         if (inputs.size() != ingredients.size()) return false;
         if (index == ingredients.size()) return true;
         for (int i = 0; i < inputs.size(); i++) {
@@ -60,8 +71,9 @@ public interface ISpecialRecipe extends Recipe<Container> {
 
         for (int i = 0; i < remaining.size(); ++i) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem().hasCraftingRemainingItem()) {
-                remaining.set(i, new ItemStack(stack.getItem().getCraftingRemainingItem()));
+            ItemStackTemplate template = stack.getItem().getCraftingRemainder();
+            if (template != null) {
+                remaining.set(i, template.create());
             }
         }
 

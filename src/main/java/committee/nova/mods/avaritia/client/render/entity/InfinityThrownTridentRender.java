@@ -1,45 +1,72 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
+import committee.nova.mods.avaritia.Const;
+
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
+import committee.nova.mods.avaritia.client.render.mesh.SimpleObjMeshLoader;
+import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-
-
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static committee.nova.mods.avaritia.Res.TRIDENT_TEX;
+import java.util.Map;
 
-
-public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTrident> {
-    private final InfinityTridentModel model;
+public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTrident, ThrownTridentRenderState> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfinityThrownTridentRender.class);
+    private final Map<String, SimpleMesh> tridentModel;
 
     public InfinityThrownTridentRender(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new InfinityTridentModel();
+        this.tridentModel = SimpleObjMeshLoader.load(Identifier.fromNamespaceAndPath(Const.MOD_ID, "models/infinity_trident.obj"), true);
+
+        if (tridentModel.isEmpty()) {
+            LOGGER.error("Failed to load trident OBJ model!");
+        } else {
+            LOGGER.info("Loaded trident models: {}", tridentModel.keySet());
+        }
     }
 
     @Override
-    public void render(InfinityThrownTrident entity, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight) {
+    public void submit(ThrownTridentRenderState state, PoseStack poseStack, SubmitNodeCollector output, CameraRenderState cameraState) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
-        VertexConsumer vertexconsumer = ItemRenderer.getFoilBufferDirect(buffer, this.model.renderType(this.getTextureLocation(entity)), false, entity.isFoil());
-        this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+
+        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot));
+
+        poseStack.rotate(Axis.XP.rotationDegrees(0));
+        output.submitCustomGeometry(poseStack, AvaritiaRenderTypes.TRIDENT,
+                (poseState, vertexConsumer) -> this.tridentModel.values().forEach(model ->
+                        model.render(poseState, vertexConsumer, 0xFFFFFFFF, 0, OverlayTexture.NO_OVERLAY)));
+
         poseStack.popPose();
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, output, cameraState);
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull InfinityThrownTrident thrownTrident) {
-        return TRIDENT_TEX;
+    public ThrownTridentRenderState createRenderState() {
+        return new ThrownTridentRenderState();
+    }
+
+    @Override
+    public void extractRenderState(InfinityThrownTrident entity, ThrownTridentRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.yRot = entity.getYRot(partialTicks);
+        state.xRot = entity.getXRot(partialTicks);
+        state.isFoil = false;
+    }
+
+    public @NotNull Identifier getTextureLocation(@NotNull InfinityThrownTrident thrownTrident) {
+        return Res.TRIDENT_TEX;
     }
 }

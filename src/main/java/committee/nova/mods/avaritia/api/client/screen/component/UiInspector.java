@@ -1,16 +1,19 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.platform.Window;
 import committee.nova.mods.avaritia.Const;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -18,11 +21,16 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.fog.FogRenderer;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
-
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.input.KeyEvent;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -39,9 +47,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-/** Development-only geometry observations, not a replacement for Minecraft's event dispatch. */
+/**
+ * Development-only geometry observations.
+ * ScreenEvents.AFTER_EXTRACT runs during extract, before GuiRenderer draws; export captures at tick end
+ * (Fabric 无逐帧事件，用 END_CLIENT_TICK 近似 Neo 的 RenderFrameEvent.Post).
+ */
 public final class UiInspector {
-    private static final boolean ENABLED = net.fabricmc.loader.api.FabricLoader.getInstance().isDevelopmentEnvironment() && Boolean.getBoolean("avaritia.ui.inspect");
+    private static final boolean ENABLED = !FabricLoader.getInstance().isDevelopmentEnvironment() && Boolean.getBoolean("avaritia.ui.inspect");
 
     private UiInspector() {
     }
@@ -49,7 +61,8 @@ public final class UiInspector {
     public static boolean enabled() {
         return ENABLED;
     }
-    public static <T> T name(T widget, String id) {
+
+    public static <T extends AbstractWidget> T name(T widget, String id) {
         if (ENABLED) {
             State.names.put(widget, id);
         }
@@ -92,8 +105,8 @@ public final class UiInspector {
     }
 
     private static final class State {
-        private static final Map<Object, String> names = new WeakHashMap<>();
-        private static final Map<Object, Long> widgetIds = new WeakHashMap<>();
+        private static final Map<AbstractWidget, String> names = new WeakHashMap<>();
+        private static final Map<AbstractWidget, Long> widgetIds = new WeakHashMap<>();
         private static final Map<Screen, ScreenState> screens = new WeakHashMap<>();
         private static final List<Layer> layers = new ArrayList<>();
         private static long nextScreen;
@@ -105,8 +118,9 @@ public final class UiInspector {
         private static boolean overlay;
         private static boolean requested;
         private static boolean writing;
-        private static boolean collectFrame;
+        private static boolean extractOpen;
         private static Layer current;
+        private static PendingExport pending;
     }
 
     private static final class ScreenState {
@@ -165,7 +179,7 @@ public final class UiInspector {
         }
 
         private void finish() {
-            boolean background = screen != Minecraft.getInstance().screen;
+            boolean background = screen != Minecraft.getInstance().gui.screen();
             for (int i = 0; i < entries.size(); i++) {
                 Stamp stamp = entries.get(i);
                 Element element = stamp.element;
@@ -180,44 +194,52 @@ public final class UiInspector {
         }
     }
 
-    public static void onInit(Screen screen) {
-        if (ENABLED) {
-            ++State.layoutRevision;
-            State.current = null;
-        }
-    }
-
-    public static void onClosing(Screen screen) {
-        if (ENABLED) {
-            State.screens.remove(screen);
-            State.current = null;
-            State.layers.clear();
-        }
-    }
-
-    public static void onRenderTick() {
+    public static void register() {
         if (!ENABLED) {
             return;
         }
-        ++State.frameId;
-        State.current = null;
-        State.layers.clear();
-        State.collectFrame = State.overlay || State.requested;
-        if (Minecraft.getInstance().screen == null) {
-            State.screens.clear();
-            State.requested = false;
-        }
+        ScreenEvents.AFTER_INIT.register((minecraft, screen, width, height) -> {
+            ++State.layoutRevision;
+            State.current = null;
+            State.layers.clear();
+            State.extractOpen = false;
+            ScreenKeyboardEvents.allowKeyPress(screen).register(UiInspector::onKey);
+            // 26.3 fabric-screen-api v5：REMOVE / EXTRACT 事件改为按 Screen 实例注册
+            ScreenEvents.remove(screen).register(s -> {
+                State.screens.remove(s);
+                State.current = null;
+                State.layers.clear();
+                State.extractOpen = false;
+            });
+            ScreenEvents.beforeExtract(screen).register((s, graphics, mouseX, mouseY, tickDelta) -> {
+                if (!State.overlay && !State.requested) {
+                    return;
+                }
+                if (!State.extractOpen) {
+                    State.extractOpen = true;
+                    ++State.frameId;
+                    State.layers.clear();
+                    State.current = null;
+                }
+                State.current = new Layer(s);
+                State.layers.add(State.current);
+            });
+            ScreenEvents.afterExtract(screen).register(UiInspector::onExtractPost);
+        });
+        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
+            exportPending();
+            if (minecraft.gui.screen() == null) {
+                State.screens.clear();
+                State.requested = false;
+                State.pending = null;
+                State.current = null;
+                State.layers.clear();
+                State.extractOpen = false;
+            }
+        });
     }
 
-    public static void onRenderPre(Screen screen) {
-        if (!ENABLED || !State.collectFrame) {
-            return;
-        }
-        State.current = new Layer(screen);
-        State.layers.add(State.current);
-    }
-
-    public static void onRenderPost(Screen screen, GuiGraphics graphics) {
+    private static void onExtractPost(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickDelta) {
         if (!collecting() || State.current.screen != screen) {
             return;
         }
@@ -236,14 +258,14 @@ public final class UiInspector {
         }
         layer.finish();
         State.current = null;
-        if (layer.screen != Minecraft.getInstance().screen) {
+        if (layer.screen != Minecraft.getInstance().gui.screen()) {
             return;
         }
         Set<Screen> live = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Layer visible : State.layers) {
             live.add(visible.screen);
         }
-        State.screens.keySet().removeIf(visibleScreen -> !live.contains(visibleScreen));
+        State.screens.keySet().removeIf(screenKey -> !live.contains(screenKey));
         List<Element> elements = new ArrayList<>();
         List<Issue> issues = new ArrayList<>();
         for (Layer visible : State.layers) {
@@ -261,12 +283,65 @@ public final class UiInspector {
         }
         if (State.requested) {
             State.requested = false;
-            capture(graphics, layer, List.copyOf(elements), List.copyOf(issues));
+            WindowInfo window = WindowInfo.capture(Minecraft.getInstance().getWindow());
+            String prefix = "inspection-" + State.session + "-" + ++State.exportSequence;
+            State.pending = new PendingExport(layer.screen.getClass().getName(), layer.state.instance,
+                    State.layoutRevision, State.frameId, window, prefix, List.copyOf(elements), List.copyOf(issues));
         } else if (State.overlay) {
+            graphics.nextStratum();
             annotate(graphics, elements, issues);
         }
-        State.layers.clear();
     }
+
+    private static void exportPending() {
+        CaptureJob job = null;
+        try {
+            if (State.pending != null) {
+                PendingExport pending = State.pending;
+                State.pending = null;
+                Minecraft minecraft = Minecraft.getInstance();
+                State.writing = true;
+                job = new CaptureJob(pending);
+                Screenshot.takeScreenshot(minecraft.gameRenderer.mainRenderTarget(), job::acceptPlain);
+                renderAnnotationPass(minecraft, pending.elements, pending.issues);
+                Screenshot.takeScreenshot(minecraft.gameRenderer.mainRenderTarget(), job::acceptAnnotated);
+            }
+        } catch (Exception error) {
+            if (job != null) {
+                job.abort(error);
+            } else {
+                State.writing = false;
+                failed(error);
+            }
+        } finally {
+            State.extractOpen = false;
+            State.current = null;
+            State.layers.clear();
+        }
+    }
+
+    private static boolean onKey(Screen screen, KeyEvent event) {
+        if (screen != Minecraft.getInstance().gui.screen()) {
+            return true;
+        }
+        int modifiers = event.modifiers() & (InputConstants.MOD_CONTROL | InputConstants.MOD_ALT | InputConstants.MOD_SHIFT | InputConstants.MOD_SUPER);
+        if (modifiers != (InputConstants.MOD_CONTROL | InputConstants.MOD_ALT)) {
+            return true;
+        }
+        if (event.input() == InputConstants.KEY_F8) {
+            State.overlay = !State.overlay;
+            return false;
+        } else if (event.input() == InputConstants.KEY_F9) {
+            if (State.writing || State.requested || State.pending != null) {
+                notifyUser("UI inspection export in progress");
+            } else {
+                State.requested = true;
+            }
+            return false;
+        }
+        return true;
+    }
+
 
     private static void collectWidgets(Layer layer, List<? extends GuiEventListener> children, String path,
                                        @Nullable ScreenRectangle clip, boolean parentVisible, Set<GuiEventListener> seen) {
@@ -288,40 +363,11 @@ public final class UiInspector {
                 if (child instanceof AbstractSelectionList<?>) {
                     childClip = clip == null ? bounds : intersect(clip, bounds);
                 }
-            } else if (child instanceof AbstractSelectionList<?> list) {
-                String name = State.names.get(list);
-                ScreenRectangle bounds = list.getRectangle();
-                long identity = State.widgetIds.computeIfAbsent(list, ignored -> ++State.nextWidget);
-                layer.add(name == null ? "widget/" + childPath : name, layer.root(), "widget", name != null,
-                        bounds, clip, bounds, visible, true, list.isFocused(), identity);
-                childClip = clip == null ? bounds : intersect(clip, bounds);
             }
             if (child instanceof ContainerEventHandler container) {
                 collectWidgets(layer, container.children(), childPath, childClip, visible, seen);
             }
         }
-    }
-
-    public static boolean onKey(Screen screen, int key, int keyModifiers) {
-        if (!ENABLED || screen != Minecraft.getInstance().screen) {
-            return false;
-        }
-        int modifiers = keyModifiers & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT | GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_SUPER);
-        if (modifiers != (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT)) {
-            return false;
-        }
-        if (key == GLFW.GLFW_KEY_F8) {
-            State.overlay = !State.overlay;
-            return true;
-        } else if (key == GLFW.GLFW_KEY_F9) {
-            if (State.writing || State.requested) {
-                notifyUser("UI inspection export in progress");
-            } else {
-                State.requested = true;
-            }
-            return true;
-        }
-        return false;
     }
 
     private static boolean positive(ScreenRectangle bounds) {
@@ -333,15 +379,12 @@ public final class UiInspector {
         return result == null ? ScreenRectangle.empty() : result;
     }
 
-    private static void annotate(GuiGraphics graphics, List<Element> elements, List<Issue> issues) {
+    private static void annotate(GuiGraphicsExtractor graphics, List<Element> elements, List<Issue> issues) {
         Minecraft minecraft = Minecraft.getInstance();
         Window window = minecraft.getWindow();
-        double mouseX = windowToGui(minecraft.mouseHandler.xpos(), window.getGuiScaledWidth(), window.getScreenWidth());
-        double mouseY = windowToGui(minecraft.mouseHandler.ypos(), window.getGuiScaledHeight(), window.getScreenHeight());
+        double mouseX = minecraft.mouseHandler.getScaledXPos(window);
+        double mouseY = minecraft.mouseHandler.getScaledYPos(window);
         Element hovered = null;
-        graphics.flush();
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 9000);
         for (Element element : elements) {
             if (!element.visible) {
                 continue;
@@ -370,21 +413,36 @@ public final class UiInspector {
         }
         int y = Math.max(0, window.getGuiScaledHeight() - lines.size() * 10 - 4);
         graphics.fill(0, y, window.getGuiScaledWidth(), window.getGuiScaledHeight(), 0xDD000000);
+        Font font = minecraft.font;
         for (String line : lines) {
-            graphics.drawString(minecraft.font, minecraft.font.plainSubstrByWidth(line, Math.max(0, window.getGuiScaledWidth() - 4)), 2, y + 2, 0xFFFFFFFF, false);
+            graphics.text(font, font.plainSubstrByWidth(line, Math.max(0, window.getGuiScaledWidth() - 4)), 2, y + 2, 0xFFFFFFFF, false);
             y += 10;
         }
-        graphics.flush();
-        graphics.pose().popPose();
+    }
+
+    private static void renderAnnotationPass(Minecraft minecraft, List<Element> elements, List<Issue> issues) {
+        Window window = minecraft.getWindow();
+        int mouseX = (int) minecraft.mouseHandler.getScaledXPos(window);
+        int mouseY = (int) minecraft.mouseHandler.getScaledYPos(window);
+        GuiRenderState state = minecraft.gameRenderer.gameRenderState().guiRenderState;
+        GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(minecraft, state, mouseX, mouseY);
+        graphics.nextStratum();
+        annotate(graphics, elements, issues);
+        var target = minecraft.gameRenderer.mainRenderTarget();
+        if (target.getDepthTexture() != null) {
+            RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(target.getDepthTexture(), 1.0);
+        }
+        RenderSystem.setShaderFog(minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+        minecraft.gameRenderer.guiRenderer.render();
     }
 
     private static String describe(@Nullable ScreenRectangle bounds) {
         return bounds == null ? "none" : bounds.left() + "," + bounds.top() + " " + bounds.width() + "x" + bounds.height();
     }
 
-    private static void outline(GuiGraphics graphics, ScreenRectangle bounds, int color) {
+    private static void outline(GuiGraphicsExtractor graphics, ScreenRectangle bounds, int color) {
         if (positive(bounds)) {
-            graphics.renderOutline(bounds.left(), bounds.top(), bounds.width(), bounds.height(), color);
+            graphics.outline(bounds.left(), bounds.top(), bounds.width(), bounds.height(), color);
         }
     }
 
@@ -396,52 +454,90 @@ public final class UiInspector {
         }
     }
 
+    private record PendingExport(String screenId, long screenInstance, long layoutRevision, long frameId, WindowInfo window,
+                                 String prefix, List<Element> elements, List<Issue> issues) {
+    }
+
     private record Export(String screenId, long screenInstance, long layoutRevision, long frameId, WindowInfo window,
                           String plain, String annotated, boolean pixelMappingValid, List<Element> elements, List<Issue> issues) {
     }
 
-    private static void capture(GuiGraphics graphics, Layer top, List<Element> elements, List<Issue> issues) {
-        Minecraft minecraft = Minecraft.getInstance();
-        NativeImage plain = null;
-        NativeImage annotated = null;
-        try {
-            graphics.flush();
-            plain = Screenshot.takeScreenshot(minecraft.getMainRenderTarget());
-            annotate(graphics, elements, issues);
-            graphics.flush();
-            annotated = Screenshot.takeScreenshot(minecraft.getMainRenderTarget());
-            WindowInfo window = WindowInfo.capture(minecraft.getWindow());
-            String prefix = "inspection-" + State.session + "-" + ++State.exportSequence;
-            boolean valid = plain.getWidth() == window.framebufferWidth && plain.getHeight() == window.framebufferHeight
-                    && annotated.getWidth() == window.framebufferWidth && annotated.getHeight() == window.framebufferHeight;
-            Export export = new Export(top.screen.getClass().getName(), top.state.instance, State.layoutRevision, State.frameId,
-                    window, prefix + "-plain.png", prefix + "-annotated.png", valid, elements, issues);
-            Path directory = Path.of(System.getProperty("avaritia.ui.inspectOutput", "build/ui-inspection")).toAbsolutePath();
-            NativeImage plainImage = plain;
-            NativeImage annotatedImage = annotated;
-            State.writing = true;
-            Util.ioPool().execute(() -> writeExport(directory, prefix, export, plainImage, annotatedImage));
-            plain = null;
-            annotated = null;
-        } catch (Exception error) {
-            State.writing = false;
-            failed(error);
-        } finally {
+    private static final class CaptureJob {
+        private final PendingExport pending;
+        private NativeImage plain;
+        private NativeImage annotated;
+        private boolean terminal;
+
+        private CaptureJob(PendingExport pending) {
+            this.pending = pending;
+        }
+
+        private synchronized void acceptPlain(NativeImage image) {
+            if (terminal) {
+                image.close();
+                return;
+            }
+            plain = image;
+            tryFinish();
+        }
+
+        private synchronized void acceptAnnotated(NativeImage image) {
+            if (terminal) {
+                image.close();
+                return;
+            }
+            annotated = image;
+            tryFinish();
+        }
+
+        private void tryFinish() {
+            if (plain == null || annotated == null) {
+                return;
+            }
+            try {
+                NativeImage plainImage = plain;
+                NativeImage annotatedImage = annotated;
+                boolean valid = plainImage.getWidth() == pending.window.framebufferWidth && plainImage.getHeight() == pending.window.framebufferHeight
+                        && annotatedImage.getWidth() == pending.window.framebufferWidth && annotatedImage.getHeight() == pending.window.framebufferHeight;
+                Export export = new Export(pending.screenId, pending.screenInstance, pending.layoutRevision, pending.frameId,
+                        pending.window, pending.prefix + "-plain.png", pending.prefix + "-annotated.png", valid,
+                        pending.elements, pending.issues);
+                Path directory = Path.of(System.getProperty("avaritia.ui.inspectOutput", "build/ui-inspection")).toAbsolutePath();
+                Util.ioPool().execute(() -> writeExport(directory, pending.prefix, export, plainImage, annotatedImage));
+                terminal = true;
+                plain = null;
+                annotated = null;
+            } catch (Exception error) {
+                abort(error);
+            }
+        }
+
+        private synchronized void abort(Exception error) {
+            if (terminal) {
+                return;
+            }
+            terminal = true;
             if (plain != null) {
                 plain.close();
+                plain = null;
             }
             if (annotated != null) {
                 annotated.close();
+                annotated = null;
             }
+            Minecraft.getInstance().execute(() -> State.writing = false);
+            UiInspector.failed(error);
         }
     }
 
     private static void writeExport(Path directory, String prefix, Export export, NativeImage plain, NativeImage annotated) {
         try (plain; annotated) {
             Files.createDirectories(directory);
-            Files.write(directory.resolve(export.plain), plain.asByteArray(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
-            Files.write(directory.resolve(export.annotated), annotated.asByteArray(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            Path plainPath = directory.resolve(export.plain);
+            Path annotatedPath = directory.resolve(export.annotated);
             Path json = directory.resolve(prefix + ".json");
+            writePng(plain, plainPath);
+            writePng(annotated, annotatedPath);
             try (Writer writer = Files.newBufferedWriter(json, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
                 serialize(export, writer);
             }
@@ -450,6 +546,14 @@ public final class UiInspector {
             failed(error);
         } finally {
             Minecraft.getInstance().execute(() -> State.writing = false);
+        }
+    }
+
+    private static void writePng(NativeImage image, Path path) throws IOException {
+        try (var output = Files.newByteChannel(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+            if (!image.writeToChannel(output)) {
+                throw new IOException("Could not encode inspection image: " + path);
+            }
         }
     }
 
@@ -466,7 +570,7 @@ public final class UiInspector {
     }
 
     private static void notifyUser(String message) {
-        Minecraft.getInstance().gui.setOverlayMessage(Component.literal(message), false);
+        Minecraft.getInstance().gui.hud.setOverlayMessage(Component.literal(message), false);
         Const.LOGGER.info(message);
     }
 

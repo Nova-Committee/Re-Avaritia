@@ -2,14 +2,13 @@ package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,50 +16,50 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AvaritiaKeyBindingsTest {
     @Test
     void controlsSortAvaritiaKeysAfterVanillaAndSparseModCategories() throws ReflectiveOperationException {
-        Map<String, Integer> categoryOrder = KeyMapping.CATEGORY_SORT_ORDER;
-        Map<String, KeyMapping> allKeys = staticField("ALL");
-        Map<InputConstants.Key, KeyMapping> keyLookup = staticField("MAP");
-        Set<String> categories = staticField("CATEGORIES");
-        var savedOrder = new HashMap<>(categoryOrder);
-        var savedKeys = new HashMap<>(allKeys);
-        var savedLookup = new HashMap<>(keyLookup);
-        var savedCategories = new HashSet<>(categories);
+        Map<String, KeyMapping> allKeys = staticField(KeyMapping.class, "ALL");
+        Map<InputConstants.Key, List<KeyMapping>> keyLookup = staticField(KeyMapping.class, "MAP");
+        List<KeyMapping.Category> sortOrder = staticField(KeyMapping.Category.class, "SORT_ORDER");
+        List<KeyMapping.Category> savedOrder = new ArrayList<>(sortOrder);
         try {
-            // Another mod can register a rank larger than the number of categories.
-            String otherCategory = "key.avaritia.test.other_category";
-            categoryOrder.put(otherCategory, 100);
-            KeyMapping vanilla = new KeyMapping("key.avaritia.test.vanilla", -1, KeyMapping.CATEGORY_MOVEMENT);
-            KeyMapping otherMod = new KeyMapping("key.avaritia.test.other", -1, otherCategory);
+            // 先引用 AvaritiaClient 触发静态初始化，保证 KEY_CATEGORY 的注册顺序早于下面的测试类别，
+            // 模拟"本模组在客户端初始化时注册、其他模组更晚注册"的真实顺序。
             KeyMapping[] avaritiaKeys = {
-                    AvaritiaForgeClient.FILTER_KEY,
-                    AvaritiaForgeClient.RING_KEY,
-                    AvaritiaForgeClient.CONFIG_KEY
+                    AvaritiaClient.FILTER_KEY,
+                    AvaritiaClient.RING_KEY,
+                    AvaritiaClient.CONFIG_KEY
             };
+            // 26.3 的 Category 按注册顺序排序；另一个模组可能在本模组之后注册自己的类别。
+            KeyMapping vanilla = new KeyMapping("key.avaritia.test.vanilla", -1, KeyMapping.Category.MOVEMENT);
+            KeyMapping.Category otherCategory = KeyMapping.Category.register(
+                    Identifier.parse("avaritia_test:other_category"));
+            KeyMapping otherMod = new KeyMapping("key.avaritia.test.other", -1, otherCategory);
             KeyMapping[] controls = {avaritiaKeys[0], otherMod, avaritiaKeys[1], vanilla, avaritiaKeys[2]};
             Arrays.sort(controls);
-            assertEquals(List.of(vanilla, otherMod), Arrays.asList(controls).subList(0, 2));
+            // Avaritia 的类别注册早于 otherMod、晚于原版：vanilla < avaritia < otherMod
+            assertEquals(vanilla, controls[0]);
+            assertEquals(otherMod, controls[controls.length - 1]);
             for (KeyMapping key : avaritiaKeys) {
-                assertTrue(key.compareTo(otherMod) > 0);
-                assertTrue(otherMod.compareTo(key) < 0);
+                assertTrue(key.compareTo(vanilla) > 0);
+                assertTrue(key.compareTo(otherMod) < 0);
             }
-            for (var entry : savedOrder.entrySet()) {
-                assertEquals(entry.getValue(), categoryOrder.get(entry.getKey()), "Existing category order must not change");
+            for (int i = 0; i < savedOrder.size(); i++) {
+                assertEquals(savedOrder.get(i), sortOrder.get(i), "Existing category order must not change");
             }
         } finally {
-            categoryOrder.clear();
-            categoryOrder.putAll(savedOrder);
-            allKeys.clear();
-            allKeys.putAll(savedKeys);
-            keyLookup.clear();
-            keyLookup.putAll(savedLookup);
-            categories.clear();
-            categories.addAll(savedCategories);
+            sortOrder.clear();
+            sortOrder.addAll(savedOrder);
+            for (String name : List.of("key.avaritia.test.vanilla", "key.avaritia.test.other")) {
+                KeyMapping removed = allKeys.remove(name);
+                if (removed != null) {
+                    keyLookup.values().forEach(list -> list.remove(removed));
+                }
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T staticField(String name) throws ReflectiveOperationException {
-        var field = KeyMapping.class.getDeclaredField(name);
+    private static <T> T staticField(Class<?> owner, String name) throws ReflectiveOperationException {
+        var field = owner.getDeclaredField(name);
         field.setAccessible(true);
         return (T) field.get(null);
     }

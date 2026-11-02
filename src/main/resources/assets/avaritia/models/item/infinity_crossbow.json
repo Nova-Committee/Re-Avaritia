@@ -1,56 +1,76 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "avaritia:item/tools/infinity_crossbow/standby"
-  },
+  "parent": "minecraft:item/generated",
   "display": {
-    "thirdperson_righthand": {
-      "rotation": [ -90, 0, -60 ],
-      "translation": [ 2, 0.1, -3 ],
-      "scale": [ 0.9, 0.9, 0.9 ]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [ -90, 0, 30 ],
-      "translation": [ 2, 0.1, -3 ],
-      "scale": [ 0.9, 0.9, 0.9 ]
+    "firstperson_lefthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        35.0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ]
     },
     "firstperson_righthand": {
-      "rotation": [ -90, 0, -55 ],
-      "translation": [ 1.13, 3.2, 1.13],
-      "scale": [ 0.68, 0.68, 0.68 ]
+      "rotation": [
+        -90.0,
+        0.0,
+        -55.0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ]
     },
-    "firstperson_lefthand": {
-      "rotation": [ -90, 0, 35 ],
-      "translation": [ 1.13, 3.2, 1.13],
-      "scale": [ 0.68, 0.68, 0.68 ]
+    "thirdperson_lefthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        30.0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "translation": [
+        2.0,
+        0.1,
+        -3.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        -60.0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "translation": [
+        2.0,
+        0.1,
+        -3.0
+      ]
     }
   },
-  "overrides": [
-    {
-      "predicate": {
-        "avaritia:pulling": 1
-      },
-      "model": "avaritia:item/infinity_crossbow_pulling_0"
-    },
-    {
-      "predicate": {
-        "avaritia:pulling": 1,
-        "avaritia:pull": 0.58
-      },
-      "model": "avaritia:item/infinity_crossbow_pulling_1"
-    },
-    {
-      "predicate": {
-        "avaritia:pulling": 1,
-        "avaritia:pull": 1.0
-      },
-      "model": "avaritia:item/infinity_crossbow_pulling_2"
-    },
-    {
-      "predicate": {
-        "avaritia:charged": 1
-      },
-      "model": "avaritia:item/infinity_crossbow_pulling_2"
-    }
-  ]
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_crossbow/standby"
+  }
 }

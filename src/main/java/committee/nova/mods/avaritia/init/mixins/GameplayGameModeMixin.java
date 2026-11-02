@@ -32,7 +32,8 @@ public abstract class GameplayGameModeMixin {
     }
     @Inject(method = "destroyBlock", at = @At("HEAD"))
     private void avaritia$rememberState(BlockPos pos, CallbackInfoReturnable<Boolean> cir) { avaritia$brokenState = level.getBlockState(pos); }
-    @Inject(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;playerWillDestroy(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/entity/player/Player;)V"), cancellable = true)
+    // 26.3: Block.playerWillDestroy returns the adjusted BlockState.
+    @Inject(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;playerWillDestroy(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/level/block/state/BlockState;"), cancellable = true)
     private void avaritia$smelt(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (!player.isCreative() && InfinityHandler.toolEnchant(player, pos)) cir.setReturnValue(true);
     }

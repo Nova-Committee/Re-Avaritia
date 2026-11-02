@@ -1,167 +1,56 @@
 package committee.nova.mods.avaritia.client.shader;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import committee.nova.mods.avaritia.Const;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.util.RenderUtils;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-import java.util.HashMap;
-import java.util.Map;
-
-import static net.minecraft.client.renderer.RenderStateShard.*;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 
 /**
  * @Project: Avaritia
- * @author cnlimiter
+ * @Author: cnlimiter
  * @CreateTime: 2025/5/21 00:31
  * @Description:
  */
 public class AvaritiaRenderTypes {
-    private static final Map<ResourceLocation, RenderType> GLOW_TYPES = new HashMap<>();
-    private static final Map<ResourceLocation, RenderType> WING_GLOW_TYPES = new HashMap<>();
-    public static final RenderType BLACK_HOLE_RENDER_TYPE = RenderType.create(
-            "black_hole",
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,  // useDynamicLight
-            true,   // translucent
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.BLACK_HOLE_SHADER))
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(RenderStateShard.NO_CULL)
-                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+    public static RenderType VOID = AvaritiaRenderTypeHelper.entityCutoutNoCull("void_hemisphere", Res.VOID);
 
-    public static final RenderType BLACK_HOLE_SOLID = RenderType.create(
-            "black_hole_solid",
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,
-            false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                    .setCullState(RenderStateShard.CULL)
-                    .createCompositeState(false)
-    );
+    public static RenderType VOID_HALO = AvaritiaRenderTypeHelper.entityTranslucent("void_halo", Res.VOID_HALO);
 
-    public static RenderType VOID = RenderType.create(
-            Const.rl("void_hemisphere").toString(),
-            DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_ENTITY_SHADOW_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(Res.VOID, false, false))
-                    .setCullState(RenderType.NO_CULL)
-                    .createCompositeState(false));
+    public static RenderType COSMIC = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType VOID_HALO = RenderType.create(
-            Const.rl("void_halo").toString(),
-            DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderType.POSITION_COLOR_TEX_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(Res.VOID_HALO, false, false))
-                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                    .setWriteMaskState(RenderType.COLOR_WRITE)
-                    .createCompositeState(false));
+    public static RenderType COSMIC_ARMOR = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic_armor", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType COSMIC = RenderType.create(
-            Const.rl("cosmic").toString(), DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
-                    .createCompositeState(true)
-    );
+    public static final RenderType BLADE_SLASH = AvaritiaRenderTypeHelper.textSeeThrough("blade_slash", Res.BLADE_SLASH);
 
-    public static final RenderType COSMIC_ARMOR = RenderType.create(
-            Const.rl("cosmic").toString(), DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
-                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .setCullState(RenderStateShard.NO_CULL)
-                    .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET)
-                    .createCompositeState(true));
-
-    public static final RenderType BLADE_SLASH = RenderType.create("blade_slash",
-            DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
-            RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(Res.BLADE_SLASH, false, false))
-                    .setShaderState(RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .createCompositeState(true));
-
-    public static RenderType Glow(ResourceLocation resourceLocation) {
-        return GLOW_TYPES.computeIfAbsent(resourceLocation, texture -> RenderType.create(Const.rl("glow").toString(),
-                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
-                RenderType.CompositeState.builder().setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                        .setCullState(RenderStateShard.NO_CULL)
-                        .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-                        .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-                        .createCompositeState(true)));
+    public static RenderType Glow(Identifier Identifier) {
+        return AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("glow", Identifier);
     }
 
-    public static RenderType WingGlow(ResourceLocation resourceLocation) {
-        return WING_GLOW_TYPES.computeIfAbsent(resourceLocation, texture -> RenderType.create(Const.rl("glow").toString(),
-                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
-                RenderType.CompositeState.builder().setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                        .setTransparencyState(RenderStateShard.LIGHTNING_TRANSPARENCY)
-                        .setCullState(RenderStateShard.NO_CULL)
-                        .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-                        .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-                        .createCompositeState(true)));
+    public static RenderType WingGlow(Identifier Identifier) {
+        return AvaritiaRenderTypeHelper.armorGlow("wing_glow", Identifier);
     }
 
-    public static RenderType HELL = RenderType.create(
-            Const.rl("hell").toString(), DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.HELL_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
-                    .createCompositeState(true)
-    );
+    public static RenderType HELL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("hell", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType ETERNAL = RenderType.create(
-            Const.rl("eternal").toString(), DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.ETERNAL_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
-                    .createCompositeState(true)
-    );
+    public static RenderType ETERNAL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("eternal", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType UNSTABLE = RenderType.create(
-            Const.rl("unstable").toString(), DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.UNSTABLE_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
-                    .createCompositeState(true)
-    );
+    public static RenderType UNSTABLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("unstable", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
+    public static RenderType BLACK_HOLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("black_hole", Res.VOID);
+
+    public static RenderType TRIDENT = AvaritiaRenderTypeHelper.entityCutoutNoCull("infinity_trident", Res.TRIDENT_TEX);
+    public static RenderType SHIELD_OBJ = AvaritiaRenderTypeHelper.entityCutoutNoCull("shield_obj", Res.INFINITY_SHIELD_MODEL_TEX);
+
+    public static void reloadEffectTypes() {
+        COSMIC = AvaritiaRenderTypeHelper.textured("cosmic", AvaritiaShaders.COSMIC_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        COSMIC_ARMOR = AvaritiaRenderTypeHelper.textured("cosmic_armor", AvaritiaShaders.COSMIC_ARMOR_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        HELL = AvaritiaRenderTypeHelper.textured("hell", AvaritiaShaders.HELL_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        ETERNAL = AvaritiaRenderTypeHelper.textured("eternal", AvaritiaShaders.ETERNAL_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        UNSTABLE = AvaritiaRenderTypeHelper.textured("unstable", AvaritiaShaders.UNSTABLE_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        BLACK_HOLE = AvaritiaRenderTypeHelper.textured("black_hole", AvaritiaShaders.BLACK_HOLE_SHADER, Res.VOID, true, true, true, true);
+    }
 }

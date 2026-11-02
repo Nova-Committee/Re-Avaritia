@@ -1,27 +1,35 @@
 package committee.nova.mods.avaritia.init.registry.enums;
 
-import committee.nova.mods.avaritia.init.registry.ModTags;
-import net.minecraft.world.item.crafting.Ingredient;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+
+import java.util.function.Supplier;
 
 /**
  * @Project: Avaritia
  * @author cnlimiter
- * @CreateTime: 2024/7/21 上午1:17
+ * @CreateTime: 2024/1/8 22:43
  * @Description:
  */
 public enum CollectorTier {
-    DEFAULT("neutron_collector", Ingredient.of(ModTags.NEUTRON_DUST), 3600),
-    DENSE("dense_neutron_collector", Ingredient.of(ModTags.NEUTRON_NUGGET), 3600),
-    DENSER("denser_neutron_collector", Ingredient.of(ModTags.NEUTRON_INGOT), 3600),
-    DENSEST("densest_neutron_collector", Ingredient.of(ModTags.NEUTRON_INGOT), 200);
+    DEFAULT("neutron_collector", ModItems.neutron_pile, 3600),
+    DENSE("dense_neutron_collector", ModItems.neutron_nugget, 3600),
+    DENSER("denser_neutron_collector", ModItems.neutron_ingot, 3600),
+    DENSEST("densest_neutron_collector", ModBlocks.neutron, 200);
 
     public final int production_ticks;
-    public final Ingredient production;
+    public final Supplier<? extends ItemLike> production;
     public final String name;
 
-    CollectorTier(String name, Ingredient production, int production_ticks) {
+    CollectorTier(String name, Supplier<? extends ItemLike> production, int production_ticks) {
         this.production_ticks = production_ticks;
         this.production = production;
         this.name = name;
+    }
+
+    public ItemStack createProductionStack() {
+        return new ItemStack(this.production.get());
     }
 }

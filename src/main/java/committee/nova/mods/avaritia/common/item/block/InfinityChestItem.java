@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.block;
 
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
@@ -9,7 +10,7 @@ import net.minecraft.world.level.block.Block;
  */
 public class InfinityChestItem extends BlockItem {
     public InfinityChestItem(Block block) {
-        super(block, new Properties().rarity(ModRarities.LEGEND));
+        super(block, ModItems.properties().rarity(ModRarities.LEGEND).useBlockDescriptionPrefix());
     }
 
 }

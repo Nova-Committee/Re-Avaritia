@@ -1,26 +1,25 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonSyntaxException;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
-    public NoConsumeCatalystShapedRecipe(ResourceLocation recipeId, int width, int height,
-                                         NonNullList<Ingredient> inputs, ItemStack output, int tier) {
-        super(recipeId, width, height, inputs, output, tier, false);
+    public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStack output, int tier) {
+        super(pattern, output, tier, false);
+    }
+
+    public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStackTemplate result, int tier) {
+        super(pattern, result, tier, false);
     }
 
     @Override
@@ -36,59 +35,35 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.NO_CONSUME_CATALYST_SHAPED_SERIALIZER.get();
+    public @NotNull RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.CraftingInput>> getSerializer() {
+        return (RecipeSerializer<NoConsumeCatalystShapedRecipe>) ModRecipeSerializers.NO_CONSUME_CATALYST_SHAPED_SERIALIZER.get();
     }
 
-    public static class Serializer implements RecipeSerializer<NoConsumeCatalystShapedRecipe> {
-        @Override
-        public @NotNull NoConsumeCatalystShapedRecipe fromJson(@NotNull ResourceLocation recipeId, com.google.gson.@NotNull JsonObject json) {
-            var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-            var pattern = patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
-            int width = pattern[0].length();
-            int height = pattern.length;
-            var inputs = ShapedRecipe.dissolvePattern(pattern, map, width, height);
-            var output = RecipeIngredients.resultFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int tier = GsonHelper.getAsInt(json, "tier", 0);
-            return new NoConsumeCatalystShapedRecipe(recipeId, width, height, inputs, output, tier);
+    public static class Serializer {
+        public static final com.mojang.serialization.MapCodec<NoConsumeCatalystShapedRecipe> CODEC =
+                com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(builder ->
+                        builder.group(
+                                ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
+                                RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
+                                com.mojang.serialization.Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
+                        ).apply(builder, NoConsumeCatalystShapedRecipe::new)
+                );
+        public static final StreamCodec<RegistryFriendlyByteBuf, NoConsumeCatalystShapedRecipe> STREAM_CODEC = StreamCodec.of(
+                NoConsumeCatalystShapedRecipe.Serializer::toNetwork, NoConsumeCatalystShapedRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<NoConsumeCatalystShapedRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
+        private static NoConsumeCatalystShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
+            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            int tier = buffer.readVarInt();
+            return new NoConsumeCatalystShapedRecipe(pattern, result, tier);
         }
 
-        @Override
-        public @Nullable NoConsumeCatalystShapedRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            int width = buffer.readVarInt();
-            int height = buffer.readVarInt();
-            var inputs = NonNullList.withSize(width * height, Ingredient.EMPTY);
-
-            inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
-
-            var output = buffer.readItem();
-            var tier = buffer.readVarInt();
-            return new NoConsumeCatalystShapedRecipe(recipeId, width, height, inputs, output, tier);
-        }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull NoConsumeCatalystShapedRecipe recipe) {
-            buffer.writeVarInt(recipe.getWidth());
-            buffer.writeVarInt(recipe.getHeight());
-
-            for (var ingredient : recipe.getIngredients()) {
-                ingredient.toNetwork(buffer);
-            }
-
-            buffer.writeItem(recipe.output);
-            buffer.writeVarInt(recipe.getTier());
-        }
-
-        private static String[] patternFromJson(JsonArray jsonArr) {
-            var astring = new String[jsonArr.size()];
-            for (int i = 0; i < astring.length; ++i) {
-                var s = GsonHelper.convertToString(jsonArr.get(i), "pattern[" + i + "]");
-                if (i > 0 && astring[0].length() != s.length()) {
-                    throw new JsonSyntaxException("Invalid pattern: each row must be the same width");
-                }
-                astring[i] = s;
-            }
-            return astring;
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, NoConsumeCatalystShapedRecipe recipe) {
+            ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            buffer.writeVarInt(recipe.tier);
         }
     }
 }

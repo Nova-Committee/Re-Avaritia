@@ -11,19 +11,20 @@ import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvents;
 
 /** Loaded exclusively by the Fabric client entrypoint. */
 public final class NetworkClientPackets {
     private NetworkClientPackets() {}
     public static void initialize() {
-        NetBaseHandler.setClientSender(packet -> {
-            var connection = Minecraft.getInstance().getConnection();
-            if (connection == null) throw new IllegalStateException("No active server connection");
-            connection.send(packet);
+        NetBaseHandler.setClientSender((CustomPacketPayload payload) -> {
+            if (Minecraft.getInstance().getConnection() == null) throw new IllegalStateException("No active server connection");
+            ClientPlayNetworking.send(payload);
         });
         ClientPacketProxy.initialize(NetworkClientPackets::handle);
     }
@@ -32,7 +33,7 @@ public final class NetworkClientPackets {
         if (packet instanceof S2CMenuDataPack menu) {
             DataMenuType.setOpeningData(menu.containerId, new FriendlyByteBuf(Unpooled.wrappedBuffer(menu.data)));
         } else if (packet instanceof NbtDataPack nbt) {
-            if (minecraft.screen instanceof IDataReceiver receiver) receiver.receive(nbt.tag);
+            if (minecraft.gui.screen() instanceof IDataReceiver receiver) receiver.receive(nbt.tag);
         } else if (packet instanceof S2CSingularitiesPack singularities) {
             SingularityReloadListener.INSTANCE.replaceEffectiveSnapshot(singularities.singularities);
         } else if (packet instanceof S2CTotemPack totem) {
@@ -41,7 +42,7 @@ public final class NetworkClientPackets {
             if (entity == null) return;
             minecraft.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
             minecraft.level.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1, 1, false);
-            minecraft.gameRenderer.displayItemActivation(totem.stack);
+            if (minecraft.player != null) minecraft.player.displayItemActivation(totem.stack);
         } else if (packet instanceof S2CSideConfigSyncPacket configuration) {
             if (minecraft.level != null && minecraft.level.getBlockEntity(configuration.pos) instanceof ITileIO tile)
                 tile.setSideConfiguration(configuration.sideConfig);

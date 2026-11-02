@@ -1,52 +1,45 @@
 package committee.nova.mods.avaritia.client.render.util;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Res;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4fc;
 
 import java.util.Random;
-
-import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
  * @author cnlimiter
  */
 public class ArcRender {
-    public static final RenderType ARC_RENDER_TYPE = new RenderType.CompositeRenderType(
+    public static final RenderType ARC_RENDER_TYPE = RenderType.create(
             "arc_render_type",
-            DefaultVertexFormat.POSITION_TEX,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,
-            true,
-            RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(
-                            Res.ARC_TEX,
-                            false,
-                            false
-                    ))
-                    .setShaderState(POSITION_TEX_SHADER)
-                    .setCullState(NO_CULL)
-                    .setOutputState(ITEM_ENTITY_TARGET)
-                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                    .createCompositeState(false)
+            RenderSetup.builder(RenderPipelines.LIGHTNING)
+                    .withTexture("Sampler0", Res.ARC_TEX)
+                    .createRenderSetup()
     );
 
     private static final float THICKNESS_VARIATION = 0.4f;
     private static final float MIN_THICKNESS_FACTOR = 0.1f;
     private static final double EPSILON = 1e-6;
+    private static final int ARC_COLOR = 0xFFFFFFFF;
 
-    public static void renderArc(PoseStack ps, MultiBufferSource mbs, long seed,
+    public static void renderArc(PoseStack ps, SubmitNodeCollector collector, long seed,
                                  float sx, float sy, float sz, float ex, float ey, float ez,
                                  float thickness, int segments) {
-        var vc = mbs.getBuffer(ARC_RENDER_TYPE);
-        var matrix = ps.last().pose();
+        collector.submitCustomGeometry(ps, ARC_RENDER_TYPE,
+                (pose, vc) -> renderArc(pose, vc, seed, sx, sy, sz, ex, ey, ez, thickness, segments));
+    }
+
+    public static void renderArc(PoseStack.Pose pose, VertexConsumer vc, long seed,
+                                 float sx, float sy, float sz, float ex, float ey, float ez,
+                                 float thickness, int segments) {
+        var matrix = pose.pose();
         var rnd = new Random(seed);
 
         var start = new Vec3(sx, sy, sz);
@@ -110,13 +103,19 @@ public class ArcRender {
             var u0 = (float) (i - 1) / segments;
             var u1 = (float) i / segments;
 
-            vc.vertex(matrix, (float) prevL.x(), (float) prevL.y(), (float) prevL.z()).uv(u0, 0).endVertex();
-            vc.vertex(matrix, (float) prevR.x(), (float) prevR.y(), (float) prevR.z()).uv(u0, 1).endVertex();
-            vc.vertex(matrix, (float) currentR.x(), (float) currentR.y(), (float) currentR.z()).uv(u1, 1).endVertex();
-            vc.vertex(matrix, (float) currentL.x(), (float) currentL.y(), (float) currentL.z()).uv(u1, 0).endVertex();
+            vertex(matrix, vc, prevL, u0, 0);
+            vertex(matrix, vc, prevR, u0, 1);
+            vertex(matrix, vc, currentR, u1, 1);
+            vertex(matrix, vc, currentL, u1, 0);
 
             prevL = currentL;
             prevR = currentR;
         }
+    }
+
+    private static void vertex(Matrix4fc matrix, VertexConsumer vc, Vec3 position, float u, float v) {
+        vc.addVertex(matrix, (float) position.x(), (float) position.y(), (float) position.z())
+                .setUv(u, v)
+                .setColor(ARC_COLOR);
     }
 }

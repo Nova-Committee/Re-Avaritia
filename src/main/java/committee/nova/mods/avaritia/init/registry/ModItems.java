@@ -11,12 +11,15 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.blaze.*;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.block.Block;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
-import net.minecraft.core.registries.BuiltInRegistries;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
 
 import java.util.function.Function;
@@ -30,9 +33,10 @@ import java.util.function.Supplier;
  */
 public class ModItems {
     public static final RegistryEntries<Item> ITEMS = RegistryEntries.create(BuiltInRegistries.ITEM, Const.MOD_ID);
+    private static final ThreadLocal<ResourceKey<Item>> CURRENT_ITEM_KEY = new ThreadLocal<>();
 
     //test
-    public static RegistryEntry<Item> test_sword = item("test_sword", () -> new Item(new Item.Properties()), false);
+    public static RegistryEntry<Item> test_sword = item("test_sword", () -> new Item(properties()), false);
     //curios
     public static RegistryEntry<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
     public static RegistryEntry<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
@@ -56,6 +60,8 @@ public class ModItems {
     public static RegistryEntry<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
     public static RegistryEntry<Item> infinity_shield = item("infinity_shield", InfinityShieldItem::new);
     public static RegistryEntry<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
+    public static RegistryEntry<Item> infinity_spear = item("infinity_spear", InfinitySpearItem::new);
+    public static RegistryEntry<Item> infinity_mace = item("infinity_mace", InfinityMaceItem::new);
 
     //crystal
     public static RegistryEntry<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
@@ -64,6 +70,7 @@ public class ModItems {
     public static RegistryEntry<Item> crystal_shovel = item("crystal_shovel", CrystalShovelItem::new);
     public static RegistryEntry<Item> crystal_axe = item("crystal_axe", CrystalAxeItem::new);
     public static RegistryEntry<Item> crystal_bow = item("crystal_bow", CrystalBowItem::new);
+    public static RegistryEntry<Item> crystal_spear = item("crystal_spear", CrystalSpearItem::new);
     //blaze
     public static RegistryEntry<Item> blaze_sword = item("blaze_sword", BlazeSwordItem::new);
     public static RegistryEntry<Item> blaze_hoe = item("blaze_hoe", BlazeHoeItem::new);
@@ -71,50 +78,54 @@ public class ModItems {
     public static RegistryEntry<Item> blaze_shovel = item("blaze_shovel", BlazeShovelItem::new);
     public static RegistryEntry<Item> blaze_axe = item("blaze_axe", BlazeAxeItem::new);
     public static RegistryEntry<Item> blaze_bow= item("blaze_bow", BlazeBowItem::new);
+    public static RegistryEntry<Item> blaze_spear = item("blaze_spear", BlazeSpearItem::new);
 
     /**
      * Armor
      */
-    public static RegistryEntry<Item> infinity_helmet = item("infinity_helmet", () -> new InfinityArmorItem(ArmorItem.Type.HELMET));
-    public static RegistryEntry<Item> infinity_chestplate = item("infinity_chestplate", () -> new InfinityArmorItem(ArmorItem.Type.CHESTPLATE));
-    public static RegistryEntry<Item> infinity_pants = item("infinity_pants", () -> new InfinityArmorItem(ArmorItem.Type.LEGGINGS));
-    public static RegistryEntry<Item> infinity_boots = item("infinity_boots", () -> new InfinityArmorItem(ArmorItem.Type.BOOTS));
+    public static RegistryEntry<Item> infinity_helmet = item("infinity_helmet", () -> new InfinityArmorItem(ArmorType.HELMET, new Item.Properties()));
+    public static RegistryEntry<Item> infinity_chestplate = item("infinity_chestplate", () -> new InfinityArmorItem(ArmorType.CHESTPLATE, new Item.Properties()));
+    public static RegistryEntry<Item> infinity_pants = item("infinity_pants", () -> new InfinityArmorItem(ArmorType.LEGGINGS, new Item.Properties()));
+    public static RegistryEntry<Item> infinity_boots = item("infinity_boots", () -> new InfinityArmorItem(ArmorType.BOOTS, new Item.Properties()));
     public static RegistryEntry<Item> neutron_horse_armor = item("neutron_horse_armor", NeutronHorseArmorItem::new);
+    public static RegistryEntry<Item> neutron_nautilus_armor = item("neutron_nautilus_armor", NeutronNautilusArmorItem::new);
+    public static RegistryEntry<Item> neutron_wolf_armor = item("neutron_wolf_armor", NeutronWolfArmorItem::new);
+    public static RegistryEntry<Item> neutron_harness = item("neutron_harness", NeutronHarnessItem::new);
     public static RegistryEntry<Item> infinity_elytra = item("infinity_elytra", InfinityElytraItem::new);
 
     /**
      * Resource
      */
     //fire
-    public static RegistryEntry<Item> blaze_cube = item("blaze_cube", () -> new ResourceItem(ModRarities.UNCOMMON, true));
+    public static RegistryEntry<Item> blaze_cube = item("blaze_cube", () -> new ResourceItem(ModRarities.UNCOMMON, true, new Item.Properties().fireResistant()));
     //wind
-    public static RegistryEntry<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(ModRarities.UNCOMMON, true));
-    public static RegistryEntry<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", (s) -> new ResourceItem(ModRarities.RARE, true));
+    public static RegistryEntry<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(ModRarities.UNCOMMON, true, new Item.Properties()));
+    public static RegistryEntry<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(ModRarities.RARE, true, new Item.Properties().fireResistant()));
     //earth
-    public static RegistryEntry<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(ModRarities.UNCOMMON, true));
-    public static RegistryEntry<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(ModRarities.RARE, true));
-    public static RegistryEntry<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(ModRarities.EPIC, true));
+    public static RegistryEntry<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(ModRarities.UNCOMMON, true, new Item.Properties()));
+    public static RegistryEntry<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(ModRarities.RARE, true, new Item.Properties()));
+    public static RegistryEntry<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(ModRarities.EPIC, true, new Item.Properties()));
     public static RegistryEntry<Item> neutron_gear = item("neutron_gear", NeutronGearItem::new);
     //infinity
-    public static RegistryEntry<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(ModRarities.EPIC, true));
-    public static RegistryEntry<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND, true));
-    public static RegistryEntry<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC, true));
+    public static RegistryEntry<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(ModRarities.EPIC, true, new Item.Properties().fireResistant()));
+    public static RegistryEntry<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND, true, new Item.Properties().fireResistant()));
+    public static RegistryEntry<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC, true, new Item.Properties().fireResistant()));
     //singularity
     public static RegistryEntry<Item> singularity = item("singularity", SingularityItem::new);
     public static RegistryEntry<Item> eternal_singularity = item("eternal_singularity", EternalSingularityItem::new);
     //misc
-    public static RegistryEntry<Item> record_fragment = item("record_fragment", () -> new ResourceItem(ModRarities.RARE, true));
+    public static RegistryEntry<Item> record_fragment = item("record_fragment", () -> new ResourceItem(ModRarities.RARE, true, new Item.Properties()));
     public static RegistryEntry<Item> star_fuel = item("star_fuel", StarFuelItem::new);
     public static RegistryEntry<Item> refined_coal = item("refined_coal", RefinedCoalItem::new);
     public static RegistryEntry<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
     public static RegistryEntry<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
-    public static RegistryEntry<Item> full_matter_cluster = item("full_matter_cluster", () -> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
+    public static RegistryEntry<Item> full_matter_cluster = item("full_matter_cluster", () -> new Item(properties().stacksTo(1).rarity(ModRarities.RARE)));
     public static RegistryEntry<Item> enhancement_core = item("enhancement_core", EnhancementCoreItem::new);
     public static RegistryEntry<Item> upgrade_smithing_template = item("upgrade_smithing_template", UpgradeSmithingTemplateItem::new);
     public static RegistryEntry<Item> infinity_upgrade = item("infinity_upgrade", InfinityUpgradeItem::new);
     //food
-    public static RegistryEntry<Item> ultimate_stew = item("ultimate_stew", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew)));
-    public static RegistryEntry<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs)));
+    public static RegistryEntry<Item> ultimate_stew = item("ultimate_stew", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew, ModFoods.ultimate_stew_consumable)));
+    public static RegistryEntry<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs, ModFoods.cosmic_meatballs_consumable)));
     public static RegistryEntry<Item> forge_energy = item("forge_energy", false);
 
     public static RegistryEntry<Item> item(String name) {
@@ -122,11 +133,11 @@ public class ModItems {
     }
 
     public static RegistryEntry<Item> blockItem(String name, Supplier<Block> block, Item.Properties properties, boolean exist) {
-        return item(name, (e) -> new BlockItem(block.get(), properties), exist);
+        return item(name, (e) -> new BlockItem(block.get(), applyId(properties).useBlockDescriptionPrefix()), exist);
     }
 
     public static RegistryEntry<Item> item(String name, boolean exist) {
-        return item(name, (e) -> new BaseItem(), exist);
+        return item(name, (e) -> new Item(properties()), exist);
     }
 
     public static RegistryEntry<Item> item(String name, Function<String, Item> item) {
@@ -142,9 +153,25 @@ public class ModItems {
     }
 
     public static RegistryEntry<Item> item(String name, Supplier<Item> item, boolean exist) {
-        var regItem = ITEMS.register(name, item);
+        var regItem = ITEMS.register(name, (Identifier id) -> {
+            CURRENT_ITEM_KEY.set(ResourceKey.create(Registries.ITEM, id));
+            try {
+                return item.get();
+            } finally {
+                CURRENT_ITEM_KEY.remove();
+            }
+        });
         if (exist) ModCreativeModeTabs.ACCEPT_ITEM.add(regItem);
         return regItem;
     }
 
+    /** 26.3 要求 Item.Properties 显式携带注册 id，仅在注册工厂执行期间可用。 */
+    public static Item.Properties properties() {
+        return applyId(new Item.Properties());
+    }
+
+    public static Item.Properties applyId(Item.Properties properties) {
+        ResourceKey<Item> key = CURRENT_ITEM_KEY.get();
+        return key == null ? properties : properties.setId(key);
+    }
 }

@@ -13,7 +13,7 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record EndCraftingTableCategory(ITierCraftingRecipe recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/tables/end_jei.png"), 0, 0, 193, 133);
+    private static final EmiTexture TEXTURE = new EmiTexture(Identifier.tryBuild(Const.MOD_ID, "textures/gui/jei/tables/end_jei.png"), 0, 0, 193, 133);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.end_crafting_table.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "end_crafting_table"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(Identifier.tryBuild(Const.MOD_ID, "end_crafting_table"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {
@@ -31,7 +31,7 @@ public record EndCraftingTableCategory(ITierCraftingRecipe recipe) implements Em
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
+    public @NotNull Identifier getId() {
         return this.recipe.getId();
     }
 

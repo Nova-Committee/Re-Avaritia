@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.util;
 
 import committee.nova.mods.avaritia.Const;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -11,45 +11,45 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ResourceUtil {
-    private static final ResourceLocationFactory FACTORY;
+    private static final IdentifierFactory FACTORY;
 
     static {
-        ResourceLocationFactory factory1;
+        IdentifierFactory factory1;
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle fromNamespaceAndPath;
         MethodHandle parse;
         MethodHandle tryWithResources;
         MethodHandle valueOf;
         MethodHandle of;
-        Constructor<ResourceLocation> constructor;
+        Constructor<Identifier> constructor;
         try {
-            fromNamespaceAndPath = lookup.findStatic(ResourceLocation.class, "fromNamespaceAndPath",
-                    MethodType.methodType(ResourceLocation.class, String.class, String.class));
-            parse = lookup.findStatic(ResourceLocation.class, "parse",
-                    MethodType.methodType(ResourceLocation.class, String.class));
+            fromNamespaceAndPath = lookup.findStatic(Identifier.class, "fromNamespaceAndPath",
+                    MethodType.methodType(Identifier.class, String.class, String.class));
+            parse = lookup.findStatic(Identifier.class, "parse",
+                    MethodType.methodType(Identifier.class, String.class));
             factory1 = new HighVersionFactory(fromNamespaceAndPath, parse);
         } catch (Exception e) {
             try {
-                tryWithResources = lookup.findStatic(ResourceLocation.class, "tryWithResources",
-                        MethodType.methodType(ResourceLocation.class, String.class, String.class));
+                tryWithResources = lookup.findStatic(Identifier.class, "tryWithResources",
+                        MethodType.methodType(Identifier.class, String.class, String.class));
                 factory1 = new LowVersionFactory(tryWithResources, LowVersionFactory.MethodType.TRY_WITH_RESOURCES);
             } catch (Exception e1) {
                 try {
-                    valueOf = lookup.findStatic(ResourceLocation.class, "valueOf",
-                            MethodType.methodType(ResourceLocation.class, String.class, String.class));
+                    valueOf = lookup.findStatic(Identifier.class, "valueOf",
+                            MethodType.methodType(Identifier.class, String.class, String.class));
                     factory1 = new LowVersionFactory(valueOf, LowVersionFactory.MethodType.VALUE_OF);
                 } catch (Exception e2) {
                     try {
-                        of = tryFindStaticMethod(lookup, ResourceLocation.class, MethodType.methodType(ResourceLocation.class,
+                        of = tryFindStaticMethod(lookup, Identifier.class, MethodType.methodType(Identifier.class,
                                 String.class, String.class), Arrays.asList("of", "m_135822_"));
                         factory1 = new LowVersionFactory(of, LowVersionFactory.MethodType.OF);
                     } catch (Exception e3) {
                         try {
-                            constructor = ResourceLocation.class.getDeclaredConstructor(String.class, String.class);
+                            constructor = Identifier.class.getDeclaredConstructor(String.class, String.class);
                             constructor.setAccessible(true);
                             factory1 = new LowVersionFactory(constructor, LowVersionFactory.MethodType.CONSTRUCTOR);
                         } catch (Exception e4) {
-                            throw new RuntimeException("无法找到可用的 ResourceLocation 创建方法", e4);
+                            throw new RuntimeException("无法找到可用的 Identifier 创建方法", e4);
                         }
                     }
                 }
@@ -58,35 +58,35 @@ public class ResourceUtil {
         FACTORY = factory1;
     }
 
-    private interface ResourceLocationFactory {
-        ResourceLocation create(String namespace, String path);
+    private interface IdentifierFactory {
+        Identifier create(String namespace, String path);
 
-        ResourceLocation parse(String path);
+        Identifier parse(String path);
     }
 
     private record HighVersionFactory(MethodHandle fromNamespaceAndPath,
-                                      MethodHandle parse) implements ResourceLocationFactory {
+                                      MethodHandle parse) implements IdentifierFactory {
 
         @Override
-        public ResourceLocation create(String namespace, String path) {
+        public Identifier create(String namespace, String path) {
             try {
-                return (ResourceLocation) fromNamespaceAndPath.invokeExact(namespace, path);
+                return (Identifier) fromNamespaceAndPath.invokeExact(namespace, path);
             } catch (Throwable e) {
-                throw new RuntimeException("高版本创建 ResourceLocation 失败", e);
+                throw new RuntimeException("高版本创建 Identifier 失败", e);
             }
         }
 
         @Override
-        public ResourceLocation parse(String path) {
+        public Identifier parse(String path) {
             try {
-                return (ResourceLocation) parse.invokeExact(path);
+                return (Identifier) parse.invokeExact(path);
             } catch (Throwable e) {
-                throw new RuntimeException("高版本解析 ResourceLocation 失败", e);
+                throw new RuntimeException("高版本解析 Identifier 失败", e);
             }
         }
     }
 
-    private static class LowVersionFactory implements ResourceLocationFactory {
+    private static class LowVersionFactory implements IdentifierFactory {
         private final Object method;
         private final MethodType methodType;
 
@@ -99,27 +99,27 @@ public class ResourceUtil {
             this.methodType = methodType;
         }
 
-        public LowVersionFactory(Constructor<ResourceLocation> constructor, MethodType methodType) {
+        public LowVersionFactory(Constructor<Identifier> constructor, MethodType methodType) {
             this.method = constructor;
             this.methodType = methodType;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public ResourceLocation create(String namespace, String path) {
+        public Identifier create(String namespace, String path) {
             try {
                 return switch (methodType) {
                     case TRY_WITH_RESOURCES, VALUE_OF, OF ->
-                            (ResourceLocation) ((MethodHandle) method).invokeExact(namespace, path);
-                    case CONSTRUCTOR -> ((Constructor<ResourceLocation>) method).newInstance(namespace, path);
+                            (Identifier) ((MethodHandle) method).invokeExact(namespace, path);
+                    case CONSTRUCTOR -> ((Constructor<Identifier>) method).newInstance(namespace, path);
                 };
             } catch (Throwable e) {
-                throw new RuntimeException("低版本创建 ResourceLocation 失败", e);
+                throw new RuntimeException("低版本创建 Identifier 失败", e);
             }
         }
 
         @Override
-        public ResourceLocation parse(String path) {
+        public Identifier parse(String path) {
             int colonIndex = path.indexOf(':');
             if (colonIndex == -1) {
                 return create(Const.MOD_ID, path);
@@ -132,7 +132,7 @@ public class ResourceUtil {
     }
 
     private static MethodHandle tryFindStaticMethod(MethodHandles.Lookup lookup,
-                                                    Class<ResourceLocation> clazz,
+                                                    Class<Identifier> clazz,
                                                     MethodType methodType,
                                                     List<String> methodNames) throws NoSuchMethodException {
         for (String methodName : methodNames) {
@@ -145,44 +145,44 @@ public class ResourceUtil {
     }
 
     /**
-     * 创建ResourceLocation的通用方法
+     * 创建Identifier的通用方法
      */
-    private static ResourceLocation createResourceLocation(String namespace, String path) {
+    private static Identifier createIdentifier(String namespace, String path) {
         return FACTORY.create(namespace, path);
     }
 
     /**
-     * 解析ResourceLocation的通用方法
+     * 解析Identifier的通用方法
      */
-    private static ResourceLocation parseResourceLocation(String path) {
+    private static Identifier parseIdentifier(String path) {
         return FACTORY.parse(path);
     }
 
-    public static ResourceLocation createInstance(String path) {
-        return createResourceLocation(Const.MOD_ID, path);
+    public static Identifier createInstance(String path) {
+        return createIdentifier(Const.MOD_ID, path);
     }
 
     public static String createStringInstance(String path) {
         return Const.MOD_ID + ":" + path;
     }
 
-    public static ResourceLocation createInstance(String name, String path) {
-        return createResourceLocation(name, path);
+    public static Identifier createInstance(String name, String path) {
+        return createIdentifier(name, path);
     }
 
-    public static ResourceLocation createInstanceNoNamespace(String path) {
-        return parseResourceLocation(path);
+    public static Identifier createInstanceNoNamespace(String path) {
+        return parseIdentifier(path);
     }
 
-    public static ResourceLocation createMinecraftInstance(String path) {
-        return createResourceLocation("minecraft", path);
+    public static Identifier createMinecraftInstance(String path) {
+        return createIdentifier("minecraft", path);
     }
 
-    public static ResourceLocation createTextureInstance(String path) {
-        return createResourceLocation(Const.MOD_ID, "textures/" + path);
+    public static Identifier createTextureInstance(String path) {
+        return createIdentifier(Const.MOD_ID, "textures/" + path);
     }
 
-    public static ResourceLocation createInstanceWithColon(String all) {
+    public static Identifier createInstanceWithColon(String all) {
         String namespace;
         String path;
         if (all.contains(":")) {
@@ -200,7 +200,7 @@ public class ResourceUtil {
      * 自动解析 namespace:path
      * 若无冒号，自动补 modid
      */
-    public static ResourceLocation create(String id) {
+    public static Identifier create(String id) {
         if (id.contains(":")) {
             return createInstanceWithColon(id);
         }

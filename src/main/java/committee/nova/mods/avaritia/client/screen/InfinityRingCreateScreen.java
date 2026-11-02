@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -85,19 +85,22 @@ public final class InfinityRingCreateScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
-        PortableUi.panel(graphics, panel);
-        UiInspector.region("ring.create.panel", panel, null, false);
-        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         if (help.width() > 0 && help.height() > 0) {
             graphics.enableScissor(help.left(), help.top(), help.right(), help.bottom());
-            graphics.drawWordWrap(font, Component.translatable("gui.avaritia.infinity_ring.access.help"),
+            graphics.textWithWordWrap(font, Component.translatable("gui.avaritia.infinity_ring.access.help"),
                     help.left(), help.top(), help.width(), PortableUi.MUTED);
             UiInspector.region("ring.create.help", help, help, false);
             graphics.disableScissor();
         }
+    }
+
+    @Override
+    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics) {
+        PortableUi.panel(graphics, panel);
+        UiInspector.region("ring.create.panel", panel, null, false);
+        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
     }
 
     @Override
@@ -106,7 +109,7 @@ public final class InfinityRingCreateScreen extends Screen {
     }
 
     private void create() {
-        NetworkHandler.CHANNEL.sendToServer(new C2SInfinityRingPack(
+        NetworkHandler.sendToServer(new C2SInfinityRingPack(
                 C2SInfinityRingPack.CREATE, terrain, time, weather, access, "", new UUID(0L, 0L)));
         onClose();
     }
@@ -114,9 +117,8 @@ public final class InfinityRingCreateScreen extends Screen {
     private <T extends Enum<T>> void addCycle(GridLayout form, int row, int w, String optionKey, String valuePrefix,
                                               T[] values, T current, Consumer<T> changed) {
         CycleButton<T> cycle = addRenderableWidget(CycleButton.builder((T value) -> Component.translatable(
-                        valuePrefix + value.name().toLowerCase(Locale.ROOT)))
+                        valuePrefix + value.name().toLowerCase(Locale.ROOT)), current)
                 .withValues(values)
-                .withInitialValue(current)
                 .withTooltip(value -> Tooltip.create(Component.translatable(
                         valuePrefix + value.name().toLowerCase(Locale.ROOT) + ".info")))
                 .create(0, 0, w, BTN_H, Component.translatable(optionKey),

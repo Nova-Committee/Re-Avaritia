@@ -11,7 +11,6 @@
   "entrypoints": {
     "main": ["committee.nova.mods.avaritia.Avaritia"],
     "client": ["committee.nova.mods.avaritia.client.AvaritiaModClient"],
-    "emi": ["committee.nova.mods.avaritia.init.compat.emi.AvaritiaEmiPlugin"],
     "jei_mod_plugin": ["committee.nova.mods.avaritia.init.compat.jei.AvaritiaJeiPlugin"],
     "jade": ["committee.nova.mods.avaritia.init.compat.JadeCompat"]
   },
@@ -19,7 +18,8 @@
   "accessWidener": "avaritia.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "${mc_version}",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
     "java": ">=${java_version}"
   },
   "suggests": {

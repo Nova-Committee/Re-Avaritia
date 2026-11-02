@@ -3,9 +3,8 @@ package committee.nova.mods.avaritia;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
-import committee.nova.mods.avaritia.api.util.data.RawValue;
 import committee.nova.mods.avaritia.init.compat.trinkets.TrinketsIntegration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +18,6 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Description:
@@ -35,9 +33,12 @@ public class Const {
     public static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
 
+    public static final Identifier HALO_ATLAS_LOCATION = rl("textures/atlas/halo.png");
+    public static final Identifier HALO_ATLAS_INFO = rl("halo");
 
-    public static ResourceLocation rl(String path) {
-        return new ResourceLocation(MOD_ID, path);
+
+    public static Identifier rl(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static boolean isLoad(String name) {
@@ -45,14 +46,14 @@ public class Const {
     }
 
     public static Ingredient getIngredient(String modid, String name) {
-        return Ingredient.fromValues(Stream.of(new RawValue(new ResourceLocation(modid, name))));
+        return Ingredient.of(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(modid, name)));
     }
 
     public static Item getItem(String modid, String name) {
-        return BuiltInRegistries.ITEM.get(new ResourceLocation(modid, name));
+        return BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(modid, name));
     }
 
-    public static ResourceLocation getItemName(Item item) {
+    public static Identifier getItemName(Item item) {
         return BuiltInRegistries.ITEM.getKey(item);
     }
 

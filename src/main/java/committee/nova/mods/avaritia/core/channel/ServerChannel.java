@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.net.channel.ChannelState;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelStatePack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashSet;
@@ -54,33 +54,36 @@ public class ServerChannel extends Channel {
     }
 
     public void initialize(CompoundTag dat) {
-        if (dat.contains("name")) this.setName(dat.getString("name"));
+        if (dat.contains("name")) this.setName(dat.getStringOr("name", ""));
         storageItems.clear();
         if (dat.contains("items")) {
-            CompoundTag items = dat.getCompound("items");
-            items.getAllKeys().forEach(itemId -> {
-                if (items.getLong(itemId) > 0 && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(new ResourceLocation(itemId))) {
-                    storageItems.put(itemId, items.getLong(itemId));
+            CompoundTag items = dat.getCompoundOrEmpty("items");
+            items.keySet().forEach(itemId -> {
+                long count = items.getLongOr(itemId, 0L);
+                if (count > 0 && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(Identifier.parse(itemId))) {
+                    storageItems.put(itemId, count);
                 }
             });
             updateItemKeys();
         }
         storageFluids.clear();
         if (dat.contains("fluids")) {
-            CompoundTag fluids = dat.getCompound("fluids");
-            fluids.getAllKeys().forEach(fluidId -> {
-                if (fluids.getLong(fluidId) > 0 && net.minecraft.core.registries.BuiltInRegistries.FLUID.containsKey(new ResourceLocation(fluidId))) {
-                    storageFluids.put(fluidId, fluids.getLong(fluidId));
+            CompoundTag fluids = dat.getCompoundOrEmpty("fluids");
+            fluids.keySet().forEach(fluidId -> {
+                long count = fluids.getLongOr(fluidId, 0L);
+                if (count > 0 && net.minecraft.core.registries.BuiltInRegistries.FLUID.containsKey(Identifier.parse(fluidId))) {
+                    storageFluids.put(fluidId, count);
                 }
             });
             updateFluidKeys();
         }
         storageEnergies.clear();
         if (dat.contains("energies")) {
-            CompoundTag energies = dat.getCompound("energies");
-            energies.getAllKeys().forEach(energy -> {
-                if (energies.getLong(energy) > 0 && energy.equals("avaritia:forge_energy")) {
-                    storageEnergies.put(energy, energies.getLong(energy));
+            CompoundTag energies = dat.getCompoundOrEmpty("energies");
+            energies.keySet().forEach(energy -> {
+                long count = energies.getLongOr(energy, 0L);
+                if (count > 0 && energy.equals("avaritia:forge_energy")) {
+                    storageEnergies.put(energy, count);
                 }
             });
         }

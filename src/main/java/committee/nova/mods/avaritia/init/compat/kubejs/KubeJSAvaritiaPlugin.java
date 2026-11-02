@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
@@ -46,7 +46,7 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
     }
 
     @Override
-    public void injectRuntimeRecipes(RecipesEventJS event, RecipeManager manager, Map<ResourceLocation, Recipe<?>> recipesByName) {
+    public void injectRuntimeRecipes(RecipesEventJS event, RecipeManager manager, Map<Identifier, Recipe<?>> recipesByName) {
         SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
         AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
     }

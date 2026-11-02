@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "color": -872415232,
+    "model": "avaritia:item/infinity_bucket",
+    "pulse": false,
+    "size": 6,
+    "texture": "avaritia:misc/halo"
+  },
+  "oversized_in_gui": true
+}

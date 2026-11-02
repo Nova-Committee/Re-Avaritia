@@ -1,47 +1,49 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import lombok.Getter;
-import lombok.Setter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
-import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
-import committee.nova.mods.avaritia.api.common.wrapper.ContainerItemHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Description:
- * @author cnlimiter
+ * Author: cnlimiter
  * Date: 2022/4/2 17:40
  * Version: 1.0
  */
-public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
-    private final ResourceLocation recipeId;
+public class CompressorRecipe implements ICompressorRecipe {
     private final Ingredient input;
-    private final ItemStack output;
+    private final ItemStackTemplate result;
     private final int inputCount;
     private final int timeCost;
 
-    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeCost) {
-        this.recipeId = recipeId;
+    public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
+        this(input, ItemStackTemplate.fromNonEmptyStack(result), inputCount, timeCost);
+    }
+
+    public CompressorRecipe(Ingredient input, ItemStackTemplate result, int inputCount, int timeCost) {
         this.input = input;
-        this.output = output;
+        this.result = result;
         this.inputCount = inputCount;
         this.timeCost = timeCost;
     }
@@ -51,64 +53,53 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return true;
     }
 
-    @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
-        return this.output;
+    public @NotNull ItemStack getResultItem() {
+        return this.result.create();
     }
 
-    public @NotNull ItemStack getResultItem() {
-        return this.output;
+    @Override
+    public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+        return this.result.create();
     }
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, this.input);
+        NonNullList<Ingredient> ingredients = NonNullList.createWithCapacity(1);
+        ingredients.add(this.input);
+        return ingredients;
     }
 
     @Override
-    public Ingredient getInput() {
+    public @NotNull Ingredient getInput() {
         return this.input;
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
-        return this.recipeId;
-    }
-
-    @Override
     public int getTimeCost() {
-        return timeCost;
+        return this.timeCost;
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.COMPRESSOR_SERIALIZER.get();
+    public @NotNull RecipeSerializer<? extends ICompressorRecipe> getSerializer() {
+        return (RecipeSerializer<CompressorRecipe>) ModRecipeSerializers.COMPRESSOR_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<? extends ICompressorRecipe> getType() {
         return ModRecipeTypes.COMPRESSOR_RECIPE.get();
     }
 
     @Override
-    public ItemStack assemble(ItemHandler inventory) {
-        return this.output.copy();
+    public @NotNull ItemStack assemble(@NotNull CraftingInput input) {
+        return this.result.create();
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return this.output.copy();
-    }
-
-    @Override
-    public boolean matches(ItemHandler inventory) {
-        var input = inventory.getStackInSlot(0);
-        return this.input.test(input);
-    }
-
-    @Override
-    public boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new ContainerItemHandler(inv));
+    public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
+        if (inv.size() != 1) return false;
+        var craftInput = inv.getItem(0);
+        if (craftInput.isEmpty()) return false;
+        return this.input.test(craftInput);
     }
 
     @Override
@@ -116,32 +107,51 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return this.inputCount;
     }
 
-    public static class Serializer implements RecipeSerializer<CompressorRecipe> {
-        @Override
-        public @NotNull CompressorRecipe fromJson(@NotNull ResourceLocation recipeId, JsonObject json) {
-            var input = Ingredient.fromJson(json.getAsJsonObject("ingredient"));
-            var output = RecipeIngredients.resultFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int inputCount = GsonHelper.getAsInt(json, "inputCount", 1000);
-            int timeCost = GsonHelper.getAsInt(json, "timeCost");
-            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
+    @Override
+    public @NotNull List<RecipeDisplay> display() {
+        ItemStack result = this.result.create();
+        if (result.isEmpty()) {
+            return List.of();
+        }
+        return List.of(new FurnaceRecipeDisplay(
+                this.input.display(),
+                SlotDisplay.Empty.INSTANCE,
+                new SlotDisplay.ItemStackSlotDisplay(this.result),
+                new SlotDisplay.ItemSlotDisplay(ModBlocks.neutron_compressor.get().asItem()),
+                this.timeCost,
+                0.0F
+        ));
+    }
+
+    public static class Serializer {
+        public static final MapCodec<CompressorRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        RecipeCodecs.LEGACY_INGREDIENT
+                                .fieldOf("ingredient").forGetter(recipe -> recipe.input),
+                        RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
+                        Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
+                        Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
+                ).apply(builder, CompressorRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, CompressorRecipe> STREAM_CODEC = StreamCodec.of(
+                CompressorRecipe.Serializer::toNetwork, CompressorRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<CompressorRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
+        private static CompressorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            var ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            var output = ItemStackTemplate.STREAM_CODEC.decode(buffer);
+            int inputCount = buffer.readVarInt();
+            int timeCost = buffer.readVarInt();
+
+            return new CompressorRecipe(ingredient, output, inputCount, timeCost);
         }
 
-        @Override
-        public CompressorRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            var input = Ingredient.fromNetwork(buffer);
-            var output = buffer.readItem();
-            int inputCount = buffer.readInt();
-            int timeCost = buffer.readInt();
-
-            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
-        }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, CompressorRecipe recipe) {
-            recipe.input.toNetwork(buffer);
-            buffer.writeItem(recipe.output);
-            buffer.writeInt(recipe.inputCount);
-            buffer.writeInt(recipe.timeCost);
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
+            buffer.writeVarInt(recipe.inputCount);
+            buffer.writeVarInt(recipe.timeCost);
         }
     }
 }

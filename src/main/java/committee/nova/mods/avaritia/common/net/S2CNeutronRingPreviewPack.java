@@ -49,7 +49,7 @@ public class S2CNeutronRingPreviewPack {
     }
 
     public static void send(ServerPlayer player, String id, CompoundTag template) {
-        HolderLookup.Provider registries = player.server.registryAccess();
+        HolderLookup.Provider registries = player.level().registryAccess();
         NeutronSpacePreview preview = NeutronSpacePreview.fromTemplate(template, registries);
         int total = Math.min(preview.positions().length, preview.states().length);
         int chunks = Math.max(1, (total + NeutronSpacePreview.CELLS_PER_CHUNK - 1) / NeutronSpacePreview.CELLS_PER_CHUNK);

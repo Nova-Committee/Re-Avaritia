@@ -1,9 +1,16 @@
 package committee.nova.mods.avaritia.api.common.wrapper;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+
+import java.util.Optional;
 
 public class ItemStackHandler implements ModifiableItemHandler {
     protected NonNullList<ItemStack> stacks;
@@ -22,7 +29,7 @@ public class ItemStackHandler implements ModifiableItemHandler {
         validateSlotIndex(slot);
         if (stack.isEmpty() || !isItemValid(slot, stack)) return stack;
         ItemStack existing = stacks.get(slot);
-        if (!existing.isEmpty() && !ItemStack.isSameItemSameTags(existing, stack)) return stack;
+        if (!existing.isEmpty() && !ItemStack.isSameItemSameComponents(existing, stack)) return stack;
         int accepted = Math.min(stack.getCount(), Math.max(0, getStackLimit(slot, stack) - existing.getCount()));
         if (accepted == 0) return stack;
         if (!simulate) { if (existing.isEmpty()) stacks.set(slot, stack.copyWithCount(accepted)); else existing.grow(accepted); onContentsChanged(slot); }
@@ -37,16 +44,41 @@ public class ItemStackHandler implements ModifiableItemHandler {
         if (!simulate) { if (taken == existing.getCount()) stacks.set(slot, ItemStack.EMPTY); else existing.shrink(taken); onContentsChanged(slot); }
         return result;
     }
-    public CompoundTag serializeNBT() {
-        CompoundTag tag = new CompoundTag(); ListTag items = new ListTag();
-        for (int i = 0; i < stacks.size(); i++) if (!stacks.get(i).isEmpty()) { CompoundTag item = stacks.get(i).save(new CompoundTag()); item.putInt("Slot", i); item.putInt("ExtendedCount", stacks.get(i).getCount()); items.add(item); }
-        tag.put("Items", items); tag.putInt("Size", stacks.size()); return tag;
+    public void serialize(ValueOutput output) {
+        ValueOutput.ValueOutputList items = output.childrenList("Items");
+        for (int i = 0; i < stacks.size(); i++) {
+            ItemStack stack = stacks.get(i);
+            if (!stack.isEmpty()) {
+                ValueOutput item = items.addChild();
+                item.putInt("Slot", i);
+                item.putInt("ExtendedCount", stack.getCount());
+                item.store("item", ItemStack.CODEC, stack.copyWithCount(1));
+            }
+        }
+        output.putInt("Size", stacks.size());
     }
-    public void deserializeNBT(CompoundTag tag) {
-        setSize(tag.contains("Size", 3) ? Math.max(0, tag.getInt("Size")) : stacks.size());
-        ListTag items = tag.getList("Items", 10);
-        for (int i = 0; i < items.size(); i++) { CompoundTag item = items.getCompound(i); int slot = item.getInt("Slot"); if (slot >= 0 && slot < stacks.size()) { ItemStack stack = ItemStack.of(item); if (item.contains("ExtendedCount", 3)) stack.setCount(item.getInt("ExtendedCount")); stacks.set(slot, stack); } }
-        onLoad();
+    public void deserialize(ValueInput input) {
+        this.setSize(input.getIntOr("Size", stacks.size()));
+        Optional<ValueInput.ValueInputList> items = input.childrenList("Items");
+        if (items.isPresent()) {
+            for (ValueInput item : items.get()) {
+                int slot = item.getIntOr("Slot", 0);
+                if (slot >= 0 && slot < stacks.size()) {
+                    ItemStack stack = item.read("item", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+                    stack.setCount(item.getIntOr("ExtendedCount", stack.getCount()));
+                    stacks.set(slot, stack);
+                }
+            }
+        }
+        this.onLoad();
+    }
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, provider);
+        this.serialize(output);
+        return output.buildResult();
+    }
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        this.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, provider, tag));
     }
     public void setChanged() { onContentsChanged(-1); }
     protected void onContentsChanged(int slot) {}

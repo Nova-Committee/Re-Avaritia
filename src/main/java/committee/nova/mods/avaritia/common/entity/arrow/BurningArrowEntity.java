@@ -2,15 +2,14 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModMobEffects;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -43,9 +42,10 @@ public class BurningArrowEntity extends Arrow {
     public BurningArrowEntity(Entity pShooter) {
         this(pShooter.level(), pShooter);
     }
+
     @Override
     protected void onHit(@NotNull HitResult result) {
-        // Vanilla AbstractArrow dispatches MISS too; Forge filtered it before calling onHit.
+        // 26.3 的 AbstractArrow 会对 MISS 也分发 onHit，此处过滤
         if (result.getType() == HitResult.Type.MISS) {
             return;
         }
@@ -57,8 +57,8 @@ public class BurningArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         //super.onHitEntity(result);
         Entity owner = this.getOwner();
-        if (!this.level().isClientSide && owner instanceof ServerPlayer player && result.getEntity() instanceof LivingEntity livingEntity) {
-            livingEntity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 1200));
+        if (!this.level().isClientSide() && owner instanceof ServerPlayer player && result.getEntity() instanceof LivingEntity livingEntity) {
+            livingEntity.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ModMobEffects.BURNING.get()), 1200));
         }
     }
 
@@ -66,11 +66,6 @@ public class BurningArrowEntity extends Arrow {
     @Override
     protected float getWaterInertia() {
         return 1.0F;
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
     }
 
     @Override

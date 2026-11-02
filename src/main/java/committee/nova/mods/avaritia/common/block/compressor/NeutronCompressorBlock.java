@@ -6,8 +6,6 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCompressorBlock extends BaseTileEntityBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public NeutronCompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
@@ -59,7 +57,7 @@ public class NeutronCompressorBlock extends BaseTileEntityBlock {
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
@@ -69,19 +67,6 @@ public class NeutronCompressorBlock extends BaseTileEntityBlock {
         }
 
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof NeutronCompressorTile compressor) {
-                Containers.dropContents(level, pos, compressor.getInventory().getStacks());
-            }
-        }
-
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override

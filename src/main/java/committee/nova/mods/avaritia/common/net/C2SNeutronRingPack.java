@@ -84,7 +84,11 @@ public class C2SNeutronRingPack {
         if (!data.storageId().equals(storageId)) {
             return;
         }
-        NeutronRingSavedData store = NeutronRingSavedData.get(player.server);
+        var server = player.level().getServer();
+        if (server == null) {
+            return;
+        }
+        NeutronRingSavedData store = NeutronRingSavedData.get(server);
         UUID library = data.storageId();
         boolean refreshLibrary = true;
         switch (action) {
@@ -111,7 +115,7 @@ public class C2SNeutronRingPack {
             default -> { return; }
         }
         if (refreshLibrary) {
-            NetworkHandler.CHANNEL.sendTo(player, S2CNeutronRingOpenPack.from(player.server, NeutronRingItem.bind(player, stack), handOf(hand)));
+            NetworkHandler.CHANNEL.sendTo(player, S2CNeutronRingOpenPack.from(server, NeutronRingItem.bind(player, stack), handOf(hand)));
         }
     }
 

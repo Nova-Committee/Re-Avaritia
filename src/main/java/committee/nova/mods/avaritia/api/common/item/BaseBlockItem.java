@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.common.item;
 
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 
@@ -11,13 +12,12 @@ import java.util.function.Function;
  * Name BaseItemBlock
  * Description
  */
-
 public class BaseBlockItem extends BlockItem {
     public BaseBlockItem(Block block) {
-        super(block, new Properties());
+        super(block, ModItems.properties());
     }
 
     public BaseBlockItem(Block block, Function<Properties, Properties> properties) {
-        super(block, properties.apply(new Properties()));
+        super(block, properties.apply(ModItems.properties()));
     }
 }

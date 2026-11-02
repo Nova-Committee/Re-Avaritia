@@ -1,91 +1,129 @@
 {
-  "parent": "builtin/entity",
-  "gui_light": "front",
-  "textures": {
-    "particle": "avaritia:block/resource/infinity"
-  },
+  "parent": "minecraft:item/generated",
   "display": {
-    "thirdperson_righthand": {
-      "rotation": [ 0, 90, 0 ],
-      "translation": [ 10, 6, -4 ],
-      "scale": [ 1, 1, 1 ]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [ 0, 90, 0 ],
-      "translation": [ 10, 6, 12 ],
-      "scale": [ 1, 1, 1 ]
+    "firstperson_lefthand": {
+      "rotation": [
+        0.0,
+        180.0,
+        5.0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "translation": [
+        10.0,
+        0.0,
+        -10.0
+      ]
     },
     "firstperson_righthand": {
-      "rotation": [ 0, 180, 5 ],
-      "translation": [ -10, 2, -10 ],
-      "scale": [ 1.25, 1.25, 1.25 ]
-    },
-    "firstperson_lefthand": {
-      "rotation": [ 0, 180, 5 ],
-      "translation": [ 10, 0, -10 ],
-      "scale": [ 1.25, 1.25, 1.25 ]
-    },
-    "gui": {
-      "rotation": [ 15, -25, -5 ],
-      "translation": [ 2, 3, 0 ],
-      "scale": [ 0.65, 0.65, 0.65 ]
+      "rotation": [
+        0.0,
+        180.0,
+        5.0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "translation": [
+        -10.0,
+        2.0,
+        -10.0
+      ]
     },
     "fixed": {
-      "rotation": [ 0, 180, 0 ],
-      "translation": [ -4.5, 4.5, -5],
-      "scale":[ 0.55, 0.55, 0.55]
+      "rotation": [
+        0.0,
+        180.0,
+        0.0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ],
+      "translation": [
+        -4.5,
+        4.5,
+        -5.0
+      ]
     },
     "ground": {
-      "rotation": [ 0, 0, 0 ],
-      "translation": [ 2, 4, 2],
-      "scale":[ 0.25, 0.25, 0.25]
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "translation": [
+        2.0,
+        4.0,
+        2.0
+      ]
+    },
+    "gui": {
+      "rotation": [
+        15.0,
+        -25.0,
+        -5.0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ],
+      "translation": [
+        2.0,
+        3.0,
+        0.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0.0,
+        90.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "translation": [
+        10.0,
+        6.0,
+        12.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        0.0,
+        90.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "translation": [
+        10.0,
+        6.0,
+        -4.0
+      ]
     }
   },
-  "overrides": [
-    {
-      "predicate": {
-        "avaritia:blocking": 1
-      },
-      "model": "avaritia:item/infinity_shield_blocking"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 1
-      },
-      "model": "avaritia:item/infinity_shield_defending"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 1,
-        "avaritia:blocking": 1
-      },
-      "model": "avaritia:item/infinity_shield_defending_blocking"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 2
-      },
-      "model": "avaritia:item/infinity_shield_definite_defending"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 2,
-        "avaritia:blocking": 1
-      },
-      "model": "avaritia:item/infinity_shield_definite_defending_blocking"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 3
-      },
-      "model": "avaritia:item/infinity_shield_float"
-    },
-    {
-      "predicate": {
-        "avaritia:mode": 3,
-        "avaritia:blocking": 1
-      },
-      "model": "avaritia:item/infinity_shield_float_blocking"
-    }
-  ]
+  "gui_light": "front",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_shield/layer_0",
+    "particle": "avaritia:block/resource/infinity"
+  }
 }

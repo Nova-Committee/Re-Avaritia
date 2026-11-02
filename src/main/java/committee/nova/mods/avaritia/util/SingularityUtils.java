@@ -1,7 +1,11 @@
 package committee.nova.mods.avaritia.util;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.util.NBTUtils;
 import committee.nova.mods.avaritia.api.util.ResourceUtil;
@@ -9,10 +13,12 @@ import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 
 /**
@@ -26,14 +32,14 @@ public class SingularityUtils {
         return loadFromJson(json, null);
     }
 
-    public static Singularity loadFromJson(JsonObject json, ResourceLocation sourceId) {
+    public static Singularity loadFromJson(JsonObject json, Identifier sourceId) {
         var name = GsonHelper.getAsString(json, "name");
         var displayName = GsonHelper.getAsString(json, "displayName", name);
         int materialCount = GsonHelper.getAsInt(json, "count", 1000);
         int overlayColor = Integer.parseInt(GsonHelper.getAsString(json, "overlayColor"), 16);
         int underlayColor = Integer.parseInt(GsonHelper.getAsString(json, "underlayColor"), 16);
 
-        var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
+        JsonElement ing = normalizeIngredient(json.has("ingredient") ? json.get("ingredient") : null);
         int time;
         if (json.has("timeCost")) {
             time = GsonHelper.getAsInt(json, "timeCost");
@@ -55,14 +61,45 @@ public class SingularityUtils {
             recipeEnabled = true;
         }
 
+        Ingredient ingredient = ing == null ? null
+                : Ingredient.CODEC.parse(JsonOps.INSTANCE, ing).getOrThrow(JsonParseException::new);
         Singularity singularity = Singularity.create(ResourceUtil.createInstanceWithColon(name), displayName,
-                new int[]{overlayColor, underlayColor}, ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
+                new int[]{overlayColor, underlayColor}, ingredient)
                 .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeEnabled).validate();
         if (json.has("conditions")) {
             GsonHelper.getAsJsonArray(json, "conditions").forEach(condition ->
                     singularity.addCondition(GsonHelper.convertToJsonObject(condition, "condition")));
         }
         return singularity;
+    }
+
+    /**
+     * Converts legacy 1.20 ingredient JSON to the 26.3 codec form.
+     * <p>26.3 accepts a plain item id string ("minecraft:emerald"), a tag string prefixed
+     * with '#', or an array of those; the old object forms {"item":...}/{"tag":...} were removed.
+     */
+    private static JsonElement normalizeIngredient(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+        if (element.isJsonObject()) {
+            JsonObject object = element.getAsJsonObject();
+            if (object.has("item")) {
+                return new JsonPrimitive(GsonHelper.getAsString(object, "item"));
+            }
+            if (object.has("tag")) {
+                return new JsonPrimitive("#" + GsonHelper.getAsString(object, "tag"));
+            }
+            return element;
+        }
+        if (element.isJsonArray()) {
+            JsonArray normalized = new JsonArray();
+            for (JsonElement child : element.getAsJsonArray()) {
+                normalized.add(normalizeIngredient(child));
+            }
+            return normalized;
+        }
+        return element;
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
@@ -75,7 +112,10 @@ public class SingularityUtils {
         json.addProperty("underlayColor", Integer.toString(singularity.getUnderlayColor(), 16));
         json.addProperty("count", singularity.getRealCount());
         json.addProperty("timeCost", singularity.getTimeCost());
-        json.add("ingredient", singularity.getIngredient().toJson());
+        if (singularity.hasIngredient()) {
+            json.add("ingredient", Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, singularity.getIngredient())
+                    .getOrThrow(IllegalArgumentException::new));
+        }
         json.addProperty("enabled", singularity.isEnabled());
         json.addProperty("recipeEnabled", singularity.isRecipeEnabled());
         JsonArray conditions = new JsonArray();
@@ -96,7 +136,7 @@ public class SingularityUtils {
         var nbt = makeTag(singularity);
         var stack = new ItemStack(ModItems.singularity.get());
 
-        stack.setTag(nbt);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
 
         return stack;
     }

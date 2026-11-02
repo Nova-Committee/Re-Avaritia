@@ -6,14 +6,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author cnlimiter
@@ -30,12 +29,13 @@ public abstract class ItemMixin implements ITooltip {
             method = "appendHoverText",
             at = @At(value = "TAIL")
     )
-    public void avaritia$appendHoverText(ItemStack stack, Level level, List<Component> tooltipComponents,
-                                         TooltipFlag isAdvanced, CallbackInfo ci) {
+    public void avaritia$appendHoverText(ItemStack stack, Item.TooltipContext context,
+                                         TooltipDisplay tooltipDisplay, Consumer<Component> tooltipComponents,
+                                         TooltipFlag tooltipFlag, CallbackInfo ci) {
         if (this.hasDescTooltip()) {
-            tooltipComponents.add(
+            tooltipComponents.accept(
                     Component.translatable("tooltip."
-                            + BuiltInRegistries.ITEM.getKey((Item) (Object) this).toString().replace(":", ".")
+                            + ((Item) (Object) this).builtInRegistryHolder().key().identifier().toString().replace(":", ".")
                             + ".desc").withStyle(ChatFormatting.DARK_GRAY,  ChatFormatting.ITALIC)
             );
         }

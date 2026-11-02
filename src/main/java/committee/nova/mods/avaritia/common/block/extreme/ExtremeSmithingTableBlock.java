@@ -2,10 +2,10 @@ package committee.nova.mods.avaritia.common.block.extreme;
 
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
@@ -29,7 +29,7 @@ public class ExtremeSmithingTableBlock extends BaseBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("block.avaritia.extreme_smithing_table");
 
     public ExtremeSmithingTableBlock() {
-        super(Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.COLOR_RED)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(2.5F)
@@ -44,8 +44,8 @@ public class ExtremeSmithingTableBlock extends BaseBlock {
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
+        if (pLevel.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             pPlayer.openMenu(pState.getMenuProvider(pLevel, pPos));

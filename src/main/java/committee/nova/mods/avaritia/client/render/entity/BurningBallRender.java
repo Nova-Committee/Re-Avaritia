@@ -1,39 +1,31 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-
-
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
-/**
- * Description:
- * @author cnlimiter
- * Date: 2022/4/20 18:54
- * Version: 1.0
- */
-
-public class BurningBallRender extends EntityRenderer<BurningBallEntity> {
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.DRAGON_FIREBALL);
+public class BurningBallRender extends EntityRenderer<BurningBallEntity, EntityRenderState> {
+    private static final RenderType RENDER_TYPE = RenderTypes.entityCutout(Res.DRAGON_FIREBALL);
 
     public BurningBallRender(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
 
-    private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, int pY, int pU, int pV) {
-        pConsumer.vertex(pPose, pX - 0.5F, (float) pY - 0.25F, 0.0F).color(255, 255, 255, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+    private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, int pLightmapUV, float pX, int pY, int pU, int pV) {
+        pConsumer.addVertex(pPose, pX - 0.5F, (float) pY - 0.25F, 0.0F).setColor(255, 255, 255, 255).setUv((float) pU, (float) pV).setOverlay(OverlayTexture.NO_OVERLAY).setLight(pLightmapUV).setNormal(pPose, 0.0F, 1.0F, 0.0F);
     }
 
     @Override
@@ -42,28 +34,30 @@ public class BurningBallRender extends EntityRenderer<BurningBallEntity> {
     }
 
     @Override
-    public void render(@NotNull BurningBallEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void submit(@NotNull EntityRenderState pState, @NotNull PoseStack pPoseStack, @NotNull SubmitNodeCollector pOutput, @NotNull CameraRenderState pCameraState) {
         pPoseStack.pushPose();
         pPoseStack.scale(2.0F, 2.0F, 2.0F);
-        pPoseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        PoseStack.Pose posestack$pose = pPoseStack.last();
-        Matrix4f matrix4f = posestack$pose.pose();
-        Matrix3f matrix3f = posestack$pose.normal();
-        VertexConsumer vertexconsumer = pBuffer.getBuffer(RENDER_TYPE);
-        vertex(vertexconsumer, matrix4f, matrix3f, pPackedLight, 0.0F, 0, 0, 1);
-        vertex(vertexconsumer, matrix4f, matrix3f, pPackedLight, 1.0F, 0, 1, 1);
-        vertex(vertexconsumer, matrix4f, matrix3f, pPackedLight, 1.0F, 1, 1, 0);
-        vertex(vertexconsumer, matrix4f, matrix3f, pPackedLight, 0.0F, 1, 0, 0);
+        pPoseStack.rotate(pCameraState.orientation);
+        pPoseStack.rotate(Axis.YP.rotationDegrees(180.0F));
+        pOutput.submitCustomGeometry(pPoseStack, RENDER_TYPE, (pose, vertexconsumer) -> {
+            vertex(vertexconsumer, pose, pState.lightCoords, 0.0F, 0, 0, 1);
+            vertex(vertexconsumer, pose, pState.lightCoords, 1.0F, 0, 1, 1);
+            vertex(vertexconsumer, pose, pState.lightCoords, 1.0F, 1, 1, 0);
+            vertex(vertexconsumer, pose, pState.lightCoords, 0.0F, 1, 0, 0);
+        });
         pPoseStack.popPose();
-        super.render(pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
+        super.submit(pState, pPoseStack, pOutput, pCameraState);
+    }
+
+    @Override
+    public @NotNull EntityRenderState createRenderState() {
+        return new EntityRenderState();
     }
 
     /**
      * Returns the location of an entity's texture.
      */
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull BurningBallEntity pEntity) {
+    public @NotNull Identifier getTextureLocation(@NotNull BurningBallEntity pEntity) {
         return Res.DRAGON_FIREBALL;
     }
 }

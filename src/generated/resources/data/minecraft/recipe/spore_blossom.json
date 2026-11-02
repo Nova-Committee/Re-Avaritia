@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:bone_meal",
+    "b": "minecraft:pink_petals",
+    "c": "minecraft:torchflower_seeds"
+  },
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "result": {
+    "id": "minecraft:spore_blossom"
+  },
+  "tier": 1
+}

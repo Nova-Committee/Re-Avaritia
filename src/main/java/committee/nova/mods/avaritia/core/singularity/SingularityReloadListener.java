@@ -2,13 +2,16 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.util.SingularityUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import committee.nova.mods.avaritia.api.init.data.ResourceConditions;
@@ -20,33 +23,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static committee.nova.mods.avaritia.Const.GSON;
-
 /**
  * Owns persistent Java registrations, the current datapack snapshot, per-reload
  * script registrations, and the committed effective view used by gameplay.
  */
-public class SingularityReloadListener extends SimpleJsonResourceReloadListener {
+public class SingularityReloadListener extends SimpleJsonResourceReloadListener<JsonElement> {
+    private static final Codec<JsonElement> JSON_CODEC = ExtraCodecs.JSON;
     public static final SingularityReloadListener INSTANCE = new SingularityReloadListener();
 
-    private volatile Map<ResourceLocation, Singularity> dataSingularities = Map.of();
-    private final Map<ResourceLocation, Singularity> persistentSingularities = new ConcurrentHashMap<>();
+    private volatile Map<Identifier, Singularity> dataSingularities = Map.of();
+    private final Map<Identifier, Singularity> persistentSingularities = new ConcurrentHashMap<>();
     private final List<ScriptOperation> craftTweakerOperations = new ArrayList<>();
     private final List<ScriptOperation> kubeJsOperations = new ArrayList<>();
     private boolean scriptTransactionFinalized;
-    private volatile Map<ResourceLocation, Singularity> effectiveSingularities = Map.of();
+    private volatile Map<Identifier, Singularity> effectiveSingularities = Map.of();
 
     public SingularityReloadListener() {
-        super(GSON, "singularities");
+        super(JSON_CODEC, FileToIdConverter.json("singularities"));
     }
 
 
     @Override
-    protected void apply(@NotNull Map<ResourceLocation, JsonElement> objects, @NotNull ResourceManager resourceManager,
+    protected void apply(@NotNull Map<Identifier, JsonElement> objects, @NotNull ResourceManager resourceManager,
                          @NotNull ProfilerFiller profiler) {
-        Map<ResourceLocation, Singularity> nextDataSnapshot = new LinkedHashMap<>();
-        for (Map.Entry<ResourceLocation, JsonElement> entry : objects.entrySet()) {
-            ResourceLocation resourceId = entry.getKey();
+        Map<Identifier, Singularity> nextDataSnapshot = new LinkedHashMap<>();
+        for (Map.Entry<Identifier, JsonElement> entry : objects.entrySet()) {
+            Identifier resourceId = entry.getKey();
             if (resourceId.getPath().startsWith("_")) {
                 continue;
             }
@@ -72,7 +74,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     }
 
     /** Replaces the datapack snapshot and opens a fresh per-reload script transaction. */
-    public synchronized void beginReload(Map<ResourceLocation, Singularity> nextDataSnapshot) {
+    public synchronized void beginReload(Map<Identifier, Singularity> nextDataSnapshot) {
         this.dataSingularities = copyMap(nextDataSnapshot, true);
         beginScriptTransaction();
     }
@@ -105,7 +107,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         if (this.scriptTransactionFinalized) {
             return false;
         }
-        Map<ResourceLocation, Singularity> previousSnapshot = this.effectiveSingularities;
+        Map<Identifier, Singularity> previousSnapshot = this.effectiveSingularities;
         this.effectiveSingularities = Map.copyOf(buildEffectiveSnapshot());
         this.scriptTransactionFinalized = true;
         try {
@@ -126,7 +128,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
 
     /** Replaces the client view with the effective snapshot calculated by the server. */
     public synchronized void replaceEffectiveSnapshot(Iterable<Singularity> singularities) {
-        Map<ResourceLocation, Singularity> replacement = new LinkedHashMap<>();
+        Map<Identifier, Singularity> replacement = new LinkedHashMap<>();
         for (Singularity singularity : singularities) {
             Singularity copy = singularity.copy();
             replacement.put(copy.getRegistryName(), copy);
@@ -135,16 +137,16 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         onSingularitiesReloaded(getAllSingularities());
     }
 
-    public Map<ResourceLocation, Singularity> getAllSingularities() {
+    public Map<Identifier, Singularity> getAllSingularities() {
         return copyMap(this.effectiveSingularities, false);
     }
 
-    public Map<ResourceLocation, Singularity> getDataSingularities() {
+    public Map<Identifier, Singularity> getDataSingularities() {
         return copyMap(this.dataSingularities, false);
     }
 
-    public synchronized Map<ResourceLocation, Singularity> getRunSingularities() {
-        Map<ResourceLocation, Singularity> allRuntime = copyMap(this.persistentSingularities, false);
+    public synchronized Map<Identifier, Singularity> getRunSingularities() {
+        Map<Identifier, Singularity> allRuntime = copyMap(this.persistentSingularities, false);
         applyOperations(allRuntime, this.craftTweakerOperations);
         applyOperations(allRuntime, this.kubeJsOperations);
         return allRuntime;
@@ -174,19 +176,19 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         SingularityEvent.post(new SingularityEvent.Add(buildEffectiveSnapshot(), copy.copy()));
     }
 
-    public void removeSingularityRecipe(ResourceLocation id) {
+    public void removeSingularityRecipe(Identifier id) {
         removeSingularityRecipe(ScriptSource.KUBE_JS, id);
     }
 
-    public synchronized void removeSingularityRecipe(ScriptSource source, ResourceLocation id) {
+    public synchronized void removeSingularityRecipe(ScriptSource source, Identifier id) {
         operations(source).add(ScriptOperation.removeRecipe(id));
     }
 
-    public void removeSingularity(ResourceLocation id) {
+    public void removeSingularity(Identifier id) {
         removeSingularity(ScriptSource.KUBE_JS, id);
     }
 
-    public synchronized void removeSingularity(ScriptSource source, ResourceLocation id) {
+    public synchronized void removeSingularity(ScriptSource source, Identifier id) {
         operations(source).add(ScriptOperation.remove(id));
         SingularityEvent.post(new SingularityEvent.Remove(buildEffectiveSnapshot(), id));
     }
@@ -211,13 +213,13 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         }
     }
 
-    public Singularity getSingularity(ResourceLocation id) {
+    public Singularity getSingularity(Identifier id) {
         Singularity singularity = this.effectiveSingularities.get(id);
         return singularity == null ? null : singularity.copy();
     }
 
-    private Map<ResourceLocation, Singularity> buildEffectiveSnapshot() {
-        Map<ResourceLocation, Singularity> all = copyMap(this.dataSingularities, false);
+    private Map<Identifier, Singularity> buildEffectiveSnapshot() {
+        Map<Identifier, Singularity> all = copyMap(this.dataSingularities, false);
         all.putAll(copyMap(this.persistentSingularities, false));
         applyOperations(all, this.craftTweakerOperations);
         applyOperations(all, this.kubeJsOperations);
@@ -228,7 +230,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         return source == ScriptSource.CRAFT_TWEAKER ? this.craftTweakerOperations : this.kubeJsOperations;
     }
 
-    private static void applyOperations(Map<ResourceLocation, Singularity> singularities,
+    private static void applyOperations(Map<Identifier, Singularity> singularities,
                                         List<ScriptOperation> operations) {
         for (ScriptOperation operation : operations) {
             switch (operation.type()) {
@@ -247,9 +249,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         }
     }
 
-    private static Map<ResourceLocation, Singularity> copyMap(Map<ResourceLocation, Singularity> source,
+    private static Map<Identifier, Singularity> copyMap(Map<Identifier, Singularity> source,
                                                                boolean requireMatchingIds) {
-        Map<ResourceLocation, Singularity> copy = new LinkedHashMap<>();
+        Map<Identifier, Singularity> copy = new LinkedHashMap<>();
         source.forEach((id, singularity) -> {
             Singularity singularityCopy = singularity.copy();
             if (requireMatchingIds && !id.equals(singularityCopy.getRegistryName())) {
@@ -261,11 +263,11 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         return copy;
     }
 
-    private static void logRegistration(String source, ResourceLocation id, boolean replaced) {
+    private static void logRegistration(String source, Identifier id, boolean replaced) {
         Const.LOGGER.info("Singularity: {} {} {} singularity", replaced ? "Updated" : "Registered", source, id);
     }
 
-    private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
+    private void onSingularitiesReloaded(Map<Identifier, Singularity> singularities) {
         InfinityCatalystCraftRecipe.INGREDIENTS_LOADED.clear();
         EternalSingularityCraftRecipe.INGREDIENTS_LOADED.clear();
         SingularityEvent.post(new SingularityEvent.Reload(singularities));
@@ -299,16 +301,16 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         REMOVE_ALL
     }
 
-    private record ScriptOperation(ScriptOperationType type, ResourceLocation id, Singularity singularity) {
+    private record ScriptOperation(ScriptOperationType type, Identifier id, Singularity singularity) {
         private static ScriptOperation add(Singularity singularity) {
             return new ScriptOperation(ScriptOperationType.ADD, singularity.getRegistryName(), singularity.copy());
         }
 
-        private static ScriptOperation remove(ResourceLocation id) {
+        private static ScriptOperation remove(Identifier id) {
             return new ScriptOperation(ScriptOperationType.REMOVE, id, null);
         }
 
-        private static ScriptOperation removeRecipe(ResourceLocation id) {
+        private static ScriptOperation removeRecipe(Identifier id) {
             return new ScriptOperation(ScriptOperationType.REMOVE_RECIPE, id, null);
         }
 

@@ -1,19 +1,23 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.common.capability.RingStorageProvider;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,13 +34,53 @@ import java.util.UUID;
 public final class NeutronRingLegacyRecovery extends SavedData {
     public static final String NAME = "avaritia_neutron_ring_legacy";
     public static final String RECOVERED_TAG = "NeutronRingLegacyRecovered";
+
+    private static final Codec<PlayerEntry> PLAYER_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUIDUtil.CODEC.fieldOf("id").forGetter(PlayerEntry::id),
+            ItemStack.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(PlayerEntry::items),
+            Codec.BOOL.optionalFieldOf("notified", false).forGetter(PlayerEntry::notified)
+    ).apply(instance, PlayerEntry::new));
+
+    public static final Codec<NeutronRingLegacyRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            PLAYER_CODEC.listOf().optionalFieldOf("players", List.of()).forGetter(NeutronRingLegacyRecovery::entries)
+    ).apply(instance, NeutronRingLegacyRecovery::fromEntries));
+
+    // 26.3 Fabric 的 SavedDataType 为 4 参构造；DataFixTypes 不能为 null，用 SAVED_DATA_COMMAND_STORAGE 占位
+    public static final SavedDataType<NeutronRingLegacyRecovery> TYPE = new SavedDataType<>(
+            Const.rl(NAME), NeutronRingLegacyRecovery::new, CODEC, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
+
     private final Map<UUID, List<ItemStack>> pending = new HashMap<>();
     private final Set<UUID> overflowNotified = new HashSet<>();
 
+    public NeutronRingLegacyRecovery() {
+    }
+
+    private record PlayerEntry(UUID id, List<ItemStack> items, boolean notified) {
+    }
+
+    private static NeutronRingLegacyRecovery fromEntries(List<PlayerEntry> entries) {
+        NeutronRingLegacyRecovery data = new NeutronRingLegacyRecovery();
+        for (PlayerEntry entry : entries) {
+            List<ItemStack> items = new ArrayList<>(entry.items());
+            items.removeIf(ItemStack::isEmpty);
+            if (!items.isEmpty()) {
+                data.pending.put(entry.id(), items);
+                if (entry.notified()) {
+                    data.overflowNotified.add(entry.id());
+                }
+            }
+        }
+        return data;
+    }
+
+    private List<PlayerEntry> entries() {
+        List<PlayerEntry> entries = new ArrayList<>(pending.size());
+        pending.forEach((id, items) -> entries.add(new PlayerEntry(id, List.copyOf(items), overflowNotified.contains(id))));
+        return entries;
+    }
+
     public static NeutronRingLegacyRecovery get(MinecraftServer server) {
-        ServerLevel overworld = server.overworld();
-        return overworld.getDataStorage().computeIfAbsent(
-                NeutronRingLegacyRecovery::load, NeutronRingLegacyRecovery::new, NAME);
+        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }
 
     public static void recover(ServerPlayer player, ItemStack ring) {
@@ -50,7 +94,7 @@ public final class NeutronRingLegacyRecovery extends SavedData {
         if (!found.isEmpty()) {
             rings.add(found);
         }
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.is(ModItems.neutron_ring.get())) {
                 rings.add(stack);
             }
@@ -68,14 +112,15 @@ public final class NeutronRingLegacyRecovery extends SavedData {
         if (ring.isEmpty() || !ring.is(ModItems.neutron_ring.get())) {
             return;
         }
-        boolean alreadyRecovered = ring.hasTag() && ring.getTag().getBoolean(RECOVERED_TAG);
+        CompoundTag tag = ring.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        boolean alreadyRecovered = tag.getBooleanOr(RECOVERED_TAG, false);
         List<ItemStack> taken = RingStorageProvider.takeLegacyItems(ring);
         if (!alreadyRecovered && !taken.isEmpty()) {
             NeutronRingLegacyRecovery data = get(player.server);
             data.store(player.getUUID(), taken);
             data.setDirty();
         }
-        ring.getOrCreateTag().putBoolean(RECOVERED_TAG, true);
+        CustomData.update(DataComponents.CUSTOM_DATA, ring, t -> t.putBoolean(RECOVERED_TAG, true));
     }
 
 
@@ -88,6 +133,7 @@ public final class NeutronRingLegacyRecovery extends SavedData {
             return;
         }
         List<ItemStack> leftover = new ArrayList<>(remainders.size());
+        NonNullList<ItemStack> items = player.getInventory().getNonEquipmentItems();
         boolean changed = false;
         for (ItemStack next : remainders) {
             if (next.isEmpty()) {
@@ -97,15 +143,15 @@ public final class NeutronRingLegacyRecovery extends SavedData {
             int before = next.getCount();
             ItemStack remaining = next.copy();
             for (int pass = 0; pass < 2 && !remaining.isEmpty(); pass++) {
-                for (int slot = 0; slot < player.getInventory().items.size() && !remaining.isEmpty(); slot++) {
-                    ItemStack existing = player.getInventory().items.get(slot);
-                    if (pass == 0 && !existing.isEmpty() && ItemStack.isSameItemSameTags(existing, remaining)) {
+                for (int slot = 0; slot < items.size() && !remaining.isEmpty(); slot++) {
+                    ItemStack existing = items.get(slot);
+                    if (pass == 0 && !existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, remaining)) {
                         int moved = Math.min(remaining.getCount(), Math.max(0, existing.getMaxStackSize() - existing.getCount()));
                         existing.grow(moved);
                         remaining.shrink(moved);
                     } else if (pass == 1 && existing.isEmpty()) {
                         int moved = Math.min(remaining.getCount(), remaining.getMaxStackSize());
-                        player.getInventory().items.set(slot, remaining.copyWithCount(moved));
+                        items.set(slot, remaining.copyWithCount(moved));
                         remaining.shrink(moved);
                     }
                 }
@@ -131,8 +177,8 @@ public final class NeutronRingLegacyRecovery extends SavedData {
         }
         if (!leftover.isEmpty() && data.overflowNotified.add(id)) {
             data.setDirty();
-            player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.legacy_pending",
-                    leftover.size()), true);
+            ItemUtils.sendActionbar(player, Component.translatable("message.avaritia.neutron_ring.legacy_pending",
+                    leftover.size()));
         }
     }
 
@@ -149,50 +195,5 @@ public final class NeutronRingLegacyRecovery extends SavedData {
     List<ItemStack> remaining(UUID player) {
         List<ItemStack> items = pending.get(player);
         return items == null ? List.of() : List.copyOf(items);
-    }
-
-
-    @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
-        ListTag players = new ListTag();
-        pending.forEach((id, items) -> {
-            CompoundTag entry = new CompoundTag();
-            entry.put("Id", NbtUtils.createUUID(id));
-            ListTag stacks = new ListTag();
-            for (ItemStack item : items) {
-                if (!item.isEmpty()) {
-                    stacks.add(item.save(new CompoundTag()));
-                }
-            }
-            entry.put("Items", stacks);
-            entry.putBoolean("Notified", overflowNotified.contains(id));
-            players.add(entry);
-        });
-        tag.put("Players", players);
-        return tag;
-    }
-
-    static NeutronRingLegacyRecovery load(CompoundTag tag) {
-        NeutronRingLegacyRecovery data = new NeutronRingLegacyRecovery();
-        ListTag players = tag.getList("Players", Tag.TAG_COMPOUND);
-        for (int i = 0; i < players.size(); i++) {
-            CompoundTag entry = players.getCompound(i);
-            UUID id = NbtUtils.loadUUID(entry.get("Id"));
-            ListTag stacks = entry.getList("Items", Tag.TAG_COMPOUND);
-            List<ItemStack> items = new ArrayList<>();
-            for (int j = 0; j < stacks.size(); j++) {
-                ItemStack stack = ItemStack.of(stacks.getCompound(j));
-                if (!stack.isEmpty()) {
-                    items.add(stack);
-                }
-            }
-            if (!items.isEmpty()) {
-                data.pending.put(id, items);
-                if (entry.getBoolean("Notified")) {
-                    data.overflowNotified.add(id);
-                }
-            }
-        }
-        return data;
     }
 }

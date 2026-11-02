@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.api.iface;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 /**
@@ -10,5 +11,5 @@ import net.minecraft.world.item.enchantment.Enchantment;
  * @Description: 自带附魔
  */
 public interface InitEnchantItem {
-    int getInitEnchantLevel(ItemStack stack, Enchantment enchantment);
+    int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder);
 }

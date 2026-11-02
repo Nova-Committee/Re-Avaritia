@@ -1,28 +1,35 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.Const;
+
+import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-
-
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * @author cnlimiter
+ * Author: cnlimiter
  * Date: 2022/4/20 18:54
  * Version: 1.0
  */
+public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity, ArrowRenderState> {
+    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 
-public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
-    public HeavenSubArrowRender(EntityRendererProvider.Context p_174008_) {
-        super(p_174008_);
+    public HeavenSubArrowRender(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull HeavenSubArrowEntity entity) {
-        return Res.HEAVEN_ARROW;
+    protected @NotNull Identifier getTextureLocation(@NotNull ArrowRenderState state) {
+        return HEAVEN_ARROW_TEXTURE;
+    }
+
+    @Override
+    public @NotNull ArrowRenderState createRenderState() {
+        return new ArrowRenderState();
     }
 }

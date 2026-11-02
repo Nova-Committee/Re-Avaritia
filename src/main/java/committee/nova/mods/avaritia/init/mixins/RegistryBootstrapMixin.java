@@ -1,23 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModRegistries;
-import net.minecraft.core.registries.BuiltInRegistries;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 /**
- * Registers after vanilla contents exist, before Loader entrypoints and registry freeze.
- * Fabric API redirects the initial bootstrap to createContents and delays bootStrap
- * until server setup, which is already too late for WorldLoader's registry freeze.
+ * 已在 26.3 升级中废弃：注册入口改由 Avaritia.onInitialize() 直接调用
+ * ModRegistries.initialize()，不再需要钩子 BuiltInRegistries.createContents()。
+ * 条目已从 avaritia.mixins.json 移除，保留文件仅作记录。
  */
-@Mixin(BuiltInRegistries.class)
 public abstract class RegistryBootstrapMixin {
-    @Inject(method = "createContents", at = @At("RETURN"))
-    private static void avaritia$registerAfterVanillaContents(CallbackInfo ci) {
-        ModConfig.register();
-        ModRegistries.initialize();
-    }
 }

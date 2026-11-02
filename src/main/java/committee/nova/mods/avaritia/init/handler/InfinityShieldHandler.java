@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -35,9 +35,9 @@ public final class InfinityShieldHandler {
         Entity attacker = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
         LivingEntity target = attacker instanceof LivingEntity living ? living : attacker instanceof EnderDragonPart part ? part.parentMob : null;
         if (target == null || target == player) return;
-        target.invulnerableTime = 0;
+        target.setInvulnerableTime(0);
         level.getServer().execute(() -> {
-            if (target.isAlive()) target.hurt(ModDamageTypes.causeRandomDamage(level, player), blocked);
+            if (target.isAlive()) target.hurtServer(level, ModDamageTypes.causeRandomDamage(level, player), blocked);
         });
     }
     public static boolean reflectProjectile(Projectile projectile, HitResult result) {

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.util.recipe;
 
 import com.google.gson.JsonElement;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
@@ -9,8 +9,8 @@ import java.util.Map;
  * @author cnlimiter
  */
 public class RecipeProcessor {
-    public static void processRecipes(Map<ResourceLocation, JsonElement> recipes,
-                                      Map<ResourceLocation, ConfigRecipeManager.RecipeConfig> configRecipes) {
+    public static void processRecipes(Map<Identifier, JsonElement> recipes,
+                                      Map<Identifier, ConfigRecipeManager.RecipeConfig> configRecipes) {
         // 按优先级处理配方
         configRecipes.entrySet().stream()
                 .sorted((e1, e2) -> {
@@ -18,7 +18,7 @@ public class RecipeProcessor {
                     return e1.getKey().toString().compareTo(e2.getKey().toString());
                 })
                 .forEach(entry -> {
-                    ResourceLocation id = entry.getKey();
+                    Identifier id = entry.getKey();
                     ConfigRecipeManager.RecipeConfig config = entry.getValue();
 
                     switch (config.action) {

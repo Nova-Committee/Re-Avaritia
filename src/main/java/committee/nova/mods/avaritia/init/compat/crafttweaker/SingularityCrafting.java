@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.core.singularity.SingularityValidationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.openzen.zencode.java.ZenCodeType;
 
 /**
@@ -18,7 +18,7 @@ public class SingularityCrafting {
     @ZenCodeType.Method
     public static void register(String key, String displayName, int overlayColor, int underlayColor,
                          int count, int timeCost, IIngredient ingredient, boolean enabled, boolean recipeEnable) {
-        ResourceLocation id = parseId(key);
+        Identifier id = parseId(key);
         if (id == null) {
             return;
         }
@@ -35,7 +35,7 @@ public class SingularityCrafting {
 
     @ZenCodeType.Method
     public static void remove(String id) {
-        ResourceLocation parsedId = parseId(id);
+        Identifier parsedId = parseId(id);
         if (parsedId != null) {
             SingularityReloadListener.INSTANCE.removeSingularity(
                     SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, parsedId);
@@ -50,7 +50,7 @@ public class SingularityCrafting {
 
     @ZenCodeType.Method
     public static void removeRecipe(String id) {
-        ResourceLocation parsedId = parseId(id);
+        Identifier parsedId = parseId(id);
         if (parsedId != null) {
             SingularityReloadListener.INSTANCE.removeSingularityRecipe(
                     SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, parsedId);
@@ -63,8 +63,8 @@ public class SingularityCrafting {
                 SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, true);
     }
 
-    private static ResourceLocation parseId(String id) {
-        ResourceLocation parsedId = ResourceLocation.tryParse(id);
+    private static Identifier parseId(String id) {
+        Identifier parsedId = Identifier.tryParse(id);
         if (parsedId == null) {
             Const.LOGGER.error("Singularity: Invalid CraftTweaker singularity id {}; skipping this operation", id);
         }

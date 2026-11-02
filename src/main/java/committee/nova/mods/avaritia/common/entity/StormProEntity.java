@@ -2,30 +2,35 @@ package committee.nova.mods.avaritia.common.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.PositionPath;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class StormProEntity extends ThrowableItemProjectile {
-    public StormProEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
+    public StormProEntity(EntityType<? extends StormProEntity> entityType, Level level) {
+        super(entityType, level);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return Items.FIRE_CHARGE;
     }
 
     @Override
-    protected void onHit(HitResult result) {
+    protected void onHit(@NotNull HitResult result) {
         super.onHit(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             BlockPos pos = null;
 
 
@@ -36,9 +41,9 @@ public class StormProEntity extends ThrowableItemProjectile {
             }
 
             if (pos != null) {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(this.level());
+                LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(this.level(), EntitySpawnReason.EVENT);
                 if (lightning != null) {
-                    lightning.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                    lightning.moveOrInterpolateTo(PositionPath.of(new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
 
 
                     if (this.getOwner() instanceof ServerPlayer player) {

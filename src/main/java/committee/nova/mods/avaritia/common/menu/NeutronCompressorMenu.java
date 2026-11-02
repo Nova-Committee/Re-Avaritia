@@ -25,10 +25,16 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
+    public static final int DATA_PROGRESS = 0;
+    public static final int DATA_MATERIAL_COUNT = 1;
+    public static final int DATA_MATERIALS_REQUIRED = 2;
+    public static final int DATA_TIME_REQUIRED = 3;
+    public static final int DATA_COUNT = 4;
+
     private final ContainerData progressData;
 
     public NeutronCompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
+        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(DATA_COUNT));
     }
 
     public NeutronCompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
@@ -84,7 +90,19 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     }
 
     public int getProgress() {
-        return this.progressData.get(0);
+        return this.progressData.get(DATA_PROGRESS);
+    }
+
+    public int getMaterialCount() {
+        return this.progressData.get(DATA_MATERIAL_COUNT);
+    }
+
+    public int getMaterialsRequired() {
+        return this.progressData.get(DATA_MATERIALS_REQUIRED);
+    }
+
+    public int getTimeRequired() {
+        return this.progressData.get(DATA_TIME_REQUIRED);
     }
 
     public NeutronCompressorTile getTileEntity() {

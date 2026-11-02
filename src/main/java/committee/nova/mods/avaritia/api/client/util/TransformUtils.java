@@ -6,14 +6,15 @@ import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.util.math.MathUtils;
 import committee.nova.mods.avaritia.api.util.vec.Vector3;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +35,7 @@ public class TransformUtils {
     public static final PerspectiveModelState DEFAULT_BOW;
     public static final PerspectiveModelState DEFAULT_HANDHELD_ROD;
     public static final PerspectiveModelState DEFAULT_TRIDENT;
-    public static final PerspectiveModelState DEFAULT_THROWING_TRIDENT;
     private static final Transformation flipX = new Transformation(null, null, new Vector3f(-1, 1, 1), null);
-    private static final Matrix3f FLIP_X_NORMAL = new Matrix3f().scaling(-1, 1, 1);
 
     static {
         Map<ItemDisplayContext, Transformation> map;
@@ -101,17 +100,6 @@ public class TransformUtils {
         map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(-3F,17F,1F,  0F, -90F, 25F,1F));
         map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(-15F,17F,1F,  0F,  90F,-25F,1F));
         DEFAULT_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
-
-        map = new HashMap<>();
-        // Mirror left-hand X translations; PerspectiveModel already supplies the rotation correction.
-        map.put(ItemDisplayContext.GROUND,                   create(   4F,  4F,   2F, 0F,   0F,  0F,0.25F));
-        map.put(ItemDisplayContext.FIXED,                    create(  -2F,  4F,  -5F, 0F, 180F,  0F, 0.5F));
-        map.put(ItemDisplayContext.GUI,                      create(   2F,  3F,   0F,15F, -25F, -5F,0.65F));
-        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(   8F,-17F,   9F, 0F,  90F,180F,   1F));
-        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(  -8F,-17F,  -7F, 0F,  90F,180F,   1F));
-        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(  -3F, 17F,   1F, 0F, -90F, 25F,   1F));
-        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create( -13F, 17F,   1F, 0F,  90F,-25F,   1F));
-        DEFAULT_THROWING_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
         //@formatter:on
     }
 
@@ -161,9 +149,9 @@ public class TransformUtils {
     }
 
     public static Transformation create(ItemTransform transform) {
-        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.identity();
+        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.IDENTITY;
 
-        return create(transform.translation, transform.rotation, transform.scale);
+        return create(transform.translation(), transform.rotation(), transform.scale());
     }
 
     /**
@@ -174,20 +162,6 @@ public class TransformUtils {
      */
     public static Transformation flipLeft(Transformation transform) {
         return flipX.compose(transform).compose(flipX);
-    }
-
-    public static ModelState stateFromItemTransforms(ItemTransforms itemTransforms, Map<ItemDisplayContext, Transformation> additions) {
-        if (itemTransforms == ItemTransforms.NO_TRANSFORMS) return IDENTITY;
-
-        ImmutableMap.Builder<ItemDisplayContext, Transformation> map = ImmutableMap.builder();
-
-        for (ItemDisplayContext value : ItemDisplayContext.values()) {
-            map.put(value, create(itemTransforms.getTransform(value)));
-        }
-
-        map.putAll(additions);
-
-        return new PerspectiveModelState(map.build());
     }
 
     /**
@@ -208,20 +182,26 @@ public class TransformUtils {
         return new PerspectiveModelState(map.build());
     }
 
+    public static Transformation create(Vector3fc transform, Vector3fc rotation, Vector3fc scale) {
+        return create(new Vector3f(transform), new Vector3f(rotation), new Vector3f(scale));
+    }
+
     /**
      * Applies standard lefty flip to a {@link PoseStack}.
      *
      * @param pStack The {@link PoseStack} to apply to.
      */
     public static void applyLeftyFlip(PoseStack pStack) {
-        if (!pStack.clear()) {
+        if (!pStack.isEmpty()) {
+            Matrix4fc flip = flipX.getMatrix();
+            Matrix3f flipNormal = new Matrix3f(flipX.getMatrixCopy()).normal();
             Matrix4f tMat = pStack.last().pose();
             Matrix3f nMat = pStack.last().normal();
 
-            tMat.mulLocal(flipX.getMatrix());
-            tMat.mul(flipX.getMatrix());
-            nMat.mulLocal(FLIP_X_NORMAL);
-            nMat.mul(FLIP_X_NORMAL);
+            tMat.mulLocal(flip);
+            tMat.mul(flip);
+            nMat.mulLocal(flipNormal);
+            nMat.mul(flipNormal);
 
             pStack.last().pose().mul(tMat);
             pStack.last().normal().mul(nMat);

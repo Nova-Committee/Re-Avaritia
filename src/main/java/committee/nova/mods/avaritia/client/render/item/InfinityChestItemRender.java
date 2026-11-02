@@ -1,45 +1,62 @@
 package committee.nova.mods.avaritia.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import net.minecraft.client.Minecraft;
+import com.mojang.serialization.MapCodec;
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
+import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.model.object.chest.ChestModel;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import org.joml.Vector3fc;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 /**
  * @author cnlimiter
  */
-public class InfinityChestItemRender extends BlockEntityWithoutLevelRenderer {
-    private final InfinityChestTile chest;
-    public InfinityChestItemRender(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelSet entityModelSet) {
-        super(blockEntityRenderDispatcher, entityModelSet);
-        this.chest = new InfinityChestTile(BlockPos.ZERO, ModBlocks.infinity_chest.get().defaultBlockState());
+public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
+    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("infinity_chest"));
+
+    private final ChestModel model;
+    private final SpriteGetter sprites;
+
+    public InfinityChestItemRender(EntityModelSet entityModelSet, SpriteGetter sprites) {
+        this.model = new ChestModel(entityModelSet.bakeLayer(InfinityChestBlockRender.INFINITY_CHEST));
+        this.sprites = sprites;
     }
 
     @Override
-    public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext,
-                             @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer,
-                             int packedLight, int packedOverlay) {
-        Item item = stack.getItem();
-        if (item instanceof BlockItem blockItem) {
-            Block block = blockItem.getBlock();
-            BlockState blockstate = block.defaultBlockState();
-            if (blockstate.is(ModBlocks.infinity_chest.get())) {
-                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(
-                        this.chest,
-                        poseStack, buffer, packedLight, packedOverlay);
-            }
+    public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
+        // 26.3 的 submitModel 不再接收 CrumblingOverlay 参数（物品渲染恒为 null），破坏层由 submitCrumblingOverlay 单独提交。
+        output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay,
+                RainbowTintSource.currentColor(), INFINITY_CHEST_SPRITE, this.sprites, outlineColor);
+    }
+
+    @Override
+    public void getExtents(@NotNull Consumer<Vector3fc> output) {
+        PoseStack poseStack = new PoseStack();
+        this.model.setupAnim(0.0F);
+        this.model.root().getExtentsForGui(poseStack, output);
+    }
+
+    public static record Unbaked() implements SpecialModelRenderer.Unbaked<Void> {
+        public static final MapCodec<InfinityChestItemRender.Unbaked> MAP_CODEC = MapCodec.unit(new InfinityChestItemRender.Unbaked());
+
+        @Override
+        public MapCodec<? extends SpecialModelRenderer.Unbaked<Void>> type() {
+            return MAP_CODEC;
+        }
+
+        @Override
+        public SpecialModelRenderer<Void> bake(SpecialModelRenderer.BakingContext context) {
+            return new InfinityChestItemRender(context.entityModelSet(), context.sprites());
         }
     }
 }

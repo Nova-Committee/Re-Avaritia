@@ -18,11 +18,13 @@ import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -31,10 +33,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
-import net.minecraft.core.registries.BuiltInRegistries;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
 import committee.nova.mods.avaritia.api.init.registry.FuelBlockItem;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
@@ -62,29 +62,29 @@ public class ModBlocks {
     public static RegistryEntry<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
     public static RegistryEntry<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryEntry<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
-            () -> new BaseBlock(BlockBehaviour.Properties.of()
+            () -> new BaseBlock(properties()
                     .strength(100F, 100F)
                     .sound(SoundType.GLASS)
             ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON)
     );
-    public static RegistryEntry<Block> star_fuel_block = itemBurnBlock("star_fuel_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
+    public static RegistryEntry<Block> star_fuel_block = itemBurnBlock("star_fuel_block", () -> new BaseBlock(properties()
                     .strength(100F, 200F)
                     .sound(SoundType.STONE)
             ), true,
             new Item.Properties().rarity(ModRarities.RARE), Integer.MAX_VALUE);
 
-    public static RegistryEntry<Block> refined_coal_block = itemBurnBlock("refined_coal_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
+    public static RegistryEntry<Block> refined_coal_block = itemBurnBlock("refined_coal_block", () -> new BaseBlock(properties()
                     .strength(50F, 50F)
                     .sound(SoundType.STONE)
             ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON), RefinedCoalItem.BURN_TIME * 9);
 
     //MACHINE
-    public static RegistryEntry<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.COMMON);
-    public static RegistryEntry<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.UNCOMMON);
-    public static RegistryEntry<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END, BlockBehaviour.Properties.of().lightLevel(state -> 15)),ModRarities.RARE);
-    public static RegistryEntry<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.EPIC);
+    public static RegistryEntry<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK, properties().lightLevel(state -> 15)), ModRarities.COMMON);
+    public static RegistryEntry<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER, properties().lightLevel(state -> 15)), ModRarities.UNCOMMON);
+    public static RegistryEntry<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END, properties().lightLevel(state -> 15)),ModRarities.RARE);
+    public static RegistryEntry<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME, properties().lightLevel(state -> 15)), ModRarities.EPIC);
     public static RegistryEntry<Block> neutron_collector = itemBlock("neutron_collector", NeutronCollectorBlock::new, ModRarities.RARE);
     public static RegistryEntry<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", NeutronCollectorBlock::new, ModRarities.EPIC);
     public static RegistryEntry<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", NeutronCollectorBlock::new, ModRarities.LEGEND);
@@ -102,29 +102,41 @@ public class ModBlocks {
 
 
     public static RegistryEntry<Block> fake_bedrock = itemBlock("fake_bedrock", () -> new Block(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.STONE)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
     public static RegistryEntry<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new EndPortalFrameBlock(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.GLASS)
                     .lightLevel((blockState) -> 1)
                     .strength(400F, 3600000.0F)), false);
     public static RegistryEntry<Block> fake_end_portal = itemBlock("fake_end_portal", () -> new Block(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.COLOR_BLACK)
-                    .noCollission()
+                    .noCollision()
                     .lightLevel((state) -> 15)
                     .strength(400F, 3600000.0F)
-                    .pushReaction(PushReaction.BLOCK)), false);
+                    .pushReaction(PushReaction.IMMOVEABLE)), false);
 
 
     private static RegistryEntry<Block> baseBlock(String name, Supplier<Block> block) {
-        return BLOCKS.register(name, block);
+        return BLOCKS.register(name, (Identifier id) -> {
+            BaseBlock.beginRegistration(ResourceKey.create(Registries.BLOCK, id));
+            try {
+                return block.get();
+            } finally {
+                BaseBlock.endRegistration();
+            }
+        });
+    }
+
+    /** 26.3 要求 BlockBehaviour.Properties 显式携带注册 id，仅在注册工厂执行期间可用。 */
+    public static BlockBehaviour.Properties properties() {
+        return BaseBlock.newProperties();
     }
 
     public static RegistryEntry<Block> itemBlock(String name, Supplier<Block> block) {
@@ -148,14 +160,14 @@ public class ModBlocks {
     }
 
     public static RegistryEntry<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist, Item.Properties properties) {
-        var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties), exist);
+        var reg = baseBlock(name, block);
+        if (hasItem) ModItems.blockItem(name, reg, properties, exist);
         return reg;
     }
 
     public static RegistryEntry<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
-        var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new FuelBlockItem(reg.get(), properties, burnTime));
+        var reg = baseBlock(name, block);
+        if (hasItem) ModItems.item(name, () -> new FuelBlockItem(reg.get(), ModItems.applyId(properties).useBlockDescriptionPrefix(), burnTime));
         return reg;
     }
 

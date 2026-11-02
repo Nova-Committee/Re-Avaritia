@@ -19,16 +19,21 @@
 package committee.nova.mods.avaritia.api.client.model;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import committee.nova.mods.avaritia.api.client.util.VertexUtils;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+import committee.nova.mods.avaritia.api.client.util.TextureUtils;
 import committee.nova.mods.avaritia.api.util.math.InterpHelper;
 import committee.nova.mods.avaritia.api.util.math.MathUtils;
 import committee.nova.mods.avaritia.api.util.vec.Cuboid6;
 import committee.nova.mods.avaritia.api.util.vec.Vector3;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.model.geom.builders.UVPair;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 /**
  * A simple easy to manipulate quad format. Can be reset and then used on a different format.
@@ -198,7 +203,7 @@ public class Quad implements IVertexProducer, IVertexConsumer {
                 vertex.normal[3] = 0;
             }
         }
-        orientation = Direction.getNearest(normal.x, normal.y, normal.z);
+        orientation = Direction.getApproximateNearest(normal.x, normal.y, normal.z);
     }
 
     /**
@@ -279,22 +284,58 @@ public class Quad implements IVertexProducer, IVertexConsumer {
      * @return The BakedQuad.
      */
     public BakedQuad bake() {
-        int[] packedData = new int[format.format.getVertexSize()];
-        for (int v = 0; v < 4; v++) {
-            for (int e = 0; e < format.elementCount; e++) {
-                VertexUtils.pack(vertices[v].raw[e], packedData, format.format, v, e);
-            }
-        }
-
-        return makeQuad(packedData);
+        return makeQuad();
     }
 
     // Broken out as a stub for mixins to target easier.
-    private BakedQuad makeQuad(int[] packedData) {
+    private BakedQuad makeQuad() {
         if (format.format != DefaultVertexFormat.BLOCK) {
             throw new IllegalStateException("Unable to bake this quad to the specified format. " + format.format);
         }
-        return new BakedQuad(packedData, tintIndex, orientation, sprite, diffuseLighting);
+        TextureAtlasSprite quadSprite = sprite != null ? sprite : TextureUtils.getMissingSprite();
+        // 26.3 的 MaterialInfo 用 shadeDirectionOverride(Direction) 取代旧 shade 布尔：
+        // diffuseLighting=true → override=null(按实际朝向着色)，false → Direction.UP(恒定最亮，等价旧 cardinalLighting.up())。
+        BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
+                quadSprite,
+                ChunkSectionLayer.TRANSLUCENT,
+                RenderTypes.itemTranslucent(quadSprite.atlasLocation()),
+                RenderTypes.itemTranslucentGlint(quadSprite.atlasLocation()),
+                RenderTypes.itemTranslucentGlintSpecial(quadSprite.atlasLocation()),
+                tintIndex,
+                diffuseLighting ? null : Direction.UP,
+                0
+        );
+        return new BakedQuad(
+                position(vertices[0]),
+                position(vertices[1]),
+                position(vertices[2]),
+                position(vertices[3]),
+                uv(vertices[0]),
+                uv(vertices[1]),
+                uv(vertices[2]),
+                uv(vertices[3]),
+                orientation != null ? orientation : Direction.NORTH,
+                materialInfo
+        );
+    }
+
+    private static int color(Vertex vertex) {
+        return component(vertex.color[3]) << 24
+                | component(vertex.color[0]) << 16
+                | component(vertex.color[1]) << 8
+                | component(vertex.color[2]);
+    }
+
+    private static int component(float value) {
+        return Math.round(Math.max(0.0F, Math.min(1.0F, value)) * 255.0F);
+    }
+
+    private static Vector3fc position(Vertex vertex) {
+        return new Vector3f(vertex.vec[0], vertex.vec[1], vertex.vec[2]);
+    }
+
+    private static long uv(Vertex vertex) {
+        return UVPair.pack(vertex.uv[0], vertex.uv[1]);
     }
 
     /**
@@ -484,6 +525,12 @@ public class Quad implements IVertexProducer, IVertexConsumer {
             lightmap = null;
 
             preProcess();
+            if (color != null) {
+                color[0] = 1.0F;
+                color[1] = 1.0F;
+                color[2] = 1.0F;
+                color[3] = 1.0F;
+            }
         }
     }
 }

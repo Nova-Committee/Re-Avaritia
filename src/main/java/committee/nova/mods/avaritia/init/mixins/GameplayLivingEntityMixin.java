@@ -5,17 +5,16 @@ import committee.nova.mods.avaritia.init.handler.AbilityHandler;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.handler.InfinityShieldHandler;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -32,8 +31,9 @@ public abstract class GameplayLivingEntityMixin {
     }
     @Inject(method = "jumpFromGround", at = @At("TAIL"))
     private void avaritia$jump(CallbackInfo ci) { AbilityHandler.jumpBoost((LivingEntity) (Object) this); }
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
-    private void avaritia$immunity(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    // 26.3: server-side damage entry point is hurtServer (hurt() was removed).
+    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+    private void avaritia$immunity(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (InfinityShieldHandler.preventDamage(entity, source) || InfinityHandler.preventDamage(entity, source, amount)) cir.setReturnValue(false);
     }
@@ -48,7 +48,7 @@ public abstract class GameplayLivingEntityMixin {
         if (entity instanceof Player player) AbilityHandler.stripAbilities(player);
     }
     @Inject(method = "causeFallDamage", at = @At("HEAD"), cancellable = true)
-    private void avaritia$fall(float distance, float multiplier, DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+    private void avaritia$fall(double distance, float multiplier, DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof Player player && (InfinityElytraUtils.hasInfinityElytraEquipped(player) || InfinityShieldHandler.preventFall(player))) {
             player.resetFallDistance();
             cir.setReturnValue(false);
@@ -58,22 +58,10 @@ public abstract class GameplayLivingEntityMixin {
     private void avaritia$surface(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof Player player && !player.isSwimming() && InfinityShieldHandler.preventFall(player)) cir.setReturnValue(true);
     }
-    @Redirect(method = "updateFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"))
-    private boolean avaritia$elytra(ItemStack stack, net.minecraft.world.item.Item item) {
-        return stack.is(item) || item == Items.ELYTRA && stack.getItem() instanceof InfinityElytraItem;
-    }
-    @Redirect(method = "updateFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ElytraItem;isFlyEnabled(Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean avaritia$elytraFlightEnabled(ItemStack stack) {
-        return InfinityElytraUtils.isFlyEnabled(stack);
-    }
-    @Redirect(method = "updateFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getItemBySlot(Lnet/minecraft/world/entity/EquipmentSlot;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack avaritia$equippedElytra(LivingEntity entity, EquipmentSlot slot) {
-        ItemStack elytra = InfinityElytraUtils.getInfinityElytraStack(entity);
-        return slot == EquipmentSlot.CHEST && !elytra.isEmpty() ? elytra : entity.getItemBySlot(slot);
-    }
-    @Redirect(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurtCurrentlyUsedShield(F)V"))
-    private void avaritia$reflectBlocked(LivingEntity entity, float blocked, DamageSource source, float amount) {
-        InfinityShieldHandler.onShieldBlock(entity, source, blocked);
-        ((GameplayShieldDamageInvoker) entity).avaritia$hurtShield(blocked);
+    // 26.3: gliding is component-driven; updateFallFlying and Player.tryToStartFallFlying both
+    // scan equipment slots through this static check, so one hook covers every entry point.
+    @Inject(method = "canGlideUsing", at = @At("HEAD"), cancellable = true)
+    private static void avaritia$infinityGlider(ItemStack stack, EquipmentSlot slot, CallbackInfoReturnable<Boolean> cir) {
+        if (stack.getItem() instanceof InfinityElytraItem) cir.setReturnValue(InfinityElytraUtils.isFlyEnabled(stack));
     }
 }

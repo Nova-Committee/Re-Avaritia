@@ -1,23 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import com.google.gson.JsonElement;
-import committee.nova.mods.avaritia.api.init.data.LootResourceConditions;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.storage.loot.LootDataType;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import java.util.Optional;
-
-@Mixin(LootDataType.class)
+/**
+ * 已在 26.3 升级中废弃：LootDataType 变为 record，deserialize 方法已删除，
+ * 战利品表走动态注册表加载。
+ * 条目已从 avaritia.mixins.json 移除，保留文件仅作记录。
+ */
 public abstract class RegistryLootTypeConditionsMixin {
-    @Inject(method = "deserialize", at = @At("HEAD"), cancellable = true)
-    private void avaritia$modConditions(ResourceLocation id, JsonElement resource,
-                                        CallbackInfoReturnable<Optional<?>> cir) {
-        if (resource.isJsonObject() && !LootResourceConditions.prepare(
-                (LootDataType<?>) (Object) this, id, resource.getAsJsonObject())) {
-            cir.setReturnValue(Optional.empty());
-        }
-    }
 }

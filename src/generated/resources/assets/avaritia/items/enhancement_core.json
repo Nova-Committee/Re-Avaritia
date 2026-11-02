@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "color": -872415232,
+    "model": "avaritia:item/enhancement_core",
+    "size": 8,
+    "texture": "avaritia:misc/halo"
+  },
+  "oversized_in_gui": true
+}

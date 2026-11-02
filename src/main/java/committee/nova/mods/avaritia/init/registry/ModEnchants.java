@@ -1,24 +1,10 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Const;
-import net.minecraft.world.item.enchantment.Enchantment;
-import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
-import net.minecraft.core.registries.BuiltInRegistries;
-import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
-
-import java.util.function.Supplier;
-
 /**
- * @Project: Avaritia
- * @author cnlimiter
- * @CreateTime: 2024/10/20 23:45
- * @Description:
+ * 26.3 附魔改为 ResourceKey + 数据驱动 BootstrapContext 模式（原版 Enchantments.java 与 Neo 版 ModEnchants 均如此），
+ * 不再存在 BuiltInRegistries.ENCHANTMENT 运行时注册表。
+ * 本模组自定义附魔已裁剪；如需恢复，参照 Re-Avaritia-neo-26.3 的 ModEnchants.bootstrap(BootstrapContext) 用 datagen 注册。
  */
-public class ModEnchants {
-    public static final RegistryEntries<Enchantment> ENCHANTMENT = RegistryEntries.create(BuiltInRegistries.ENCHANTMENT, Const.MOD_ID);
-
-
-    public static RegistryEntry<Enchantment> enchant(String name, Supplier<Enchantment> enchantment) {
-        return ENCHANTMENT.register(name, enchantment);
-    }
+public final class ModEnchants {
+    private ModEnchants() {}
 }

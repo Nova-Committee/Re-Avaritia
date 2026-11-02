@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TileIOHandler {
     private final BlockEntity tileEntity;
-    private final DirectionProperty facing;
+    private final EnumProperty<Direction> facing;
     private final committee.nova.mods.avaritia.api.common.wrapper.ItemHandler[] sidedHandlers = new committee.nova.mods.avaritia.api.common.wrapper.ItemHandler[6];
-    public TileIOHandler(BlockEntity tileEntity, DirectionProperty facing){
+    public TileIOHandler(BlockEntity tileEntity, EnumProperty<Direction> facing){
         this.tileEntity = tileEntity;
         this.facing = facing;
     }

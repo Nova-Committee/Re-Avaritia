@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.net.channel.S2CChannelStatePack;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -64,7 +65,7 @@ public class NameCacheManager {
     }
 
     public void onPlayerJoin(net.minecraft.server.level.ServerPlayer player) {
-        this.userCache.getCompound("nameCache").putString(player.getUUID().toString(), player.getGameProfile().getName());
+        this.userCache.getCompoundOrEmpty("nameCache").putString(player.getUUID().toString(), player.getGameProfile().name());
         NetworkHandler.CHANNEL.sendToAll(server, new S2CChannelStatePack(ChannelState.NAME, userCache));
         NetworkHandler.CHANNEL.sendToAll(server, new S2CInfinityChestStatePack(ChannelState.NAME, userCache));
         if (!loadSuccess)
@@ -78,7 +79,7 @@ public class NameCacheManager {
 
             File userCacheFile = new File(saveDataPath, "UserCache.dat");
             if (userCacheFile.exists() && userCacheFile.isFile()) {
-                this.userCache = NbtIo.readCompressed(userCacheFile);
+                this.userCache = NbtIo.readCompressed(userCacheFile.toPath(), NbtAccounter.unlimitedHeap());
                 if (!this.userCache.contains("nameCache")) this.initializeNameCache();
             } else {
                 this.initializeNameCache();
@@ -94,7 +95,7 @@ public class NameCacheManager {
         try {
             File userCache = new File(saveDataPath, "UserCache.dat");
             if (!userCache.exists()) userCache.createNewFile();
-            NbtIo.writeCompressed(this.userCache, userCache);
+            NbtIo.writeCompressed(this.userCache, userCache.toPath());
         } catch (Exception e) {
             throw new RuntimeException("在保存数据的时候出错了！ 什么情况呢？", e);
         }
@@ -107,7 +108,7 @@ public class NameCacheManager {
 
     private void initializeNameCache() {
         CompoundTag nameCache = new CompoundTag();
-        nameCache.putString(Const.AVARITIA_FAKE_PLAYER.getId().toString(), Const.AVARITIA_FAKE_PLAYER.getName());
+        nameCache.putString(Const.AVARITIA_FAKE_PLAYER.id().toString(), Const.AVARITIA_FAKE_PLAYER.name());
         if (userCache == null) this.initializeUserCache();
         this.userCache.put("nameCache", nameCache);
     }

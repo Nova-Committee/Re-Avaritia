@@ -1,37 +1,35 @@
-#version 150
+#version 330
+#extension GL_ARB_separate_shader_objects : require
 
-// Black Hole Vertex Shader
-// Transforms vertices for the black hole entity billboard
+#include <minecraft:fog.glsl>
+#include <minecraft:dynamictransforms.glsl>
+#include <minecraft:projection.glsl>
+#include <minecraft:sample_lightmap.glsl>
 
-in vec4 Position;
-in vec4 Color;
-in vec2 UV0;
-in vec2 UV1;
-in vec2 UV2;
-in vec3 Normal;
+layout(location = 0) in vec3 Position;
+layout(location = 1) in vec4 Color;
+layout(location = 2) in vec2 UV0;
+layout(location = 3) in ivec2 UV1;
+layout(location = 4) in ivec2 UV2;
+layout(location = 5) in vec3 Normal;
 
-uniform mat4 ModelViewMat;
-uniform mat4 ProjMat;
-uniform vec3 CHUNK_OFFSET;
+uniform sampler2D Sampler2;
 
-out vec4 vertexColor;
-out vec2 texCoord0;
-out vec2 texCoord1;
-out vec2 texCoord2;
-out vec3 normal;
+layout(location = 0) out float sphericalVertexDistance;
+layout(location = 1) out float cylindricalVertexDistance;
+layout(location = 2) out vec4 vertexColor;
+layout(location = 3) out vec2 texCoord0;
+layout(location = 4) out vec4 normal;
+layout(location = 5) out vec3 fPos;
 
 void main() {
-    // Apply chunk offset for rendering
-    vec4 worldPosition = Position;
-    worldPosition.xyz += CHUNK_OFFSET;
+    vec3 pos = Position + ModelOffset;
+    gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);
+    fPos = (ModelViewMat * vec4(pos, 1.0)).xyz;
 
-    // Calculate final position
-    gl_Position = ProjMat * ModelViewMat * worldPosition;
-
-    // Pass data to fragment shader
-    vertexColor = Color;
+    sphericalVertexDistance = fog_spherical_distance(pos);
+    cylindricalVertexDistance = fog_cylindrical_distance(pos);
+    vertexColor = Color * sample_lightmap(Sampler2, UV2);
     texCoord0 = UV0;
-    texCoord1 = UV1;
-    texCoord2 = UV2;
-    normal = Normal;
+    normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 }

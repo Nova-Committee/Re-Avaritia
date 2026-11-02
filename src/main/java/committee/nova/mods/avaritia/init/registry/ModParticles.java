@@ -1,10 +1,12 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.particle.ShockwaveParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
@@ -20,9 +22,15 @@ public class ModParticles {
 
 
     public static final RegistryEntry<ParticleType<ShockwaveParticleOptions>> SHOCKWAVE_PARTICLE = PARTICLE_TYPE.register("shockwave",
-            () -> new ParticleType<>(false, ShockwaveParticleOptions.DESERIALIZER) {
-        public @NotNull Codec<ShockwaveParticleOptions> codec() {
+            () -> new ParticleType<>(false) {
+        @Override
+        public @NotNull MapCodec<ShockwaveParticleOptions> codec() {
             return ShockwaveParticleOptions.CODEC;
+        }
+
+        @Override
+        public @NotNull StreamCodec<? super RegistryFriendlyByteBuf, ShockwaveParticleOptions> streamCodec() {
+            return ShockwaveParticleOptions.STREAM_CODEC;
         }
     });
 

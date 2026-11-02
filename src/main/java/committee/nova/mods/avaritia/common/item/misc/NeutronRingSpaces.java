@@ -5,6 +5,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
+
+import java.util.List;
 
 /** Capture/place volume from a floor-center base. X/Z cap at one chunk, Y clipped to world height. */
 public final class NeutronRingSpaces {
@@ -31,7 +34,7 @@ public final class NeutronRingSpaces {
     public static Vec3i size(Level level, BlockPos base, NeutronRingContents.Size size) {
         NeutronRingContents.Size clamped = size.clamp();
         BlockPos min = minCorner(base, clamped);
-        int maxY = Math.min(level.getMaxBuildHeight() - 1, min.getY() + clamped.y() - 1);
+        int maxY = Math.min(level.getMaxY(), min.getY() + clamped.y() - 1);
         int sizeY = Math.max(1, maxY - min.getY() + 1);
         return new Vec3i(clamped.x(), sizeY, clamped.z());
     }
@@ -62,7 +65,7 @@ public final class NeutronRingSpaces {
 
     public static CompoundTag capture(ServerLevel level, BlockPos base, NeutronRingContents.Size size) {
         StructureTemplate template = new StructureTemplate();
-        template.fillFromWorld(level, minCorner(base, size), size(level, base, size), false, null);
+        template.fillFromWorld(level, minCorner(base, size), size(level, base, size), false, List.of());
         return template.save(new CompoundTag());
     }
 
@@ -98,11 +101,11 @@ public final class NeutronRingSpaces {
     }
 
     public static NeutronRingContents.Size sizeOf(CompoundTag tag) {
-        var list = tag.getList("size", 3);
+        ListTag list = tag.getListOrEmpty("size");
         if (list.size() < 3) {
             return NeutronRingContents.Size.DEFAULT;
         }
-        return new NeutronRingContents.Size(list.getInt(0), list.getInt(1), list.getInt(2)).clamp();
+        return new NeutronRingContents.Size(list.getIntOr(0, 16), list.getIntOr(1, 16), list.getIntOr(2, 16)).clamp();
     }
 
     public static boolean sameDimension(Level level, GlobalPos pos) {

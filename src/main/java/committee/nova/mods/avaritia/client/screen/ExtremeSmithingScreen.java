@@ -1,44 +1,38 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SmithingTemplateItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * @Project: Avaritia
- * @author cnlimiter
- * @CreateTime: 2024/12/19 13:14
- * @Description:
+ * 极限锻造台界面。
  */
 public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu> {
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
-    private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
-    private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
-    private final CyclingSlotBackground additionalIcon2 = new CyclingSlotBackground(3);
-    private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
-    private ScreenRectangle errorIcon;
-    private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
-    private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
+    private ScreenRectangle errorIcon = ScreenRectangle.empty();
+    private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = Identifier.withDefaultNamespace(
+            "container/slot/smithing_template_netherite_upgrade"
+    );
+    private static final List<Identifier> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
+    private static final Component MISSING_TEMPLATE_TOOLTIP = Component.translatable("container.upgrade.missing_template_tooltip");
+    private static final Component ERROR_TOOLTIP = Component.translatable("container.upgrade.error_tooltip");
 
-    public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle, Res.EXTREME_SMITHING_TEX);
-        this.titleLabelX = 74;
+    public ExtremeSmithingScreen(ExtremeSmithingMenu menu, Inventory playerInventory, Component title) {
+        super(menu, playerInventory, title, ScreenTextures.EXTREME_SMITHING);
+        this.titleLabelX = 78;
         this.titleLabelY = 6;
     }
 
@@ -48,6 +42,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
         this.errorIcon = PortableLayout.translate(new ScreenRectangle(65, 46, 28, 21), this.leftPos, this.topPos);
     }
 
+
     private boolean hasRecipeError() {
         return this.menu.getSlot(0).hasItem() && this.menu.getSlot(1).hasItem()
                 && this.menu.getSlot(2).hasItem() && this.menu.getSlot(3).hasItem()
@@ -55,70 +50,46 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     }
 
     @Override
-    protected void renderErrorIcon(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
-        if (this.hasRecipeError() && this.errorIcon != null) {
-            pGuiGraphics.blit(Res.EXTREME_SMITHING_TEX, this.errorIcon.left(), this.errorIcon.top(), this.imageWidth, 0, this.errorIcon.width(), this.errorIcon.height());
+    protected void extractErrorIcon(@NotNull GuiGraphicsExtractor graphics, int x, int y) {
+        if (this.hasRecipeError()) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.EXTREME_SMITHING, this.errorIcon.left(), this.errorIcon.top(), this.imageWidth, 0.0F, this.errorIcon.width(), this.errorIcon.height(), 256, 256);
             UiInspector.region("smithing.error", this.errorIcon, null, true);
         }
     }
 
+
     @Override
     public void containerTick() {
         super.containerTick();
-        Optional<SmithingTemplateItem> optional = this.getTemplateItem();
         this.templateIcon.tick(EMPTY_SLOT_SMITHING_TEMPLATES);
-        //this.baseIcon.tick(optional.map(InfinitySmithingTemplateItem::getBaseSlotEmptyIcons).orElse(List.of()));
-        //this.additionalIcon1.tick(optional.map(InfinitySmithingTemplateItem::getAdditionalSlotEmptyIcons).orElse(List.of()));
-    }
-
-    private Optional<SmithingTemplateItem> getTemplateItem() {
-        ItemStack itemstack = this.menu.getSlot(0).getItem();
-        if (!itemstack.isEmpty()) {
-            Item item = itemstack.getItem();
-            if (item instanceof UpgradeSmithingTemplateItem smithingTemplateItem) {
-                return Optional.of(smithingTemplateItem);
-            }
-        }
-
-        return Optional.empty();
     }
 
     @Override
-    public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderOnboardingTooltips(pGuiGraphics, pMouseX, pMouseY);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        this.extractOnboardingTooltips(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
-        super.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
-        this.templateIcon.render(this.menu, pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
-        this.baseIcon.render(this.menu, pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
-        this.additionalIcon1.render(this.menu, pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
-        this.additionalIcon2.render(this.menu, pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
-        this.additionalIcon3.render(this.menu, pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+        this.templateIcon.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
     }
 
-    private static final Component MISSING_TEMPLATE_TOOLTIP = Component.translatable("container.upgrade.missing_template_tooltip");
-    private static final Component ERROR_TOOLTIP = Component.translatable("container.upgrade.error_tooltip");
-
-    private void renderOnboardingTooltips(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+    private void extractOnboardingTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         Optional<Component> optional = Optional.empty();
-        if (this.hasRecipeError() && this.errorIcon != null && PortableLayout.contains(this.errorIcon, pMouseX, pMouseY)) {
+        if (this.hasRecipeError() && PortableLayout.contains(this.errorIcon, mouseX, mouseY)) {
             optional = Optional.of(ERROR_TOOLTIP);
         }
 
+
         if (this.hoveredSlot != null) {
-            ItemStack itemstack = this.menu.getSlot(0).getItem();
-            if (itemstack.isEmpty()) {
-                if (this.hoveredSlot.index == 0) {
-                    optional = Optional.of(MISSING_TEMPLATE_TOOLTIP);
-                }
+            ItemStack itemStack = this.menu.getSlot(0).getItem();
+            if (itemStack.isEmpty() && this.hoveredSlot.index == 0) {
+                optional = Optional.of(MISSING_TEMPLATE_TOOLTIP);
             }
         }
 
-        optional.ifPresent((p_280863_) -> {
-            pGuiGraphics.renderTooltip(this.font, this.font.split(p_280863_, 115), pMouseX, pMouseY);
-        });
+        optional.ifPresent(component -> graphics.setTooltipForNextFrame(this.font, this.font.split(component, 115), mouseX, mouseY));
     }
 }

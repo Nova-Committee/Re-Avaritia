@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:misc/halo"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:misc/halo_noise"
+    }
+  ]
+}

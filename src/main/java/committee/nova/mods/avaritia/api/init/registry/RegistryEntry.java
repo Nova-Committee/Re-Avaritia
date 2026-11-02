@@ -1,22 +1,23 @@
 package committee.nova.mods.avaritia.api.init.registry;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** A named registration whose factory is evaluated once, on first use. */
+/** A named registration whose factory is evaluated once, on first use, with the registration id. */
 public final class RegistryEntry<T> implements Supplier<T> {
-    private final ResourceLocation id;
-    private Supplier<? extends T> factory;
+    private final Identifier id;
+    private Function<Identifier, ? extends T> factory;
     private T value;
     private boolean creating;
 
-    RegistryEntry(ResourceLocation id, Supplier<? extends T> factory) {
+    RegistryEntry(Identifier id, Function<Identifier, ? extends T> factory) {
         this.id = Objects.requireNonNull(id);
         this.factory = Objects.requireNonNull(factory);
     }
 
-    public ResourceLocation getId() { return id; }
+    public Identifier getId() { return id; }
 
     @Override
     public T get() {
@@ -24,7 +25,7 @@ public final class RegistryEntry<T> implements Supplier<T> {
             if (creating) throw new IllegalStateException("Circular registration: " + id);
             creating = true;
             try {
-                value = Objects.requireNonNull(factory.get(), "Null registration: " + id);
+                value = Objects.requireNonNull(factory.apply(id), "Null registration: " + id);
                 factory = null;
             } finally {
                 creating = false;

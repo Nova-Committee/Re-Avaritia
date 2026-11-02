@@ -2,28 +2,23 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.util.lang.TextUtils;
-import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
-
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -31,16 +26,17 @@ import java.util.List;
  * Date: 2022/4/21 15:12
  * Version: 1.0
  */
-public class InfinityArmorItem extends ArmorItem implements IUndamageable {
-    public InfinityArmorItem(Type pSlot) {
-        super(
-                ModArmorMaterial.INFINITY_ARMOR,
-                pSlot,
-                new Properties()
-                        .rarity(ModRarities.COSMIC)
-                        .fireResistant()
-                        .stacksTo(1)
+public class InfinityArmorItem extends Item implements IUndamageable {
+    private final ArmorType armorType;
+
+    public InfinityArmorItem(ArmorType pSlot, Item.Properties properties) {
+        super(ModItems.applyId(properties)
+                .humanoidArmor(ModArmorMaterial.infinity_armor, pSlot)
+                .rarity(ModRarities.COSMIC)
+                .fireResistant()
+                .stacksTo(1)
         );
+        this.armorType = pSlot;
     }
 
     @Override
@@ -48,38 +44,25 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
         return false;
     }
 
-    
-
-
-    
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
-        if (type.getSlot() == EquipmentSlot.HEAD) {
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("effect.minecraft.night_vision")));
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NonNull TooltipDisplay display,
+                                @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag isAdvanced) {
+        if (armorType.getSlot() == EquipmentSlot.HEAD) {
+            tooltip.accept(Component.literal(""));
+            tooltip.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("effect.minecraft.night_vision")));
         }
-        if (type.getSlot() == EquipmentSlot.CHEST) {
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.flying_speed")));
+        if (armorType.getSlot() == EquipmentSlot.CHEST) {
+            tooltip.accept(Component.literal(""));
+            tooltip.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.flying_speed")));
         }
-        if (type.getSlot() == EquipmentSlot.LEGS) {
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.walking_speed")));
+        if (armorType.getSlot() == EquipmentSlot.LEGS) {
+            tooltip.accept(Component.literal(""));
+            tooltip.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.walking_speed")));
         }
-        if (type.getSlot() == EquipmentSlot.FEET) {
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.movement_speed")));
+        if (armorType.getSlot() == EquipmentSlot.FEET) {
+            tooltip.accept(Component.literal(""));
+            tooltip.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.movement_speed")));
         }
-        super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
+        super.appendHoverText(stack, context, display, tooltip, isAdvanced);
     }
-
-    
-
-    
-
-
-//    @Override
-//    public @Nullable String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-//        return Const.MOD_ID + ":textures/models/infinity_armor.png";
-//    }
 }

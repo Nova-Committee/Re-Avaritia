@@ -27,6 +27,7 @@ public final class ModConfig {
     public static final DoubleValue growthSoulFarmland = decimal("tools", "config.avaritia.growth_soul_farmland", .8, 0, 1);
     public static final IntValue bladeSlashDamage = integer("tools", "config.avaritia.blade_slash_damage", 200, 0, Integer.MAX_VALUE);
     public static final IntValue bladeSlashRadius = integer("tools", "config.avaritia.blade_slash_radius", 10, 5, 100);
+    public static final IntValue endestPearlAbsorptionLimit = integer("tools", "config.avaritia.endest_pearl_absorption_limit", 64, 16, 4096);
     public static final BooleanValue isSwordAttackExplode = bool("tools", "config.avaritia.is_sword_attack_explode", true);
     public static final BooleanValue enableProjectESingularityCountBoost = bool("emc", "config.avaritia.enable_projecte_singularity_count_boost", true);
     public static final IntValue neutronPileEmc = integer("emc", "config.avaritia.neutron_pile_emc", 512, 0, Integer.MAX_VALUE);
@@ -85,7 +86,7 @@ public final class ModConfig {
         } catch (IOException exception) { throw new IllegalStateException("Cannot save Avaritia configuration " + file, exception); }
     }
 
-    public abstract static class Value<T> {
+    public abstract static class Value<T> implements java.util.function.Supplier<T> {
         final String key;
         private volatile T value;
         private final T defaultValue;

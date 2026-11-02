@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +22,7 @@ public abstract class RegistryRarityNamesMixin {
     }
 
     @Inject(method = "getTooltipLines", at = @At("RETURN"))
-    private void avaritia$tooltipColor(Player player, TooltipFlag flag, CallbackInfoReturnable<List<Component>> cir) {
+    private void avaritia$tooltipColor(Item.TooltipContext context, Player player, TooltipFlag flag, CallbackInfoReturnable<List<Component>> cir) {
         ChatFormatting color = ModRarities.nameColor((ItemStack) (Object) this);
         if (color != null && !cir.getReturnValue().isEmpty()) {
             List<Component> lines = cir.getReturnValue();

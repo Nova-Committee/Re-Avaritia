@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.dimension;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ public final class InfinityRingKeys {
         if (key == null) {
             return false;
         }
-        ResourceLocation id = key.location();
+        Identifier id = key.identifier();
         return Const.MOD_ID.equals(id.getNamespace()) && id.getPath().startsWith(PATH_PREFIX);
     }
 
@@ -33,7 +33,7 @@ public final class InfinityRingKeys {
         if (!isPersonal(key)) {
             return Optional.empty();
         }
-        String hex = key.location().getPath().substring(PATH_PREFIX.length());
+        String hex = key.identifier().getPath().substring(PATH_PREFIX.length());
         if (hex.length() != 32) {
             return Optional.empty();
         }

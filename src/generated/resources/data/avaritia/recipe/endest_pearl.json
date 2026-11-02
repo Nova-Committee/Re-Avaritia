@@ -1,0 +1,34 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "   EEE   ",
+    " EEPPPEE ",
+    " EPPPPPE ",
+    "EPPPNPPPE",
+    "EPPNSNPPE",
+    "EPPPNPPPE",
+    " EPPPPPE ",
+    " EEPPPEE ",
+    "   EEE   "
+  ],
+  "result": {
+    "item": "avaritia:endest_pearl"
+  },
+  "show_notification": true,
+  "tier": 4
+}

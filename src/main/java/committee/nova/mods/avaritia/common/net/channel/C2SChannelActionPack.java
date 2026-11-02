@@ -47,7 +47,7 @@ public class C2SChannelActionPack {
             if (player == null) return;
             if (!(player.containerMenu instanceof TesseractMenu)) return;
             if (actionId < 0 || actionId > 9 || (!type.equals("item") && !type.equals("fluid"))
-                    || net.minecraft.resources.ResourceLocation.tryParse(committee.nova.mods.avaritia.util.StorageUtils.getBaseItemId(id)) == null) return;
+                    || net.minecraft.resources.Identifier.tryParse(committee.nova.mods.avaritia.util.StorageUtils.getBaseItemId(id)) == null) return;
             if (player.containerMenu.containerId != containerId) return;
             if (!player.containerMenu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);

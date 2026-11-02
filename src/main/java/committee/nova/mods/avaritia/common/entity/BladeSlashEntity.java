@@ -3,6 +3,10 @@ package committee.nova.mods.avaritia.common.entity;
 import committee.nova.mods.avaritia.api.util.EntityUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -55,7 +59,7 @@ public class BladeSlashEntity extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
 
     }
 
@@ -69,11 +73,19 @@ public class BladeSlashEntity extends Projectile {
         super.onHitEntity(result);
 
         if (this.getOwner() instanceof Player player) {
-            result.getEntity().hurt(this.damageSources().playerAttack(player), damage);
+            damageEntity(result.getEntity(), this.damageSources().playerAttack(player), damage);
         } else if (this.getOwner() instanceof LivingEntity livingEntity) {
-            result.getEntity().hurt(this.damageSources().mobAttack(livingEntity), damage);
+            damageEntity(result.getEntity(), this.damageSources().mobAttack(livingEntity), damage);
         } else {
-            result.getEntity().hurt(this.damageSources().generic(), damage);
+            damageEntity(result.getEntity(), this.damageSources().generic(), damage);
+        }
+    }
+
+    private void damageEntity(Entity entity, DamageSource source, float amount) {
+        if (level() instanceof ServerLevel serverLevel) {
+            entity.hurtServer(serverLevel, source, amount);
+        } else {
+            entity.hurtOrSimulate(source, amount);
         }
     }
 
@@ -90,9 +102,11 @@ public class BladeSlashEntity extends Projectile {
             discard();
         }
         calculateCollision(this.level());
-        checkInsideBlocks();
         Vec3 velocity = getDeltaMovement();
-        setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
+        Vec3 start = this.position();
+        Vec3 end = start.add(velocity);
+        this.applyEffectsFromBlocks(start, end);
+        setPos(end.x, end.y, end.z);
     }
 
     @Override

@@ -1,17 +1,9 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.renderer.item.ItemPropertyFunction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import java.util.Map;
-
-@Mixin(ItemProperties.class)
+/**
+ * 已在 26.3 升级中废弃：net.minecraft.client.renderer.item.ItemProperties 已删除，
+ * 条件/范围选择物品属性改由 ConditionalItemModelProperties/RangeSelectItemModelProperties
+ * （见 init.handler.ItemOverrideHandler）。条目已从 avaritia.mixins.json 移除。
+ */
 public interface GameplayItemPropertiesAccessor {
-    @Accessor("PROPERTIES")
-    static Map<Item, Map<ResourceLocation, ItemPropertyFunction>> avaritia$properties() {
-        throw new AssertionError("Mixin accessor was not applied");
-    }
 }

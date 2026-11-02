@@ -2,13 +2,11 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -49,7 +47,7 @@ public class HeavenSubArrowEntity extends Arrow {
     @Override
     public void tick() {
         super.tick();
-        if (inGround && inGroundTime >= 20) {
+        if (isInGround() && inGroundTime >= 20) {
             remove(RemovalReason.KILLED);
         }
     }
@@ -57,11 +55,6 @@ public class HeavenSubArrowEntity extends Arrow {
     @Override
     public @NotNull ItemStack getPickupItem() {
         return new ItemStack(Items.ARROW);
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
     }
 
     @Override
@@ -77,7 +70,9 @@ public class HeavenSubArrowEntity extends Arrow {
             if (entity == getOwner()) {
                 return;
             }
-            entity.hurt(ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                entity.hurtServer(serverLevel, ModDamageTypes.causeRandomDamage(level(), this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            }
         }
         this.discard();
     }

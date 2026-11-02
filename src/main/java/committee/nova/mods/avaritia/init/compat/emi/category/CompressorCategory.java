@@ -11,15 +11,15 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public record CompressorCategory(ICompressorRecipe recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
+    private static final EmiTexture TEXTURE = new EmiTexture(Identifier.tryBuild(Const.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.neutron_compressor.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "compressor"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(Identifier.tryBuild(Const.MOD_ID, "compressor"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {
@@ -27,7 +27,7 @@ public record CompressorCategory(ICompressorRecipe recipe) implements EmiRecipe 
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
+    public @NotNull Identifier getId() {
         return this.recipe.getId();
     }
 

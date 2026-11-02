@@ -13,6 +13,7 @@ import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.compat.jei.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.ExtremeSmithingRecipeCategory;
@@ -29,18 +30,23 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.registration.*;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,10 +58,10 @@ import java.util.stream.Stream;
  */
 @JeiPlugin
 public class AvaritiaJeiPlugin implements IModPlugin {
-    public static final ResourceLocation UID = new ResourceLocation(Const.MOD_ID, "jei_plugin");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "jei_plugin");
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public @NotNull Identifier getPluginUid() {
         return UID;
     }
 
@@ -74,42 +80,45 @@ public class AvaritiaJeiPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         ClientLevel world = Minecraft.getInstance().level;
         if (world != null) {
-            var manager = world.getRecipeManager();
-            registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
+            var manager = world.recipeAccess().getSynchronizedRecipes();
+            var compressorRecipes = List.copyOf(manager.getAllOfType(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
+            var extremeSmithingRecipes = List.copyOf(manager.getAllOfType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()));
+            var craftingRecipes = manager.getAllOfType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get());
 
-            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()));
+            registration.addRecipes(CompressorCategory.RECIPE_TYPE, compressorRecipes);
+            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, extremeSmithingRecipes);
 
-            var recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
-                    manager.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()).values()
-                            .stream()
-                            .filter(recipe -> recipe.hasRequiredTier() ? tier == recipe.getTier() : tier >= recipe.getTier())
-                            .toList()
-            ));
+            Map<Integer, List<RecipeHolder<ITierCraftingRecipe>>> recipes =
+                    Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
+                            craftingRecipes.stream()
+                                    .filter(recipe -> recipe.value().hasRequiredTier() ? tier == recipe.value().getTier() : tier >= recipe.value().getTier())
+                                    .toList()
+                    ));
 
-            registration.addRecipes(SculkCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, new ArrayList<>()));
-            registration.addRecipes(NetherCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(2, new ArrayList<>()));
-            registration.addRecipes(EndCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(3, new ArrayList<>()));
-            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(4, new ArrayList<>()));
+            registration.addRecipes(SculkCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, List.of()));
+            registration.addRecipes(NetherCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(2, List.of()));
+            registration.addRecipes(EndCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(3, List.of()));
+            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(4, List.of()));
 
-            registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
-            registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
-            registration.addIngredientInfo(new ItemStack(ModItems.crystal_pickaxe.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.crystal_pickaxe"));
-            registration.addIngredientInfo(new ItemStack(ModItems.full_matter_cluster.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.full_matter_cluster"));
-            registration.addIngredientInfo(new ItemStack(ModItems.refined_coal.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.refined_coal"));
-            registration.addIngredientInfo(new ItemStack(Items.BEDROCK), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.bedrock"));
-            registration.addIngredientInfo(new ItemStack(Items.END_PORTAL_FRAME), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.end_portal_frame"));
+            registration.addIngredientInfo(ModBlocks.neutron_collector.get(), Component.translatable("jei.tooltip.avaritia.neutron_collector"));
+            registration.addIngredientInfo(ModItems.neutron_pile.get(), Component.translatable("jei.tooltip.avaritia.neutron_pile"));
+            registration.addIngredientInfo(ModItems.crystal_pickaxe.get(), Component.translatable("jei.tooltip.avaritia.crystal_pickaxe"));
+            registration.addIngredientInfo(ModItems.full_matter_cluster.get(), Component.translatable("jei.tooltip.avaritia.full_matter_cluster"));
+            registration.addIngredientInfo(ModItems.refined_coal.get(), Component.translatable("jei.tooltip.avaritia.refined_coal"));
+            registration.addIngredientInfo(Items.BEDROCK, Component.translatable("jei.tooltip.avaritia.bedrock"));
+            registration.addIngredientInfo(Items.END_PORTAL_FRAME, Component.translatable("jei.tooltip.avaritia.end_portal_frame"));
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.neutron_compressor.get()), CompressorCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.sculk_crafting_table.get()), SculkCraftingTableCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.nether_crafting_table.get()), NetherCraftingTableCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.end_crafting_table.get()), EndCraftingTableCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_crafting_table.get()), ExtremeCraftingTableCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_smithing_table.get()), ExtremeSmithingRecipeCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_anvil.get()), RecipeTypes.ANVIL);
+        registration.addCraftingStation(CompressorCategory.RECIPE_TYPE, ModBlocks.neutron_compressor.get());
+        registration.addCraftingStation(SculkCraftingTableCategory.RECIPE_TYPE, ModBlocks.sculk_crafting_table.get());
+        registration.addCraftingStation(NetherCraftingTableCategory.RECIPE_TYPE, ModBlocks.nether_crafting_table.get());
+        registration.addCraftingStation(EndCraftingTableCategory.RECIPE_TYPE, ModBlocks.end_crafting_table.get());
+        registration.addCraftingStation(ExtremeCraftingTableCategory.RECIPE_TYPE, ModBlocks.extreme_crafting_table.get());
+        registration.addCraftingStation(ExtremeSmithingRecipeCategory.RECIPE_TYPE, ModBlocks.extreme_smithing_table.get());
+        registration.addCraftingStation(RecipeTypes.ANVIL, ModBlocks.extreme_anvil.get());
     }
 
     @Override
@@ -119,7 +128,15 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.nether_crafting_tile_table.get(), NetherCraftingTableCategory.RECIPE_TYPE, 1, 25, 26, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.end_crafting_tile_table.get(), EndCraftingTableCategory.RECIPE_TYPE, 1, 49, 50, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
-        registration.addRecipeTransferHandler(ExtremeSmithingMenu.class, ModMenus.extreme_smithing_table.get(), ExtremeSmithingRecipeCategory.RECIPE_TYPE, 1, 5, 6, 36);
+        registration.addRecipeTransferHandler(
+                ExtremeSmithingMenu.class,
+                ModMenus.extreme_smithing_table.get(),
+                ExtremeSmithingRecipeCategory.RECIPE_TYPE,
+                ExtremeSmithingMenu.TEMPLATE_SLOT,
+                ExtremeSmithingMenu.INPUT_SLOT_COUNT,
+                ExtremeSmithingMenu.RESULT_SLOT + 1,
+                36
+        );
         registration.addRecipeTransferHandler(ExtremeAnvilMenu.class, ModMenus.extreme_anvil.get(), RecipeTypes.ANVIL, 0, 2, 3, 36);
     }
 
@@ -132,12 +149,12 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(ExtremeCraftScreen.class, 174, 90, 22, 12, ExtremeCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeSmithingScreen.class, 86, 40, 22, 12, ExtremeSmithingRecipeCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeAnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
-        registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler());
+        registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler<>());
     }
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.singularity.get(), (stack, context) -> {
+        registration.registerSubtypeInterpreter(ModItems.singularity.get(), (stack, context) -> {
             Singularity singularity = SingularityUtils.getSingularity(stack);
             return singularity != null ? singularity.getRegistryName().toString() : "";
         });

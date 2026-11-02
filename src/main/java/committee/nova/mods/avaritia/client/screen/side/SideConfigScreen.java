@@ -1,29 +1,19 @@
 package committee.nova.mods.avaritia.client.screen.side;
 
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
-import committee.nova.mods.avaritia.api.client.screen.component.PortableScreenLayers;
-import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * 方块配置界面
- * Description: 类似Mekanism的六面配置界面，支持多种方块类型
- * @author cnlimiter
- * Date: 2025/11/14
- * Version: 1.0
- */
 public class SideConfigScreen extends Screen {
 
     private SideConfiguration sideConfig;
@@ -31,16 +21,11 @@ public class SideConfigScreen extends Screen {
     private final BlockPos blockPos;
     private final ITileIO tile;
 
-    // 屏幕坐标字段
-    // 屏幕坐标字段（由于Screen没有imageWidth等，我们需要自己管理）
-    @Getter
     private int guiLeft;
-    @Getter
     private int guiTop;
     private int imageWidth = 156;
     private int imageHeight = 117;
 
-    // 六个面配置按钮
     private SideButton northButton;
     private SideButton southButton;
     private SideButton eastButton;
@@ -56,75 +41,91 @@ public class SideConfigScreen extends Screen {
         this.tile = tile;
     }
 
+    public int getGuiLeft() {
+        return guiLeft;
+    }
+
+    public int getGuiTop() {
+        return guiTop;
+    }
+
     @Override
     protected void init() {
         super.init();
-        ScreenRectangle panel = PortableLayout.centered(this.width, this.height, this.imageWidth, this.imageHeight, 0);
-        this.guiLeft = panel.left();
-        this.guiTop = panel.top();
+        this.guiLeft = (this.width - this.imageWidth) / 2;
+        this.guiTop = (this.height - this.imageHeight) / 2;
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
+
         createSideButtons(x, y);
-        this.addRenderableWidget(UiInspector.name(
+
+        this.addRenderableWidget(
                 new ImageButton(x + 135, y + 93, 17, 18,
-                        17, 164, 18, Res.SIDE_CONFIG_TEX,
-                        (button) -> setAllSides(SideConfiguration.SideMode.OFF)), "side.clear"));
-        this.addRenderableWidget(UiInspector.name(
+                        new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
+                        (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
+                    @Override
+                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                        int vOffset = 164, textureDifference = 18;
+                        int i = vOffset;
+                        if (!this.isActive()) {
+                            i = vOffset + textureDifference * 2;
+                        } else if (this.isHoveredOrFocused()) {
+                            i = vOffset + textureDifference;
+                        }
+
+                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), 17, i, width, height, 256, 256);
+                    }
+                }
+
+        );
+        this.addRenderableWidget(
                 new ImageButton(x + 4, y + 4, 17, 18,
-                        0, 164, 18, Res.SIDE_CONFIG_TEX,
-                        (button) -> onClose()), "side.back"));
-        UiInspector.name(northButton, "side.north");
-        UiInspector.name(southButton, "side.south");
-        UiInspector.name(eastButton, "side.east");
-        UiInspector.name(westButton, "side.west");
-        UiInspector.name(upButton, "side.up");
-        UiInspector.name(downButton, "side.down");
+                        new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
+                        (button) -> onClose()) {
+                    @Override
+                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                        int vOffset = 164, textureDifference = 18;
+                        int i = vOffset;
+                        if (!this.isActive()) {
+                            i = vOffset + textureDifference * 2;
+                        } else if (this.isHoveredOrFocused()) {
+                            i = vOffset + textureDifference;
+                        }
+
+                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), 0, i, width, height, 256, 256);
+                    }
+                }
+        );
     }
 
-    /**
-     * 创建六个面的配置按钮
-     */
     private void createSideButtons(int x, int y) {
-        int centerX = x + 67; // 中心点
+        int centerX = x + 67;
         int centerY = y + 50;
 
-        // 上（顶部视图）
         upButton = new SideButton(centerX, centerY - 24, Direction.UP, sideConfig.getSideMode(Direction.UP), this);
         this.addRenderableWidget(upButton);
 
-        // 下（底部视图）
         downButton = new SideButton(centerX, centerY + 24, Direction.DOWN, sideConfig.getSideMode(Direction.DOWN), this);
         this.addRenderableWidget(downButton);
 
-        // 北（前面）
         northButton = new SideButton(centerX, centerY, Direction.NORTH, sideConfig.getSideMode(Direction.NORTH), this);
         this.addRenderableWidget(northButton);
 
-        // 南（后面）
         southButton = new SideButton(centerX - 23, centerY + 24, Direction.SOUTH, sideConfig.getSideMode(Direction.SOUTH), this);
         this.addRenderableWidget(southButton);
 
-        // 西（左面）
         westButton = new SideButton(centerX - 23, centerY, Direction.WEST, sideConfig.getSideMode(Direction.WEST), this);
         this.addRenderableWidget(westButton);
 
-        // 东（右面）
         eastButton = new SideButton(centerX + 23, centerY, Direction.EAST, sideConfig.getSideMode(Direction.EAST), this);
         this.addRenderableWidget(eastButton);
     }
 
-    /**
-     * 为指定方向切换模式
-     */
     public void cycleModeForDirection(Direction direction) {
         tile.cycleSideModeForNeutronCollector(direction);
-        // 更新本地配置显示
         sideConfig.setSideMode(direction, tile.getSideConfiguration().getSideMode(direction));
     }
 
-    /**
-     * 设置所有面为指定模式
-     */
     private void setAllSides(SideConfiguration.SideMode mode) {
         for (Direction direction : Direction.values()) {
             sideConfig.setSideMode(direction, mode);
@@ -134,9 +135,6 @@ public class SideConfigScreen extends Screen {
         sendConfigUpdate();
     }
 
-    /**
-     * 更新所有按钮状态
-     */
     public void updateAllButtons() {
         northButton.updateMode(sideConfig.getSideMode(Direction.NORTH));
         southButton.updateMode(sideConfig.getSideMode(Direction.SOUTH));
@@ -146,28 +144,30 @@ public class SideConfigScreen extends Screen {
         downButton.updateMode(sideConfig.getSideMode(Direction.DOWN));
     }
 
-    /**
-     * 发送配置更新到服务端
-     */
     public void sendConfigUpdate() {
         NetworkHandler.sendSideConfigUpdate(blockPos, sideConfig);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // 先渲染背景
+    public void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractTransparentBackground(guiGraphics);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
-        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
-        UiInspector.region("side.panel", new ScreenRectangle(x, y, this.imageWidth, this.imageHeight), null, true);
-        // 渲染子组件（按钮等）
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
+    @Override
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, this.guiTop + 7, 0xFF404040);
+    }
 
     @Override
     public void onClose() {
-        PortableScreenLayers.close(this, parentScreen);
+        // 26.3 无 pushScreenLayer/popScreenLayer 分层屏幕栈，改为显式返回父屏幕。
+        if (this.minecraft != null) {
+            this.minecraft.gui.setScreen(this.parentScreen);
+        }
     }
 
 }

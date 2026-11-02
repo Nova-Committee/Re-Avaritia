@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:soul_farmland",
+    "b": "minecraft:amethyst_block",
+    "c": "minecraft:amethyst_cluster"
+  },
+  "pattern": [
+    "cac",
+    "aba",
+    "cac"
+  ],
+  "result": {
+    "id": "minecraft:budding_amethyst"
+  },
+  "tier": 1
+}

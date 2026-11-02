@@ -94,7 +94,7 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
         for (int i = 0; i < paletteSize; i++) {
             CompoundTag tag = buf.readNbt();
             palette.add(tag == null ? Blocks.AIR.defaultBlockState()
-                    : NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag));
+                    : NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag));
         }
         int count = readCount(buf);
         int[] positions = new int[count];
@@ -138,26 +138,26 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
     public static Meta meta(CompoundTag template) {
         SizeBounds size = sizeOf(template);
         ListTag paletteTag = paletteTag(template);
-        ListTag blocksTag = template.getList("blocks", Tag.TAG_COMPOUND);
+        ListTag blocksTag = template.getListOrEmpty("blocks");
         boolean[] air = new boolean[paletteTag.size()];
         for (int i = 0; i < paletteTag.size(); i++) {
-            air[i] = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), paletteTag.getCompound(i)).isAir();
+            air[i] = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, compound(paletteTag, i)).isAir();
         }
         int count = 0;
         int limit = Math.min(MAX_CELLS, blocksTag.size());
         for (int i = 0; i < limit; i++) {
-            CompoundTag block = blocksTag.getCompound(i);
-            int index = block.getInt("state");
+            CompoundTag block = compound(blocksTag, i);
+            int index = block.getIntOr("state", -1);
             if (index < 0 || index >= air.length || air[index]) {
                 continue;
             }
-            ListTag pos = block.getList("pos", Tag.TAG_INT);
+            ListTag pos = block.getListOrEmpty("pos");
             if (pos.size() < 3) {
                 continue;
             }
-            int x = pos.getInt(0);
-            int y = pos.getInt(1);
-            int z = pos.getInt(2);
+            int x = pos.getIntOr(0, -1);
+            int y = pos.getIntOr(1, -1);
+            int z = pos.getIntOr(2, -1);
             if (x < 0 || y < 0 || z < 0 || x >= size.sizeX || y >= size.sizeY || z >= size.sizeZ) {
                 continue;
             }
@@ -175,9 +175,9 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
         var blocks = registries.lookupOrThrow(Registries.BLOCK);
         List<BlockState> sourcePalette = new ArrayList<>(paletteTag.size());
         for (int i = 0; i < paletteTag.size(); i++) {
-            sourcePalette.add(NbtUtils.readBlockState(blocks, paletteTag.getCompound(i)));
+            sourcePalette.add(NbtUtils.readBlockState(blocks, compound(paletteTag, i)));
         }
-        ListTag blocksTag = template.getList("blocks", Tag.TAG_COMPOUND);
+        ListTag blocksTag = template.getListOrEmpty("blocks");
         Map<BlockState, Integer> index = new HashMap<>();
         List<BlockState> palette = new ArrayList<>();
         int[] positions = new int[Math.min(MAX_CELLS, blocksTag.size())];
@@ -185,8 +185,8 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
         List<BlockEntityData> entities = new ArrayList<>();
         int count = 0;
         for (int i = 0; i < blocksTag.size() && count < MAX_CELLS; i++) {
-            CompoundTag block = blocksTag.getCompound(i);
-            int sourceIndex = block.getInt("state");
+            CompoundTag block = compound(blocksTag, i);
+            int sourceIndex = block.getIntOr("state", -1);
             if (sourceIndex < 0 || sourceIndex >= sourcePalette.size()) {
                 continue;
             }
@@ -194,13 +194,13 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
             if (state.isAir()) {
                 continue;
             }
-            ListTag posTag = block.getList("pos", Tag.TAG_INT);
+            ListTag posTag = block.getListOrEmpty("pos");
             if (posTag.size() < 3) {
                 continue;
             }
-            int x = posTag.getInt(0);
-            int y = posTag.getInt(1);
-            int z = posTag.getInt(2);
+            int x = posTag.getIntOr(0, -1);
+            int y = posTag.getIntOr(1, -1);
+            int z = posTag.getIntOr(2, -1);
             if (x < 0 || y < 0 || z < 0 || x >= size.sizeX || y >= size.sizeY || z >= size.sizeZ) {
                 continue;
             }
@@ -212,8 +212,9 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
             positions[count] = packed;
             states[count] = paletteIndex;
             count++;
-            if (block.contains("nbt", Tag.TAG_COMPOUND)) {
-                CompoundTag update = clientUpdateTag(new BlockPos(x, y, z), state, block.getCompound("nbt"));
+            CompoundTag nbt = block.getCompound("nbt").orElse(null);
+            if (nbt != null && !nbt.isEmpty()) {
+                CompoundTag update = clientUpdateTag(new BlockPos(x, y, z), state, nbt, registries);
                 if (update != null && !update.isEmpty()) {
                     entities.add(new BlockEntityData(packed, update));
                 }
@@ -244,10 +245,7 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
         to = Mth.clamp(to, from, count);
         List<BlockEntityData> entities = List.of();
         if (from < to && !blockEntities.isEmpty()) {
-            IntOpenHashSet included = new IntOpenHashSet();
-            for (int i = from; i < to; i++) {
-                included.add(positions[i]);
-            }
+            IntOpenHashSet included = new IntOpenHashSet(positions, from, to - from);
             entities = new ArrayList<>();
             for (BlockEntityData entity : blockEntities) {
                 if (included.contains(entity.packedPos())) {
@@ -288,35 +286,39 @@ public record NeutronSpacePreview(int sizeX, int sizeY, int sizeZ, int blocks, L
     }
 
     @Nullable
-    private static CompoundTag clientUpdateTag(BlockPos pos, BlockState state, CompoundTag templateNbt) {
+    private static CompoundTag clientUpdateTag(BlockPos pos, BlockState state, CompoundTag templateNbt,
+                                               HolderLookup.Provider registries) {
         try {
-            BlockEntity blockEntity = BlockEntity.loadStatic(pos, state, templateNbt.copy());
+            BlockEntity blockEntity = BlockEntity.loadStatic(pos, state, templateNbt.copy(), registries);
             if (blockEntity == null) {
                 return null;
             }
-            return blockEntity.getUpdateTag();
+            return blockEntity.getUpdateTag(registries);
         } catch (RuntimeException ignored) {
             return null;
         }
     }
 
     private static ListTag paletteTag(CompoundTag template) {
-        if (template.contains("palettes", Tag.TAG_LIST)) {
-            ListTag palettes = template.getList("palettes", Tag.TAG_LIST);
-            return palettes.isEmpty() ? new ListTag() : palettes.getList(0);
+        ListTag palettes = template.getListOrEmpty("palettes");
+        if (!palettes.isEmpty()) {
+            Tag first = palettes.get(0);
+            return first instanceof ListTag list ? list : new ListTag();
         }
-        return template.getList("palette", Tag.TAG_COMPOUND);
+        return template.getListOrEmpty("palette");
     }
 
     private static SizeBounds sizeOf(CompoundTag template) {
-        ListTag size = template.getList("size", Tag.TAG_INT);
-        int sizeX = size.size() > 0 ? size.getInt(0) : 1;
-        int sizeY = size.size() > 1 ? size.getInt(1) : 1;
-        int sizeZ = size.size() > 2 ? size.getInt(2) : 1;
+        ListTag size = template.getListOrEmpty("size");
         return new SizeBounds(
-                Mth.clamp(sizeX, 1, NeutronRingContents.MAX_XZ),
-                Mth.clamp(sizeY, 1, NeutronRingContents.MAX_Y),
-                Mth.clamp(sizeZ, 1, NeutronRingContents.MAX_XZ));
+                Mth.clamp(size.getIntOr(0, 1), 1, NeutronRingContents.MAX_XZ),
+                Mth.clamp(size.getIntOr(1, 1), 1, NeutronRingContents.MAX_Y),
+                Mth.clamp(size.getIntOr(2, 1), 1, NeutronRingContents.MAX_XZ));
+    }
+
+    private static CompoundTag compound(ListTag list, int index) {
+        Tag tag = list.get(index);
+        return tag instanceof CompoundTag compound ? compound : new CompoundTag();
     }
 
     private record SizeBounds(int sizeX, int sizeY, int sizeZ) {

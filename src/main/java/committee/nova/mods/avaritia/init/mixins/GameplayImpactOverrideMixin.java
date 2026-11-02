@@ -7,7 +7,14 @@ import committee.nova.mods.avaritia.common.entity.arrow.BurningArrowEntity;
 import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
 import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import committee.nova.mods.avaritia.init.handler.ProjectileReflectionTracker;
-import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.projectile.hurtingprojectile.DragonFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownExperienceBottle;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /** Cancels entire override bodies, not just their super.onHit call. */
-@Mixin({ThrownPotion.class, ThrownEgg.class, ThrownEnderpearl.class, ThrownExperienceBottle.class,
+@Mixin({AbstractThrownPotion.class, ThrownEgg.class, ThrownEnderpearl.class, ThrownExperienceBottle.class,
         SmallFireball.class, LargeFireball.class, DragonFireball.class, WitherSkull.class,
         RainProEntity.class, StormProEntity.class, SunProEntity.class,
         BurningArrowEntity.class, BurningBallEntity.class, FireBallEntity.class})

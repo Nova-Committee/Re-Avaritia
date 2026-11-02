@@ -3,12 +3,14 @@ package committee.nova.mods.avaritia.api.init.handler;
 import committee.nova.mods.avaritia.api.common.net.IPacket;
 import committee.nova.mods.avaritia.api.common.net.PacketContext;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -19,19 +21,23 @@ import java.util.function.*;
 public final class NetBaseHandler {
     public enum Direction { SERVERBOUND, CLIENTBOUND, BOTH }
     private static final int PROTOCOL = 1;
-    private static final Map<ResourceLocation, NetBaseHandler> CHANNELS = new HashMap<>();
-    private static Consumer<ServerboundCustomPayloadPacket> clientSender;
-    private final ResourceLocation identifier;
+    private static final Map<Identifier, NetBaseHandler> CHANNELS = new HashMap<>();
+    private static Consumer<CustomPacketPayload> clientSender;
+    private final Identifier identifier;
+    private final CustomPacketPayload.Type<ChannelPayload> payloadType;
     private final List<Registration<?>> registrations = new ArrayList<>();
     private final Map<Class<?>, Registration<?>> byType = new HashMap<>();
 
-    public NetBaseHandler(ResourceLocation identifier) {
+    public NetBaseHandler(Identifier identifier) {
         this.identifier = identifier;
         if (CHANNELS.putIfAbsent(identifier, this) != null) throw new IllegalArgumentException("Duplicate channel " + identifier);
+        this.payloadType = new CustomPacketPayload.Type<>(identifier);
+        PayloadTypeRegistry.serverboundPlay().register(this.payloadType, ChannelPayload.codec(this.payloadType));
+        PayloadTypeRegistry.clientboundPlay().register(this.payloadType, ChannelPayload.codec(this.payloadType));
     }
 
-    public static void setClientSender(Consumer<ServerboundCustomPayloadPacket> sender) { clientSender = Objects.requireNonNull(sender); }
-    public static boolean ownsChannel(ResourceLocation identifier) { return CHANNELS.containsKey(identifier); }
+    public static void setClientSender(Consumer<CustomPacketPayload> sender) { clientSender = Objects.requireNonNull(sender); }
+    public static boolean ownsChannel(Identifier identifier) { return CHANNELS.containsKey(identifier); }
 
     public <T> void register(Class<T> type, BiConsumer<T, FriendlyByteBuf> encoder,
                              Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<PacketContext>> consumer,
@@ -45,7 +51,7 @@ public final class NetBaseHandler {
         register(type, codec::write, codec::read, codec::run, direction);
     }
 
-    public static boolean receive(ResourceLocation identifier, FriendlyByteBuf data, PacketContext context) {
+    public static boolean receive(Identifier identifier, FriendlyByteBuf data, PacketContext context) {
         NetBaseHandler channel = CHANNELS.get(identifier);
         if (channel == null) return false;
         try {
@@ -62,7 +68,7 @@ public final class NetBaseHandler {
         return true;
     }
 
-    private <T> FriendlyByteBuf encode(T message, boolean serverbound) {
+    private <T> byte[] encode(T message, boolean serverbound) {
         @SuppressWarnings("unchecked") Registration<T> registration = (Registration<T>) byType.get(message.getClass());
         if (registration == null) throw new IllegalArgumentException("Unregistered packet " + message.getClass());
         registration.checkDirection(serverbound);
@@ -73,41 +79,55 @@ public final class NetBaseHandler {
             registration.encoder.accept(message, data);
             int limit = serverbound ? 32767 : 1048576;
             if (data.readableBytes() > limit) throw new IllegalArgumentException("Avaritia packet exceeds vanilla payload limit");
-            return data;
-        } catch (RuntimeException exception) {
+            byte[] bytes = new byte[data.readableBytes()];
+            data.readBytes(bytes);
+            return bytes;
+        } finally {
             data.release();
-            throw exception;
         }
     }
 
     public <T> void sendToServer(T message) {
         if (clientSender == null) throw new IllegalStateException("Client networking is not initialized");
-        clientSender.accept(new ServerboundCustomPayloadPacket(identifier, encode(message, true)));
+        clientSender.accept(new ChannelPayload(this.payloadType, encode(message, true)));
     }
     public <T> void sendTo(ServerPlayer player, T message) {
-        player.connection.send(new ClientboundCustomPayloadPacket(identifier, encode(message, false)));
+        ServerPlayNetworking.send(player, new ChannelPayload(this.payloadType, encode(message, false)));
     }
     public <T> void sendToAll(MinecraftServer server, T message) {
         var players = server.getPlayerList().getPlayers();
         if (players.isEmpty()) return;
-        ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(identifier, encode(message, false));
-        for (ServerPlayer player : players) player.connection.send(packet);
+        ChannelPayload payload = new ChannelPayload(this.payloadType, encode(message, false));
+        for (ServerPlayer player : players) ServerPlayNetworking.send(player, payload);
     }
     public <T> void sendToNear(Level level, BlockPos pos, double radius, T message) {
         if (level.isClientSide) return;
-        ClientboundCustomPayloadPacket packet = null;
+        ChannelPayload payload = null;
         double radiusSquared = radius * radius;
         double x = pos.getX() + .5, y = pos.getY() + .5, z = pos.getZ() + .5;
         for (net.minecraft.world.entity.player.Player player : level.players()) {
             if (player instanceof ServerPlayer serverPlayer && player.distanceToSqr(x, y, z) <= radiusSquared) {
-                if (packet == null) packet = new ClientboundCustomPayloadPacket(identifier, encode(message, false));
-                serverPlayer.connection.send(packet);
+                if (payload == null) payload = new ChannelPayload(this.payloadType, encode(message, false));
+                ServerPlayNetworking.send(serverPlayer, payload);
             }
         }
     }
     public <T> void reply(T message, PacketContext context) {
         if (context.getSender() == null) throw new IllegalArgumentException("Reply requires serverbound context");
         sendTo(context.getSender(), message);
+    }
+
+    /** Wrapper payload routed through the Fabric payload registries; carries one encoded project packet. */
+    public record ChannelPayload(CustomPacketPayload.Type<ChannelPayload> payloadType, byte[] data) implements CustomPacketPayload {
+        @Override
+        public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+            return this.payloadType;
+        }
+
+        public static StreamCodec<FriendlyByteBuf, ChannelPayload> codec(CustomPacketPayload.Type<ChannelPayload> type) {
+            return CustomPacketPayload.codec((payload, buf) -> buf.writeByteArray(payload.data()),
+                    buf -> new ChannelPayload(type, buf.readByteArray()));
+        }
     }
 
     private record Registration<T>(int id, Class<T> type, BiConsumer<T, FriendlyByteBuf> encoder,

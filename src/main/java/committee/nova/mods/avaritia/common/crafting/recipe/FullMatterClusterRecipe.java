@@ -1,15 +1,17 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -21,25 +23,22 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
     private final int count;
 
 
-    public FullMatterClusterRecipe(ResourceLocation recipeId, String group, NonNullList<Ingredient> inputs, int count) {
-
-        super(recipeId, inputs, new ItemStack(ModItems.full_matter_cluster.get()), 1);
+    public FullMatterClusterRecipe(String group, NonNullList<Ingredient> inputs, int count) {
+        super(inputs, new ItemStackTemplate(ModItems.full_matter_cluster.get()), 1);
         this.group = group;
         this.count = count;
     }
 
     @Override
-    public boolean matches(@NotNull Container container, @NotNull Level level) {
-
-        if (!super.matches(container, level)) {
+    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+        if (!super.matches(input, level)) {
             return false;
         }
 
         // 额外检查物质团数量是否≥4096
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack stack = container.getItem(i);
-            if (stack.getItem() instanceof MatterClusterItem clusterItem) {
-
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (stack.getItem() instanceof MatterClusterItem) {
                 if (MatterClusterItem.getClusterSize(stack) >= 4096) {
                     return true;
                 }
@@ -49,48 +48,50 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull String getGroup() {
-        return group;
+    public @NotNull String group() {
+        return this.group;
     }
-
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.FULL_MATTER_CLUSTER_SERIALIZER.get();
+    public @NotNull RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<CraftingInput>> getSerializer() {
+        return (RecipeSerializer<FullMatterClusterRecipe>) ModRecipeSerializers.FULL_MATTER_CLUSTER_SERIALIZER.get();
     }
 
-    public static class Serializer implements RecipeSerializer<FullMatterClusterRecipe> {
-        @Override
-        public @NotNull FullMatterClusterRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
+    public int getCount() {
+        return this.count;
+    }
 
-            String group = GsonHelper.getAsString(json, "group", "default");
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
-            for (int i = 0; i < ingredients.size(); i++) {
-                inputs.add(Ingredient.fromJson(ingredients.get(i)));
-            }
-            int count = GsonHelper.getAsInt(json, "count", 1);
-            return new FullMatterClusterRecipe(recipeId, group, inputs, count);
-        }
+    public static class Serializer {
+        public static final MapCodec<FullMatterClusterRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        Codec.STRING.optionalFieldOf("group", "default").forGetter(recipe -> recipe.group),
+                        RecipeCodecs.ingredientList(81, false, "Combination recipe")
+                                .fieldOf("ingredients")
+                                .forGetter(recipe -> recipe.inputs),
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
+                ).apply(builder, FullMatterClusterRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, FullMatterClusterRecipe> STREAM_CODEC = StreamCodec.of(
+                FullMatterClusterRecipe.Serializer::toNetwork, FullMatterClusterRecipe.Serializer::fromNetwork
+        );
+        public static final RecipeSerializer<FullMatterClusterRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
-        @Override
-        public FullMatterClusterRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+        private static FullMatterClusterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             int size = buffer.readVarInt();
-            NonNullList<Ingredient> inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
             for (int i = 0; i < size; i++) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             int count = buffer.readInt();
-            return new FullMatterClusterRecipe(recipeId, group, inputs, count);
+            return new FullMatterClusterRecipe(group, inputs, count);
         }
 
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull FullMatterClusterRecipe recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, FullMatterClusterRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeVarInt(recipe.inputs.size());
             for (Ingredient ingredient : recipe.inputs) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             buffer.writeInt(recipe.count);
         }

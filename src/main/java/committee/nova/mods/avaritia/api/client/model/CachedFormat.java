@@ -19,8 +19,8 @@
 package committee.nova.mods.avaritia.api.client.model;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormatElement;
 
 import java.util.List;
 import java.util.Map;
@@ -76,54 +76,44 @@ public class CachedFormat {
         int lightMapIndex = -1;
 
         for (int i = 0; i < elementCount; i++) {
-            VertexFormatElement element = elements.get(i);
-            switch (element.getUsage()) {
-                case POSITION:
-                    if (hasPosition) {
-                        throw new IllegalStateException("Found 2 position elements..");
-                    }
-                    hasPosition = true;
-                    positionIndex = i;
-                    break;
-                case NORMAL:
-                    if (hasNormal) {
-                        throw new IllegalStateException("Found 2 normal elements..");
-                    }
-                    hasNormal = true;
-                    normalIndex = i;
-                    break;
-                case COLOR:
-                    if (hasColor) {
-                        throw new IllegalStateException("Found 2 color elements..");
-                    }
-                    hasColor = true;
-                    colorIndex = i;
-                    break;
-                case UV:
-                    switch (element.getIndex()) {
-                        case 0 -> {
-                            if (hasUV) {
-                                throw new IllegalStateException("Found 2 UV elements..");
-                            }
-                            hasUV = true;
-                            uvIndex = i;
-                        }
-                        case 1 -> {
-                            if (hasOverlay) {
-                                throw new IllegalStateException("Found 2 Overlay elements..");
-                            }
-                            hasOverlay = true;
-                            overlayIndex = i;
-                        }
-                        case 2 -> {
-                            if (hasLightMap) {
-                                throw new IllegalStateException("Found 2 LightMap elements..");
-                            }
-                            hasLightMap = true;
-                            lightMapIndex = i;
-                        }
-                    }
-                    break;
+            // 26.3 起顶点元素不再有常量标识，统一按 name() 字符串识别语义角色。
+            String name = elements.get(i).name();
+            if (DefaultVertexFormat.POSITION_SEMANTIC_NAME.equals(name)) {
+                if (hasPosition) {
+                    throw new IllegalStateException("Found 2 position elements..");
+                }
+                hasPosition = true;
+                positionIndex = i;
+            } else if (DefaultVertexFormat.NORMAL_SEMANTIC_NAME.equals(name)) {
+                if (hasNormal) {
+                    throw new IllegalStateException("Found 2 normal elements..");
+                }
+                hasNormal = true;
+                normalIndex = i;
+            } else if (DefaultVertexFormat.COLOR_SEMANTIC_NAME.equals(name)) {
+                if (hasColor) {
+                    throw new IllegalStateException("Found 2 color elements..");
+                }
+                hasColor = true;
+                colorIndex = i;
+            } else if (DefaultVertexFormat.UV0_SEMANTIC_NAME.equals(name)) {
+                if (hasUV) {
+                    throw new IllegalStateException("Found 2 UV elements..");
+                }
+                hasUV = true;
+                uvIndex = i;
+            } else if (DefaultVertexFormat.UV1_SEMANTIC_NAME.equals(name)) {
+                if (hasOverlay) {
+                    throw new IllegalStateException("Found 2 Overlay elements..");
+                }
+                hasOverlay = true;
+                overlayIndex = i;
+            } else if (DefaultVertexFormat.UV2_SEMANTIC_NAME.equals(name)) {
+                if (hasLightMap) {
+                    throw new IllegalStateException("Found 2 LightMap elements..");
+                }
+                hasLightMap = true;
+                lightMapIndex = i;
             }
         }
 

@@ -1,29 +1,26 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.common.item.misc.InfinityElytraItem;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+/**
+ * 26.3 滑翔已数据驱动（DataComponents.GLIDER + EQUIPPABLE）；无尽鞘翅仅带 GLIDER 组件
+ * 且可经饰品栏携带，vanilla canGlideUsing 无法放行，故在 aiStep 的起飞调用处补齐触发。
+ */
 @Mixin(LocalPlayer.class)
 public abstract class GameplayLocalPlayerMixin {
-    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getItemBySlot(Lnet/minecraft/world/entity/EquipmentSlot;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack avaritia$equippedElytra(LocalPlayer player, EquipmentSlot slot) {
-        ItemStack elytra = InfinityElytraUtils.getInfinityElytraStack(player);
-        return slot == EquipmentSlot.CHEST && !elytra.isEmpty() ? elytra : player.getItemBySlot(slot);
-    }
-    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"))
-    private boolean avaritia$nativeElytra(ItemStack stack, Item item) {
-        return stack.is(item) || item == Items.ELYTRA && stack.getItem() instanceof InfinityElytraItem;
-    }
-    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ElytraItem;isFlyEnabled(Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean avaritia$elytraFlightEnabled(ItemStack stack) {
-        return InfinityElytraUtils.isFlyEnabled(stack);
+    @Redirect(
+            method = "aiStep",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;tryToStartFallFlying()Z")
+    )
+    private boolean avaritia$tryStartFallFlying(LocalPlayer player) {
+        if (player.tryToStartFallFlying()) return true;
+        if (player.isFallFlying() || player.isInLiquid() || InfinityElytraUtils.isUsingOtherFlightMode(player)) return false;
+        if (InfinityElytraUtils.getInfinityElytraStack(player).isEmpty()) return false;
+        player.startFallFlying();
+        return true;
     }
 }

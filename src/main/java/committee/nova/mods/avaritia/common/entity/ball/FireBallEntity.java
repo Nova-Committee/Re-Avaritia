@@ -2,20 +2,20 @@ package committee.nova.mods.avaritia.common.entity.ball;
 
 import committee.nova.mods.avaritia.api.util.PlayerUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,7 +39,7 @@ public class FireBallEntity extends ThrowableProjectile {
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             Entity owner = this.getOwner();
             if (owner instanceof ServerPlayer player) {
                 BlockPos pos = result.getBlockPos();
@@ -74,29 +74,28 @@ public class FireBallEntity extends ThrowableProjectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             Entity owner = this.getOwner();
             if (owner instanceof Player) {
                 Entity ent = result.getEntity();
-                ent.setSecondsOnFire(100);
-                ent.hurt(this.level().damageSources().inFire(), 50.0F);
+                ent.setRemainingFireTicks(100);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    ent.hurtServer(serverLevel, this.level().damageSources().inFire(), 50.0F);
+                } else {
+                    ent.hurtOrSimulate(this.level().damageSources().inFire(), 50.0F);
+                }
             }
         }
 
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return super.getAddEntityPacket();
-    }
-
-    @Override
-    public boolean ignoreExplosion() {
+    public boolean ignoreExplosion(@NotNull Explosion explosion) {
         return true;
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
 
     }
 }

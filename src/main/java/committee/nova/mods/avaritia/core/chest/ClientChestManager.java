@@ -53,7 +53,7 @@ public class ClientChestManager {
     }
 
     public String getUserName(UUID uuid) {
-        String userName = userCache.getCompound("nameCache").getString(uuid.toString());
+        String userName = userCache.getCompoundOrEmpty("nameCache").getStringOr(uuid.toString(), "");
         if (userName.isEmpty()) return "unknownUser";
         return userName;
     }

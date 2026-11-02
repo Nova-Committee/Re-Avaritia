@@ -28,8 +28,8 @@ public class CraftingRecipeGridIndexGetter {
                 }
             }
         } else {
-            if (craftingRecipe.getIngredients().size() == 1) indexArray.add(4);
-            else for (int i = 0; i < craftingRecipe.getIngredients().size(); i++) {
+            if (craftingRecipe.placementInfo().ingredients().size() == 1) indexArray.add(4);
+            else for (int i = 0; i < craftingRecipe.placementInfo().ingredients().size(); i++) {
                 indexArray.add(i);
             }
         }

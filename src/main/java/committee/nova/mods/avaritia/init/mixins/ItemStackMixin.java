@@ -2,7 +2,10 @@ package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.item.misc.InfinityElytraItem;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,15 +30,11 @@ public abstract class ItemStackMixin {
         }
     }
 
-
     /**
      * 拦截ItemStack的hurtAndBreak方法
-     *
-     * @param amount 伤害值
-     * @param ci     回调信息
      */
-    @Inject(method = "hurtAndBreak", at = @At("HEAD"), cancellable = true)
-    private void onHurtAndBreak(int amount, LivingEntity entity, Consumer<LivingEntity> onBroken, CallbackInfo ci) {
+    @Inject(method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
+    private void onHurtAndBreak(int amount, ServerLevel level, ServerPlayer player, Consumer<ItemStack> onBroken, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof IUndamageable) {
             ci.cancel();

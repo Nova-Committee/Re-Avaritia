@@ -1,215 +1,180 @@
 package committee.nova.mods.avaritia.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreviewLevel;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
+import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.CardinalLighting;
+import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Matrix3x2f;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
-/** Cached BlockRenderDispatcher mesh of a captured Neutron Ring volume. */
+/**
+ * Snapshot preview submitted through native PIP.
+ * Block models tessellate against the captured volume (neighbor cull);
+ * fluids use FluidRenderer, not MovingBlockRenderState (model-only).
+ */
 public final class NeutronSpacePreviewRenderer {
-    private static int reloadGeneration;
-
     private @Nullable NeutronSpacePreview preview;
     private @Nullable NeutronSpacePreviewLevel level;
     private @Nullable Level boundWorld;
-    private final List<Layer> layers = new ArrayList<>();
-    private int bakedGeneration = -1;
-    private final Matrix4f modelView = new Matrix4f();
     private float fitSpan = 1.0F;
 
-    public static void invalidate() {
-        reloadGeneration++;
+    public static void registerPip() {
+        PictureInPictureRendererRegistry.register(context -> new PipRenderer());
     }
 
     public void setPreview(@Nullable NeutronSpacePreview preview) {
         if (this.preview == preview) {
             return;
         }
-        closeMesh();
         this.preview = preview;
         fitSpan = preview == null ? 1.0F : (float) Math.hypot(
                 Math.hypot(Math.max(1, preview.sizeX()), Math.max(1, preview.sizeZ())),
                 Math.max(1, preview.sizeY()));
         this.level = null;
         this.boundWorld = null;
-        bakedGeneration = -1;
     }
 
     public void close() {
         setPreview(null);
     }
 
-    public void draw(GuiGraphics graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom,
+    public void draw(GuiGraphicsExtractor graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom,
                      float panX, float panY) {
         graphics.fill(x, y, x + w, y + h, PortableUi.INSET_BG);
-        graphics.bufferSource().endBatch();
         bindSnapshot();
-        if (preview == null || level == null) {
+        if (preview == null || level == null || w <= 0 || h <= 0) {
             return;
         }
-        ensureBaked(yaw, pitch);
-        int sizeX = Math.max(1, preview.sizeX());
-        int sizeY = Math.max(1, preview.sizeY());
-        int sizeZ = Math.max(1, preview.sizeZ());
-        graphics.enableScissor(x, y, x + w, y + h);
-        var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(x + w / 2.0F + panX, y + h / 2.0F + panY, 150.0F);
-        float scale = zoom * Math.min(Math.max(1, w - 12), Math.max(1, h - 12)) / fitSpan;
-        pose.scale(scale, -scale, scale);
-        pose.mulPose(Axis.XP.rotationDegrees(pitch));
-        pose.mulPose(Axis.YP.rotationDegrees(yaw));
-        pose.translate(-sizeX / 2.0F, -sizeY / 2.0F, -sizeZ / 2.0F);
-
-        float fogStart = RenderSystem.getShaderFogStart();
-        RenderSystem.setShaderFogStart(Float.MAX_VALUE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        modelView.set(RenderSystem.getModelViewMatrix()).mul(pose.last().pose());
-        Matrix4f projection = RenderSystem.getProjectionMatrix();
-        for (Layer layer : layers) {
-            if (layer.translucent) {
-                continue;
-            }
-            drawLayer(layer, modelView, projection);
-        }
-        drawBlockEntities(graphics, pose);
-        for (Layer layer : layers) {
-            if (layer.translucent) {
-                drawLayer(layer, modelView, projection);
-            }
-        }
-        RenderSystem.setShaderFogStart(fogStart);
-        RenderSystem.enableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(true);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        pose.popPose();
-        graphics.disableScissor();
-        graphics.bufferSource().endBatch();
-    }
-
-    private void drawLayer(Layer layer, Matrix4f modelView, Matrix4f projection) {
-        layer.type.setupRenderState();
-        ShaderInstance shader = RenderSystem.getShader();
-        if (shader != null && !layer.buffer.isInvalid()) {
-            if (shader.CHUNK_OFFSET != null) {
-                shader.CHUNK_OFFSET.set(0.0F, 0.0F, 0.0F);
-            }
-            layer.buffer.bind();
-            layer.buffer.drawWithShader(modelView, projection, shader);
-            VertexBuffer.unbind();
-        }
-        layer.type.clearRenderState();
-    }
-
-    @SuppressWarnings("unchecked")
-    private void drawBlockEntities(GuiGraphics graphics, PoseStack pose) {
-        if (level == null || level.blockEntities().isEmpty()) {
-            return;
-        }
-        Minecraft minecraft = Minecraft.getInstance();
-        MultiBufferSource.BufferSource buffers = graphics.bufferSource();
-        int light = LightTexture.pack(15, 15);
-        for (BlockEntity blockEntity : level.blockEntities()) {
-            BlockEntityRenderer<?> renderer = minecraft.getBlockEntityRenderDispatcher().getRenderer(blockEntity);
-            if (renderer == null) {
-                continue;
-            }
-            BlockPos pos = blockEntity.getBlockPos();
-            pose.pushPose();
-            pose.translate(pos.getX(), pos.getY(), pos.getZ());
-            ((BlockEntityRenderer<BlockEntity>) renderer).render(blockEntity, 0.0F, pose, buffers, light, OverlayTexture.NO_OVERLAY);
-            pose.popPose();
-        }
-        buffers.endBatch();
-    }
-
-    private static VertexSorting sorting(float yaw, float pitch) {
-        Vector3f direction = new Vector3f(0, 0, 1)
-                .rotateX((float) Math.toRadians(-pitch))
-                .rotateY((float) Math.toRadians(-yaw));
-        return VertexSorting.byDistance(point -> -point.dot(direction));
+        ScreenRectangle bounds = new ScreenRectangle(x, y, w, h);
+        graphics.guiRenderState.addPicturesInPictureState(new PreviewState(
+                preview, level, yaw, pitch, zoom, panX, panY, fitSpan,
+                x, y, x + w, y + h, 1.0F, new Matrix3x2f(graphics.pose()), bounds, bounds));
     }
 
     private void bindSnapshot() {
         Minecraft minecraft = Minecraft.getInstance();
         Level world = minecraft.level;
         if (preview == null || world == null) {
-            if (level != null) {
-                closeMesh();
-                level = null;
-                boundWorld = null;
-            }
+            level = null;
+            boundWorld = null;
             return;
         }
         if (level != null && boundWorld == world) {
             return;
         }
-        closeMesh();
         BlockPos tintOrigin = minecraft.player != null ? minecraft.player.blockPosition() : BlockPos.ZERO;
         level = new NeutronSpacePreviewLevel(world, tintOrigin, preview);
         boundWorld = world;
-        bakedGeneration = -1;
     }
 
-    private void ensureBaked(float yaw, float pitch) {
-        if (bakedGeneration == reloadGeneration) {
-            return;
+    public record PreviewState(
+            NeutronSpacePreview preview,
+            NeutronSpacePreviewLevel snapshot,
+            float yaw,
+            float pitch,
+            float zoom,
+            float panX,
+            float panY,
+            float fitSpan,
+            int x0,
+            int y0,
+            int x1,
+            int y1,
+            float scale,
+            Matrix3x2f pose,
+            @Nullable ScreenRectangle scissorArea,
+            @Nullable ScreenRectangle bounds
+    ) implements PictureInPictureRenderState {
+        public PreviewState(
+                NeutronSpacePreview preview,
+                NeutronSpacePreviewLevel snapshot,
+                float yaw,
+                float pitch,
+                float zoom,
+                float panX,
+                float panY,
+                float fitSpan,
+                int x0,
+                int y0,
+                int x1,
+                int y1,
+                float scale,
+                Matrix3x2f pose,
+                @Nullable ScreenRectangle scissorArea
+        ) {
+            this(preview, snapshot, yaw, pitch, zoom, panX, panY, fitSpan, x0, y0, x1, y1, scale, pose, scissorArea,
+                    PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
         }
-        closeMesh();
-        if (preview == null || level == null) {
-            return;
-        }
-        bake(preview, level, yaw, pitch);
-        bakedGeneration = reloadGeneration;
     }
 
-    private void bake(NeutronSpacePreview preview, NeutronSpacePreviewLevel level, float yaw, float pitch) {
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockRenderDispatcher dispatcher = minecraft.getBlockRenderer();
-        Map<RenderType, BufferSink> sinks = new LinkedHashMap<>();
-        PoseStack pose = new PoseStack();
-        RandomSource random = RandomSource.create();
-        ModelBlockRenderer.enableCaching();
-        try {
+    private static final class PipRenderer extends PictureInPictureRenderer<PreviewState> {
+        private PipRenderer() {
+        }
+
+        @Override
+        public Class<PreviewState> getRenderStateClass() {
+            return PreviewState.class;
+        }
+
+        @Override
+        protected void renderToTexture(PreviewState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+            Minecraft minecraft = Minecraft.getInstance();
+            // 26.3 起 Lighting 访问器由 getLighting() 改名为 lighting()（同原版 PiP 实体渲染）。
+            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ENTITY_IN_UI);
+            NeutronSpacePreview preview = state.preview();
+            NeutronSpacePreviewLevel snapshot = state.snapshot();
+            int sizeX = Math.max(1, preview.sizeX());
+            int sizeY = Math.max(1, preview.sizeY());
+            int sizeZ = Math.max(1, preview.sizeZ());
+            poseStack.translate(state.panX(), state.panY(), 0.0F);
+            float view = Math.min(Math.max(1, state.x1() - state.x0()), Math.max(1, state.y1() - state.y0()));
+            float scale = state.zoom() * view / Math.max(1.0F, state.fitSpan());
+            poseStack.scale(scale, scale, scale);
+            // PiP 管线的净效果是一次 Y 翻转（与 vanilla 实体 PiP 相同）；
+            // 绕 Z 轴旋转 180° 校正朝向，行列式为正以保持 winding/面剔除正确。
+            poseStack.rotate(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.rotate(Axis.XP.rotationDegrees(state.pitch()));
+            poseStack.rotate(Axis.YP.rotationDegrees(state.yaw()));
+            poseStack.translate(-sizeX / 2.0F, -sizeY / 2.0F, -sizeZ / 2.0F);
+
+            SnapshotTintGetter getter = new SnapshotTintGetter(snapshot);
+            BlockStateModelSet models = minecraft.getModelManager().getBlockStateModelSet();
+            ModelBlockRenderer blockRenderer = new ModelBlockRenderer(true, true, minecraft.getBlockColors());
+            FluidRenderer fluidRenderer = new FluidRenderer(minecraft.getModelManager().getFluidStateModelSet());
             int count = Math.min(preview.positions().length, preview.states().length);
             for (int i = 0; i < count; i++) {
                 int packed = preview.positions()[i];
@@ -217,130 +182,217 @@ public final class NeutronSpacePreviewRenderer {
                 int y = NeutronSpacePreview.unpackY(packed);
                 int z = NeutronSpacePreview.unpackZ(packed);
                 BlockPos pos = new BlockPos(x, y, z);
-                BlockState state = level.getBlockState(pos);
-                if (state.isAir()) {
-                    continue;
+                BlockState blockState = snapshot.getBlockState(pos);
+                if (blockState.getRenderShape() == RenderShape.MODEL) {
+                    tessellateModel(submitNodeCollector, poseStack, blockRenderer, models, getter, pos, blockState);
                 }
-                if (state.getRenderShape() == RenderShape.MODEL) {
-                    random.setSeed(state.getSeed(pos));
-                    {
-                        RenderType type = ItemBlockRenderTypes.getChunkRenderType(state);
-                        BufferSink sink = sinks.computeIfAbsent(type, BufferSink::new);
-                        pose.pushPose();
-                        pose.translate(x, y, z);
-                        dispatcher.renderBatched(state, pos, level, pose, sink.buffer, true, random);
-                        pose.popPose();
-                    }
-                }
-                FluidState fluid = state.getFluidState();
+                FluidState fluid = blockState.getFluidState();
                 if (!fluid.isEmpty()) {
-                    RenderType type = ItemBlockRenderTypes.getRenderLayer(fluid);
-                    BufferSink sink = sinks.computeIfAbsent(type, BufferSink::new);
-                    dispatcher.renderLiquid(pos, level, new OffsetConsumer(sink.buffer, 0, pos.getY() & ~15, 0),
-                            state, fluid);
+                    tessellateFluid(submitNodeCollector, poseStack, fluidRenderer, getter, pos, blockState, fluid);
                 }
             }
-        } finally {
-            ModelBlockRenderer.clearCache();
-        }
-        for (BufferSink sink : sinks.values()) {
-            boolean translucent = sink.type == RenderType.translucent() || sink.type == RenderType.tripwire();
-            if (translucent) {
-                sink.buffer.setQuadSorting(sorting(yaw, pitch));
+
+            CameraRenderState camera = new CameraRenderState();
+            for (BlockEntity blockEntity : snapshot.blockEntities()) {
+                submitBlockEntity(minecraft, blockEntity, poseStack, submitNodeCollector, camera);
             }
-            BufferBuilder.RenderedBuffer mesh = sink.buffer.endOrDiscardIfEmpty();
-            if (mesh == null) {
-                continue;
+        }
+
+        private void tessellateModel(SubmitNodeCollector collector, PoseStack poseStack, ModelBlockRenderer blockRenderer, BlockStateModelSet models,
+                                     SnapshotTintGetter getter, BlockPos pos, BlockState blockState) {
+            BlockStateModel model = models.get(blockState);
+            poseStack.pushPose();
+            try {
+                poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+                blockRenderer.tesselateBlock(
+                        (ox, oy, oz, quad, instance) -> {
+                            poseStack.pushPose();
+                            try {
+                                poseStack.translate(ox, oy, oz);
+                                collector.submitCustomGeometry(poseStack, layerType(quad.materialInfo().layer()),
+                                        (pose, buffer) -> buffer.putBakedQuad(pose, quad, instance));
+                            } finally {
+                                poseStack.popPose();
+                            }
+                        },
+                        0.0F, 0.0F, 0.0F, getter, pos, blockState, model, blockState.getSeed(pos));
+            } finally {
+                poseStack.popPose();
             }
-            VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-            vertexBuffer.bind();
-            vertexBuffer.upload(mesh);
-            VertexBuffer.unbind();
-            layers.add(new Layer(sink.type, vertexBuffer, translucent));
+        }
+
+        private void tessellateFluid(SubmitNodeCollector collector, PoseStack poseStack, FluidRenderer fluidRenderer, SnapshotTintGetter getter,
+                                     BlockPos pos, BlockState blockState, FluidState fluid) {
+            poseStack.pushPose();
+            try {
+                poseStack.translate(pos.getX() & ~15, pos.getY() & ~15, pos.getZ() & ~15);
+                Map<ChunkSectionLayer, RecordingVertexConsumer> recordings = new EnumMap<>(ChunkSectionLayer.class);
+                fluidRenderer.tesselate(getter, pos, layer -> recordings.computeIfAbsent(layer, l -> new RecordingVertexConsumer()),
+                        blockState, fluid);
+                recordings.forEach((layer, recording) ->
+                        collector.submitCustomGeometry(poseStack, layerType(layer),
+                                (pose, buffer) -> recording.replay(buffer, pose)));
+            } finally {
+                poseStack.popPose();
+            }
+        }
+
+        private static net.minecraft.client.renderer.rendertype.RenderType layerType(ChunkSectionLayer layer) {
+            return switch (layer) {
+                case SOLID -> RenderTypes.solidMovingBlock();
+                case CUTOUT -> RenderTypes.cutoutMovingBlock();
+                case TRANSLUCENT -> RenderTypes.translucentMovingBlock();
+            };
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private static void submitBlockEntity(Minecraft minecraft, BlockEntity blockEntity, PoseStack poseStack,
+                                              SubmitNodeCollector collector, CameraRenderState camera) {
+            BlockEntityRenderer renderer = minecraft.getBlockEntityRenderDispatcher().getRenderer(blockEntity);
+            if (renderer == null) {
+                return;
+            }
+            BlockEntityRenderState renderState = renderer.createRenderState();
+            renderer.extractRenderState(blockEntity, renderState, 0.0F, Vec3.ZERO, null);
+            BlockPos pos = blockEntity.getBlockPos();
+            poseStack.pushPose();
+            poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+            renderer.submit(renderState, poseStack, collector, camera);
+            poseStack.popPose();
+        }
+
+        @Override
+        protected float getTranslateY(int height, int guiScale) {
+            return height / 2.0F;
+        }
+
+        @Override
+        protected String getTextureLabel() {
+            return "neutron_space_preview";
         }
     }
 
-    private void closeMesh() {
-        for (Layer layer : layers) {
-            layer.buffer.close();
+    /** Client tint/light view of the captured volume so neighbors, fluids, and ModelData stay on the snapshot. */
+    private static final class SnapshotTintGetter implements BlockAndTintGetter {
+        private final NeutronSpacePreviewLevel snapshot;
+
+        private SnapshotTintGetter(NeutronSpacePreviewLevel snapshot) {
+            this.snapshot = snapshot;
         }
-        layers.clear();
+
+        @Override
+        public CardinalLighting cardinalLighting() {
+            return CardinalLighting.DEFAULT;
+        }
+
+        @Override
+        public LevelLightEngine getLightEngine() {
+            return LevelLightEngine.EMPTY;
+        }
+
+        @Override
+        public int getBrightness(net.minecraft.world.level.LightLayer layer, BlockPos pos) {
+            return 15;
+        }
+
+        @Override
+        public int getRawBrightness(BlockPos pos, int darkening) {
+            return 15;
+        }
+
+        @Override
+        public int getBlockTint(BlockPos pos, ColorResolver color) {
+            return snapshot.foliageTint(color);
+        }
+
+        @Override
+        public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
+            return snapshot.getBlockEntity(pos);
+        }
+
+        @Override
+        public BlockState getBlockState(BlockPos pos) {
+            return snapshot.getBlockState(pos);
+        }
+
+        @Override
+        public FluidState getFluidState(BlockPos pos) {
+            return snapshot.getFluidState(pos);
+        }
+
+        @Override
+        public int getHeight() {
+            return snapshot.getHeight();
+        }
+
+        @Override
+        public int getMinY() {
+            return snapshot.getMinY();
+        }
     }
 
-    private record Layer(RenderType type, VertexBuffer buffer, boolean translucent) {
-    }
+    /** 26.3 已无逐层 BufferSource：先录制流体顶点写入操作，再按层回放到提交节点。 */
+    private static final class RecordingVertexConsumer implements VertexConsumer {
+        private final java.util.List<BiConsumer<VertexConsumer, PoseStack.Pose>> ops = new java.util.ArrayList<>();
 
-    private static final class BufferSink {
-        private final RenderType type;
-        private final BufferBuilder buffer = new BufferBuilder(262144);
-
-        private BufferSink(RenderType type) {
-            this.type = type;
-            this.buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
-        }
-    }
-
-    private static final class OffsetConsumer implements VertexConsumer {
-        private final VertexConsumer inner;
-        private final float ox;
-        private final float oy;
-        private final float oz;
-
-        private OffsetConsumer(VertexConsumer inner, float ox, float oy, float oz) {
-            this.inner = inner;
-            this.ox = ox;
-            this.oy = oy;
-            this.oz = oz;
+        void replay(VertexConsumer out, PoseStack.Pose pose) {
+            for (BiConsumer<VertexConsumer, PoseStack.Pose> op : ops) {
+                op.accept(out, pose);
+            }
         }
 
         @Override
-        public VertexConsumer vertex(double x, double y, double z) {
-            return inner.vertex(x + ox, y + oy, z + oz);
-        }
-
-        @Override
-        public VertexConsumer color(int red, int green, int blue, int alpha) {
-            inner.color(red, green, blue, alpha);
+        public VertexConsumer addVertex(float x, float y, float z) {
+            ops.add((out, pose) -> out.addVertex(pose, x, y, z));
             return this;
         }
 
         @Override
-        public VertexConsumer uv(float u, float v) {
-            inner.uv(u, v);
+        public VertexConsumer setColor(int r, int g, int b, int a) {
+            ops.add((out, pose) -> out.setColor(r, g, b, a));
             return this;
         }
 
         @Override
-        public VertexConsumer overlayCoords(int u, int v) {
-            inner.overlayCoords(u, v);
+        public VertexConsumer setColor(int color) {
+            ops.add((out, pose) -> out.setColor(color));
             return this;
         }
 
         @Override
-        public VertexConsumer uv2(int u, int v) {
-            inner.uv2(u, v);
+        public VertexConsumer setUv(float u, float v) {
+            ops.add((out, pose) -> out.setUv(u, v));
             return this;
         }
 
         @Override
-        public VertexConsumer normal(float x, float y, float z) {
-            inner.normal(x, y, z);
+        public VertexConsumer setUv1(int u, int v) {
+            ops.add((out, pose) -> out.setUv1(u, v));
             return this;
         }
 
         @Override
-        public void endVertex() {
-            inner.endVertex();
+        public VertexConsumer setUv2(int u, int v) {
+            ops.add((out, pose) -> out.setUv2(u, v));
+            return this;
         }
 
         @Override
-        public void defaultColor(int defaultR, int defaultG, int defaultB, int defaultA) {
-            inner.defaultColor(defaultR, defaultG, defaultB, defaultA);
+        public VertexConsumer setUv3(float u, float v) {
+            ops.add((out, pose) -> out.setUv3(u, v));
+            return this;
         }
 
         @Override
-        public void unsetDefaultColor() {
-            inner.unsetDefaultColor();
+        public VertexConsumer setNormal(float x, float y, float z) {
+            ops.add((out, pose) -> out.setNormal(pose, x, y, z));
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setLineWidth(float width) {
+            ops.add((out, pose) -> out.setLineWidth(width));
+            return this;
         }
     }
 }

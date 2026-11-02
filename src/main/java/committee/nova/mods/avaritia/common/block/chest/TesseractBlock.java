@@ -4,27 +4,25 @@ import com.google.common.collect.ImmutableMap;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
 import committee.nova.mods.avaritia.common.tile.TesseractTile;
-import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
-import net.minecraft.client.Minecraft;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -46,9 +44,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.UUID;
-
 /**
  * @Project: Avaritia
  * @author cnlimiter
@@ -63,10 +58,10 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     public static final BooleanProperty EAST = BlockStateProperties.EAST;
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
-    private final ImmutableMap<BlockState, VoxelShape> shapesCache;
+    private ImmutableMap<BlockState, VoxelShape> shapesCache;
 
     public TesseractBlock() {
-        super(Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.GOLD)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(30.0F, 1200.0F)
@@ -84,7 +79,11 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
                 .setValue(DOWN, Boolean.TRUE)
                 .setValue(WATERLOGGED, Boolean.FALSE)
         );
-        this.shapesCache = this.getShapeForEachState(TesseractBlock::calculateShape);
+        ImmutableMap.Builder<BlockState, VoxelShape> builder = ImmutableMap.builder();
+        for (BlockState state : this.stateDefinition.getPossibleStates()) {
+            builder.put(state, calculateShape(state));
+        }
+        this.shapesCache = builder.build();
     }
 
     private static VoxelShape calculateShape(BlockState state) {
@@ -121,6 +120,12 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
         return 0;
     }
 
+    private VoxelShape shapeFor(BlockState state) {
+        var cache = this.shapesCache;
+        if (cache == null) return calculateShape(state);
+        VoxelShape shape = cache.get(state);
+        return shape != null ? shape : Shapes.block();
+    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -128,26 +133,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
-        if (Minecraft.getInstance().player == null) return;
-        if (!pStack.hasTag()) return;
-        if (pStack.getTag().contains("BlockEntityTag")) {
-            CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
-            if (nbt.contains("owner")) {
-                UUID selfUUID = Minecraft.getInstance().player.getUUID();
-                UUID ownerUUID = nbt.getUUID("owner");
-                String ownerName = ClientChannelManager.getInstance().getUserName(nbt.getUUID("owner"));
-                boolean lock = nbt.getBoolean("locked");
-                if (selfUUID.equals(ownerUUID))
-                    pTooltip.add(Component.translatable("gui.avaritia.owner", "§a" + ownerName));
-                else if (lock) pTooltip.add(Component.translatable("gui.avaritia.owner", "§c" + ownerName));
-                else pTooltip.add(Component.translatable("gui.avaritia.owner", ownerName));
-            }
-        }
-    }
-
-    @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
         if (!level.isClientSide() && !player.isSpectator()) {
             var tile = level.getBlockEntity(pos);
 
@@ -199,7 +185,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
     @Override
     public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        if (pPlacer instanceof ServerPlayer player && !pStack.getOrCreateTag().contains("BlockEntityTag")) {
+        if (pPlacer instanceof ServerPlayer && !pStack.has(DataComponents.BLOCK_ENTITY_DATA)) {
             TesseractTile blockEntity = (TesseractTile) pLevel.getBlockEntity(pPos);
             if (blockEntity != null) {
                 blockEntity.setOwner(pPlacer.getUUID());
@@ -208,8 +194,8 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public void entityInside(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Entity pEntity) {
-        if (pLevel.isClientSide) return;
+    public void entityInside(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Entity pEntity, @NotNull InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
         if (blockentity instanceof TesseractTile tesseractTile && pEntity instanceof ItemEntity itemEntity) {
             tesseractTile.inhaleItem(itemEntity);
@@ -224,16 +210,12 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
     @Override
     public @NotNull VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        VoxelShape shape = shapesCache.get(pState);
-        if (shape != null) return shape;
-        return Shapes.block();
+        return shapeFor(pState);
     }
 
     @Override
-    public @NotNull VoxelShape getOcclusionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        VoxelShape shape = shapesCache.get(pState);
-        if (shape != null) return shape;
-        return Shapes.block();
+    public @NotNull VoxelShape getOcclusionShape(BlockState pState) {
+        return shapeFor(pState);
     }
 
     @Override
@@ -242,16 +224,16 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter getter, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state) {
         return state.getFluidState().isEmpty();
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState pState, @NotNull Direction pFacing, @NotNull BlockState pFacingState, @NotNull LevelAccessor pLevel, @NotNull BlockPos pCurrentPos, @NotNull BlockPos pFacingPos) {
+    public @NotNull BlockState updateShape(@NotNull BlockState pState, @NotNull LevelReader pLevel, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pCurrentPos, @NotNull Direction pFacing, @NotNull BlockPos pFacingPos, @NotNull BlockState pFacingState, @NotNull RandomSource random) {
         if (pState.getValue(WATERLOGGED)) {
-            pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
+            scheduledTickAccess.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
         }
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+        return super.updateShape(pState, pLevel, scheduledTickAccess, pCurrentPos, pFacing, pFacingPos, pFacingState, random);
     }
 
     @Override
@@ -265,7 +247,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public int getAnalogOutputSignal(@NotNull BlockState state, Level level, @NotNull BlockPos pos) {
+    public int getAnalogOutputSignal(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Direction direction) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 
@@ -277,7 +259,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
+    protected boolean isPathfindable(@NotNull BlockState pState, @NotNull PathComputationType pType) {
         return false;
     }
 

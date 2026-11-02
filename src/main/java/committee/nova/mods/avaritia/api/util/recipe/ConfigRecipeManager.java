@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.util.recipe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,8 +42,8 @@ public class ConfigRecipeManager {
         }
     }
 
-    public static Map<ResourceLocation, RecipeConfig> loadConfigRecipes() {
-        Map<ResourceLocation, RecipeConfig> configs = new HashMap<>();
+    public static Map<Identifier, RecipeConfig> loadConfigRecipes() {
+        Map<Identifier, RecipeConfig> configs = new HashMap<>();
         Path configDir = Paths.get(CONFIG_PATH);
 
         if (!Files.exists(configDir)) {
@@ -61,7 +61,7 @@ public class ConfigRecipeManager {
                     .forEach(path -> {
                         try (BufferedReader reader = Files.newBufferedReader(path)) {
                             JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-                            ResourceLocation recipeId = getRecipeIdFromPath(path, configDir);
+                            Identifier recipeId = getRecipeIdFromPath(path, configDir);
                             RecipeAction action = parseAction(json);
                             String recipeType = GsonHelper.getAsString(json, "type", "");
                             JsonObject recipeData = GsonHelper.getAsJsonObject(json, "recipe", new JsonObject());
@@ -78,10 +78,10 @@ public class ConfigRecipeManager {
         return configs;
     }
 
-    private static ResourceLocation getRecipeIdFromPath(Path path, Path root) {
+    private static Identifier getRecipeIdFromPath(Path path, Path root) {
         String relativePath = root.relativize(path).toString();
         String name = relativePath.substring(0, relativePath.length() - 5); // Remove .json
-        return new ResourceLocation("avaritia", name.replace('\\', '/'));
+        return Identifier.fromNamespaceAndPath("avaritia", name.replace('\\', '/'));
     }
 
     private static RecipeAction parseAction(JsonObject json) {

@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.util.StorageUtils.ViewType;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import committee.nova.mods.avaritia.core.io.FluidStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public class DummyChannelContainer extends SimpleContainer {
     }
 
     public void refreshContainer(boolean fullUpdate) {
-        if (!this.menu.level.isClientSide) return;
+        if (!this.menu.level.isClientSide()) return;
         if ((fullUpdate || this.menu.sortType >= 6) && !this.menu.LShifting) {
             sortedItems = new ArrayList<>(this.menu.channel.storageItems.keySet());
             sortedFluids = new ArrayList<>(this.menu.channel.storageFluids.keySet());
@@ -106,7 +107,8 @@ public class DummyChannelContainer extends SimpleContainer {
                     for (String itemName : sortedItems) {
                         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
                         ArrayList<String> tags = new ArrayList<>();
-                        itemStack.getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
+                        BuiltInRegistries.ITEM.wrapAsHolder(itemStack.getItem()).tags()
+                                .forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
                         for (String tag : tags) {
                             if (tag.contains(s)) {
                                 temp.add(itemName);
@@ -261,6 +263,43 @@ public class DummyChannelContainer extends SimpleContainer {
                 }
             } else this.setItem(j, ItemStack.EMPTY);
         }
+    }
+
+    public enum Kind {
+        EMPTY, ITEM, FLUID, ENERGY
+    }
+
+    public record Entry(Kind kind, ItemStack item, FluidStack fluid, long amount, String displayName, String identifier) {
+        public static final Entry EMPTY = new Entry(Kind.EMPTY, ItemStack.EMPTY, FluidStack.EMPTY, 0L, "", "");
+    }
+
+    /** 将当前可见视图第 index 格解析为类型化条目；空位返回 Entry.EMPTY */
+    public Entry entry(int index) {
+        if (index < 0 || index >= this.viewingObject.size()) return Entry.EMPTY;
+        String[] parts = this.viewingObject.get(index);
+        if (parts == null || parts.length < 2) return Entry.EMPTY;
+        String kind = parts[0];
+        String id = parts[1];
+        if ("fluid".equals(kind)) {
+            FluidStack fluid = this.fluidStacks.get(index);
+            if (fluid == null) return Entry.EMPTY;
+            return new Entry(Kind.FLUID, ItemStack.EMPTY, fluid,
+                    this.menu.channel.storageFluids.getOrDefault(id, 0L),
+                    fluid.getDisplayName().getString(), id);
+        }
+        ItemStack stack = this.getItem(index);
+        if ("item".equals(kind)) {
+            return new Entry(Kind.ITEM, stack, FluidStack.EMPTY,
+                    this.menu.channel.storageItems.getOrDefault(id, 0L),
+                    stack.getDisplayName().getString(), id);
+        }
+        return new Entry(Kind.ENERGY, stack, FluidStack.EMPTY,
+                this.menu.channel.storageEnergies.getOrDefault(id, 0L),
+                stack.getDisplayName().getString(), id);
+    }
+
+    public long amount(int index) {
+        return this.entry(index).amount();
     }
 
     @Override

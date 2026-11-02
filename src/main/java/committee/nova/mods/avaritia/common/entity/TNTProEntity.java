@@ -2,20 +2,22 @@ package committee.nova.mods.avaritia.common.entity;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +35,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     public TNTProEntity(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner) {
         this(ModEntities.TNT_PRO_ENTITY.get(), pLevel);
         this.setPos(pX, pY, pZ);
-        double d = pLevel.random.nextDouble() * (double) ((float) Math.PI * 2F);
+        double d = pLevel.getRandom().nextDouble() * (double) ((float) Math.PI * 2F);
         this.setDeltaMovement(-Math.sin(d) * 0.02, (double) 0.2F, -Math.cos(d) * 0.02);
         this.setFuse(DEFAULT_FUSE_TIME);
         this.xo = pX;
@@ -43,19 +45,21 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return Blocks.TNT.asItem();
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FUSE_ID, 80);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_FUSE_ID, 80);
     }
 
-    protected Entity.MovementEmission getMovementEmission() {
+    @Override
+    protected @NotNull MovementEmission getMovementEmission() {
         return MovementEmission.NONE;
     }
 
+    @Override
     public boolean isPickable() {
         return !this.isRemoved();
     }
@@ -95,7 +99,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
         }
 
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
 
             java.util.List<Entity> list = this.level().getEntities(this, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) ->
                     !(entity instanceof TNTProEntity) && entity.isPickable()
@@ -113,8 +117,8 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
         if (fuse <= 0) {
             this.explodeAndRemove();
         } else {
-            this.updateInWaterStateAndDoFluidPushing();
-            if (this.level().isClientSide) {
+            this.updateFluidInteraction();
+            if (this.level().isClientSide()) {
                 this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5D, this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
@@ -127,18 +131,18 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     protected void explodeAndRemove() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.explode();
             this.discard();
         }
     }
 
-    public void addAdditionalSaveData(CompoundTag pCompound) {
-        pCompound.putShort("Fuse", (short) this.getFuse());
+    public void addAdditionalSaveData(ValueOutput output) {
+        output.putShort("Fuse", (short) this.getFuse());
     }
 
-    public void readAdditionalSaveData(CompoundTag pCompound) {
-        this.setFuse(pCompound.getShort("Fuse"));
+    public void readAdditionalSaveData(ValueInput input) {
+        this.setFuse(input.getShortOr("Fuse", (short) DEFAULT_FUSE_TIME));
     }
 
     @Nullable

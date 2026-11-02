@@ -2,13 +2,5 @@
   "parent": "minecraft:item/handheld",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_pickaxe/layer_0"
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "avaritia:hammer": 1
-      },
-      "model": "avaritia:item/infinity_pickaxe_hammer"
-    }
-  ]
+  }
 }

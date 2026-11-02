@@ -9,10 +9,11 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -28,11 +29,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final Level world;
-    private final Container result;
+    private final ResultContainer result;
     private final Player player;
     private final ModCraftTier tier;
     private final TierCraftTile craftTile;
-    public final ModCraftContainer matrix;
+    private final ModCraftContainer craftContainer;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
         this(type, id, playerInventory, buf.readBlockPos(), tier);
@@ -48,14 +49,14 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.tier = tier;
         this.craftTile = getTileEntity();
 
-        matrix = new ModCraftContainer(this, this.craftTile.getInventory(), tier.size * tier.size);
+        this.craftContainer = new ModCraftContainer(this, this.craftTile.getInventory(), tier.size * tier.size);
 
-        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, tier.size * tier.size, tier.outX, tier.outY));
+        this.addSlot(new ModCraftResultSlot(this.player, this, craftContainer, this.result, 0, tier.outX, tier.outY));
 
         int i, j;
         for (i = 0; i < tier.size; i++) {
             for (j = 0; j < tier.size; j++) {
-                this.addSlot(new Slot(matrix, j + i * tier.size, tier.mainX + j * 18, tier.mainY + i * 18));
+                this.addSlot(new Slot(craftContainer, j + i * tier.size, tier.mainX + j * 18, tier.mainY + i * 18));
             }
         }
 
@@ -69,7 +70,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
             this.addSlot(new Slot(playerInventory, j, tier.hotBarX + j * 18, tier.hotBarY));
         }
 
-        this.slotsChanged(matrix);
+        this.slotsChanged(craftContainer);
     }
 
     public static TierCraftMenu sculk(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
@@ -106,23 +107,22 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        if (this.level.isClientSide) {
-            return;
+        if (this.world instanceof ServerLevel) {
+            this.result.setItem(0, this.assembleCurrentResult());
         }
-        this.result.setItem(0, this.assembleCurrentResult());
-
         super.slotsChanged(matrix);
     }
 
     @Override
     public boolean stillValid(@NotNull Player player) {
         return super.stillValid(player)
+                && this.craftTile != null
                 && !this.craftTile.isRemoved()
                 && this.world.getBlockEntity(this.getBlockPos()) == this.craftTile;
     }
 
     public boolean canTakeCraftingResult() {
-        if (this.world.isClientSide) {
+        if (!(this.world instanceof ServerLevel)) {
             return true;
         }
 
@@ -130,7 +130,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         var displayedResult = this.result.getItem(0);
         var valid = !currentResult.isEmpty()
                 && currentResult.getCount() == displayedResult.getCount()
-                && ItemStack.isSameItemSameTags(currentResult, displayedResult);
+                && ItemStack.isSameItemSameComponents(currentResult, displayedResult);
 
         if (!valid) {
             this.result.setItem(0, currentResult);
@@ -140,22 +140,25 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     }
 
     private ItemStack assembleCurrentResult() {
-        if (!this.stillValid(this.player) || this.matrix.isEmpty()) {
+        if (!(this.world instanceof ServerLevel serverLevel)
+                || !this.stillValid(this.player)
+                || this.craftContainer.isEmpty()) {
             return ItemStack.EMPTY;
         }
 
-        return this.world.getRecipeManager()
-                .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), this.matrix, this.world)
-                .map(recipe -> recipe.assemble(this.matrix, this.world.registryAccess()))
+        var input = this.craftContainer.asCraftInput();
+        return serverLevel.recipeAccess()
+                .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), input, serverLevel)
+                .map(holder -> holder.value().assemble(input))
                 .orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player player) {
+    public void clicked(int slotId, int button, @NotNull ContainerInput input, @NotNull Player player) {
         if (slotId == 0 && !this.canTakeCraftingResult()) {
             return;
         }
-        super.clicked(slotId, button, clickType, player);
+        super.clicked(slotId, button, input, player);
     }
 
     @Override

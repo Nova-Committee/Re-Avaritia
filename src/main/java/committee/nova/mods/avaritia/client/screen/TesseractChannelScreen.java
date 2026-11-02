@@ -1,39 +1,42 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
+import committee.nova.mods.avaritia.common.net.channel.C2SRemoveChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** 使用 1.20.1 材质图集的超立方体频道选择界面。 */
-public class TesseractChannelScreen extends AbstractContainerScreen<TesseractChannelMenu> {
+/** Server-authoritative Tesseract channel selector using the legacy 1.20.1 panel. */
+public final class TesseractChannelScreen extends BaseContainerScreen<TesseractChannelMenu> {
     static final int WIDTH = 88;
     static final int HEIGHT = 154;
     static final int ROWS = 9;
-
-    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_SELECT;
-    private static final int TEXTURE_SIZE = 256;
     private static final int ROW_X = 7;
     private static final int ROW_Y = 8;
     private static final int ROW_WIDTH = 64;
@@ -42,154 +45,168 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
     private static final int SCROLLBAR_Y = 8;
     private static final int SCROLLBAR_WIDTH = 9;
     private static final int SCROLLBAR_HEIGHT = 90;
-
     private final ClientChannelManager channelManager = ClientChannelManager.getInstance();
-    private final List<ChannelEntry> filteredChannels = new ArrayList<>();
-    private final List<ChannelRowButton> channelButtons = new ArrayList<>();
-    private EditBox searchBox;
+    private final WidgetSprites legacySprites;
+    private final List<ChannelRowButton> rowButtons = new ArrayList<>();
+    private List<ChannelEntry> channels = List.of();
+    private EditBox search;
     private int scrollOffset;
+    private byte selectedType = -1;
+    private int selectedId = -1;
     private boolean draggingScrollbar;
-    private ScreenRectangle panel;
-    private ScreenRectangle listBounds;
-    private ScreenRectangle scrollbar;
-    private ScreenRectangle scrollbarHandle;
-
+    private ScreenRectangle panel = ScreenRectangle.empty();
+    private ScreenRectangle listBounds = ScreenRectangle.empty();
+    private ScreenRectangle scrollbar = ScreenRectangle.empty();
+    private ScreenRectangle scrollbarHandle = ScreenRectangle.empty();
     public TesseractChannelScreen(TesseractChannelMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageWidth = WIDTH;
-        imageHeight = HEIGHT;
+        super(menu, inventory, title, Res.BLACK_HOLE_CHANNEL_SELECT, WIDTH, HEIGHT, 256, 256);
+        legacySprites = new WidgetSprites(Res.BLACK_HOLE_CHANNEL_SELECT, Res.BLACK_HOLE_CHANNEL_SELECT);
     }
 
     @Override
-    protected void init() {
-        String query = searchBox == null ? "" : searchBox.getValue();
-        super.init();
-        leftPos = (width - imageWidth) / 2;
-        topPos = (height - imageHeight) / 2;
+    protected void subInit() {
+        selectedType = channelManager.selectedType();
+        selectedId = channelManager.selectedId();
         panel = new ScreenRectangle(leftPos, topPos, imageWidth, imageHeight);
         listBounds = PortableLayout.translate(new ScreenRectangle(ROW_X, ROW_Y, ROW_WIDTH, ROW_HEIGHT * ROWS), panel.left(), panel.top());
         scrollbar = PortableLayout.translate(new ScreenRectangle(SCROLLBAR_X, SCROLLBAR_Y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT), panel.left(), panel.top());
-        draggingScrollbar = false;
-        channelManager.addScreen(this);
 
-        searchBox = new EditBox(font, leftPos + 7, topPos + 118, 76, 12,
+        search = new EditBox(font, leftPos + 7, topPos + 118, 76, 12,
                 Component.translatable("gui.avaritia.search"));
-        searchBox.setMaxLength(64);
-        searchBox.setBordered(false);
-        searchBox.setHint(Component.translatable("gui.avaritia.search"));
-        searchBox.setValue(query);
-        searchBox.setResponder(ignored -> updateChannelList());
-        addRenderableWidget(UiInspector.name(searchBox, "channels.search"));
+        search.setBordered(false);
+        search.setMaxLength(64);
+        search.setHint(Component.translatable("gui.avaritia.search"));
+        search.setResponder(ignored -> refreshChannels());
+        addRenderableWidget(UiInspector.name(search, "channels.search"));
 
-        channelButtons.clear();
+        rowButtons.clear();
         for (int row = 0; row < ROWS; row++) {
             ChannelRowButton button = new ChannelRowButton(listBounds.left(),
                     listBounds.top() + row * ROW_HEIGHT, row);
-            channelButtons.add(button);
+            rowButtons.add(button);
             addRenderableWidget(button);
         }
 
-        LegacyIconButton addButton = new LegacyIconButton(leftPos + 7, topPos + 131,
-                18, 18, 202, 0, 18, this::openAddDialog);
-        addButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.addChannel.tip2")
-                .append("\n").append(Component.translatable("gui.avaritia.addChannel.tip3"))));
+        var addButton = new LegacyIconButton(leftPos + 7, topPos + 131, 18, 18, 202, 0, 18, this::openAddDialog);
+        addButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.addChannel.tip2")));
         addRenderableWidget(UiInspector.name(addButton, "channels.add"));
-        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 27, topPos + 131,
-                16, 16, 202, 34, 16, this::openRenameDialog), "channels.rename"));
-        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 47, topPos + 131,
-                16, 16, 202, 18, 16, () -> sendMenuButton(0)), "channels.delete"));
-        LegacyIconButton backButton = new LegacyIconButton(leftPos + 67, topPos + 131,
-                16, 16, 202, 50, 16, () -> sendMenuButton(1));
-        backButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.backChannel.tip1")));
-        addRenderableWidget(UiInspector.name(backButton, "channels.back"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 27, topPos + 131, 16, 16, 202, 34, 16,
+                this::openRenameDialog), "channels.rename"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 47, topPos + 131, 16, 16, 202, 18, 16,
+                this::removeSelected), "channels.delete"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 67, topPos + 131, 16, 16, 202, 50, 16,
+                this::openSelected), "channels.back"));
 
-        updateChannelList();
+        channelManager.listenSelector(this::refreshChannels);
+        refreshChannels();
+    }
+
+
+    public void refreshChannels() {
+        String filter = search == null ? "" : search.getValue().strip().toLowerCase(Locale.ROOT);
+        List<ChannelEntry> refreshed = new ArrayList<>();
+        appendChannels(refreshed, channelManager.mine(), (byte) 0, filter);
+        appendChannels(refreshed, channelManager.terminalOwner(), (byte) 1, filter);
+        appendChannels(refreshed, channelManager.shared(), (byte) 2, filter);
+        channels = List.copyOf(refreshed);
+        setScrollOffset(scrollOffset);
+    }
+
+    private static void appendChannels(List<ChannelEntry> destination, Map<Integer, String> source,
+                                       byte type, String filter) {
+        source.entrySet().stream()
+                .filter(entry -> filter.isEmpty() || entry.getValue().toLowerCase(Locale.ROOT).contains(filter))
+                .sorted(Map.Entry.comparingByValue(String.CASE_INSENSITIVE_ORDER))
+                .map(entry -> new ChannelEntry(type, entry.getKey(), entry.getValue()))
+                .forEach(destination::add);
     }
 
     private void openAddDialog() {
-        PortableUi.prompt(this, Component.translatable("gui.avaritia.addChannel.tip2"), "默认的频道", 64, false,
-                input -> NetworkHandler.CHANNEL.sendToServer(
-                        new C2SAddChannelPack(input, hasShiftDown())));
+        PortableUi.prompt(this, Component.literal("Channel name"), "Channel", 64, false,
+                input -> send(new C2SAddChannelPack(input, isShiftDown())));
     }
 
     private void openRenameDialog() {
-        if (channelManager.selectedChannelName.isEmpty() || channelManager.selectedChannelType == 1) {
+        if (!hasSelection()) {
             return;
         }
-        int selectedId = channelManager.selectedChannelID;
-        int selectedType = channelManager.selectedChannelType;
-        PortableUi.prompt(this, Component.translatable("gui.avaritia.renameChannel.tip1", channelManager.selectedChannelName),
-                channelManager.selectedChannelName, 64, false, input -> {
-                    if (channelManager.selectedChannelID == selectedId
-                            && channelManager.selectedChannelType == selectedType) {
-                        NetworkHandler.CHANNEL.sendToServer(
-                                new C2SRenameChannelPack(menu.containerId, input));
-                    }
-                });
+        byte type = selectedType;
+        int id = selectedId;
+        String current = search.getValue().strip();
+        PortableUi.prompt(this, Component.literal("Rename channel"), current.isEmpty() ? "Channel" : current, 64, false, input -> {
+            if (selectedType == type && selectedId == id) {
+                send(new C2SRenameChannelPack(menu.containerId, input));
+            }
+        });
     }
 
-    private void sendMenuButton(int id) {
-        if (minecraft != null && minecraft.gameMode != null) {
-            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
+
+    private void removeSelected() {
+        if (hasSelection()) {
+            send(new C2SRemoveChannelPack(menu.containerId, selectedType, selectedId));
         }
     }
 
-    private void selectChannel(int row) {
+    private void openSelected() {
+        if (hasSelection()) {
+            send(new C2SSetChannelPack(menu.containerId, selectedType, selectedId));
+        }
+    }
+
+    private void selectRow(int row) {
         ChannelEntry entry = rowEntry(row);
         if (entry != null) {
-            NetworkHandler.CHANNEL.sendToServer(
-                    new C2SSetChannelPack(menu.containerId, entry.type, entry.id));
+            selectedType = entry.type();
+            selectedId = entry.id();
         }
     }
 
     private ChannelEntry rowEntry(int row) {
         int index = scrollOffset + row;
-        return index >= 0 && index < filteredChannels.size() ? filteredChannels.get(index) : null;
+        return index >= 0 && index < channels.size() ? channels.get(index) : null;
     }
 
-    public void updateChannelList() {
-        if (searchBox == null) {
-            return;
-        }
-        String filter = searchBox.getValue().strip().toLowerCase(Locale.ROOT);
-        filteredChannels.clear();
-        appendChannels((byte) 0, channelManager.myChannels, filter);
-        appendChannels((byte) 1, channelManager.otherChannels, filter);
-        appendChannels((byte) 2, channelManager.publicChannels, filter);
-        setScrollOffset(scrollOffset);
+    private boolean hasSelection() {
+        return selectedType >= 0 && selectedType <= 2 && selectedId >= 0;
     }
 
-    private void appendChannels(byte type, Map<Integer, String> channels, String filter) {
-        channels.entrySet().stream()
-                .filter(entry -> filter.isEmpty() || entry.getValue().toLowerCase(Locale.ROOT).contains(filter))
-                .sorted(Map.Entry.comparingByValue(String.CASE_INSENSITIVE_ORDER))
-                .map(entry -> new ChannelEntry(type, entry.getKey(), entry.getValue()))
-                .forEach(filteredChannels::add);
+    private boolean isSelected(ChannelEntry entry) {
+        return entry.type() == selectedType && entry.id() == selectedId;
+    }
+
+    private boolean isShiftDown() {
+        var window = minecraft.getWindow();
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
+    }
+
+    private static void send(Object payload) {
+        NetworkHandler.sendToServer(payload);
     }
 
     static int maxScrollOffset(int channelCount) {
         return Math.max(0, channelCount - ROWS);
     }
 
-    private void setScrollOffset(int value) {
-        scrollOffset = Math.max(0, Math.min(maxScrollOffset(filteredChannels.size()), value));
-        for (int row = 0; row < channelButtons.size(); row++) {
-            channelButtons.get(row).visible = rowEntry(row) != null;
+    private void setScrollOffset(int requestedOffset) {
+        scrollOffset = Math.max(0, Math.min(maxScrollOffset(channels.size()), requestedOffset));
+        for (int row = 0; row < rowButtons.size(); row++) {
+            rowButtons.get(row).visible = rowEntry(row) != null;
         }
         updateScrollbar();
     }
 
     private void updateScrollbar() {
-        int handleHeight = filteredChannels.size() <= ROWS ? scrollbar.height()
-                : Math.max(8, ROWS * scrollbar.height() / filteredChannels.size());
-        int maximumOffset = maxScrollOffset(filteredChannels.size());
+        int handleHeight = channels.size() <= ROWS ? scrollbar.height()
+                : Math.max(8, ROWS * scrollbar.height() / Math.max(1, channels.size()));
+        int maximumOffset = maxScrollOffset(channels.size());
         int travel = scrollbar.height() - handleHeight;
         int handleY = scrollbar.top() + (maximumOffset == 0 ? 0 : scrollOffset * travel / maximumOffset);
         scrollbarHandle = new ScreenRectangle(scrollbar.left(), handleY, scrollbar.width(), handleHeight);
     }
 
     private void updateScrollFromMouse(double mouseY) {
-        int maximumOffset = maxScrollOffset(filteredChannels.size());
+        int maximumOffset = maxScrollOffset(channels.size());
         if (maximumOffset == 0) {
             setScrollOffset(0);
             return;
@@ -201,117 +218,100 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (delta != 0.0D && PortableLayout.contains(panel, mouseX, mouseY)) {
-            setScrollOffset(scrollOffset + (delta > 0.0D ? -1 : 1));
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 1 && searchBox.isMouseOver(mouseX, mouseY)) {
-            searchBox.setValue("");
-            searchBox.setFocused(true);
-            return true;
+    protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        search.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        if (channels.size() > ROWS) {
+            graphics.fill(scrollbarHandle.left() + 2, scrollbarHandle.top(),
+                    scrollbarHandle.right() - 2, scrollbarHandle.bottom(), 0xFF777777);
+            graphics.outline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
+                    scrollbarHandle.width() - 2, scrollbarHandle.height() + 2, 0xFF202020);
         }
-        if (button == 0 && PortableLayout.contains(scrollbar, mouseX, mouseY)) {
-            draggingScrollbar = true;
-            updateScrollFromMouse(mouseY);
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (draggingScrollbar) {
-            updateScrollFromMouse(mouseY);
-            return true;
-        }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            draggingScrollbar = false;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.blit(GUI_IMG, panel.left(), panel.top(), 0, 0, panel.width(), panel.height(), TEXTURE_SIZE, TEXTURE_SIZE);
         UiInspector.region("channels.list", listBounds, listBounds, true);
-        UiInspector.region("channels.scrollbar", scrollbar, null, filteredChannels.size() > ROWS);
+        UiInspector.region("channels.scrollbar", scrollbar, null, channels.size() > ROWS);
     }
+
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-    }
-
-    @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderScrollbar(graphics);
-        renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    private void renderScrollbar(GuiGraphics graphics) {
-        if (filteredChannels.size() <= ROWS || scrollbarHandle == null) {
-            return;
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY != 0.0D && PortableLayout.contains(panel, mouseX, mouseY)) {
+            setScrollOffset(scrollOffset + (scrollY > 0.0D ? -1 : 1));
+            return true;
         }
-        graphics.fill(scrollbarHandle.left() + 2, scrollbarHandle.top(),
-                scrollbarHandle.right() - 2, scrollbarHandle.bottom(), 0xFF777777);
-        graphics.renderOutline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
-                scrollbarHandle.width() - 2, scrollbarHandle.height() + 2, 0xFF202020);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 1 && search.isMouseOver(event.x(), event.y())) {
+            search.setValue("");
+            search.setFocused(true);
+            return true;
+        }
+        if (event.button() == 0 && PortableLayout.contains(scrollbar, event.x(), event.y())) {
+            draggingScrollbar = true;
+            updateScrollFromMouse(event.y());
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (draggingScrollbar) {
+            updateScrollFromMouse(event.y());
+            return true;
+        }
+        return super.mouseDragged(event, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) draggingScrollbar = false;
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        return search.keyPressed(event) || search.canConsumeInput() || super.keyPressed(event);
     }
 
     @Override
     public void onClose() {
-        channelManager.onScreenClose();
+        channelManager.closeSelector();
         super.onClose();
     }
 
-    private record ChannelEntry(byte type, int id, String name) {
+    record ChannelEntry(byte type, int id, String name) {
     }
 
     private final class ChannelRowButton extends ImageButton {
         private final int row;
 
         private ChannelRowButton(int x, int y, int row) {
-            super(x, y, listBounds.width(), ROW_HEIGHT, 0, 154, GUI_IMG, ignored -> selectChannel(row));
+            super(x, y, ROW_WIDTH, ROW_HEIGHT, legacySprites, ignored -> selectRow(row));
             this.row = row;
         }
 
         @Override
-        public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             ChannelEntry entry = rowEntry(row);
-            if (entry == null) {
-                return;
-            }
+            if (entry == null) return;
             int vOffset = 154;
-            if (isHoveredOrFocused()) {
-                vOffset += 12;
-            }
-            if (entry.type == channelManager.selectedChannelType && entry.id == channelManager.selectedChannelID) {
-                vOffset += 24;
-            }
-            graphics.blit(GUI_IMG, getX(), getY(), 0, vOffset, width, height, TEXTURE_SIZE, TEXTURE_SIZE);
-            if (UiInspector.enabled()) {
-                long key = ((long) entry.type << 32) | Integer.toUnsignedLong(entry.id);
-                UiInspector.row("channels.list", key, scrollOffset + row, getX(), getY(), getWidth(), getHeight(), listBounds, active);
-            }
-            int color = switch (entry.type) {
-                case 0 -> 0x55FF55;
-                case 1 -> 0xFF5555;
-                default -> 0xFFFFFF;
+            if (isHoveredOrFocused()) vOffset += 12;
+            if (isSelected(entry)) vOffset += 24;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Res.BLACK_HOLE_CHANNEL_SELECT,
+                    getX(), getY(), 0, vOffset, width, height, 256, 256);
+            int color = switch (entry.type()) {
+                case 0 -> 0xFF55FF55;
+                case 1 -> 0xFFFF5555;
+                default -> 0xFFFFFFFF;
             };
-            String label = font.plainSubstrByWidth(entry.name, getWidth() - 8);
-            graphics.drawString(font, label, getX() + 4, getY() + 2, color, false);
+            String label = font.plainSubstrByWidth(entry.name(), ROW_WIDTH - 8);
+            graphics.text(font, Component.literal(label), getX() + 4, getY() + 2, color, false);
         }
     }
 
@@ -320,18 +320,19 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
         private final int v;
         private final int hoverOffset;
 
-        private LegacyIconButton(int x, int y, int buttonWidth, int buttonHeight,
-                                 int u, int v, int hoverOffset, Runnable action) {
-            super(x, y, buttonWidth, buttonHeight, 0, 0, GUI_IMG, ignored -> action.run());
+        private LegacyIconButton(int x, int y, int width, int height, int u, int v, int hoverOffset,
+                                 Runnable action) {
+            super(x, y, width, height, legacySprites, ignored -> action.run());
             this.u = u;
             this.v = v;
             this.hoverOffset = hoverOffset;
         }
 
         @Override
-        public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             int uOffset = isHoveredOrFocused() ? u + hoverOffset : u;
-            graphics.blit(GUI_IMG, getX(), getY(), uOffset, v, width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Res.BLACK_HOLE_CHANNEL_SELECT,
+                    getX(), getY(), uOffset, v, width, height, 256, 256);
         }
     }
 }

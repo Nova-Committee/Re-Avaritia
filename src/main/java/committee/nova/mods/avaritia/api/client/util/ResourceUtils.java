@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.client.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -24,7 +24,7 @@ public class ResourceUtils {
      * @return The InputStream.
      * @throws IOException If the file is not found or some other IO error occurred.
      */
-    public static InputStream getResourceAsStream(ResourceLocation resource) throws IOException {
+    public static InputStream getResourceAsStream(Identifier resource) throws IOException {
         return getResource(resource).open();
     }
 
@@ -45,7 +45,7 @@ public class ResourceUtils {
      * @throws IOException If the resource doesn't exist, or some other IO error occurred.
      */
     public static Resource getResource(String location) throws IOException {
-        return getResource(new ResourceLocation(location));
+        return getResource(Identifier.tryParse(location));
     }
 
     /**
@@ -55,7 +55,7 @@ public class ResourceUtils {
      * @return The gotten resource.
      * @throws IOException If the resource doesn't exist, or some other IO error occurred.
      */
-    public static Resource getResource(ResourceLocation location) throws IOException {
+    public static Resource getResource(Identifier location) throws IOException {
         return getResourceManager().getResourceOrThrow(location);
     }
 
@@ -69,14 +69,14 @@ public class ResourceUtils {
     }
 
     /**
-     * Loads the given {@link ResourceLocation} with the given {@link ResourceProvider} into
+     * Loads the given {@link Identifier} with the given {@link ResourceProvider} into
      * a list of UTF-8 Strings.
      *
      * @param resourceProvider The {@link ResourceProvider}.
-     * @param loc              The {@link ResourceLocation}.
+     * @param loc              The {@link Identifier}.
      * @return The UTF-8 lines of the resource.
      */
-    public static List<String> loadResource(ResourceProvider resourceProvider, ResourceLocation loc) {
+    public static List<String> loadResource(ResourceProvider resourceProvider, Identifier loc) {
         try {
             Resource resource = resourceProvider.getResourceOrThrow(loc);
             try (BufferedReader reader = resource.openAsReader()) {

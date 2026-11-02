@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -25,7 +26,8 @@ public class CompressedChestMenu extends BaseTileMenu<CompressedChestTile> {
         super(ModMenus.GENERIC_9x27.get(), pContainerId, pPlayerInventory, pos);
         this.containerRows = pRows;
         this.container = getTileEntity();
-        container.startOpen(pPlayerInventory.player);
+        ContainerUser user = pPlayerInventory.player;
+        container.startOpen(user);
         int $$5 = (this.containerRows - 4) * 18;
 
         int $$10;

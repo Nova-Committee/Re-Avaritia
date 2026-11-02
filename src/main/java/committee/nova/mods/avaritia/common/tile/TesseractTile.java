@@ -12,10 +12,10 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +25,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import committee.nova.mods.avaritia.core.io.FluidStack;
@@ -72,7 +74,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, TesseractTile blockEntity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         blockEntity.bindChannel();
         blockEntity.onBlockStateChange();
         if (blockEntity.channel.isRemoved()) {
@@ -88,40 +90,49 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
-        if (pTag.contains("owner")) {
-            owner = pTag.getUUID("owner");
-            locked = pTag.getBoolean("locked");
-        }
-        if (pTag.contains("craftingMode")) craftingMode = pTag.getBoolean("craftingMode");
-        if (pTag.contains("filter")) filter = pTag.getString("filter");
-        if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
-        if (pTag.contains("viewType")) viewType = pTag.getByte("viewType");
-        if (pTag.contains("channel")) {
-            CompoundTag channel = pTag.getCompound("channel");
-            channelOwner = channel.getUUID("channelOwner");
-            channelID = channel.getInt("channelID");
-        }
-        if (level != null && !level.isClientSide && ServerChannelManager.getInstance() != null)
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        input.read("owner", UUIDUtil.CODEC).ifPresent(uuid -> {
+            owner = uuid;
+            locked = input.getBooleanOr("locked", false);
+        });
+        craftingMode = input.getBooleanOr("craftingMode", false);
+        filter = input.getStringOr("filter", "");
+        sortType = input.getByteOr("sortType", (byte) 4);
+        viewType = input.getByteOr("viewType", (byte) 0);
+        ValueInput channelData = input.childOrEmpty("channel");
+        channelOwner = channelData.read("channelOwner", UUIDUtil.CODEC).orElse(null);
+        channelID = channelData.getIntOr("channelID", -1);
+        if (channelID >= 0 && channelOwner != null && level != null && !level.isClientSide() && ServerChannelManager.getInstance() != null)
             channel = ServerChannelManager.getInstance().getChannel(channelOwner, channelID);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag pTag) {
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
         if (owner != null) {
-            pTag.putUUID("owner", owner);
-            pTag.putBoolean("locked", locked);
+            output.store("owner", UUIDUtil.CODEC, owner);
+            output.putBoolean("locked", locked);
         }
-        pTag.putBoolean("craftingMode", craftingMode);
-        pTag.putString("filter", filter);
-        pTag.putByte("sortType", sortType);
-        pTag.putByte("viewType", viewType);
+        output.putBoolean("craftingMode", craftingMode);
+        output.putString("filter", filter);
+        output.putByte("sortType", sortType);
+        output.putByte("viewType", viewType);
         if (channelID >= 0) {
-            CompoundTag channel = new CompoundTag();
-            channel.putUUID("channelOwner", channelOwner);
+            ValueOutput channel = output.child("channel");
+            channel.store("channelOwner", UUIDUtil.CODEC, channelOwner);
             channel.putInt("channelID", channelID);
-            pTag.put("channel", channel);
         }
+    }
+
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super：默认实现检测到本类是 Container
+     * （NativeInventory）会调用 Containers.dropContents，把虚拟频道存储中每种物品
+     * 最多散落一组（64 个）到世界；频道数据在 ServerChannelManager 中不受影响，
+     * 散落纯属复制。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
     }
 
     @Override
@@ -135,7 +146,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
     }
 
     private void bindChannel() {
-        if (level != null && !level.isClientSide && ServerChannelManager.getInstance() != null)
+        if (level != null && !level.isClientSide() && ServerChannelManager.getInstance() != null)
             channel = ServerChannelManager.getInstance().getChannel(channelOwner, channelID);
     }
 
@@ -178,20 +189,25 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
     @Override
     public void removeChannel(ServerPlayer actor) {
         if (channelOwner == null) return;
-        if (channelOwner.equals(actor.getUUID()) || channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+        if (channelOwner.equals(actor.getUUID()) || channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.id())) {
             if (!ServerChannelManager.getInstance().tryRemoveChannel(channelOwner, channelID)) return;
-            this.channelID = -1;
-            this.channelOwner = null;
-            this.setChanged();
-            channelSelectors.forEach(player -> NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1)));
-            this.channel = NullChannel.INSTANCE;
+            clearChannel();
         }
+    }
+
+    @Override
+    public void clearChannel() {
+        this.channelID = -1;
+        this.channelOwner = null;
+        this.setChanged();
+        channelSelectors.forEach(player -> NetworkHandler.CHANNEL.sendTo(player, new S2CChannelActionPack(ChannelAction.SET, (byte) -1, "", -1)));
+        this.channel = NullChannel.INSTANCE;
     }
 
     @Override
     public void renameChannel(ServerPlayer actor, String name) {
         if (channelID < 0) return;
-        if (actor.getUUID().equals(channelOwner) || channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.getId()))
+        if (actor.getUUID().equals(channelOwner) || channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.id()))
             ServerChannelManager.getInstance().renameChannel(new ChannelInfo(channelOwner, channelID), name);
     }
 
@@ -214,7 +230,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal, c
 
     @Override
     public void tryReOpenMenu(ServerPlayer player) {
-        if (channelID >= 0) this.getBlockState().use(level, player, InteractionHand.MAIN_HAND, new BlockHitResult(
+        if (channelID >= 0) this.getBlockState().useWithoutItem(level, player, new BlockHitResult(
                 new Vec3(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5), Direction.UP, worldPosition, false));
     }
 

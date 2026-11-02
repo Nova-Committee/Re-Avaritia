@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.core.io;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import java.util.Objects;
@@ -27,5 +27,12 @@ public class FluidStack {
     public static boolean areFluidStackTagsEqual(FluidStack left, FluidStack right) { return Objects.equals(left.tag, right.tag); }
     public net.minecraft.network.chat.Component getDisplayName() { return net.minecraft.network.chat.Component.translatable(fluid.defaultFluidState().createLegacyBlock().getBlock().getDescriptionId()); }
     public CompoundTag writeToNBT(CompoundTag nbt) { nbt.putString("FluidName", BuiltInRegistries.FLUID.getKey(fluid).toString()); nbt.putInt("Amount", amount); if (tag != null) nbt.put("Tag", tag.copy()); return nbt; }
-    public static FluidStack loadFluidStackFromNBT(CompoundTag nbt) { ResourceLocation id = ResourceLocation.tryParse(nbt.getString("FluidName")); if (id == null || !BuiltInRegistries.FLUID.containsKey(id)) return EMPTY; return new FluidStack(BuiltInRegistries.FLUID.get(id), nbt.getInt("Amount"), nbt.contains("Tag", 10) ? nbt.getCompound("Tag") : null); }
+    public static FluidStack loadFluidStackFromNBT(CompoundTag nbt) {
+        Identifier id = nbt.getString("FluidName").map(Identifier::tryParse).orElse(null);
+        if (id == null || !BuiltInRegistries.FLUID.containsKey(id)) return EMPTY;
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(id);
+        int amount = nbt.getIntOr("Amount", 0);
+        CompoundTag tag = nbt.contains("Tag") ? nbt.getCompoundOrEmpty("Tag") : null;
+        return new FluidStack(fluid, amount, tag);
+    }
 }

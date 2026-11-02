@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:soul_soil",
+    "b": "minecraft:sand"
+  },
+  "pattern": [
+    "ab ",
+    "ba "
+  ],
+  "result": {
+    "count": 4,
+    "id": "minecraft:soul_sand"
+  },
+  "tier": 1
+}

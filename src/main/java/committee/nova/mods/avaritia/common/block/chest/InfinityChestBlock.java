@@ -7,20 +7,21 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
@@ -35,7 +36,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -53,12 +54,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 
     public InfinityChestBlock() {
-        super(Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.GOLD)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(30.0F, 1200.0F)
@@ -72,16 +73,17 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
 
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState,
-                                           @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+    public @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess,
+                                           @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos,
+                                           @NotNull BlockState facingState, @NotNull RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            scheduledTickAccess.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+        return super.updateShape(state, level, scheduledTickAccess, currentPos, facing, facingPos, facingState, random);
     }
 
     @Override
@@ -134,13 +136,13 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public void playerDestroy(@NotNull Level level, @NotNull Player player, @NotNull BlockPos pos,
+    public void playerDestroy(@NotNull ServerLevel level, @NotNull ServerPlayer player, @NotNull BlockPos pos,
                               @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
         super.playerDestroy(level, player, pos, state, blockEntity, tool);
     }
 
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder builder) {
+    protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder builder) {
         ItemStack stack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
         if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof InfinityChestTile tile) {
             tile.saveToItem(stack);
@@ -149,8 +151,8 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos,
-                                          @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos,
+                                                     @NotNull Player player, @NotNull BlockHitResult trace) {
         if (!level.isClientSide() && !player.isSpectator()) {
             BlockEntity tile = level.getBlockEntity(pos);
             if (tile instanceof InfinityChestTile chestTile) {
@@ -166,7 +168,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                     buf.writeByte(chestTile.getSortType());
                     buf.writeUUID(chestTile.getChannelID());
                 });
-                player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
+                player.awardStat(Stats.OPEN_CHEST);
             }
         }
         return InteractionResult.SUCCESS;
@@ -198,12 +200,11 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull PathComputationType type) {
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
         return false;
     }
 
     private static boolean hasSavedChannel(ItemStack stack) {
-        return stack.getTag() != null
-                && stack.getTag().contains(BlockItem.BLOCK_ENTITY_TAG, Tag.TAG_COMPOUND);
+        return stack.has(DataComponents.BLOCK_ENTITY_DATA);
     }
 }

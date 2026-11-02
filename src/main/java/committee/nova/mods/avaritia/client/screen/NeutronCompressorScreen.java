@@ -1,19 +1,20 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
-import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -25,10 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Description:
- * @author cnlimiter
- * Date: 2022/4/2 18:16
- * Version: 1.0
+ * 中子压缩机界面。
  */
 public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompressorMenu> {
     private Button lockButton;
@@ -38,7 +36,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     private ScreenRectangle progress;
 
     public NeutronCompressorScreen(NeutronCompressorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, Res.NEUTRON_COMPRESSOR_TEX);
+        super(container, inventory, title, ScreenTextures.NEUTRON_COMPRESSOR);
     }
 
     @Override
@@ -46,17 +44,17 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         super.init();
         int x = this.leftPos;
         int y = this.topPos;
-        this.material = PortableLayout.translate(new ScreenRectangle(63, 35, 17, 16), x, y);
-        this.progress = PortableLayout.translate(new ScreenRectangle(89, 35, 23, 16), x, y);
+        material = PortableLayout.translate(new ScreenRectangle(63, 35, 17, 16), x, y);
+        progress = PortableLayout.translate(new ScreenRectangle(89, 35, 23, 16), x, y);
 
         this.lockButton = UiInspector.name(new LockButton(x + 40, y + 55), "compressor.lock");
         this.ejectButton = UiInspector.name(new EjectButton(x + 40, y + 20), "compressor.eject");
         this.configButton = UiInspector.name(new SideConfigButton(this, x - 20, y), "compressor.config");
-
         this.addRenderableWidget(this.lockButton);
         this.addRenderableWidget(this.ejectButton);
         this.addRenderableWidget(this.configButton);
 
+        // 更新按钮初始状态
         this.lockButton.setMessage(Component.literal(this.isRecipeLocked() ? "🔒" : "🔓"));
     }
 
@@ -73,13 +71,11 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         }
     }
 
-
-
     private class LockButton extends ImageButton {
         private final List<FormattedCharSequence> tips = new ArrayList<>();
 
         public LockButton(int pX, int pY) {
-            super(pX, pY, 14, 13, 177, 47, Res.NEUTRON_COMPRESSOR_TEX, pButton -> lockRecipe());
+            super(pX, pY, 14, 13, new WidgetSprites(ScreenTextures.NEUTRON_COMPRESSOR, ScreenTextures.NEUTRON_COMPRESSOR), pButton -> lockRecipe());
             if (isRecipeLocked()) {
                 tips.add(Component.translatable("button.avaritia.lock_button_1").withStyle(ChatFormatting.GREEN).getVisualOrderText());
                 tips.add(Component.translatable("button.avaritia.lock_button_2").withStyle(ChatFormatting.GRAY).getVisualOrderText());
@@ -91,14 +87,17 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
+            var xTexStart = 177;
+            var yTexStart = 47;
             if (this.isHovered) {
-                if (isRecipeLocked()) pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart + 14 + 1, this.yTexStart + 13 + 1, this.width, this.height, 256, 256);
-                else pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart + 14 + 1, this.yTexStart, this.width, this.height, 256, 256);
-                setTooltipForNextRenderPass(tips);
+                if (isRecipeLocked()) pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart + 13 + 1, this.width, this.height, 256, 256);
+                else pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.setTooltipForNextFrame(font, tips, pMouseX, pMouseY);
             } else {
-                if (isRecipeLocked()) pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 13 + 1, this.width, this.height, 256, 256);
-                else pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
+                if (isRecipeLocked()) pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart + 13 + 1, this.width, this.height, 256, 256);
+                else pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
             }
 
 
@@ -109,68 +108,77 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         private final List<FormattedCharSequence> tips = new ArrayList<>();
 
         public EjectButton(int pX, int pY) {
-            super(pX, pY, 14, 11, 177, 35, Res.NEUTRON_COMPRESSOR_TEX, pButton -> ejectMaterials());
+            super(pX, pY, 14, 11, new WidgetSprites(ScreenTextures.NEUTRON_COMPRESSOR, ScreenTextures.NEUTRON_COMPRESSOR), pButton -> ejectMaterials());
             tips.add(Component.translatable("button.avaritia.eject_button_1").withStyle(ChatFormatting.AQUA).getVisualOrderText());
             tips.add(Component.translatable("button.avaritia.eject_button_2").withStyle(ChatFormatting.GRAY).getVisualOrderText());
         }
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
+            var xTexStart = 177;
+            var yTexStart = 35;
             if (this.isHovered) {
-                setTooltipForNextRenderPass(tips);
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart + 14 + 1, this.yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.setTooltipForNextFrame(font, tips, pMouseX, pMouseY);
+                pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
             } else {
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
             }
         }
     }
 
     @Override
-    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        if (this.material != null && PortableLayout.contains(this.material, pMouseX, pMouseY)) {
+    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        if (PortableLayout.contains(material, pMouseX, pMouseY)) {
             List<Component> tooltip = new ArrayList<>();
+
             if (this.getMaterialCount() < 1) {
                 tooltip.add(ModTooltips.EMPTY.color(ChatFormatting.WHITE).build());
             } else {
                 if (this.hasMaterialStack()) {
                     tooltip.add(this.getMaterialStackDisplayName());
                 }
-                tooltip.add(Component.literal(number(this.getMaterialCount()) + " / " + number(this.getMaterialsRequired())));
+
+                var text = Component.translatable(
+                        "gui.avaritia.neutron_compressor.material_count",
+                        number(this.getMaterialCount()),
+                        number(this.getMaterialsRequired()));
+
+                tooltip.add(text);
             }
-            pGuiGraphics.renderComponentTooltip(font, tooltip, pMouseX, pMouseY);
+
+            pGuiGraphics.setComponentTooltipForNextFrame(font, tooltip, pMouseX, pMouseY);
         }
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
-        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752, false);
-        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
+        stack.text(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
+        stack.text(font, this.playerInventoryTitle, 8, this.imageHeight - 94, LABEL_COLOR, false);
     }
 
+
     @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        if (this.hasRecipe() && this.material != null && this.progress != null) {
+    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
+        if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
-                int filled = this.getMaterialBarScaled(16);
-                pGuiGraphics.blit(Res.NEUTRON_COMPRESSOR_TEX, this.material.left(), this.material.top(), 176, 18, filled + 1, this.material.height());
+                int filled = this.getMaterialBarScaled(material.width() - 1);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, material.left(), material.top(), 176, 18, filled + 1, material.height(), 256, 256);
             }
+
             if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
-                int filled = this.getProgressBarScaled(22);
-                pGuiGraphics.blit(Res.NEUTRON_COMPRESSOR_TEX, this.progress.left(), this.progress.top(), 176, 0, filled + 1, this.progress.height());
+                int filled = this.getProgressBarScaled(progress.width() - 1);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, progress.left(), progress.top(), 176, 0, filled + 1, progress.height(), 256, 256);
             }
         }
-        if (this.material != null) {
-            UiInspector.region("compressor.material", this.material, null, true);
-        }
-        if (this.progress != null) {
-            UiInspector.region("compressor.progress", this.progress, null, false);
-        }
+        UiInspector.region("compressor.material", material, null, true);
+        UiInspector.region("compressor.progress", progress, null, false);
     }
 
     private Component getMaterialStackDisplayName() {
-        var level = this.minecraft.level;
+        var level = Minecraft.getInstance().level;
 
         if (level != null) {
             var container = this.getMenu();
@@ -187,10 +195,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public boolean hasRecipe() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().hasRecipe();
+        return this.getMaterialsRequired() > 0;
     }
 
     public boolean hasMaterialStack() {
@@ -208,24 +213,15 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public int getMaterialCount() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getMaterialCount();
+        return this.menu.getMaterialCount();
     }
 
     public int getMaterialsRequired() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getMaterialsRequired();
+        return this.menu.getMaterialsRequired();
     }
 
     public int getTimeRequired() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getTimeRequired();
+        return this.menu.getTimeRequired();
     }
 
     public int getMaterialBarScaled(int pixels) {
@@ -248,10 +244,8 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public boolean canEjectMaterials() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().getMaterialCount() > 0;
+        return this.getMaterialCount() > 0;
     }
+
 
 }

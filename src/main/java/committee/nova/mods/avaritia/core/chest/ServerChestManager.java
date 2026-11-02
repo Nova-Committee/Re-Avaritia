@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -98,7 +99,7 @@ public class ServerChestManager {
                     HashMap<UUID, ServerChestHandler> playerChannels = new HashMap<>();
                     for (File channelFile : channels) {
                         UUID channelID = UUID.fromString(channelFile.getName().substring(0, channelFile.getName().lastIndexOf(".")));
-                        CompoundTag channelDat = NbtIo.readCompressed(channelFile);
+                        CompoundTag channelDat = NbtIo.readCompressed(channelFile.toPath(), NbtAccounter.unlimitedHeap());
                         ServerChestHandler channel = new ServerChestHandler(channelDat);
                         playerChannels.put(channelID, channel);
                         Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID, "").getString());
@@ -124,7 +125,7 @@ public class ServerChestManager {
                     File channelDat = new File(user, id.toString() + ".dat");
                     try {
                         if (!channelDat.exists()) channelDat.createNewFile();
-                        NbtIo.writeCompressed(channel.buildData(), channelDat);
+                        NbtIo.writeCompressed(channel.buildData(), channelDat.toPath());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

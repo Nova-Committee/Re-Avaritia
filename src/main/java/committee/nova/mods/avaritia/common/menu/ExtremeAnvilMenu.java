@@ -1,26 +1,29 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
-import net.minecraft.SharedConstants;
-import net.minecraft.Util;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * @Project: Avaritia
@@ -30,19 +33,23 @@ import java.util.Map;
  */
 public class ExtremeAnvilMenu extends AnvilMenu {
     private String itemName;
+    private int repairItemCountCost;
+    private final DataSlot maximumCost = DataSlot.standalone();
 
-    private void setMaximumCost(int value) { this.cost.set(value); }
+    private void setMaximumCost(int value) { this.maximumCost.set(value); }
+
     public ExtremeAnvilMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf buf) {
         this(pContainerId, pPlayerInventory, ContainerLevelAccess.NULL);
     }
 
     public ExtremeAnvilMenu(int pContainerId, Inventory pPlayerInventory, ContainerLevelAccess pAccess) {
         super(pContainerId, pPlayerInventory, pAccess);
+        this.addDataSlot(this.maximumCost);
     }
 
     @Override
-    protected boolean isValidBlock(net.minecraft.world.level.block.state.BlockState state) {
-        return state.is(committee.nova.mods.avaritia.init.registry.ModBlocks.extreme_anvil.get());
+    protected boolean isValidBlock(BlockState state) {
+        return state.is(ModBlocks.extreme_anvil.get());
     }
 
     @Override
@@ -53,6 +60,11 @@ public class ExtremeAnvilMenu extends AnvilMenu {
     @Override
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
         return true;
+    }
+
+    @Override
+    public int getCost() {
+        return this.maximumCost.get();
     }
 
     @Override
@@ -80,22 +92,21 @@ public class ExtremeAnvilMenu extends AnvilMenu {
     public void createResult() {
         this.clearResult();
         ItemStack left = this.inputSlots.getItem(0);
-        if (left.isEmpty()) {
+        if (left.isEmpty() || !EnchantmentHelper.canStoreEnchantments(left)) {
             return;
         }
 
         ItemStack right = this.inputSlots.getItem(1);
-        int baseCost = left.getBaseRepairCost() + (right.isEmpty() ? 0 : right.getBaseRepairCost());
+        int baseCost = left.getOrDefault(DataComponents.REPAIR_COST, 0) + (right.isEmpty() ? 0 : right.getOrDefault(DataComponents.REPAIR_COST, 0));
 
         ItemStack result = left.copy();
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(result);
+        ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(result));
         int operationCost = 0;
         boolean enchantedBook = false;
 
         if (!right.isEmpty()) {
-            enchantedBook = right.getItem() == Items.ENCHANTED_BOOK
-                    && !EnchantedBookItem.getEnchantments(right).isEmpty();
-            if (result.isDamageableItem() && result.getItem().isValidRepairItem(left, right)) {
+            enchantedBook = right.has(DataComponents.STORED_ENCHANTMENTS);
+            if (result.isDamageableItem() && left.isValidRepairItem(right)) {
                 int repairAmount = Math.min(result.getDamageValue(), result.getMaxDamage() / 4);
                 if (repairAmount <= 0) {
                     this.clearResult();
@@ -128,20 +139,14 @@ public class ExtremeAnvilMenu extends AnvilMenu {
                     }
                 }
 
-                Map<Enchantment, Integer> addedEnchantments = EnchantmentHelper.getEnchantments(right);
-                for (Enchantment enchantment : addedEnchantments.keySet()) {
-                    if (enchantment == null) {
-                        continue;
-                    }
+                ItemEnchantments addedEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(right);
+                for (Object2IntMap.Entry<Holder<Enchantment>> entry : addedEnchantments.entrySet()) {
+                    Holder<Enchantment> enchantmentHolder = entry.getKey();
+                    Enchantment enchantment = enchantmentHolder.value();
 
-                    int mergedLevel = enchantments.getOrDefault(enchantment, 0) + addedEnchantments.get(enchantment);
-                    enchantments.put(enchantment, mergedLevel);
-                    int enchantmentCost = switch (enchantment.getRarity()) {
-                        case COMMON -> 1;
-                        case UNCOMMON -> 2;
-                        case RARE -> 4;
-                        case VERY_RARE -> 8;
-                    };
+                    int mergedLevel = enchantments.getLevel(enchantmentHolder) + entry.getIntValue();
+                    enchantments.set(enchantmentHolder, mergedLevel);
+                    int enchantmentCost = enchantment.getAnvilCost();
                     if (enchantedBook) {
                         enchantmentCost = Math.max(1, enchantmentCost / 2);
                     }
@@ -154,14 +159,14 @@ public class ExtremeAnvilMenu extends AnvilMenu {
             }
         }
 
-        if (this.itemName != null && !Util.isBlank(this.itemName)) {
+        if (this.itemName != null && !StringUtil.isBlank(this.itemName)) {
             if (!this.itemName.equals(left.getHoverName().getString())) {
                 ++operationCost;
-                result.setHoverName(Component.literal(this.itemName));
+                result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
             }
-        } else if (left.hasCustomHoverName()) {
+        } else if (left.has(DataComponents.CUSTOM_NAME)) {
             ++operationCost;
-            result.resetHoverName();
+            result.remove(DataComponents.CUSTOM_NAME);
         }
 
         if (operationCost <= 0) {
@@ -169,7 +174,7 @@ public class ExtremeAnvilMenu extends AnvilMenu {
             return;
         }
 
-        EnchantmentHelper.setEnchantments(enchantments, result);
+        EnchantmentHelper.setEnchantments(result, enchantments.toImmutable());
         this.setMaximumCost(baseCost + operationCost);
         this.resultSlots.setItem(0, result);
         this.broadcastChanges();
@@ -181,16 +186,17 @@ public class ExtremeAnvilMenu extends AnvilMenu {
         this.setMaximumCost(0);
     }
 
+    @Override
     public boolean setItemName(String pItemName) {
         String s = validateName(pItemName);
         if (s != null && !s.equals(this.itemName)) {
             this.itemName = s;
             if (this.getSlot(2).hasItem()) {
                 ItemStack itemstack = this.getSlot(2).getItem();
-                if (Util.isBlank(s)) {
-                    itemstack.resetHoverName();
+                if (StringUtil.isBlank(s)) {
+                    itemstack.remove(DataComponents.CUSTOM_NAME);
                 } else {
-                    itemstack.setHoverName(Component.literal(s));
+                    itemstack.set(DataComponents.CUSTOM_NAME, Component.literal(s));
                 }
             }
 
@@ -203,7 +209,7 @@ public class ExtremeAnvilMenu extends AnvilMenu {
 
     @Nullable
     private static String validateName(String pItemName) {
-        String s = SharedConstants.filterText(pItemName);
+        String s = StringUtil.filterText(pItemName);
         return s.length() <= 100 ? s : null;
     }
 }

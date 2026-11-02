@@ -112,14 +112,6 @@ public class NoMenuContainer implements Container {
     }
 
     @Override
-    public void startOpen(@NotNull Player player) {
-    }
-
-    @Override
-    public void stopOpen(@NotNull Player player) {
-    }
-
-    @Override
     public void clearContent() {
         Arrays.fill(items, ItemStack.EMPTY);
     }

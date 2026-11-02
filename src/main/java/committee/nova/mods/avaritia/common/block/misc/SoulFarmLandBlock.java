@@ -7,17 +7,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @Project: Avaritia
@@ -29,7 +27,7 @@ public class SoulFarmLandBlock extends BaseBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
     public SoulFarmLandBlock() {
-        super(BlockBehaviour.Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.COLOR_BROWN)
                 .strength(0.6F)
                 .randomTicks()
@@ -37,12 +35,12 @@ public class SoulFarmLandBlock extends BaseBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(@NotNull BlockState pState, @NotNull Direction pFacing, @NotNull BlockState pFacingState, @NotNull LevelAccessor pLevel, @NotNull BlockPos pCurrentPos, @NotNull BlockPos pFacingPos) {
+    protected @NotNull BlockState updateShape(@NotNull BlockState pState, @NotNull LevelReader pLevel, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pCurrentPos, @NotNull Direction pFacing, @NotNull BlockPos pFacingPos, @NotNull BlockState pFacingState, @NotNull RandomSource random) {
         if (pFacing == Direction.UP && !pState.canSurvive(pLevel, pCurrentPos)) {
-            pLevel.scheduleTick(pCurrentPos, this, 1);
+            scheduledTickAccess.scheduleTick(pCurrentPos, this, 1);
         }
 
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+        return super.updateShape(pState, pLevel, scheduledTickAccess, pCurrentPos, pFacing, pFacingPos, pFacingState, random);
     }
 
     @Override
@@ -55,12 +53,9 @@ public class SoulFarmLandBlock extends BaseBlock {
         return SHAPE;
     }
 
-
-
-
     @Override
     public void randomTick(@NotNull BlockState state, ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource rand) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockPos abovePos = pos.above();
             BlockState aboveState = level.getBlockState(abovePos);
             Block aboveBlock = aboveState.getBlock();
@@ -73,9 +68,9 @@ public class SoulFarmLandBlock extends BaseBlock {
                 return;
             }
 
-            if ((aboveBlock instanceof SugarCaneBlock || level.getBlockState(pos.above(2)).getBlock() instanceof SugarCaneBlock)
-                    && level.random.nextFloat() <= ModConfig.growthSoulFarmland.get()
-            ) {
+            if (aboveBlock instanceof SugarCaneBlock || level.getBlockState(pos.above(2)).getBlock() instanceof SugarCaneBlock
+                    && rand.nextFloat() <= ModConfig.growthSoulFarmland.get()
+            ){
                 if (aboveState.getValue(SugarCaneBlock.AGE) < 11) {
                     level.setBlock(abovePos, aboveState.setValue(SugarCaneBlock.AGE, aboveState.getValue(SugarCaneBlock.AGE) + 5), 4);
                 }
@@ -83,10 +78,10 @@ public class SoulFarmLandBlock extends BaseBlock {
 
 
             if (aboveBlock instanceof BonemealableBlock growable
-                    && level.random.nextFloat() <= ModConfig.growthSoulFarmland.get()
+                    && rand.nextFloat() <= ModConfig.growthSoulFarmland.get()
             ) {
-                if (growable.isValidBonemealTarget(level, pos.above(), aboveState, false)) {
-                    growable.performBonemeal(level, level.random, pos.above(), aboveState);
+                if (growable.isValidBonemealTarget(level, pos.above(), aboveState, BonemealSource.MOB)) {
+                    growable.performBonemeal(level, rand, pos.above(), aboveState, BonemealSource.MOB);
                     level.levelEvent(2005, pos.above(), 0);
                 }
             }

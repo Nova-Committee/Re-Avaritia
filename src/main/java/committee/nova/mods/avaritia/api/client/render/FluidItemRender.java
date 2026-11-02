@@ -1,30 +1,30 @@
 package committee.nova.mods.avaritia.api.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.InventoryMenu;
-
-
 import committee.nova.mods.avaritia.core.io.FluidStack;
-import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.material.FluidState;
+
 
 /**
  * @Project: Avaritia
- * @author cnlimiter
+ * @Author: cnlimiter
  * @CreateTime: 2025/2/28 13:55
  * @Description:
  */
-
 public final class FluidItemRender {
 
-    private final ResourceLocation texture;
+    private final TextureAtlasSprite sprite;
     private final int referenceWidth;
     private final int referenceHeight;
     private int r = 255;
@@ -35,22 +35,18 @@ public final class FluidItemRender {
     private Rect2i destRect = new Rect2i(0, 0, 0, 0);
     private boolean blending = true;
 
-    public FluidItemRender(ResourceLocation texture, int referenceWidth, int referenceHeight) {
-        this.texture = texture;
+    public FluidItemRender(TextureAtlasSprite sprite, int referenceWidth, int referenceHeight) {
+        this.sprite = sprite;
         this.referenceWidth = referenceWidth;
         this.referenceHeight = referenceHeight;
     }
 
     public static FluidItemRender sprite(TextureAtlasSprite sprite) {
-        // We use this convoluted method to convert from UV in the range of [0,1] back to pixel values with a
-        // fictitious reference size of a large integer. This is converted back to UV later when we actually blit.
-        final int refSize = Integer.MAX_VALUE / 2; // Don't use max int to prevent overflows after inexact conversions.
-
-        return new FluidItemRender(sprite.atlasLocation(), refSize, refSize).src(
-                (int) (sprite.getU0() * refSize),
-                (int) (sprite.getV0() * refSize),
-                (int) ((sprite.getU1() - sprite.getU0()) * refSize),
-                (int) ((sprite.getV1() - sprite.getV0()) * refSize)
+        return new FluidItemRender(sprite, 1, 1).src(
+                0,
+                0,
+                1,
+                1
         );
     }
 
@@ -102,10 +98,7 @@ public final class FluidItemRender {
         return color(r, g, b);
     }
 
-    public void blit(PoseStack poseStack, int zIndex) {
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, this.texture);
-
+    public void blit(PoseStack poseStack, SubmitNodeCollector source, int zIndex) {
         // With no source rectangle, we'll use the entirety of the texture. This happens rarely though.
         float minU, minV, maxU, maxV;
         if (srcRect == null) {
@@ -120,52 +113,47 @@ public final class FluidItemRender {
 
         // It's possible to not set a destination rectangle size, in which case the
         // source rectangle size will be used
+        float width = 0, height = 0;
+        if (destRect.getWidth() != 0 && destRect.getHeight() != 0) {
+            width = destRect.getWidth();
+            height = destRect.getHeight();
+        } else if (srcRect != null) {
+            width = srcRect.getWidth();
+            height = srcRect.getHeight();
+        }
         float x1 = destRect.getX();
         float y1 = destRect.getY();
-        float x2 = x1, y2 = y1;
-        if (destRect.getWidth() != 0 && destRect.getHeight() != 0) {
-            x2 += destRect.getWidth();
-            y2 += destRect.getHeight();
-        } else if (srcRect != null) {
-            x2 += srcRect.getWidth();
-            y2 += srcRect.getHeight();
-        }
+        float x2 = x1 + width;
+        float y2 = y1 + height;
 
-        Matrix4f matrix = poseStack.last().pose();
-
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex(matrix, x1, y2, zIndex).uv(minU, maxV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, zIndex).uv(maxU, maxV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y1, zIndex).uv(maxU, minV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x1, y1, zIndex).uv(minU, minV).color(r, g, b, a).endVertex();
-
-        if (blending) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        } else {
-            RenderSystem.disableBlend();
-        }
-        // RenderSystem.enableTexture();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        // 26.3 移除了 MeshData/RenderType#draw 立即绘制，改走提交节点几何路径。
+        // 顶点仍写入位置/UV/颜色；itemTranslucent 的顶点格式额外要求光照/覆盖层/法线，
+        // 用全亮(FULL_BRIGHT)、无覆盖层(NO_OVERLAY)与朝向观察者的法线补齐，保持图标始终可见。
+        source.submitCustomGeometry(poseStack, RenderTypes.itemTranslucent(sprite.atlasLocation()), (pose, buffer) -> {
+            VertexConsumer consumer = sprite.wrap(buffer);
+            consumer.addVertex(pose, x1, y2, zIndex).setUv(minU, maxV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x2, y2, zIndex).setUv(maxU, maxV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x2, y1, zIndex).setUv(maxU, minV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+            consumer.addVertex(pose, x1, y1, zIndex).setUv(minU, minV).setColor(r, g, b, blending ? a : 255).setLight(LightCoordsUtil.FULL_BRIGHT).setOverlay(OverlayTexture.NO_OVERLAY).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        });
     }
 
-    public static int tint(FluidStack fluid) {
-        if (fluid.getFluid().defaultFluidState().is(net.minecraft.tags.FluidTags.LAVA)) return 0xFFFFFF;
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.level != null && minecraft.player != null
-                ? net.minecraft.client.renderer.BiomeColors.getAverageWaterColor(minecraft.level, minecraft.player.blockPosition()) : 0x3F76E4;
-    }
-    public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, int x, int y, int z) {
-        boolean lava = fluidStack.getFluid().defaultFluidState().is(net.minecraft.tags.FluidTags.LAVA);
-        ResourceLocation texture = new ResourceLocation("minecraft", lava ? "block/lava_still" : "block/water_still");
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-        int color = tint(fluidStack);
+    public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, SubmitNodeCollector source, int x, int y, int z) {
+        FluidState fluidState = fluidStack.getFluid().defaultFluidState();
+        FluidModel fluidModel = Minecraft.getInstance()
+                .getModelManager()
+                .getFluidStateModelSet()
+                .get(fluidState);
+        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+        // 26.3 vanilla 流体模型自带 BlockTintSource（按 BlockState 取色）；Fabric 无 Neo 的
+        // FluidTintSources 扩展，故用流体默认状态的 legacy block 求色。
+        BlockTintSource tintSource = fluidModel.tintSource();
+        int color = tintSource != null ? tintSource.color(fluidState.createLegacyBlock()) : -1;
         sprite(sprite)
                 .colorRgb(color)
                 .blending(false)
                 .dest(x, y, 16, 16)
-                .blit(poseStack, z);
+                .blit(poseStack, source, z);
     }
 
 }

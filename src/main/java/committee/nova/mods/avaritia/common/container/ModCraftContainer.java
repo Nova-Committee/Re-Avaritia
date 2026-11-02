@@ -2,10 +2,14 @@ package committee.nova.mods.avaritia.common.container;
 
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Description:
@@ -18,20 +22,20 @@ public class ModCraftContainer extends TransientCraftingContainer {
     private final ItemStackWrapper inventory;
 
     public ModCraftContainer(AbstractContainerMenu menu, ItemStackWrapper inventory, int size) {
-        super(menu, (int) Math.sqrt(size), (int) Math.sqrt(size), inventory.getStacks());
+        super(menu, (int) Math.sqrt(size), (int) Math.sqrt(size));
         this.menu = menu;
         this.inventory = inventory;
     }
 
     @Override
-    public int getContainerSize() { return inventory.getSlots(); }
+    public int getContainerSize() { return this.inventory.getSlots(); }
 
     @Override
-    public java.util.List<ItemStack> getItems() { return inventory.getStacks(); }
+    public List<ItemStack> getItems() { return this.inventory.getStacks(); }
 
     @Override
-    public void fillStackedContents(net.minecraft.world.entity.player.StackedContents contents) {
-        for (ItemStack stack : inventory.getStacks()) contents.accountSimpleStack(stack);
+    public void fillStackedContents(StackedItemContents contents) {
+        for (ItemStack stack : this.inventory.getStacks()) contents.accountSimpleStack(stack);
     }
 
     @Override
@@ -51,7 +55,7 @@ public class ModCraftContainer extends TransientCraftingContainer {
 
     @Override
     public @NotNull ItemStack removeItem(int slot, int amount) {
-        var stack = this.inventory.extractItem(slot, amount, false, true);
+        var stack = this.inventory.extractItem(slot, amount, false);
         this.menu.slotsChanged(this);
         return stack;
     }
@@ -71,8 +75,7 @@ public class ModCraftContainer extends TransientCraftingContainer {
 
     @Override
     public void setChanged() {
-        inventory.setChanged();
-        menu.slotsChanged(this);
+        this.inventory.setChanged();
     }
 
     @Override
@@ -85,5 +88,14 @@ public class ModCraftContainer extends TransientCraftingContainer {
         for (int i = 0; i < this.getContainerSize(); i++) {
             this.inventory.setStackInSlot(i, ItemStack.EMPTY);
         }
+    }
+
+    /**
+     * Returns the full, untrimmed grid so oversized table recipes can derive
+     * the table tier from the slot count and index patterns by absolute slot.
+     */
+    @Override
+    public @NotNull CraftingInput asCraftInput() {
+        return new CraftingInput(this.getWidth(), this.getHeight(), this.getItems());
     }
 }

@@ -1,13 +1,14 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.Const;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +20,28 @@ import java.util.UUID;
 /** Server-side Neutron Ring structure library. */
 public final class NeutronRingSavedData extends SavedData {
     public static final int MAX_SPACES = 32;
-    private static final String NAME = "avaritia_neutron_ring";
+    public static final String NAME = "avaritia_neutron_ring";
+
+    private static final Codec<Space> SPACE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("id").forGetter(Space::id),
+            Codec.STRING.fieldOf("name").forGetter(Space::name),
+            CompoundTag.CODEC.fieldOf("template").forGetter(Space::template)
+    ).apply(instance, (id, name, template) -> new Space(id, name, template, NeutronSpacePreview.meta(template))));
+
+    private static final Codec<Library> LIBRARY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUIDUtil.CODEC.fieldOf("id").forGetter(Library::storageId),
+            SPACE_CODEC.listOf().optionalFieldOf("spaces", List.of()).forGetter(Library::spaces)
+    ).apply(instance, Library::new));
+
+    public static final Codec<NeutronRingSavedData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            LIBRARY_CODEC.listOf().optionalFieldOf("libraries", List.of()).forGetter(NeutronRingSavedData::entries)
+    ).apply(instance, NeutronRingSavedData::fromEntries));
+
+    // 26.3 Fabric 的 SavedDataType 为 4 参构造（NeoForge patch 版为 3 参）；
+    // DataFixTypes 不能为 null，自定义数据用 SAVED_DATA_COMMAND_STORAGE 占位
+    public static final SavedDataType<NeutronRingSavedData> TYPE = new SavedDataType<>(
+            Const.rl(NAME), NeutronRingSavedData::new, CODEC, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
+
     private final Map<UUID, List<Space>> libraries = new HashMap<>();
 
     public record Space(String id, String name, CompoundTag template, NeutronSpacePreview.Meta meta) {
@@ -31,10 +53,25 @@ public final class NeutronRingSavedData extends SavedData {
     public record SpaceInfo(String id, String name, int sizeX, int sizeY, int sizeZ, int blocks) {
     }
 
+    public NeutronRingSavedData() {
+    }
+
+    private static NeutronRingSavedData fromEntries(List<Library> entries) {
+        NeutronRingSavedData data = new NeutronRingSavedData();
+        for (Library library : entries) {
+            data.libraries.put(library.storageId(), new ArrayList<>(library.spaces()));
+        }
+        return data;
+    }
+
+    private List<Library> entries() {
+        List<Library> entries = new ArrayList<>(libraries.size());
+        libraries.forEach((id, spaces) -> entries.add(new Library(id, List.copyOf(spaces))));
+        return entries;
+    }
+
     public static NeutronRingSavedData get(MinecraftServer server) {
-        ServerLevel overworld = server.overworld();
-        return overworld.getDataStorage().computeIfAbsent(
-                NeutronRingSavedData::load, NeutronRingSavedData::new, NAME);
+        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }
 
     public List<SpaceInfo> list(UUID storageId) {
@@ -116,42 +153,6 @@ public final class NeutronRingSavedData extends SavedData {
         return true;
     }
 
-    @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
-        ListTag librariesTag = new ListTag();
-        libraries.forEach((storageId, spaces) -> {
-            CompoundTag library = new CompoundTag();
-            library.put("Id", NbtUtils.createUUID(storageId));
-            ListTag spacesTag = new ListTag();
-            for (Space space : spaces) {
-                CompoundTag entry = new CompoundTag();
-                entry.putString("Id", space.id);
-                entry.putString("Name", space.name);
-                entry.put("Template", space.template);
-                spacesTag.add(entry);
-            }
-            library.put("Spaces", spacesTag);
-            librariesTag.add(library);
-        });
-        tag.put("Libraries", librariesTag);
-        return tag;
-    }
-
-    static NeutronRingSavedData load(CompoundTag tag) {
-        NeutronRingSavedData data = new NeutronRingSavedData();
-        ListTag librariesTag = tag.getList("Libraries", Tag.TAG_COMPOUND);
-        for (int i = 0; i < librariesTag.size(); i++) {
-            CompoundTag library = librariesTag.getCompound(i);
-            UUID storageId = NbtUtils.loadUUID(library.get("Id"));
-            List<Space> spaces = new ArrayList<>();
-            ListTag spacesTag = library.getList("Spaces", Tag.TAG_COMPOUND);
-            for (int j = 0; j < spacesTag.size(); j++) {
-                CompoundTag entry = spacesTag.getCompound(j);
-                CompoundTag template = entry.getCompound("Template");
-                spaces.add(new Space(entry.getString("Id"), entry.getString("Name"), template, NeutronSpacePreview.meta(template)));
-            }
-            data.libraries.put(storageId, spaces);
-        }
-        return data;
+    private record Library(UUID storageId, List<Space> spaces) {
     }
 }

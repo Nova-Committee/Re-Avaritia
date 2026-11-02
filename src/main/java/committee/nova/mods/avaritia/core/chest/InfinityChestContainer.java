@@ -3,10 +3,12 @@ package committee.nova.mods.avaritia.core.chest;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,6 +21,12 @@ public class InfinityChestContainer extends SimpleContainer {
     public static final int SIZE = 15 * 9;
     public static final int WIDTH = 15;
     public static final int HEIGHT = 9;
+
+    /** 千分位精确格式化大数；MAX_VALUE 显示为 MAX */
+    public static String formatExactAmount(long amount) {
+        if (amount == Long.MAX_VALUE) return "MAX";
+        return StorageUtils.DECIMAL_FORMAT.format(amount);
+    }
     public final ArrayList<String> sortedObject = new ArrayList<>();
     public final ArrayList<String> viewingObject = new ArrayList<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
@@ -86,7 +94,7 @@ public class InfinityChestContainer extends SimpleContainer {
                     for (String itemName : sortedItems) {
                         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
                         ArrayList<String> tags = new ArrayList<>();
-                        itemStack.getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
+                        itemStack.typeHolder().tags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
                         for (String tag : tags) {
                             if (tag.contains(s)) {
                                 temp.add(itemName);
@@ -198,7 +206,7 @@ public class InfinityChestContainer extends SimpleContainer {
         long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
         Tag tag = this.menu.chest.nbtDataCache.get(itemId);
         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), (int) Math.min(Integer.MAX_VALUE, count));
-        if (tag instanceof CompoundTag cTag) itemStack.setTag(cTag);
+        if (tag instanceof CompoundTag cTag) itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(cTag));
         return itemStack;
     }
 

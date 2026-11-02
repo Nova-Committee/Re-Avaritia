@@ -1,14 +1,9 @@
 package committee.nova.mods.avaritia.api.util.vec;
 
-import committee.nova.mods.avaritia.api.client.render.CCRenderState;
-import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
-
 /**
  * Abstract supertype for any 3D vector transformation
  */
-public abstract class Transformation extends ITransformation<Vector3, Transformation> implements IVertexOperation {
-
-    public static final int operationIndex = IVertexOperation.registerOperation();
+public abstract class Transformation extends ITransformation<Vector3, Transformation> {
 
     /**
      * Applies this transformation to a normal (doesn't translate)
@@ -30,24 +25,5 @@ public abstract class Transformation extends ITransformation<Vector3, Transforma
 
     public TransformationList with(Transformation t) {
         return new TransformationList(this, t);
-    }
-
-    @Override
-    public boolean load(CCRenderState ccrs) {
-        ccrs.pipeline.addRequirement(ccrs.normalAttrib.operationID());
-        return !isRedundant();
-    }
-
-    @Override
-    public void operate(CCRenderState ccrs) {
-        apply(ccrs.vert.vec);
-        if (ccrs.normalAttrib.active) {
-            applyN(ccrs.normal);
-        }
-    }
-
-    @Override
-    public int operationID() {
-        return operationIndex;
     }
 }

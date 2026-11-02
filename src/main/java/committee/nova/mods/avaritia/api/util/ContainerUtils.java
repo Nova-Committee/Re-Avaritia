@@ -1,10 +1,9 @@
 package committee.nova.mods.avaritia.api.util;
 
-import com.google.common.base.Objects;
 import committee.nova.mods.avaritia.api.common.container.FaceContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.item.ItemStack;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
 
@@ -85,11 +84,11 @@ public class ContainerUtils {
             return stack1 == stack2;
         }
 
-        return stack1.getItem() == stack2.getItem() && stack1.getDamageValue() == stack2.getDamageValue() && stack1.getCount() == stack2.getCount() && Objects.equal(stack1.getTag(), stack2.getTag());
+        return stack1.getItem() == stack2.getItem() && stack1.getDamageValue() == stack2.getDamageValue() && stack1.getCount() == stack2.getCount() && ItemStack.isSameItemSameComponents(stack1, stack2);
     }
 
     public static boolean canStack(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
-        return stack1.isEmpty() || stack2.isEmpty() || (stack1.getItem() == stack2.getItem() && (stack2.getDamageValue() == stack1.getDamageValue()) && ItemStack.isSameItemSameTags(stack2, stack1)) && stack1.isStackable();
+        return stack1.isEmpty() || stack2.isEmpty() || (stack1.getItem() == stack2.getItem() && (stack2.getDamageValue() == stack1.getDamageValue()) && ItemStack.isSameItemSameComponents(stack2, stack1)) && stack1.isStackable();
     }
 
     /**
@@ -97,10 +96,9 @@ public class ContainerUtils {
      */
     public static void consumeItem(Container inv, int slot) {
         ItemStack stack = inv.getItem(slot);
-        Item item = stack.getItem();
-        if (item.hasCraftingRemainingItem()) {
-            ItemStack container = new ItemStack(item.getCraftingRemainingItem());
-            inv.setItem(slot, container);
+        var remainder = stack.getCraftingRemainder();
+        if (remainder != null) {
+            inv.setItem(slot, remainder.create());
         } else {
             inv.removeItem(slot, 1);
         }
@@ -121,7 +119,7 @@ public class ContainerUtils {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.removeItemNoUpdate(i);
             if (!stack.isEmpty()) {
-                player.drop(stack, false);
+                player.drop(stack, false, Prediction.SERVER_ONLY);
             }
         }
     }

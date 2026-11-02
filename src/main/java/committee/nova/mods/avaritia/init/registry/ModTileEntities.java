@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.api.init.registry.RegistryEntries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import committee.nova.mods.avaritia.api.init.registry.RegistryEntry;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -21,7 +22,7 @@ public class ModTileEntities {
     public static final RegistryEntries<BlockEntityType<?>> BLOCK_ENTITIES = RegistryEntries.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Const.MOD_ID);
 
     public static <T extends BlockEntity> RegistryEntry<BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
-        return BLOCK_ENTITIES.register(name, () -> BlockEntityType.Builder.of(tile, blocks.get()).build(null));
+        return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(tile, Set.of(blocks.get())));
     }
 
 

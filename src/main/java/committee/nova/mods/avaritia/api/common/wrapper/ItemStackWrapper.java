@@ -1,15 +1,11 @@
 package committee.nova.mods.avaritia.api.common.wrapper;
 
-
 import committee.nova.mods.avaritia.api.common.inventory.CanExtractFunction;
 import committee.nova.mods.avaritia.api.common.inventory.CanInsertFunction;
 import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import committee.nova.mods.avaritia.api.common.wrapper.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,9 +73,11 @@ public class ItemStackWrapper extends ItemStackHandler {
         int limit = getSlotLimit(slot);
         return limit > 64 ? (int) ((long) limit * stack.getMaxStackSize() / 64) : Math.min(limit, stack.getMaxStackSize());
     }
+
     public Container toIInventory() {
         return container;
     }
+
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return this.canInsert == null || this.canInsert.apply(slot, stack);
@@ -92,60 +90,6 @@ public class ItemStackWrapper extends ItemStackHandler {
         }
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        var items = new ListTag();
-
-        for (int i = 0; i < this.stacks.size(); i++) {
-            var stack = this.stacks.get(i);
-
-            if (!stack.isEmpty()) {
-                var item = new CompoundTag();
-
-                item.putInt("Slot", i);
-
-                // change: store additional ExtendedCount value for stack sizes larger than normal
-                if (stack.getCount() > 64) {
-                    item.putInt("ExtendedCount", stack.getCount());
-                }
-
-                stack.save(item);
-                items.add(item);
-            }
-        }
-
-        var nbt = new CompoundTag();
-
-        nbt.put("Items", items);
-        nbt.putInt("Size", this.stacks.size());
-
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        this.setSize(nbt.contains("Size", 3) ? nbt.getInt("Size") : this.stacks.size());
-
-        var items = nbt.getList("Items", 10);
-
-        for (int i = 0; i < items.size(); ++i) {
-            var item = items.getCompound(i);
-            int slot = item.getInt("Slot");
-
-            if (slot >= 0 && slot < this.stacks.size()) {
-                var stack = ItemStack.of(item);
-
-                // change: use the ExtendedCount value instead if it exists
-                if (item.contains("ExtendedCount")) {
-                    stack.setCount(item.getInt("ExtendedCount"));
-                }
-
-                this.stacks.set(slot, stack);
-            }
-        }
-
-        this.onLoad();
-    }
     public NonNullList<ItemStack> getStacks() {
         return this.stacks;
     }
