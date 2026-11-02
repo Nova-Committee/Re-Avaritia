@@ -4,6 +4,7 @@
     "color": -872415232,
     "model": "avaritia:item/endest_pearl",
     "size": 4,
+    "pulse": false,
     "texture": "avaritia:misc/halo"
   },
   "oversized_in_gui": true

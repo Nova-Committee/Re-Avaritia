@@ -95,6 +95,8 @@ public final class NetworkHandler {
                 new C2SSideConfigPacket.Handler());
         registrar.playToServer(C2SElytraSpeedUpPacket.TYPE, C2SElytraSpeedUpPacket.STREAM_CODEC,
                 new C2SElytraSpeedUpPacket.Handler());
+        registrar.playToServer(C2SHarnessActionPacket.TYPE, C2SHarnessActionPacket.STREAM_CODEC,
+                new C2SHarnessActionPacket.Handler());
         registrar.playToServer(C2SItemFilterPacket.TYPE, C2SItemFilterPacket.STREAM_CODEC,
                 new C2SItemFilterPacket.Handler());
         registrar.playToServer(C2SRenamePacket.TYPE, C2SRenamePacket.STREAM_CODEC,

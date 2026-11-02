@@ -3,6 +3,7 @@
     "type": "avaritia:halo",
     "color": -872415232,
     "model": "avaritia:item/infinity_nugget",
+    "pulse": false,
     "texture": "avaritia:misc/halo"
   },
   "oversized_in_gui": true

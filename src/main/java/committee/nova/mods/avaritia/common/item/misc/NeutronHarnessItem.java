@@ -63,20 +63,11 @@ public class NeutronHarnessItem extends Item implements InitEnchantItem {
                                 ),
                                 EquipmentSlotGroup.BODY
                         )
-                        .add(Attributes.FLYING_SPEED,
-                                new AttributeModifier(
-                                        FLYING_SPEED_ID,
-                                        0.95,
-                                        AttributeModifier.Operation.ADD_VALUE
-                                ),
-                                EquipmentSlotGroup.BODY
-                        )
                         .build()
                 ));
     }
     private static final Identifier ARMOR_ID = Const.rl("neutron_harness_armor");
     private static final Identifier TOUGHNESS_ID = Const.rl("neutron_harness_armor_toughness");
-    private static final Identifier FLYING_SPEED_ID = Const.rl("neutron_harness_flying_speed");
     private static Equippable createHarnessEquippable() {
         HolderGetter<EntityType<?>> entityGetter = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.ENTITY_TYPE);
         return Equippable.builder(EquipmentSlot.BODY)

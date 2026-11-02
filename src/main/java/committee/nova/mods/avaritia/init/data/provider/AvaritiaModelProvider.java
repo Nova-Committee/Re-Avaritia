@@ -220,12 +220,12 @@ public class AvaritiaModelProvider implements DataProvider {
             case "matter_cluster" -> ItemModelUtils.conditional(new ItemOverrideHandler.MatterClusterFull(),
                     matterClusterFullModel(), new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
             case "full_matter_cluster" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), HALO_COLOR, 10, false);
-            case "infinity_ingot", "infinity_nugget" -> haloModel(model, 10, true);
-            case "infinity_catalyst", "enhancement_core" -> haloModel(model, 8, true);
+            case "infinity_ingot", "infinity_nugget" -> haloModel(model, 10, false);
+            case "infinity_catalyst", "enhancement_core" -> haloModel(model, 8, false);
             case "infinity_totem", "infinity_ring", "infinity_bucket", "infinity_elytra", "neutron_ring", "star_fuel" ->
                     haloModel(model, 6, false);
             case "infinity_upgrade" -> haloModel(model, 4, false);
-            case "endest_pearl" -> haloModel(model, 4, true);
+            case "endest_pearl" -> haloModel(model, 4, false);
             case "neutron_pile" -> haloNoiseModel(model, 872415231);
             case "neutron_nugget" -> haloNoiseModel(model, 1308622847);
             case "neutron_ingot", "neutron_gear", "neutron_horse_armor", "neutron_nautilus_armor", "upgrade_smithing_template" ->

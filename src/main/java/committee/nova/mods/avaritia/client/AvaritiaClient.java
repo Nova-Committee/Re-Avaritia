@@ -53,6 +53,7 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
+import committee.nova.mods.avaritia.common.net.C2SHarnessActionPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPacket;
 import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -123,6 +124,10 @@ public class AvaritiaClient {
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, KEY_CATEGORY);
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, KEY_CATEGORY);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, KEY_CATEGORY);
+    /** 默认不绑定任何键，由玩家在「控制」里自行绑定。 */
+    public static final KeyMapping HARNESS_SUMMON_KEY = new KeyMapping("key.avaritia.neutron_harness_summon", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, KEY_CATEGORY);
+    /** 默认不绑定任何键，由玩家在「控制」里自行绑定。 */
+    public static final KeyMapping HARNESS_SHIELD_KEY = new KeyMapping("key.avaritia.neutron_harness_shield", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, KEY_CATEGORY);
     public static final ContextKey<Boolean> INFINITY_ARMOR_FLYING = new ContextKey<>(id("infinity_armor_flying"));
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(id("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(id("compressed_chest_left"), "main");
@@ -306,6 +311,8 @@ public class AvaritiaClient {
         event.register(CONFIG_KEY);
         event.register(FILTER_KEY);
         event.register(RING_KEY);
+        event.register(HARNESS_SUMMON_KEY);
+        event.register(HARNESS_SHIELD_KEY);
     }
 
     @SubscribeEvent
@@ -328,6 +335,18 @@ public class AvaritiaClient {
         while (RING_KEY.consumeClick()) {
             if (minecraft.player != null) {
                 NetworkHandler.sendToServer(new C2SOpenRingPacket());
+            }
+        }
+
+        while (HARNESS_SUMMON_KEY.consumeClick()) {
+            if (minecraft.player != null) {
+                NetworkHandler.sendToServer(new C2SHarnessActionPacket(C2SHarnessActionPacket.ACTION_SUMMON));
+            }
+        }
+
+        while (HARNESS_SHIELD_KEY.consumeClick()) {
+            if (minecraft.player != null) {
+                NetworkHandler.sendToServer(new C2SHarnessActionPacket(C2SHarnessActionPacket.ACTION_SHIELD));
             }
         }
 

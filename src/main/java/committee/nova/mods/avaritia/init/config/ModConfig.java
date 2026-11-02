@@ -52,6 +52,22 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue bootSpeedStrafingMultiplier;
     public static final ModConfigSpec.DoubleValue bootSpeedSprintingMultiplier;
 
+    public static final ModConfigSpec.BooleanValue neutronWolfArmorEnabled;
+    public static final ModConfigSpec.DoubleValue neutronWolfBondRadius;
+    public static final ModConfigSpec.DoubleValue neutronWolfMaxRange;
+    public static final ModConfigSpec.DoubleValue neutronWolfMinReduction;
+    public static final ModConfigSpec.DoubleValue neutronWolfHaxReduction;
+    public static final ModConfigSpec.IntValue neutronWolfTotemDurabilityCost;
+    public static final ModConfigSpec.IntValue neutronWolfBondCooldownSeconds;
+    public static final ModConfigSpec.DoubleValue neutronWolfHealthBonus;
+
+    public static final ModConfigSpec.DoubleValue neutronHarnessShieldRadius;
+    public static final ModConfigSpec.IntValue neutronHarnessShieldDurationSeconds;
+    public static final ModConfigSpec.IntValue neutronHarnessShieldCooldownSeconds;
+    public static final ModConfigSpec.DoubleValue neutronHarnessGhastDamageReduction;
+    public static final ModConfigSpec.DoubleValue neutronNautilusWaterDamageReduction;
+    public static final ModConfigSpec.DoubleValue neutronNautilusSpeedBonus;
+
     static {
         ModConfigSpec.Builder common = new ModConfigSpec.Builder();
         common.push("tools");
@@ -102,6 +118,20 @@ public class ModConfig {
         bootSpeedBackwardMultiplier = buildDouble(common, "boot_speed_backward_multiplier", 0.25, 0.01, 1.0, "Infinity Boots speed multiplier while moving backward");
         bootSpeedStrafingMultiplier = buildDouble(common, "boot_speed_strafing_multiplier", 0.45, 0.01, 1.0, "Infinity Boots speed multiplier while strafing");
         bootSpeedSprintingMultiplier = buildDouble(common, "boot_speed_sprinting_multiplier", 0.2, 0.01, 1.0, "Additional Infinity Boots speed while sprinting");
+        neutronWolfArmorEnabled = buildBoolean(common, "wolf_enabled", true, "Whether the Neutron Wolf Armor grants its bond and totem mechanics");
+        neutronWolfBondRadius = buildDouble(common, "wolf_bond_radius", 5.0, 0.0, 64.0, "Radius around its owner in which the wolf is unharmed and can absorb a lethal hit");
+        neutronWolfMaxRange = buildDouble(common, "wolf_max_range", 25.0, 1.0, 128.0, "Distance at which damage reduction stops decaying");
+        neutronWolfMinReduction = buildDouble(common, "wolf_min_reduction", 0.5, 0.0, 1.0, "Damage reduction kept at and beyond wolf_max_range");
+        neutronWolfHaxReduction = buildDouble(common, "wolf_hax_reduction", 0.3, 0.0, 1.0, "Damage reduction cap against armor-bypassing or invulnerability-bypassing damage");
+        neutronWolfTotemDurabilityCost = buildInt(common, "wolf_totem_durability_cost", 500, 0, 100000, "Durability the wolf armor must pay to refuse a lethal hit (0 disables the cost)");
+        neutronWolfBondCooldownSeconds = buildInt(common, "wolf_bond_cooldown_seconds", 3, 0, 3600, "Cooldown of the bond that absorbs a lethal hit aimed at the owner");
+        neutronWolfHealthBonus = buildDouble(common, "wolf_health_bonus", 100.0, 0.0, 1024.0, "Extra max health granted to a wolf wearing the armor");
+        neutronHarnessShieldRadius = buildDouble(common, "harness_shield_radius", 4.0, 1.0, 32.0, "Radius of the harness shield that protects friendly and neutral entities");
+        neutronHarnessShieldDurationSeconds = buildInt(common, "harness_shield_duration_seconds", 15, 1, 120, "How long the harness shield lasts");
+        neutronHarnessShieldCooldownSeconds = buildInt(common, "harness_shield_cooldown_seconds", 20, 0, 600, "Cooldown of the harness shield");
+        neutronHarnessGhastDamageReduction = buildDouble(common, "harness_ghast_damage_reduction", 0.8, 0.0, 1.0, "Damage reduction granted to a happy ghast wearing the neutron harness");
+        neutronNautilusWaterDamageReduction = buildDouble(common, "nautilus_water_damage_reduction", 0.99, 0.0, 1.0, "Damage reduction while an armored nautilus is in water");
+        neutronNautilusSpeedBonus = buildDouble(common, "nautilus_speed_bonus", 0.5, 0.0, 10.0, "Extra movement speed multiplier granted by the nautilus armor");
         common.pop();
         COMMON = common.build();
     }

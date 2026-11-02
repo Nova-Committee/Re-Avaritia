@@ -4,6 +4,7 @@
     "color": -872415232,
     "model": "avaritia:item/infinity_catalyst",
     "size": 8,
+    "pulse": false,
     "texture": "avaritia:misc/halo"
   },
   "oversized_in_gui": true

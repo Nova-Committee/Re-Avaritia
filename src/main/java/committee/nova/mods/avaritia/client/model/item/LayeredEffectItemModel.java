@@ -76,6 +76,18 @@ public final class LayeredEffectItemModel implements ItemModel {
         }
 
         boolean tridentGeometry = shouldRenderTridentGeometry(displayContext);
+
+        // halo / pulse 必须先于基础层提交：LayerRenderState 的提交顺序决定绘制顺序，
+        // 排在基础层之后会被物品图标压成一层灰蒙蒙的覆盖物。
+        if (!tridentGeometry && displayContext == ItemDisplayContext.GUI) {
+            this.haloLayer.ifPresent(halo -> {
+                appendHaloLayer(renderState, displayContext, halo);
+                if (halo.setting().pulse()) {
+                    appendPulseLayer(renderState, displayContext, level, seed);
+                }
+            });
+        }
+
         // 三叉戟手持态使用 OBJ 实体层；GUI/地面/展示架仍使用原始 2D 图标。
         if (!tridentGeometry) {
             this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
@@ -83,16 +95,6 @@ public final class LayeredEffectItemModel implements ItemModel {
 
         if (tridentGeometry) {
             appendTridentLayer(renderState, displayContext);
-        }
-
-        // halo 是 GUI 图标特效，世界/手持中的实体外观仍交给基础模型和其他特殊层。
-        if (displayContext == ItemDisplayContext.GUI) {
-            this.haloLayer.ifPresent(halo -> {
-                appendHaloLayer(renderState, displayContext, halo);
-                if (halo.setting().pulse()) {
-                    appendPulseLayer(renderState, displayContext, level, seed);
-                }
-            });
         }
 
         // effectQuads 由 mask 烘焙而来，只在 mask 区域绘制动态星空/永恒等效果。

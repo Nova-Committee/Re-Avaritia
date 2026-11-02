@@ -33,6 +33,7 @@ public class NeutronWolfArmorItem extends Item implements InitEnchantItem {
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)
                 .fireResistant()
+                .durability(8888)
                 .setNoCombineRepair());
     }
     private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
