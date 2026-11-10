@@ -110,7 +110,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             // 处理材料输入
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
-                    tile.materialStack = input.copy();
+                    tile.materialStack = input.copyWithCount(1);
                     tile.setChangedFast();
                 }
             }
@@ -383,20 +383,17 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
                 continue;
             }
 
-            // 计算可转移的数量
-            int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
-            int spaceInInput = materialStack.isEmpty() ? 64 : (int) (this.getActiveRecipe().getInputCount() * this.tier.inputAmplifier - materialCount);
+            // 主动输入只填充输入槽；材料缓冲区由tick消耗输入后累计。
+            int inputLimit = this.inventory.getStackLimit(1, stack);
+            int spaceInInput = inputLimit - inputSlot.getCount();
+            if (spaceInInput <= 0) break;
 
-            int inputCount = inputSlot.isEmpty() ? 64 : inputSlot.getMaxStackSize() - inputSlot.getCount();
-
-            if (spaceInInput + inputCount <= 0) break;
-
-            int transferAmount = Math.min(maxTransfer, spaceInInput + inputCount);
+            int transferAmount = Math.min(Math.min(stack.getCount(), 64), spaceInInput);
             ItemStack extractedStack = externalHandler.extractItem(i, transferAmount, false);
 
             if (!extractedStack.isEmpty()) {
                 if (materialStack.isEmpty()) {
-                    materialStack = extractedStack.copy();
+                    materialStack = extractedStack.copyWithCount(1);
                 }
 
                 // 将物品放入输入槽
