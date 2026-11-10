@@ -1904,7 +1904,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "singularity.avaritia.diamond": "钻石",
               "singularity.avaritia.electrum": "琥珀金",
               "singularity.avaritia.emerald": "绿宝石",
-              "singularity.avaritia.glowstone": "萤石",
+              "singularity.avaritia.glowstone": "荧石",
               "singularity.avaritia.gold": "金",
               "singularity.avaritia.invar": "殷钢",
               "singularity.avaritia.iron": "铁",
