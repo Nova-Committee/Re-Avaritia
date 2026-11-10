@@ -4,6 +4,9 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.component.WolfArmorState;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDataAttachments;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.util.ToolUtils;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -53,7 +56,23 @@ public final class NeutronWolfArmorHandler {
     private NeutronWolfArmorHandler() {
     }
 
-    /** 比例减伤、护卫免伤、羁绊与图腾统一在伤害结算后处理。 */
+    /** 普通近主护卫在来袭阶段取消，避免受击动画与额外结算。 */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        LivingEntity victim = event.getEntity();
+        DamageSource source = event.getSource();
+        if (!ModConfig.neutronWolfArmorEnabled.get() || victim.level().isClientSide()
+                || source.is(ModDamageTypes.INFINITY)
+                || source.is(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL)) {
+            return;
+        }
+        if (isArmoredWolf(victim) && !isHaxDamage(source) && reductionAt(ownerDistance(victim)) >= 1.0D - EPSILON) {
+            event.setCanceled(true);
+            playGuardFeedback(victim, 0);
+        }
+    }
+
+    /** 比例减伤、羁绊与图腾在减免后的伤害结算阶段处理。 */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         if (!ModConfig.neutronWolfArmorEnabled.get()) {
@@ -64,7 +83,7 @@ public final class NeutronWolfArmorHandler {
             return;
         }
         DamageSource source = event.getSource();
-        if (source.is(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL)) {
+        if (source.is(ModDamageTypes.INFINITY) || source.is(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL)) {
             return;
         }
 
@@ -126,6 +145,9 @@ public final class NeutronWolfArmorHandler {
      * 主人受致命一击时，由半径内最近的穿铠狼代受。
      */
     private static void absorbLethalHit(LivingDamageEvent.Pre event, ServerPlayer player, DamageSource source) {
+        if (ToolUtils.isInfinite(player)) {
+            return;
+        }
         float lethalDamage = event.getNewDamage();
         if (lethalDamage < player.getHealth() + player.getAbsorptionAmount()) {
             return;
@@ -142,6 +164,7 @@ public final class NeutronWolfArmorHandler {
         setState(wolf, state.withBondCooldown(gameTime, Math.max(0L, ModConfig.neutronWolfBondCooldownSeconds.get()) * 20L));
         wolf.hurt(source, lethalDamage);
         event.setNewDamage(0.0F);
+        player.hurtTime = 0;
         playGuardFeedback(wolf, 2);
         playGuardFeedback(player, 2);
     }

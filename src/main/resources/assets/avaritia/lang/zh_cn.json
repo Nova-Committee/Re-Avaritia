@@ -691,5 +691,21 @@
   "gui.avaritia.infinity_ring.filter": "筛选：%s",
   "gui.avaritia.infinity_ring.no_matching_players": "没有匹配的玩家。",
   "gui.avaritia.infinity_bucket.clear_filter": "清除筛选",
-  "gui.avaritia.infinity_bucket.list_hint": "拿起生物桶，右键列表存入；拿起空桶右键生物取出。流体容器在流体页右键取放。"
+  "gui.avaritia.infinity_bucket.list_hint": "拿起生物桶，右键列表存入；拿起空桶右键生物取出。流体容器在流体页右键取放。",
+  "config.avaritia.wolf_bond_cooldown_seconds": "羁绊冷却",
+  "config.avaritia.wolf_bond_cooldown_seconds.tooltip": "替主人挡下致命一击后的冷却秒数",
+  "config.avaritia.wolf_bond_radius": "羁绊半径",
+  "config.avaritia.wolf_bond_radius.tooltip": "狼在此距离内不受伤害，并可替主人挡下致命一击",
+  "config.avaritia.wolf_enabled": "中子战狼铠机制",
+  "config.avaritia.wolf_enabled.tooltip": "是否启用中子战狼铠的护卫、羁绊与图腾机制",
+  "config.avaritia.wolf_hax_reduction": "穿甲伤害减免上限",
+  "config.avaritia.wolf_hax_reduction.tooltip": "对穿甲与无视无敌伤害的最大减伤比例",
+  "config.avaritia.wolf_health_bonus": "铠甲生命加成",
+  "config.avaritia.wolf_health_bonus.tooltip": "狼穿戴时额外增加的最大生命值",
+  "config.avaritia.wolf_max_range": "护卫最远距离",
+  "config.avaritia.wolf_max_range.tooltip": "减伤不再随距离衰减的距离",
+  "config.avaritia.wolf_min_reduction": "护卫保底减伤",
+  "config.avaritia.wolf_min_reduction.tooltip": "该距离及更远处保留的减伤比例",
+  "config.avaritia.wolf_totem_durability_cost": "图腾耐久消耗",
+  "config.avaritia.wolf_totem_durability_cost.tooltip": "拒死一次所消耗的铠甲耐久，0 表示不消耗"
 }

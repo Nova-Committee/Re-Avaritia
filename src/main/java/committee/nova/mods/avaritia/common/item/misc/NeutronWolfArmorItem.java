@@ -30,7 +30,7 @@ public class NeutronWolfArmorItem extends AnimalArmorItem implements InitEnchant
         super(neutron_wolf_armor, AnimalArmorItem.BodyType.CANINE, false,
                 new Item.Properties()
                         .stacksTo(1)
-                        .durability(7777)
+                        .durability(8888)
                         .rarity(ModRarities.RARE)
                         .fireResistant()
                         .setNoRepair());

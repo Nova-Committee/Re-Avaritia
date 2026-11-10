@@ -685,5 +685,21 @@
   "gui.avaritia.infinity_ring.filter": "絞り込み: %s",
   "gui.avaritia.infinity_ring.no_matching_players": "一致するプレイヤーはいません。",
   "gui.avaritia.infinity_bucket.clear_filter": "絞り込みを解除",
-  "gui.avaritia.infinity_bucket.list_hint": "生き物入りのバケツを持って一覧を右クリックで収納。空のバケツで生物を右クリックすると取り出せます。液体容器の出し入れは液体タブで行います。"
+  "gui.avaritia.infinity_bucket.list_hint": "生き物入りのバケツを持って一覧を右クリックで収納。空のバケツで生物を右クリックすると取り出せます。液体容器の出し入れは液体タブで行います。",
+  "config.avaritia.wolf_bond_cooldown_seconds": "絆のクールダウン",
+  "config.avaritia.wolf_bond_cooldown_seconds.tooltip": "主人の致命傷を代わりに受けた後のクールダウン秒数",
+  "config.avaritia.wolf_bond_radius": "絆の半径",
+  "config.avaritia.wolf_bond_radius.tooltip": "狼が無傷でいられる距離、主人の致命傷を代わりに受ける距離",
+  "config.avaritia.wolf_enabled": "ニュートロンウルフアーマー機構",
+  "config.avaritia.wolf_enabled.tooltip": "ウルフアーマーの護衛・絆・トーテム機構を有効にする",
+  "config.avaritia.wolf_hax_reduction": "防具貫通の軽減上限",
+  "config.avaritia.wolf_hax_reduction.tooltip": "防具貫通・無敵貫通ダメージに対する軽減率の上限",
+  "config.avaritia.wolf_health_bonus": "アーマーの体力ボーナス",
+  "config.avaritia.wolf_health_bonus.tooltip": "狼が装着したときに追加される最大体力",
+  "config.avaritia.wolf_max_range": "護衛の最大距離",
+  "config.avaritia.wolf_max_range.tooltip": "ダメージ軽減が減衰しなくなる距離",
+  "config.avaritia.wolf_min_reduction": "護衛の最低軽減率",
+  "config.avaritia.wolf_min_reduction.tooltip": "最大距離以降も保持されるダメージ軽減率",
+  "config.avaritia.wolf_totem_durability_cost": "トーテムの耐久コスト",
+  "config.avaritia.wolf_totem_durability_cost.tooltip": "致命傷を拒否するために消費する耐久値、0 で無消費"
 }
