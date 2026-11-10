@@ -161,9 +161,6 @@ public class InfinityHandler {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 removeTemporaryFakeBlock(level, pos);
                 Block.popResource(level, pos, Blocks.BEDROCK.asItem().getDefaultInstance());
-            } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
-                removeTemporaryFakeBlock(level, pos);
-                Block.popResource(level, pos, Blocks.END_PORTAL_FRAME.asItem().getDefaultInstance());
             } else if (state.is(ModBlocks.fake_end_portal.get())) {
                 removeTemporaryFakeBlock(level, pos);
                 Block.popResource(level, pos, Blocks.END_PORTAL.asItem().getDefaultInstance());

@@ -15,6 +15,7 @@ import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
+import committee.nova.mods.avaritia.common.block.misc.TemporaryEndPortalFrameBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
@@ -24,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -106,7 +106,7 @@ public class ModBlocks {
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
-    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new EndPortalFrameBlock(
+    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new TemporaryEndPortalFrameBlock(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
