@@ -53,6 +53,19 @@ sourceSets {
     }
 }
 
+// Current native Fabric tests are isolated from legacy fixtures using removed vanilla APIs.
+if (project.hasProperty('armorTests')) {
+    sourceSets {
+        armorTest {
+            java.srcDir 'src/gameTest/java'
+            java.include 'committee/nova/mods/avaritia/gametest/NeutronArmorGameTests.java'
+            java.include 'committee/nova/mods/avaritia/gametest/ArmorPersistenceProbe.java'
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+        }
+    }
+}
+
 // Optional compat integrations kept in source but excluded from compilation until their 26.3 Fabric
 // dependencies are available (JEI/Jade compiled directly; Trinkets stays runtime-optional, accessed
 // reflectively via TrinketsIntegration so the mod loads fine without it).
@@ -79,6 +92,9 @@ loom {
     accessWidenerPath = file('src/main/resources/avaritia.accesswidener')
     mods {
         avaritia { sourceSet sourceSets.main }
+        if (project.hasProperty('armorTests')) {
+            avaritia_armor_test { sourceSet sourceSets.armorTest }
+        }
         if (project.hasProperty('gameTests')) {
             avaritia_gametest { sourceSet sourceSets.gameTest }
         }
@@ -86,6 +102,27 @@ loom {
     runs {
         client { runDir 'run/client' }
         server { runDir 'run/server' }
+        if (project.hasProperty('armorTests')) {
+            armorPersistence {
+                server()
+                source sourceSets.armorTest
+                runDir 'build/armor-persistence'
+                programArg '--nogui'
+                programArg '--port'
+                programArg '25593'
+                vmArg "-Davaritia.armor.persistence=${providers.gradleProperty('armorPhase').getOrElse('')}"
+                vmArg "-Davaritia.armor.evidence=${project.file('.dsh/evidence/armor-port-fabric-26.3/persistence')}"
+                vmArg '-Xmx2G'
+            }
+            armorTestServer {
+                server()
+                source sourceSets.armorTest
+                runDir 'build/armor-gametest'
+                vmArg '-Dfabric-api.gametest'
+                vmArg "-Dfabric-api.gametest.report-file=${project.file('.dsh/evidence/armor-port-fabric-26.3/gametest.xml')}"
+                vmArg '-Xmx2G'
+            }
+        }
         if (project.hasProperty('gameTests')) {
             gameTestServer {
                 server()

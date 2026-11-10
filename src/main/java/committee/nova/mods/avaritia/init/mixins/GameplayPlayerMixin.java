@@ -5,6 +5,10 @@ import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityAxeItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinitySwordItem;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.init.handler.NeutronWolfArmorHandler;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -18,6 +22,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class GameplayPlayerMixin {
+    // Player overrides actuallyHurt instead of invoking LivingEntity's implementation.
+    @ModifyExpressionValue(method = "actuallyHurt", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/player/Player;getDamageAfterMagicAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"))
+    private float avaritia$wolfBond(float amount, ServerLevel level, DamageSource source, float originalAmount) {
+        return NeutronWolfArmorHandler.reduceDamage((Player) (Object) this, source, amount);
+    }
+
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     private void avaritia$weaponAttack(Entity target, CallbackInfo ci) {
         Player player = (Player) (Object) this;

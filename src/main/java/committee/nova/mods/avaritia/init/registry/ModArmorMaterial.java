@@ -53,6 +53,12 @@ public class ModArmorMaterial {
     public static final ResourceKey<EquipmentAsset> NEUTRON_HARNESS_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
             Identifier.fromNamespaceAndPath(Const.MOD_ID, "neutron_harness"));
 
+    public static final ResourceKey<EquipmentAsset> NEUTRON_NAUTILUS_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "neutron_nautilus_armor"));
+    public static final ArmorMaterial neutron_nautilus_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BODY, 50);
+    }), 10, SoundEvents.ARMOR_EQUIP_NAUTILUS, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, NEUTRON_NAUTILUS_ARMOR_ASSET);
+
     public static final ArmorMaterial neutron_wolf_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
         map.put(ArmorType.BODY, 50);
     }), 10, SoundEvents.ARMOR_EQUIP_WOLF, 1.0f, 1.0f, REPAIRS_INFINITY_ARMOR, NEUTRON_WOLF_ARMOR_ASSET);

@@ -174,6 +174,36 @@ public class AvaritiaConfigScreen extends Screen {
         addDoubleEntry("boot_speed_sprinting_multiplier", ModConfig.bootSpeedSprintingMultiplier, 0.01, 1.0,
                 Component.translatable("config.avaritia.boot_speed_sprinting_multiplier.tooltip"),
                 ModConfig.bootSpeedSprintingMultiplier::set, ModConfig.bootSpeedSprintingMultiplier);
+        addBooleanEntry("wolf_enabled", ModConfig.neutronWolfArmorEnabled,
+                Component.translatable("config.avaritia.wolf_enabled.tooltip"),
+                ModConfig.neutronWolfArmorEnabled::set, ModConfig.neutronWolfArmorEnabled);
+        addDoubleEntry("wolf_bond_radius", ModConfig.neutronWolfBondRadius, 0, 64,
+                Component.translatable("config.avaritia.wolf_bond_radius.tooltip"),
+                ModConfig.neutronWolfBondRadius::set, ModConfig.neutronWolfBondRadius);
+        addDoubleEntry("wolf_max_range", ModConfig.neutronWolfMaxRange, 1, 128,
+                Component.translatable("config.avaritia.wolf_max_range.tooltip"),
+                ModConfig.neutronWolfMaxRange::set, ModConfig.neutronWolfMaxRange);
+        addDoubleEntry("wolf_min_reduction", ModConfig.neutronWolfMinReduction, 0, 1,
+                Component.translatable("config.avaritia.wolf_min_reduction.tooltip"),
+                ModConfig.neutronWolfMinReduction::set, ModConfig.neutronWolfMinReduction);
+        addDoubleEntry("wolf_hax_reduction", ModConfig.neutronWolfHaxReduction, 0, 1,
+                Component.translatable("config.avaritia.wolf_hax_reduction.tooltip"),
+                ModConfig.neutronWolfHaxReduction::set, ModConfig.neutronWolfHaxReduction);
+        addIntEntry("wolf_totem_durability_cost", ModConfig.neutronWolfTotemDurabilityCost, 0, 100000,
+                Component.translatable("config.avaritia.wolf_totem_durability_cost.tooltip"),
+                ModConfig.neutronWolfTotemDurabilityCost::set, ModConfig.neutronWolfTotemDurabilityCost);
+        addIntEntry("wolf_bond_cooldown_seconds", ModConfig.neutronWolfBondCooldownSeconds, 0, 3600,
+                Component.translatable("config.avaritia.wolf_bond_cooldown_seconds.tooltip"),
+                ModConfig.neutronWolfBondCooldownSeconds::set, ModConfig.neutronWolfBondCooldownSeconds);
+        addDoubleEntry("wolf_health_bonus", ModConfig.neutronWolfHealthBonus, 0, 1024,
+                Component.translatable("config.avaritia.wolf_health_bonus.tooltip"),
+                ModConfig.neutronWolfHealthBonus::set, ModConfig.neutronWolfHealthBonus);
+        addDoubleEntry("nautilus_water_damage_reduction", ModConfig.neutronNautilusWaterDamageReduction, 0, 1,
+                Component.translatable("config.avaritia.nautilus_water_damage_reduction.tooltip"),
+                ModConfig.neutronNautilusWaterDamageReduction::set, ModConfig.neutronNautilusWaterDamageReduction);
+        addDoubleEntry("nautilus_speed_bonus", ModConfig.neutronNautilusSpeedBonus, 0, 10,
+                Component.translatable("config.avaritia.nautilus_speed_bonus.tooltip"),
+                ModConfig.neutronNautilusSpeedBonus::set, ModConfig.neutronNautilusSpeedBonus);
     }
 
     private void resetToDefaults() {

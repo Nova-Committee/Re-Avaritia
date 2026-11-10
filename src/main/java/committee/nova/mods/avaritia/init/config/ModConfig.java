@@ -51,6 +51,17 @@ public final class ModConfig {
     public static final DoubleValue bootSpeedStrafingMultiplier = decimal("misc", "config.avaritia.boot_speed_strafing_multiplier", .45, .01, 1);
     public static final DoubleValue bootSpeedSprintingMultiplier = decimal("misc", "config.avaritia.boot_speed_sprinting_multiplier", .2, .01, 1);
 
+    public static final BooleanValue neutronWolfArmorEnabled = bool("misc", "config.avaritia.wolf_enabled", true);
+    public static final DoubleValue neutronWolfBondRadius = decimal("misc", "config.avaritia.wolf_bond_radius", 5, 0, 64);
+    public static final DoubleValue neutronWolfMaxRange = decimal("misc", "config.avaritia.wolf_max_range", 25, 1, 128);
+    public static final DoubleValue neutronWolfMinReduction = decimal("misc", "config.avaritia.wolf_min_reduction", .5, 0, 1);
+    public static final DoubleValue neutronWolfHaxReduction = decimal("misc", "config.avaritia.wolf_hax_reduction", .3, 0, 1);
+    public static final IntValue neutronWolfTotemDurabilityCost = integer("misc", "config.avaritia.wolf_totem_durability_cost", 500, 0, 100000);
+    public static final IntValue neutronWolfBondCooldownSeconds = integer("misc", "config.avaritia.wolf_bond_cooldown_seconds", 3, 0, 3600);
+    public static final DoubleValue neutronWolfHealthBonus = decimal("misc", "config.avaritia.wolf_health_bonus", 100, 0, 1024);
+    public static final DoubleValue neutronNautilusWaterDamageReduction = decimal("misc", "config.avaritia.nautilus_water_damage_reduction", .99, 0, 1);
+    public static final DoubleValue neutronNautilusSpeedBonus = decimal("misc", "config.avaritia.nautilus_speed_bonus", .5, 0, 10);
+
     private ModConfig() {}
     private static <T extends Value<?>> T add(T value) { VALUES.put(value.key, value); return value; }
     private static BooleanValue bool(String group, String name, boolean value) { return add(new BooleanValue(group + "/" + name, value)); }

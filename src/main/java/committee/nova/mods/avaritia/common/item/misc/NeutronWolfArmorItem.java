@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -22,10 +21,11 @@ import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.neutron_wolf_armor;
 
-public class NeutronWolfArmorItem extends Item implements InitEnchantItem, IUndamageable {
+public class NeutronWolfArmorItem extends Item implements InitEnchantItem {
     public NeutronWolfArmorItem() {
         super(ModItems.properties()
                 .wolfArmor(neutron_wolf_armor)
+                .durability(8888)
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)
                 .fireResistant());

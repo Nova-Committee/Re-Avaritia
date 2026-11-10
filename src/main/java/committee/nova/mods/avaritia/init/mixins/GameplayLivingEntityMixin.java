@@ -2,6 +2,10 @@ package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.common.item.misc.InfinityElytraItem;
 import committee.nova.mods.avaritia.init.handler.AbilityHandler;
+import committee.nova.mods.avaritia.init.handler.NeutronWolfArmorHandler;
+import committee.nova.mods.avaritia.init.handler.NeutronNautilusArmorHandler;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.handler.InfinityShieldHandler;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
@@ -24,6 +28,8 @@ public abstract class GameplayLivingEntityMixin {
     private void avaritia$abilities(CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
         AbilityHandler.updateAbilities(entity);
+        NeutronWolfArmorHandler.tick(entity);
+        NeutronNautilusArmorHandler.tick(entity);
         if (entity instanceof Player player) InfinityShieldHandler.floatTick(player);
         ItemStack chest = InfinityElytraUtils.getInfinityElytraStack(entity);
         if (chest.getItem() instanceof InfinityElytraItem elytra && entity.isFallFlying())
@@ -35,8 +41,19 @@ public abstract class GameplayLivingEntityMixin {
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
     private void avaritia$immunity(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (InfinityShieldHandler.preventDamage(entity, source) || InfinityHandler.preventDamage(entity, source, amount)) cir.setReturnValue(false);
+        if (NeutronWolfArmorHandler.preventDamage(entity, source) || InfinityShieldHandler.preventDamage(entity, source) || InfinityHandler.preventDamage(entity, source, amount)) cir.setReturnValue(false);
     }
+    @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true)
+    private float avaritia$nautilusIncoming(float amount) {
+        return NeutronNautilusArmorHandler.incomingDamage((LivingEntity) (Object) this, amount);
+    }
+
+    @ModifyExpressionValue(method = "actuallyHurt", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/LivingEntity;getDamageAfterMagicAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"))
+    private float avaritia$wolfDamage(float amount, ServerLevel level, DamageSource source, float originalAmount) {
+        return NeutronWolfArmorHandler.reduceDamage((LivingEntity) (Object) this, source, amount);
+    }
+
     @Inject(method = "checkTotemDeathProtection", at = @At("HEAD"), cancellable = true)
     private void avaritia$totem(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         if (InfinityHandler.preventDeath((LivingEntity) (Object) this)) cir.setReturnValue(true);
