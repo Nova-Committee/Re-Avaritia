@@ -29,6 +29,7 @@ public class NeutronWolfArmorItem extends Item implements InitEnchantItem {
     public NeutronWolfArmorItem() {
         super(ModItems.properties()
                 .wolfArmor(neutron_wolf_armor)
+                .durability(8888)
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)
                 .fireResistant()

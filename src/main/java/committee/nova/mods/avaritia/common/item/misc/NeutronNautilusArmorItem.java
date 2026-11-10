@@ -21,12 +21,12 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
-import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
+import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.neutron_nautilus_armor;
 
 public class NeutronNautilusArmorItem extends Item implements InitEnchantItem {
     public NeutronNautilusArmorItem() {
         super(ModItems.properties()
-                .nautilusArmor(infinity_horse_armor)
+                .nautilusArmor(neutron_nautilus_armor)
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)
                 .fireResistant()
