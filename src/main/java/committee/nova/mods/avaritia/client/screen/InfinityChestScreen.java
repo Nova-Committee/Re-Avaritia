@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.component.ScreenGuiScale;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
@@ -58,7 +59,9 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
     private static final Identifier TEXTURE = Const.rl("textures/gui/chest/infinity_chest1.png");
     private static final int TEXTURE_SIZE = 550;
     private static final int LABEL_COLOR = 0xFF404040;
+    private static final int SCREEN_MARGIN = 4;
 
+    private final ScreenGuiScale guiScale = new ScreenGuiScale();
     private EditBox searchBox;
     private final WidgetSprites legacyButtonSprites = new WidgetSprites(TEXTURE, TEXTURE);
     private boolean draggingScrollbar;
@@ -73,6 +76,9 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
     @Override
     protected void init() {
+        if (guiScale.resizeToFit(minecraft, width, height, imageWidth, imageHeight, SCREEN_MARGIN)) {
+            return;
+        }
         super.init();
         searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
                 Component.translatable("gui.avaritia.search"));
@@ -188,6 +194,12 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
     public void onClose() {
         NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
         super.onClose();
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        guiScale.restore(minecraft);
     }
 
     private void drawScrollbar(GuiGraphicsExtractor graphics) {
