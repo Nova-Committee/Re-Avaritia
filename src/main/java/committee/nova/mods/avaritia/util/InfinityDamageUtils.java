@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,10 +35,13 @@ public final class InfinityDamageUtils {
     private static final class DeathAttempt {
         private final LivingEntity victim;
         private final DeathAttempt parent;
+        private final DamageSource source;
         private boolean notified;
+        private boolean nativePlayerDeath;
 
-        private DeathAttempt(LivingEntity victim, DeathAttempt parent) {
+        private DeathAttempt(LivingEntity victim, DamageSource source, DeathAttempt parent) {
             this.victim = victim;
+            this.source = source;
             this.parent = parent;
         }
     }
@@ -52,6 +56,17 @@ public final class InfinityDamageUtils {
     }
 
     private InfinityDamageUtils() {
+    }
+
+    /** Limits the native player death override to the current attributed infinity hit. */
+    public static boolean completePlayerDeath(LivingEntity victim, DamageSource source) {
+        DeathAttempt attempt = DEATH_ATTEMPT.get();
+        if (attempt == null || attempt.victim != victim || attempt.source != source) return false;
+        if (!victim.isRemoved() && !victim.dead) {
+            victim.setHealth(0.0F);
+            attempt.nativePlayerDeath = true;
+        }
+        return true;
     }
 
     /**
@@ -82,13 +97,29 @@ public final class InfinityDamageUtils {
         }
 
         DeathAttempt previous = DEATH_ATTEMPT.get();
-        DeathAttempt attempt = new DeathAttempt(victim, previous);
+        DeathAttempt attempt = new DeathAttempt(victim, source, previous);
         DEATH_ATTEMPT.set(attempt);
         try {
             if (victim instanceof EnderDragon dragon) {
                 dragon.hurt(level, dragon.head, source, Float.MAX_VALUE);
             } else {
                 victim.hurtServer(level, source, Float.MAX_VALUE);
+            }
+
+            if (victim instanceof ServerPlayer player) {
+                if (!player.isRemoved() && !player.dead) {
+                    if (!attempt.nativePlayerDeath) {
+                        if (source.getEntity() instanceof Player attacker) {
+                            player.setLastHurtByPlayer(attacker, 100);
+                        }
+                        player.getCombatTracker().recordDamage(source, player.getHealth());
+                        player.setHealth(0.0F);
+                        player.die(source);
+                    }
+                    // Native ServerPlayer.die does not set LivingEntity.dead.
+                    player.dead = true;
+                }
+                return player.isRemoved() || player.isDeadOrDying();
             }
 
             if (!victim.isRemoved() && !victim.dead) {
