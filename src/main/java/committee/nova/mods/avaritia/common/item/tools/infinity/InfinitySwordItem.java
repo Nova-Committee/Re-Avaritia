@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.IInfinitySwordDeath;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
@@ -202,6 +203,14 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
+        if (victim instanceof ServerPlayer player) {
+            if (!player.isRemoved() && !player.dead) {
+                ((IInfinitySwordDeath) player).avaritia$dieFromInfinitySword(pDamageSource);
+                // ServerPlayer.die does not set this flag; retain the sword's repeated-hit guard.
+                player.dead = true;
+            }
+            return;
+        }
         if (!victim.isRemoved() && !victim.dead) {
             // Infinity damage remains terminal, but death observers must still see the attributed kill.
             CommonHooks.onLivingDeath(victim, pDamageSource);
