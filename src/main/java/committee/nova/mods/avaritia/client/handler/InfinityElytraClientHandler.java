@@ -40,8 +40,9 @@ public class InfinityElytraClientHandler {
         boolean wantsLaunch = canRequestGlide
                 && !player.isFallFlying()
                 && minecraft.options.keyJump.isDown();
-        boolean wantsBoost = (player.isFallFlying() || wantsLaunch)
-                && minecraft.options.keySprint.isDown()
+        // 滑翔后自动提供动力；疾跑键只影响地面弹射，潜行键暂停推进。
+        boolean wantsBoost = canRequestGlide
+                && (player.isFallFlying() || wantsLaunch && minecraft.options.keySprint.isDown())
                 && !minecraft.options.keyShift.isDown();
 
         sync(wantsLaunch || wantsBoost, wantsBoost);

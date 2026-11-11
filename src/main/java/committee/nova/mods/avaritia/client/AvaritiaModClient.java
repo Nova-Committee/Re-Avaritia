@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.iface.IColored;
+import committee.nova.mods.avaritia.client.handler.InfinityElytraClientHandler;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.model.loader.AvaritiaItemModelLoaders;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
@@ -67,6 +68,7 @@ public final class AvaritiaModClient implements ClientModInitializer {
         ParticleProviderRegistry.getInstance().register(ModParticles.SHOCKWAVE_PARTICLE.get(), ShockwaveParticle.Provider::new);
         // 按键（SDL3 InputConstants）与自注册调试/预览组件。
         AvaritiaClient.register();
+        InfinityElytraClientHandler.register();
         UiInspector.register();
         NeutronRingPreviewRenderer.register();
         NeutronSpacePreviewRenderer.registerPip();
