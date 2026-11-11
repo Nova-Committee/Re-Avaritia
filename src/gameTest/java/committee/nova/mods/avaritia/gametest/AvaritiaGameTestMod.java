@@ -26,6 +26,7 @@ public final class AvaritiaGameTestMod implements ModInitializer {
                 Const.LOGGER.error("Native GameTest failed: {}", info.getTestName(), info.getError());
             }
         });
+        NativeTestRegistry.register(InfinitySwordPlayerDeathGameTests.class);
         NativeTestRegistry.register(InfinityRingLifecycleGameTests.class);
         NativeTestRegistry.register(InfinityRingSpawnGameTests.class);
         NativeTestRegistry.register(InfinityBucketGameTests.class);

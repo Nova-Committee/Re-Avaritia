@@ -199,6 +199,14 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
+        if (victim instanceof ServerPlayer player) {
+            if (!player.isRemoved() && !player.dead) {
+                player.die(pDamageSource);
+                // ServerPlayer.die does not set this flag; retain the sword's repeated-hit guard.
+                player.dead = true;
+            }
+            return;
+        }
         if (!victim.isRemoved() && !victim.dead) {
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
