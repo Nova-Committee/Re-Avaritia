@@ -79,7 +79,10 @@ public final class AvaritiaItemModelRenderers {
         private static Map<RenderType, List<BakedQuad>> groupQuadsByRenderType(List<BakedQuad> quads) {
             Map<RenderType, List<BakedQuad>> grouped = new LinkedHashMap<>();
             for (BakedQuad quad : quads) {
-                grouped.computeIfAbsent(quad.materialInfo().itemRenderType(), ignored -> new ArrayList<>()).add(quad);
+                // Pulse adds fractional alpha even when the source sprite is cutout.
+                // Blend into the GUI target so its later premultiplied-alpha blit stays valid.
+                RenderType renderType = RenderTypes.itemTranslucent(quad.materialInfo().sprite().atlasLocation());
+                grouped.computeIfAbsent(renderType, ignored -> new ArrayList<>()).add(quad);
             }
             grouped.replaceAll((renderType, group) -> List.copyOf(group));
             return Collections.unmodifiableMap(grouped);
@@ -187,8 +190,9 @@ public final class AvaritiaItemModelRenderers {
                     instance.setLightCoords(lightCoords);
                     instance.setOverlayCoords(overlayCoords);
 
+                    VertexConsumer pulseBuffer = new NormalizedPulseVertexConsumer(buffer);
                     for (BakedQuad quad : entry.getValue()) {
-                        buffer.putBakedQuad(pose, quad, instance);
+                        pulseBuffer.putBakedQuad(pose, quad, instance);
                     }
                 });
             }
