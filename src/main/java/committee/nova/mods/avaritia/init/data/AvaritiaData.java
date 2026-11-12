@@ -69,7 +69,7 @@ public class AvaritiaData {
         generator.addProvider(true, new AvaritiaSingularityProvider(packOutput, lookupProvider));
         var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES);
         PackMetadataGenerator metadataProvider = new PackMetadataGenerator(packOutput).add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
-                Component.literal("Re:Avaritia 26 Generated Resources"),
+                Component.literal("Re:Avaritia Vanilla Resources by kyln默寒寒冰"),
                 packFormat.minorRange()
         ));
         generator.addProvider(true, metadataProvider);
