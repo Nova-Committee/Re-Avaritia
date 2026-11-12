@@ -30,7 +30,7 @@ class AvaritiaConfigScreenTest {
     private static final Path CLIENT_MOD_SOURCE = Path.of(
             "src/main/java/committee/nova/mods/avaritia/client/AvaritiaClientMod.java");
     private static final Pattern CONFIG_ENTRY = Pattern.compile(
-            "add(?:Boolean|Int|Double)Entry\\(\\s*\"[^\"]+\"\\s*,\\s*ModConfig\\.([A-Za-z0-9_]+)");
+            "add(?:Boolean|Int|Double|List)Entry\\(\\s*\"[^\"]+\"\\s*,\\s*ModConfig\\.([A-Za-z0-9_]+)");
     private static final Pattern CATEGORY_ENTRY = Pattern.compile("addCategoryHeader\\(\\s*\"");
 
     @Test
