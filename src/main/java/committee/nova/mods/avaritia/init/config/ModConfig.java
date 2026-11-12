@@ -1,7 +1,10 @@
 package committee.nova.mods.avaritia.init.config;
 
 
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
+
+import java.util.List;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -19,6 +22,7 @@ public class ModConfig {
     public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
     public static final ModConfigSpec.IntValue swordRangeDamage;
     public static final ModConfigSpec.IntValue swordAttackRange;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> swordAttackEntityBlacklist;
     public static final ModConfigSpec.BooleanValue isSwordAttackAnimal;
     public static final ModConfigSpec.BooleanValue isSwordAttackItemEntity;
     public static final ModConfigSpec.BooleanValue isSwordAttackProjectile;
@@ -77,6 +81,12 @@ public class ModConfig {
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
+        swordAttackEntityBlacklist = common
+                .comment("Entity type IDs excluded from both sword right-click AoE modes; does not affect direct attacks or the Infinity Totem")
+                .translation("config.avaritia.sword_attack_entity_blacklist")
+                .defineListAllowEmpty("sword_attack_entity_blacklist", List.<String>of(), () -> "minecraft:zombie",
+                        value -> value instanceof String id && id.indexOf(':') > 0
+                                && !id.endsWith(":") && ResourceLocation.tryParse(id) != null);
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
         isSwordAttackProjectile= buildBoolean(common, "config.avaritia.is_sword_attack_projectile", false, "config.avaritia.is_sword_attack_projectile.tooltip");

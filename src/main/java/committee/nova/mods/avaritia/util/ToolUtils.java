@@ -526,11 +526,18 @@ public class ToolUtils {
      * @param lightOn    使用闪电
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
+        aoeAttack(player, range, damage, hurtAnimal, lightOn, entity -> true);
+    }
+
+    /** Applies caller-specific exclusions before any damage or lightning effects. */
+    public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn,
+                                 Predicate<Entity> targetFilter) {
         if (player.level().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = ModDamageTypes.causeRandomDamage(player);
         toAttack.stream()
+                .filter(targetFilter)
                 .filter(entity -> {
                     boolean attack = ModConfig.isSwordAttackItemEntity.get();
                     if (attack == false) {
