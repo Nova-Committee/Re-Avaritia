@@ -9,7 +9,7 @@
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
     </a>
-    <img src="https://img.shields.io/badge/license-MIT%2FCC%20BY--NC--SA%204.0-green" alt="License">
+    <img src="https://img.shields.io/badge/license-MIT%2FARR-green" alt="License">
 </p>
 
 <p align="center">
@@ -44,7 +44,7 @@
 ## **🔒许可:**
 
 - 代码: [MIT](https://www.mit.edu/~amini/LICENSE.md)
-- 材质: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+- 贴图资源：**All Rights Reserved（ARR，保留所有权利）**。贴图所有者：**MHanHanBing**。未经作者事先书面许可，不得复制、再分发、修改或用于整合包。所有者保留对未经授权的使用追究法律责任的权利。
 
 ## **📌其他下载:**
 * [Avaritia (1.1x)](https://www.curseforge.com/minecraft/mc-mods/avaritia-1-10)
@@ -52,7 +52,7 @@
 * [AvaritiaLite](https://www.curseforge.com/minecraft/mc-mods/avaritia-lite)
 
 ## **❗Attention:**
-* 你**可以**将本模组添加到你制作的整合包.
+* 将包含贴图资源的本模组用于整合包前，须取得贴图作者的事先书面许可。
 * JEI查看无尽工作台和中子态素压缩机配方.
 * 可以利用CraftTweaker和KubeJs自定义并修改奇点!
 * 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!

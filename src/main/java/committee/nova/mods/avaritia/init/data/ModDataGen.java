@@ -56,7 +56,7 @@ public class ModDataGen {
             // 添加奇点数据生成器
             generator.addProvider(true, new ModSingularityGen(generator, future, helper));
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
-                    Component.literal("Avaritia Resources"),
+                    Component.literal("Re:Avaritia Vanilla Resources by kyln默寒寒冰"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                     Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
         }
