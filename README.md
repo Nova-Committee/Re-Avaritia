@@ -115,7 +115,7 @@ Active blocking is immediate and omnidirectional, does not slow movement, and pe
 
 ## **Infinity Sword AoE entity exclusions:**
 
-In the server's `config/avaritia-common.json`, set `"tools/config.avaritia.sword_attack_entity_blacklist": ["minecraft:zombie", "minecraft:chest_minecart"]`; the default is `[]`. Restart the server after editing. This list affects both sword right-click AoE modes only, not direct left-click attacks or the Infinity Totem. Sword AoE always skips Lootr's `lootr:lootr_minecart` and `lootr:chest_minecart` without requiring Lootr as a dependency, and does not change block chest behavior.
+In the server's `config/avaritia-common.json`, set `"tools/config.avaritia.sword_attack_entity_blacklist": ["minecraft:zombie", "minecraft:chest_minecart"]`; the default is `[]`. Restart the server after editing. This list affects both sword right-click AoE modes only, not direct left-click attacks or the Infinity Totem. Sword AoE skips the verified Lootr loot minecart entity IDs (`lootr:lootr_minecart`, `lootr:chest_minecart`) without requiring Lootr as a dependency, and does not change block chest behavior.
 
 ## **✏️Authors:**
 
