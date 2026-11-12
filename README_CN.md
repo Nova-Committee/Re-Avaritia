@@ -36,6 +36,10 @@
 
 主动格挡即时生效、覆盖全方向，不降低移速且允许疾跑。穿透箭和绕过盾牌的伤害仍可穿过主动格挡；举盾和收盾不产生物品交互振动。
 
+## **寰宇剑范围攻击实体排除：**
+
+在服务端 `config/avaritia-common.toml` 的 `[tools.config.avaritia]` 下设置 `sword_attack_entity_blacklist`，填写实体类型 ID，例如 `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`，默认 `[]`。修改后重启服务端；该列表只影响剑的两种右键范围攻击，不影响左键直接攻击或无尽图腾。剑的范围攻击始终跳过 Lootr 的 `lootr:lootr_minecart`，无需将 Lootr 设为前置，也不改变方块箱子的行为。
+
 ## **✏️作者:**
 
 - 程序: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3`

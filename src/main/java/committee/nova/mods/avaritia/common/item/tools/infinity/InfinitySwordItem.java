@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -280,9 +281,9 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
         }
         if (!level.isClientSide) {
             if (isActive(heldItem, "infinity_sword_kill")) {
-                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get(), this::canAoeAttack);
             } else {
-                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get(), this::canAoeAttack);
             }
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
@@ -290,6 +291,13 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
         return InteractionResultHolder.success(heldItem);
     }
 
+
+    /** 剑专用范围攻击排除，不改变图腾共用的范围攻击行为。 */
+    private boolean canAoeAttack(Entity entity) {
+        var id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        return !id.toString().equals("lootr:lootr_minecart")
+                && !ModConfig.swordAttackEntityBlacklist.get().contains(id.toString());
+    }
 
     @Override
     public boolean isDamageable(ItemStack stack) {
