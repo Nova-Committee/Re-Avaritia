@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -269,9 +270,9 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
         }
         if (!level.isClientSide) {
             if (isActive(heldItem, "infinity_sword_kill")) {
-                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get(), this::canAoeAttack);
             } else {
-                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get(), this::canAoeAttack);
             }
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
@@ -281,6 +282,13 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
 
 
     
+
+    /** Sword-only exclusions; the shared AoE entry point keeps the totem's existing targets. */
+    private boolean canAoeAttack(Entity entity) {
+        String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
+        return !id.equals("lootr:lootr_minecart") && !id.equals("lootr:chest_minecart")
+                && !ModConfig.swordAttackEntityBlacklist.get().contains(id);
+    }
 
     @Override
     public int getEnchantmentValue() {

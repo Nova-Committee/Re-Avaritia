@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.config;
 import com.google.gson.*;
 import committee.nova.mods.avaritia.Const;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +16,7 @@ public final class ModConfig {
     public static final BooleanValue isMergeMatterCluster = bool("tools", "config.avaritia.is_merge_matter_cluster", true);
     public static final IntValue swordRangeDamage = integer("tools", "config.avaritia.sword_range_damage", 10000, 100, 100000);
     public static final IntValue swordAttackRange = integer("tools", "config.avaritia.sword_attack_range", 32, 8, 64);
+    public static final ListValue swordAttackEntityBlacklist = add(new ListValue("tools/config.avaritia.sword_attack_entity_blacklist", List.of()));
     public static final BooleanValue isSwordAttackItemEntity = bool("tools", "config.avaritia.is_sword_attack_item_entity", false);
     public static final BooleanValue isSwordAttackProjectile = bool("tools", "config.avaritia.is_sword_attack_projectile", false);
     public static final BooleanValue isSwordAttackLightning = bool("tools", "config.avaritia.is_sword_attack_lightning", false);
@@ -96,6 +98,31 @@ public final class ModConfig {
         protected abstract void validate(T value);
         protected abstract void load(JsonElement json);
         public void save() { ModConfig.save(); }
+    }
+    /** Immutable entity type ID list, validated before replacing the current value. */
+    public static final class ListValue extends Value<List<String>> {
+        ListValue(String key, List<String> value) { super(key, List.copyOf(value)); }
+        @Override
+        public void set(List<String> value) { super.set(List.copyOf(value)); }
+        protected void validate(List<String> value) {
+            for (String id : value) {
+                int separator = id.indexOf(':');
+                if (separator <= 0 || separator == id.length() - 1 || ResourceLocation.tryParse(id) == null) {
+                    throw new IllegalArgumentException("Expected namespaced entity type ID: " + id);
+                }
+            }
+        }
+        protected void load(JsonElement json) {
+            if (!json.isJsonArray()) throw new IllegalArgumentException("Expected entity type ID array");
+            List<String> ids = new ArrayList<>();
+            for (JsonElement entry : json.getAsJsonArray()) {
+                if (!entry.isJsonPrimitive() || !entry.getAsJsonPrimitive().isString()) {
+                    throw new IllegalArgumentException("Expected entity type ID string");
+                }
+                ids.add(entry.getAsString());
+            }
+            set(ids);
+        }
     }
     public static final class BooleanValue extends Value<Boolean> {
         BooleanValue(String key, boolean value) { super(key, value); }

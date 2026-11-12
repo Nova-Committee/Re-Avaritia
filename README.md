@@ -113,6 +113,10 @@ Sneak + use cycles through four modes. Existing shields without mode data defaul
 
 Active blocking is immediate and omnidirectional, does not slow movement, and permits sprinting. Piercing arrows and shield-bypassing damage still bypass active blocking. Raising and lowering the shield do not emit item-interaction vibrations.
 
+## **Infinity Sword AoE entity exclusions:**
+
+In the server's `config/avaritia-common.json`, set `"tools/config.avaritia.sword_attack_entity_blacklist": ["minecraft:zombie", "minecraft:chest_minecart"]`; the default is `[]`. Restart the server after editing. This list affects both sword right-click AoE modes only, not direct left-click attacks or the Infinity Totem. Sword AoE always skips Lootr's `lootr:lootr_minecart` and `lootr:chest_minecart` without requiring Lootr as a dependency, and does not change block chest behavior.
+
 ## **✏️Authors:**
 
 - Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3` 
