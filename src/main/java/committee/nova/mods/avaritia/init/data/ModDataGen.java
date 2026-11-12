@@ -55,7 +55,7 @@ public class ModDataGen {
 
             generator.addProvider(true, new ModSingularityGen(generator, lookupProvider, helper));
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
-                    Component.literal("Re:Avaritia Modern Resources"),
+                    Component.literal("Re:Avaritia Vanilla Resources by kyln默寒寒冰"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES)
             )));
         }
