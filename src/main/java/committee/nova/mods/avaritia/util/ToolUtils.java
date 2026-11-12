@@ -423,11 +423,18 @@ public class ToolUtils {
 
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn,
                                  boolean endlessDamage) {
+        aoeAttack(player, range, damage, hurtAnimal, lightOn, endlessDamage, entity -> true);
+    }
+
+    /** Applies caller-specific exclusions before target resolution and damage effects. */
+    public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn,
+                                 boolean endlessDamage, Predicate<Entity> targetFilter) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
         AABB aabb = player.getBoundingBox().inflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = ModDamageTypes.source(player);
         toAttack.stream()
+                .filter(targetFilter)
                 .filter(entity -> {
                     boolean attack = ModConfig.isSwordAttackItemEntity.get();
                     if (attack == false) {

@@ -1,5 +1,8 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
@@ -66,6 +69,8 @@ public class AvaritiaConfigScreen extends Screen {
         addIntEntry("sword_attack_range", ModConfig.swordAttackRange, 8, 64,
                 Component.translatable("config.avaritia.sword_attack_range.tooltip"),
                 ModConfig.swordAttackRange::set, ModConfig.swordAttackRange);
+        addListEntry("sword_attack_entity_blacklist", ModConfig.swordAttackEntityBlacklist,
+                Component.translatable("config.avaritia.sword_attack_entity_blacklist.tooltip"));
         addBooleanEntry("is_sword_attack_item_entity", ModConfig.isSwordAttackItemEntity,
                 Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
                 ModConfig.isSwordAttackItemEntity::set, ModConfig.isSwordAttackItemEntity);
@@ -237,6 +242,11 @@ public class AvaritiaConfigScreen extends Screen {
     private void addDoubleEntry(String titleKey, ModConfigSpec.DoubleValue configValue, double min, double max,
                                 Component description, Consumer<Double> onValueChange, Supplier<Double> valueSupplier) {
         configEntries.add(new NumberConfigEntry<>(Component.translatable("config.avaritia." + titleKey), description, configValue.get(), min, max, onValueChange, valueSupplier, configValue, Double::parseDouble));
+    }
+
+    private void addListEntry(String titleKey, ModConfigSpec.ConfigValue<List<? extends String>> configValue,
+                              Component description) {
+        configEntries.add(new ListConfigEntry(Component.translatable("config.avaritia." + titleKey), description, configValue));
     }
 
     private void addCategoryHeader(String translationKey) {
@@ -551,6 +561,71 @@ public class AvaritiaConfigScreen extends Screen {
             if (editBox != null) {
                 currentValue = valueSupplier.get();
                 editBox.setValue(String.valueOf(currentValue));
+            }
+        }
+    }
+
+    private static class ListConfigEntry extends ConfigEntry<List<? extends String>> {
+        private EditBox editBox;
+
+        ListConfigEntry(Component title, Component description, ModConfigSpec.ConfigValue<List<? extends String>> value) {
+            super(title, description, value.get(), value::set, value, value);
+        }
+
+        @Override
+        void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
+            editBox = new EditBox(screen.font, x + width - 100, y + 10, 100, 20, title) {
+                @Override
+                public boolean keyPressed(KeyEvent event) {
+                    boolean handled = super.keyPressed(event);
+                    if (event.isConfirmation()) commitInput();
+                    return handled;
+                }
+
+                @Override
+                public void setFocused(boolean focused) {
+                    if (!focused && isFocused()) commitInput();
+                    super.setFocused(focused);
+                }
+            };
+            editBox.setMaxLength(32767);
+            editBox.setValue(Const.GSON.toJsonTree(currentValue).toString());
+            screen.addRenderableWidget(editBox);
+        }
+
+        private void commitInput() {
+            try {
+                JsonElement json = JsonParser.parseString(editBox.getValue());
+                if (!json.isJsonArray()) throw new IllegalArgumentException("Expected JSON array");
+                List<String> ids = new ArrayList<>();
+                for (JsonElement element : json.getAsJsonArray()) {
+                    if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isString()
+                            || !((ModConfigSpec.ListValueSpec) configValue.getSpec()).testElement(element.getAsString())) {
+                        throw new IllegalArgumentException("Invalid entity type ID");
+                    }
+                    ids.add(element.getAsString());
+                }
+                updateValue(List.copyOf(ids));
+            } catch (com.google.gson.JsonParseException | IllegalArgumentException exception) {
+                editBox.setValue(Const.GSON.toJsonTree(currentValue).toString());
+            }
+        }
+
+        @Override
+        void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
+            graphics.text(font, title, x, y + 5, 0xFFFFFFFF);
+            List<FormattedCharSequence> lines = font.split(description, width - 120);
+            for (int i = 0; i < lines.size(); i++) graphics.text(font, lines.get(i), x, y + 20 + i * 10, 0xFFAAAAAA);
+        }
+
+        @Override
+        AbstractWidget control() { return editBox; }
+
+        @Override
+        void updateWidgetValue() {
+            if (editBox != null) {
+                currentValue = valueSupplier.get();
+                editBox.setValue(Const.GSON.toJsonTree(currentValue).toString());
             }
         }
     }
