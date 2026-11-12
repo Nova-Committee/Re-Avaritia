@@ -77,7 +77,7 @@ public class AvaritiaData {
         // data format instead is what other 1.21.11 mods do and loads cleanly on either side.
         var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA);
         PackMetadataGenerator metadataProvider = new PackMetadataGenerator(packOutput).add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
-                Component.literal("Re:Avaritia 1.21.11 Generated Resources"),
+                Component.literal("Re:Avaritia Vanilla Resources by kyln默寒寒冰"),
                 packFormat.minorRange()
         ));
         generator.addProvider(true, metadataProvider);
