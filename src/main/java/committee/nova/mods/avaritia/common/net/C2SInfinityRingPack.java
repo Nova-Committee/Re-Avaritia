@@ -56,10 +56,10 @@ public class C2SInfinityRingPack {
         this.time = buf.readVarInt();
         this.weather = buf.readVarInt();
         this.access = buf.readVarInt();
-        this.generateStructures = buf.readBoolean();
-        this.mobSpawning = buf.readBoolean();
         this.name = buf.readUtf();
         this.owner = buf.readUUID();
+        this.generateStructures = !buf.isReadable() || buf.readBoolean();
+        this.mobSpawning = !buf.isReadable() || buf.readBoolean();
     }
 
     public void write(FriendlyByteBuf buf) {
@@ -68,10 +68,10 @@ public class C2SInfinityRingPack {
         buf.writeVarInt(time);
         buf.writeVarInt(weather);
         buf.writeVarInt(access);
-        buf.writeBoolean(generateStructures);
-        buf.writeBoolean(mobSpawning);
         buf.writeUtf(name);
         buf.writeUUID(owner);
+        buf.writeBoolean(generateStructures);
+        buf.writeBoolean(mobSpawning);
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {

@@ -46,8 +46,6 @@ public class S2CInfinityRingOpenPack {
         this.time = buf.readVarInt();
         this.weather = buf.readVarInt();
         this.access = buf.readVarInt();
-        this.generateStructures = buf.readBoolean();
-        this.mobSpawning = buf.readBoolean();
         int size = buf.readVarInt();
         List<String> names = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -56,6 +54,8 @@ public class S2CInfinityRingOpenPack {
         this.friends = names;
         this.owner = buf.readUUID();
         this.canDelete = buf.readBoolean();
+        this.generateStructures = !buf.isReadable() || buf.readBoolean();
+        this.mobSpawning = !buf.isReadable() || buf.readBoolean();
     }
 
     public void write(FriendlyByteBuf buf) {
@@ -64,14 +64,14 @@ public class S2CInfinityRingOpenPack {
         buf.writeVarInt(time);
         buf.writeVarInt(weather);
         buf.writeVarInt(access);
-        buf.writeBoolean(generateStructures);
-        buf.writeBoolean(mobSpawning);
         buf.writeVarInt(friends.size());
         for (String friend : friends) {
             buf.writeUtf(friend);
         }
         buf.writeUUID(owner);
         buf.writeBoolean(canDelete);
+        buf.writeBoolean(generateStructures);
+        buf.writeBoolean(mobSpawning);
     }
 
     public boolean create() {
