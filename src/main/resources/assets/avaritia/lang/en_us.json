@@ -198,7 +198,7 @@
   "config.avaritia.sub_arrow_damage": "Sub Arrow Damage",
   "config.avaritia.sub_arrow_damage.tooltip": "Infinity bow scattering light arrow damage",
   "config.avaritia.sword_attack_entity_blacklist": "Sword AoE Entity Blacklist",
-  "config.avaritia.sword_attack_entity_blacklist.tooltip": "Entity type IDs excluded from both sword right-click AoE modes. Empty by default; does not affect direct attacks or the Infinity Totem. Lootr loot minecarts are always excluded.",
+  "config.avaritia.sword_attack_entity_blacklist.tooltip": "Entity type IDs excluded from both sword right-click AoE modes. Empty by default; does not affect direct attacks or the Infinity Totem. Lootr loot minecarts registered as the verified entity IDs are excluded.",
   "config.avaritia.sword_attack_range": "Sword Attack Range",
   "config.avaritia.sword_attack_range.tooltip": "Infinity sword right click attack range",
   "config.avaritia.sword_range_damage": "Sword Range Damage",
