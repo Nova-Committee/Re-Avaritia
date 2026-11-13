@@ -295,7 +295,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     /** 剑专用范围攻击排除，不改变图腾共用的范围攻击行为。 */
     private boolean canAoeAttack(Entity entity) {
         var id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        return !id.toString().equals("lootr:lootr_minecart")
+        return !id.toString().equals("lootr:lootr_minecart") && !id.toString().equals("lootr:chest_minecart")
                 && !ModConfig.swordAttackEntityBlacklist.get().contains(id.toString());
     }
 

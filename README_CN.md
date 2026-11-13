@@ -38,7 +38,7 @@
 
 ## **寰宇剑范围攻击实体排除：**
 
-在服务端 `config/avaritia-common.toml` 的 `[tools.config.avaritia]` 下设置 `sword_attack_entity_blacklist`，填写实体类型 ID，例如 `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`，默认 `[]`。修改后重启服务端；该列表只影响剑的两种右键范围攻击，不影响左键直接攻击或无尽图腾。剑的范围攻击始终跳过 Lootr 的 `lootr:lootr_minecart`，无需将 Lootr 设为前置，也不改变方块箱子的行为。
+在服务端 `config/avaritia-common.toml` 的 `[tools.config.avaritia]` 下设置 `sword_attack_entity_blacklist`，填写实体类型 ID，例如 `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`，默认 `[]`。修改后重启服务端；该列表只影响剑的两种右键范围攻击，不影响左键直接攻击或无尽图腾。剑的范围攻击会跳过已核实的 Lootr 战利品矿车实体 ID（`lootr:lootr_minecart`、`lootr:chest_minecart`），无需将 Lootr 设为前置，也不改变方块箱子的行为。
 
 ## **✏️作者:**
 
