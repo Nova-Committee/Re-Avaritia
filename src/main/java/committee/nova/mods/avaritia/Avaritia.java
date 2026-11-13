@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.compat.trinkets.TrinketsIntegration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRegistries;
 import net.fabricmc.api.ModInitializer;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Avaritia implements ModInitializer {
     @Override
     public void onInitialize() {
+        ModConfig.register();
         ModRegistries.initialize();
         NetworkHandler.init();
         TrinketsIntegration.initialize();
