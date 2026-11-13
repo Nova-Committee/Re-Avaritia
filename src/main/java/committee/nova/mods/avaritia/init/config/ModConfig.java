@@ -1,5 +1,7 @@
 package committee.nova.mods.avaritia.init.config;
 
+import net.minecraft.resources.Identifier;
+import java.util.List;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -14,6 +16,7 @@ public class ModConfig {
     public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
     public static final ModConfigSpec.IntValue swordRangeDamage;
     public static final ModConfigSpec.IntValue swordAttackRange;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> swordAttackEntityBlacklist;
     public static final ModConfigSpec.BooleanValue isSwordAttackItemEntity;
     public static final ModConfigSpec.BooleanValue isSwordAttackProjectile;
     public static final ModConfigSpec.BooleanValue isSwordAttackLightning;
@@ -69,6 +72,12 @@ public class ModConfig {
         isMergeMatterCluster = buildBoolean(common, "is_merge_matter_cluster", true, "Whether to merge matter clusters");
         swordRangeDamage = buildInt(common, "sword_range_damage", 10000, 100, 100000, "Range damage dealt by the Infinity Sword's right-click attack");
         swordAttackRange = buildInt(common, "sword_attack_range", 32, 8, 64, "Range of the Infinity Sword's right-click attack");
+        swordAttackEntityBlacklist = common
+                .comment("Entity type IDs excluded from both sword right-click AoE modes; does not affect direct attacks or the Infinity Totem")
+                .translation(translationKey("sword_attack_entity_blacklist"))
+                .defineListAllowEmpty("sword_attack_entity_blacklist", List.<String>of(), () -> "minecraft:zombie",
+                        value -> value instanceof String id && id.indexOf(':') > 0
+                                && !id.endsWith(":") && Identifier.tryParse(id) != null);
         isSwordAttackItemEntity = buildBoolean(common, "is_sword_attack_item_entity", false, "Whether kill mode destroys item entities");
         isSwordAttackProjectile = buildBoolean(common, "is_sword_attack_projectile", false, "Whether kill mode destroys projectiles");
         isSwordAttackLightning = buildBoolean(common, "is_sword_attack_lightning", false, "Whether the right-click attack summons lightning within its range");
