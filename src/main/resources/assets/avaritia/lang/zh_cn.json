@@ -197,7 +197,7 @@
   "config.avaritia.sub_arrow_damage": "箭雨伤害",
   "config.avaritia.sub_arrow_damage.tooltip": "无尽弓和无尽弩的箭雨伤害",
   "config.avaritia.sword_attack_entity_blacklist": "剑范围攻击实体黑名单",
-  "config.avaritia.sword_attack_entity_blacklist.tooltip": "从剑的两种右键范围攻击中排除的实体类型 ID，默认为空；不影响直接攻击或无尽图腾，Lootr 战利品矿车始终排除。",
+  "config.avaritia.sword_attack_entity_blacklist.tooltip": "从剑的两种右键范围攻击中排除的实体类型 ID，默认为空；不影响直接攻击或无尽图腾，已核实的 Lootr 战利品矿车实体 ID 会被排除。",
   "config.avaritia.sword_attack_range": "剑攻击范围",
   "config.avaritia.sword_attack_range.tooltip": "无尽剑右键攻击范围",
   "config.avaritia.sword_range_damage": "剑范围伤害",
