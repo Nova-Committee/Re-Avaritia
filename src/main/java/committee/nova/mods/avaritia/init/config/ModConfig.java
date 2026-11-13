@@ -70,7 +70,7 @@ public class ModConfig {
         swordRangeDamage = buildInt(common, "config.avaritia.sword_range_damage", 10000, 100, 100000, "config.avaritia.sword_range_damage.tooltip");
         swordAttackRange = buildInt(common, "config.avaritia.sword_attack_range", 32, 8, 64, "config.avaritia.sword_attack_range.tooltip");
         swordAttackEntityBlacklist = common
-                .comment("Entity type IDs excluded from sword right-click AoE, e.g. minecraft:zombie. Does not affect direct attacks or the Infinity Totem; Lootr loot minecarts are always excluded.")
+                .comment("Entity type IDs excluded from sword right-click AoE, e.g. minecraft:zombie. Does not affect direct attacks or the Infinity Totem. Lootr loot minecarts registered as the verified entity IDs are excluded.")
                 .translation("config.avaritia.sword_attack_entity_blacklist")
                 .defineListAllowEmpty("config.avaritia.sword_attack_entity_blacklist", List.<String>of(),
                         value -> value instanceof String id && id.contains(":") && ResourceLocation.tryParse(id) != null);
