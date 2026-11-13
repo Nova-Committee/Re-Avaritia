@@ -23,7 +23,7 @@
       "item": "avaritia:infinity_catalyst"
     },
     "Y": {
-      "item": "botania:fabulous_pool"
+      "item": "botania:fabulous_mana_pool"
     }
   },
   "pattern": [
@@ -39,7 +39,7 @@
   ],
   "result": {
     "count": 1,
-    "id": "botania:creative_pool"
+    "id": "botania:creative_mana_pool"
   },
   "tier": 4
 }
