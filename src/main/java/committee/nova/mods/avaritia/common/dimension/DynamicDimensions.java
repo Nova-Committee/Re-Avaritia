@@ -4,6 +4,7 @@ import com.mojang.serialization.Lifecycle;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.S2CUpdateDimensionsPack;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,29 +48,38 @@ public final class DynamicDimensions {
     private DynamicDimensions() {
     }
 
-    public static LevelStem voidStem(MinecraftServer server) {
-        return stem(server, List.of());
+    public static LevelStem voidStem(MinecraftServer server, boolean generateStructures) {
+        return stem(server, List.of(), generateStructures);
     }
 
-    public static LevelStem flatStem(MinecraftServer server) {
+    public static LevelStem flatStem(MinecraftServer server, boolean generateStructures) {
         return stem(server, List.of(
                 new FlatLayerInfo(1, Blocks.BEDROCK),
                 new FlatLayerInfo(2, Blocks.DIRT),
-                new FlatLayerInfo(1, Blocks.GRASS_BLOCK)));
+                new FlatLayerInfo(1, Blocks.GRASS_BLOCK)), generateStructures);
     }
 
-    public static LevelStem stemFor(MinecraftServer server, InfinityRingSettings.Terrain terrain) {
-        return terrain == InfinityRingSettings.Terrain.FLAT ? flatStem(server) : voidStem(server);
+    public static LevelStem stemFor(MinecraftServer server, InfinityRingSettings.Terrain terrain,
+                                    boolean generateStructures) {
+        return terrain == InfinityRingSettings.Terrain.FLAT
+                ? flatStem(server, generateStructures)
+                : voidStem(server, generateStructures);
     }
 
-    private static LevelStem stem(MinecraftServer server, List<FlatLayerInfo> layers) {
+    private static LevelStem stem(MinecraftServer server, List<FlatLayerInfo> layers, boolean generateStructures) {
         Holder<net.minecraft.world.level.dimension.DimensionType> type = server.registryAccess()
                 .registryOrThrow(Registries.DIMENSION_TYPE)
                 .getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
         Holder<net.minecraft.world.level.biome.Biome> biome = server.registryAccess()
                 .registryOrThrow(Registries.BIOME)
                 .getHolderOrThrow(Biomes.PLAINS);
-        FlatLevelGeneratorSettings settings = new FlatLevelGeneratorSettings(Optional.empty(), biome, List.of());
+        // FlatLevelSource 在 structureOverrides 为空 Optional 时使用全部结构集；
+        // 关掉结构时传入一个显式的空结构集。
+        HolderSet<StructureSet> noStructures = HolderSet.direct(List.of());
+        Optional<HolderSet<StructureSet>> structureOverrides = generateStructures
+                ? Optional.empty()
+                : Optional.of(noStructures);
+        FlatLevelGeneratorSettings settings = new FlatLevelGeneratorSettings(structureOverrides, biome, List.of());
         settings.getLayersInfo().clear();
         settings.getLayersInfo().addAll(layers);
         settings.updateLayers();

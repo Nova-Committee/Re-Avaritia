@@ -93,9 +93,17 @@ public final class InfinityRingDimensions {
                 target.equals(player.getUUID()));
     }
 
+    /** Backward-compatible overload: structure generation and natural spawning stay enabled. */
     public static boolean create(ServerPlayer player, InfinityRingSettings.Terrain terrain,
                                  InfinityRingSettings.TimeMode time, InfinityRingSettings.WeatherMode weather,
                                  InfinityRingSettings.Access access) {
+        return create(player, terrain, time, weather, access, true, true);
+    }
+
+    public static boolean create(ServerPlayer player, InfinityRingSettings.Terrain terrain,
+                                 InfinityRingSettings.TimeMode time, InfinityRingSettings.WeatherMode weather,
+                                 InfinityRingSettings.Access access,
+                                 boolean generateStructures, boolean mobSpawning) {
         if (!holdingRing(player)) {
             return false;
         }
@@ -110,6 +118,8 @@ public final class InfinityRingDimensions {
         settings.time = time;
         settings.weather = weather;
         settings.access = access;
+        settings.generateStructures = generateStructures;
+        settings.mobSpawning = mobSpawning;
         data.create(player.getUUID(), settings);
         ServerLevel level = getOrCreateLevel(player.server, player.getUUID());
         if (level == null) {
@@ -329,7 +339,9 @@ public final class InfinityRingDimensions {
         }
         InfinityRingSettings settings = InfinityRingSavedData.get(server).settings(owner);
         InfinityRingSettings.Terrain terrain = settings == null ? InfinityRingSettings.Terrain.VOID : settings.terrain;
-        return DynamicDimensions.getOrCreate(server, key, () -> DynamicDimensions.stemFor(server, terrain));
+        boolean generateStructures = settings == null || settings.generateStructures;
+        return DynamicDimensions.getOrCreate(server, key,
+                () -> DynamicDimensions.stemFor(server, terrain, generateStructures));
     }
 
     public static void restoreMissingLevels(MinecraftServer server) {

@@ -32,21 +32,26 @@ public final class InfinityRingCreateScreen extends Screen {
     private int time;
     private int weather;
     private int access;
+    private boolean generateStructures;
+    private boolean mobSpawning;
 
     private ScreenRectangle panel;
     private ScreenRectangle help;
 
-    public InfinityRingCreateScreen(int terrain, int time, int weather, int access) {
+    public InfinityRingCreateScreen(int terrain, int time, int weather, int access,
+                                    boolean generateStructures, boolean mobSpawning) {
         super(Component.translatable("gui.avaritia.infinity_ring.create"));
         this.terrain = terrain;
         this.time = time;
         this.weather = weather;
         this.access = access;
+        this.generateStructures = generateStructures;
+        this.mobSpawning = mobSpawning;
     }
 
     @Override
     protected void init() {
-        panel = PortableLayout.centered(width, height, 300, 200, MARGIN);
+        panel = PortableLayout.centered(width, height, 300, 260, MARGIN);
         int panelX = panel.left();
         int panelY = panel.top();
         int panelW = panel.width();
@@ -72,6 +77,12 @@ public final class InfinityRingCreateScreen extends Screen {
                 "gui.avaritia.infinity_ring.option.access", "gui.avaritia.infinity_ring.access.",
                 InfinityRingSettings.Access.values(), InfinityRingSettings.Access.byId(access),
                 value -> access = value.ordinal());
+        addToggle(form, 4, innerW,
+                "gui.avaritia.infinity_ring.option.structures", "gui.avaritia.infinity_ring.structures.",
+                generateStructures, value -> generateStructures = value);
+        addToggle(form, 5, innerW,
+                "gui.avaritia.infinity_ring.option.spawning", "gui.avaritia.infinity_ring.spawning.",
+                mobSpawning, value -> mobSpawning = value);
         form.arrangeElements();
         int cursor = form.getY() + form.getHeight() + GAP;
 
@@ -107,8 +118,22 @@ public final class InfinityRingCreateScreen extends Screen {
 
     private void create() {
         NetworkHandler.CHANNEL.sendToServer(new C2SInfinityRingPack(
-                C2SInfinityRingPack.CREATE, terrain, time, weather, access, "", new UUID(0L, 0L)));
+                C2SInfinityRingPack.CREATE, terrain, time, weather, access,
+                generateStructures, mobSpawning, "", new UUID(0L, 0L)));
         onClose();
+    }
+
+    private void addToggle(GridLayout form, int row, int w, String optionKey, String valuePrefix,
+                           boolean current, Consumer<Boolean> changed) {
+        CycleButton<Boolean> cycle = addRenderableWidget(CycleButton.onOffBuilder(current)
+                .withTooltip(value -> Tooltip.create(Component.translatable(
+                        valuePrefix + (value ? "on" : "off") + ".info")))
+                .create(0, 0, w, BTN_H, Component.translatable(optionKey),
+                        (ignored, value) -> changed.accept(value)));
+        form.addChild(cycle, row, 0);
+        if (UiInspector.enabled()) {
+            UiInspector.name(cycle, "ring.create." + optionKey.substring(optionKey.lastIndexOf('.') + 1));
+        }
     }
 
     private <T extends Enum<T>> void addCycle(GridLayout form, int row, int w, String optionKey, String valuePrefix,

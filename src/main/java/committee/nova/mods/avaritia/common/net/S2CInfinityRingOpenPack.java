@@ -19,17 +19,22 @@ public class S2CInfinityRingOpenPack {
     private final int time;
     private final int weather;
     private final int access;
+    private final boolean generateStructures;
+    private final boolean mobSpawning;
     private final List<String> friends;
     private final UUID owner;
     private final boolean canDelete;
 
     public S2CInfinityRingOpenPack(boolean create, int terrain, int time, int weather, int access,
+                                   boolean generateStructures, boolean mobSpawning,
                                    List<String> friends, UUID owner, boolean canDelete) {
         this.create = create;
         this.terrain = terrain;
         this.time = time;
         this.weather = weather;
         this.access = access;
+        this.generateStructures = generateStructures;
+        this.mobSpawning = mobSpawning;
         this.friends = friends;
         this.owner = owner;
         this.canDelete = canDelete;
@@ -41,6 +46,8 @@ public class S2CInfinityRingOpenPack {
         this.time = buf.readVarInt();
         this.weather = buf.readVarInt();
         this.access = buf.readVarInt();
+        this.generateStructures = buf.readBoolean();
+        this.mobSpawning = buf.readBoolean();
         int size = buf.readVarInt();
         List<String> names = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -57,6 +64,8 @@ public class S2CInfinityRingOpenPack {
         buf.writeVarInt(time);
         buf.writeVarInt(weather);
         buf.writeVarInt(access);
+        buf.writeBoolean(generateStructures);
+        buf.writeBoolean(mobSpawning);
         buf.writeVarInt(friends.size());
         for (String friend : friends) {
             buf.writeUtf(friend);
@@ -85,6 +94,14 @@ public class S2CInfinityRingOpenPack {
         return access;
     }
 
+    public boolean generateStructures() {
+        return generateStructures;
+    }
+
+    public boolean mobSpawning() {
+        return mobSpawning;
+    }
+
     public List<String> friends() {
         return friends;
     }
@@ -101,14 +118,16 @@ public class S2CInfinityRingOpenPack {
         NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                 new S2CInfinityRingOpenPack(true, 0, InfinityRingSettings.TimeMode.DAY.ordinal(),
                         InfinityRingSettings.WeatherMode.CLEAR.ordinal(),
-                        InfinityRingSettings.Access.PRIVATE.ordinal(), List.of(), player.getUUID(), true));
+                        InfinityRingSettings.Access.PRIVATE.ordinal(), true, true,
+                        List.of(), player.getUUID(), true));
     }
 
     public static void openControl(ServerPlayer player, InfinityRingSettings settings, List<String> friends,
                                    UUID owner, boolean canDelete) {
         NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                 new S2CInfinityRingOpenPack(false, settings.terrain.ordinal(), settings.time.ordinal(),
-                        settings.weather.ordinal(), settings.access.ordinal(), friends, owner, canDelete));
+                        settings.weather.ordinal(), settings.access.ordinal(),
+                        settings.generateStructures, settings.mobSpawning, friends, owner, canDelete));
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
