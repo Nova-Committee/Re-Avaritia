@@ -62,6 +62,8 @@ public final class InfinityRingSettings {
     public TimeMode time = TimeMode.DAY;
     public WeatherMode weather = WeatherMode.CLEAR;
     public Access access = Access.PRIVATE;
+    public boolean generateStructures = true;
+    public boolean mobSpawning = true;
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
 
@@ -71,6 +73,8 @@ public final class InfinityRingSettings {
         tag.putInt("Time", time.ordinal());
         tag.putInt("Weather", weather.ordinal());
         tag.putInt("Access", access.ordinal());
+        tag.putBoolean("GenerateStructures", generateStructures);
+        tag.putBoolean("MobSpawning", mobSpawning);
         ListTag playerList = new ListTag();
         players.forEach((id, role) -> {
             CompoundTag entry = new CompoundTag();
@@ -93,6 +97,9 @@ public final class InfinityRingSettings {
         settings.time = TimeMode.byId(tag.getInt("Time"));
         settings.weather = WeatherMode.byId(tag.getInt("Weather"));
         settings.access = Access.byId(tag.getInt("Access"));
+        // 旧存档没有这两个字段时保持原有行为：开结构和自然刷怪。
+        settings.generateStructures = !tag.contains("GenerateStructures") || tag.getBoolean("GenerateStructures");
+        settings.mobSpawning = !tag.contains("MobSpawning") || tag.getBoolean("MobSpawning");
         ListTag playerList = tag.getList("Players", Tag.TAG_COMPOUND);
         for (int i = 0; i < playerList.size(); i++) {
             CompoundTag entry = playerList.getCompound(i);

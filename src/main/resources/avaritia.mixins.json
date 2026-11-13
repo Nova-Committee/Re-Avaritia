@@ -10,6 +10,7 @@
     "ItemMixin",
     "ItemStackMixin",
     "LivingEntityShieldMixin",
+    "NaturalSpawnerMixin",
     "NetherWartBlockMixin",
     "PlayerMixin",
     "RecipeManagerMixin",

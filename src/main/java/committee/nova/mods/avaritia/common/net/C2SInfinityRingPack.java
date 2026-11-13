@@ -26,21 +26,28 @@ public class C2SInfinityRingPack {
     private final int time;
     private final int weather;
     private final int access;
+    private final boolean generateStructures;
+    private final boolean mobSpawning;
     private final String name;
     private final UUID owner;
 
-    public C2SInfinityRingPack(int action, int terrain, int time, int weather, int access, String name, UUID owner) {
+    public C2SInfinityRingPack(int action, int terrain, int time, int weather, int access,
+                               boolean generateStructures, boolean mobSpawning, String name, UUID owner) {
         this.action = action;
         this.terrain = terrain;
         this.time = time;
         this.weather = weather;
         this.access = access;
+        this.generateStructures = generateStructures;
+        this.mobSpawning = mobSpawning;
         this.name = name;
         this.owner = owner;
     }
 
-    public static C2SInfinityRingPack of(int action, int terrain, int time, int weather, int access, String name, UUID owner) {
-        return new C2SInfinityRingPack(action, terrain, time, weather, access, name, owner);
+    public static C2SInfinityRingPack of(int action, int terrain, int time, int weather, int access,
+                                         boolean generateStructures, boolean mobSpawning, String name, UUID owner) {
+        return new C2SInfinityRingPack(action, terrain, time, weather, access, generateStructures, mobSpawning,
+                name, owner);
     }
 
     public C2SInfinityRingPack(FriendlyByteBuf buf) {
@@ -49,6 +56,8 @@ public class C2SInfinityRingPack {
         this.time = buf.readVarInt();
         this.weather = buf.readVarInt();
         this.access = buf.readVarInt();
+        this.generateStructures = buf.readBoolean();
+        this.mobSpawning = buf.readBoolean();
         this.name = buf.readUtf();
         this.owner = buf.readUUID();
     }
@@ -59,6 +68,8 @@ public class C2SInfinityRingPack {
         buf.writeVarInt(time);
         buf.writeVarInt(weather);
         buf.writeVarInt(access);
+        buf.writeBoolean(generateStructures);
+        buf.writeBoolean(mobSpawning);
         buf.writeUtf(name);
         buf.writeUUID(owner);
     }
@@ -74,7 +85,8 @@ public class C2SInfinityRingPack {
                         InfinityRingSettings.Terrain.byId(terrain),
                         InfinityRingSettings.TimeMode.byId(time),
                         InfinityRingSettings.WeatherMode.byId(weather),
-                        InfinityRingSettings.Access.byId(access));
+                        InfinityRingSettings.Access.byId(access),
+                        generateStructures, mobSpawning);
                 case SET_MODES -> InfinityRingDimensions.updateModes(player, owner,
                         InfinityRingSettings.TimeMode.byId(time),
                         InfinityRingSettings.WeatherMode.byId(weather),

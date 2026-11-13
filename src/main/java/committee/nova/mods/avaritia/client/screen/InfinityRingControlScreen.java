@@ -79,7 +79,8 @@ public final class InfinityRingControlScreen extends Screen {
         Minecraft minecraft = Minecraft.getInstance();
         if (packet.create()) {
             minecraft.setScreen(new InfinityRingCreateScreen(
-                    packet.terrain(), packet.time(), packet.weather(), packet.access()));
+                    packet.terrain(), packet.time(), packet.weather(), packet.access(),
+                    packet.generateStructures(), packet.mobSpawning()));
             return;
         }
         Screen root = PortableUi.root(minecraft.screen);
@@ -288,7 +289,7 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     private C2SInfinityRingPack pack(int action, int extra, String name) {
-        return new C2SInfinityRingPack(action, 0, time, weather, extra, name, owner);
+        return new C2SInfinityRingPack(action, 0, time, weather, extra, false, false, name, owner);
     }
 
     private void addFriend(String name) {
