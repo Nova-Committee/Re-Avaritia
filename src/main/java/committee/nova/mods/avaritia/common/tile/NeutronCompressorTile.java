@@ -436,11 +436,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
     @Override
     public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
-        if (sideConfig.getSideMode(direction).canInput()) {
-            return new int[]{1};
-        } else if (sideConfig.getSideMode(direction).canOutput()) {
-            return new int[]{0};
-        } else return new int[1];
+        Direction facing = getBlockState().getValue(NeutronCompressorBlock.FACING);
+        Direction relativeSide = ioHandler.getRelativeDirectionFromAbsolute(direction, facing);
+
+        SideConfiguration.SideMode mode = sideConfig.getSideMode(relativeSide);
+        if (mode.isMixed()) return new int[]{1, 0};
+        if (mode.canInput()) return new int[]{1};
+        if (mode.canOutput()) return new int[]{0};
+        return new int[0];
     }
 
     @Override

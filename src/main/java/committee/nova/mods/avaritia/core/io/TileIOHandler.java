@@ -39,7 +39,7 @@ public class TileIOHandler {
         };
     }
 
-    protected final Direction getRelativeDirectionFromAbsolute(Direction absoluteDirection, Direction blockFacing) {
+    public final Direction getRelativeDirectionFromAbsolute(Direction absoluteDirection, Direction blockFacing) {
         // 如果绝对方向与方块朝向相同，则它是前方
         if (absoluteDirection == blockFacing) return Direction.NORTH;
         if (absoluteDirection == blockFacing.getOpposite()) return Direction.SOUTH;
