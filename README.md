@@ -40,6 +40,12 @@ Active blocking is immediate and omnidirectional, does not slow movement, and pe
 
 In `config/avaritia-common.toml`, set `sword_attack_entity_blacklist` under `[tools.config.avaritia]` to a list of entity type IDs, for example `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`. The default is `[]`. Configure this on the server and restart it after editing; the list applies to both right-click AoE modes, not direct left-click attacks or the Infinity Totem. Sword AoE skips the verified Lootr loot minecart entity IDs (`lootr:lootr_minecart`, `lootr:chest_minecart`) without requiring Lootr as a dependency. This does not change block chest behavior.
 
+## **Neutron Compressor side modes:**
+
+Side settings are relative to the machine's facing. For external item automation, Input exposes only the material input slot and accepts insertion; Output exposes only the product slot and permits extraction; Mixed supports both; OFF exposes no item capability. These restrictions apply to both passive and active mode variants. Materials in the input slot cannot be extracted by external automation.
+
+**Behavior change for Forge 1.20.1:** Input faces no longer allow product extraction, and Output faces no longer accept materials. Existing setups that used either behavior must change that face to Mixed or use separate Input and Output faces.
+
 ## **✏️Authors:**
 
 - Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3` 

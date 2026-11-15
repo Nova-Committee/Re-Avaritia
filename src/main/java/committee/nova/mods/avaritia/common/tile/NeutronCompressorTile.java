@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
+import committee.nova.mods.avaritia.core.io.CompressorSidedItemHandler;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.core.io.TileIOHandler;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -56,6 +58,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
+    private final EnumMap<Direction, LazyOptional<IItemHandler>> sidedInventoryCapabilities = new EnumMap<>(Direction.class);
     private final SimpleContainerData data = new SimpleContainerData(1);
     private ICompressorRecipe recipe;
     private ItemStack materialStack = ItemStack.EMPTY;
@@ -183,6 +186,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
             this.sideConfig = SideConfiguration.fromNBT(tag.getCompound("SideConfig"));
         }
         this.lockedRecipe = null;
+        invalidateSidedInventoryCapabilities();
     }
 
     @Override
@@ -210,13 +214,42 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        // 检查被动输入输出配置
         if (side != null && cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (!ioHandler.shouldAllowPassiveIO(side)) {
+            if (getSideMode(side) == SideConfiguration.SideMode.OFF) {
                 return LazyOptional.empty();
             }
+            return sidedInventoryCapabilities.computeIfAbsent(side, direction -> LazyOptional.of(
+                    () -> new CompressorSidedItemHandler(inventory, () -> getSideMode(direction)))).cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    private SideConfiguration.SideMode getSideMode(Direction side) {
+        if (isRemoved()) return SideConfiguration.SideMode.OFF;
+        Direction relativeSide = ioHandler.getRelativeDirectionFromAbsolute(
+                side, getBlockState().getValue(NeutronCompressorBlock.FACING));
+        return sideConfig.getSideMode(relativeSide);
+    }
+
+    private void invalidateSidedInventoryCapabilities() {
+        var previousCapabilities = new ArrayList<>(sidedInventoryCapabilities.values());
+        sidedInventoryCapabilities.clear();
+        previousCapabilities.forEach(LazyOptional::invalidate);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        invalidateSidedInventoryCapabilities();
+    }
+
+    @Override
+    public void setBlockState(@NotNull BlockState state) {
+        Direction previousFacing = getBlockState().getValue(NeutronCompressorBlock.FACING);
+        super.setBlockState(state);
+        if (previousFacing != state.getValue(NeutronCompressorBlock.FACING)) {
+            invalidateSidedInventoryCapabilities();
+        }
     }
 
 
@@ -320,6 +353,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     @Override
     public void setSideConfiguration(SideConfiguration config) {
         this.sideConfig = config;
+        invalidateSidedInventoryCapabilities();
         this.setChangedAndDispatch();
 
         // 同步给客户端
@@ -348,6 +382,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         }
 
         sideConfig.setSideMode(direction, nextMode);
+        invalidateSidedInventoryCapabilities();
         this.setChangedAndDispatch();
 
         // 同步给客户端
@@ -358,6 +393,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     @Override
     public void setIOChange() {
+        invalidateSidedInventoryCapabilities();
         this.setChangedAndDispatch();
     }
 
