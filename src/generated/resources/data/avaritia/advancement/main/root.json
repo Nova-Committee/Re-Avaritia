@@ -15,7 +15,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "avaritia:textures/block/resource/neutron.png",
+    "background": "avaritia:block/resource/neutron",
     "description": {
       "translate": "advancements.avaritia.start.desc"
     },

@@ -80,10 +80,11 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
             return;
         }
         super.init();
-        searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
-                Component.translatable("gui.avaritia.search"));
+        Component searchTitle = Component.translatable("gui.avaritia.search");
+        searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT, searchTitle);
         searchBox.setMaxLength(64);
         searchBox.setBordered(false);
+        searchBox.setHint(searchTitle);
         searchBox.setValue(menu.filter);
         searchBox.setResponder(value -> {
             menu.filter = value;

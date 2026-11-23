@@ -11,13 +11,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestLidController;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -185,6 +188,44 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity,
     }
 
     private final ChestLidController chestLidController = new ChestLidController();
+    private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
+        @Override
+        protected void onOpen(Level level, BlockPos pos, BlockState state) {
+            playSound(level, pos, SoundEvents.CHEST_OPEN);
+        }
+
+        @Override
+        protected void onClose(Level level, BlockPos pos, BlockState state) {
+            playSound(level, pos, SoundEvents.CHEST_CLOSE);
+        }
+
+        @Override
+        protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+            level.blockEvent(pos, state.getBlock(), 1, newCount);
+        }
+
+        @Override
+        public boolean isOwnContainer(Player player) {
+            return player.containerMenu instanceof InfinityChestMenu menu && menu.chestTile == InfinityChestTile.this;
+        }
+    };
+
+    public void startOpen(ServerPlayer player) {
+        if (!isRemoved() && !player.isSpectator() && level != null) {
+            openersCounter.incrementOpeners(player, level, worldPosition, getBlockState(), player.getContainerInteractionRange());
+        }
+    }
+
+    public void stopOpen(ServerPlayer player) {
+        if (!isRemoved() && !player.isSpectator() && level != null) {
+            openersCounter.decrementOpeners(player, level, worldPosition, getBlockState());
+        }
+    }
+
+    public void recheckOpen(Level level) {
+        openersCounter.recheckOpeners(level, worldPosition, getBlockState());
+    }
+
     public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, InfinityChestTile blockEntity) {
         blockEntity.chestLidController.tickLid();
     }
