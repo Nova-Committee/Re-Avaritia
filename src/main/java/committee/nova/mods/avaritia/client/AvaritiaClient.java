@@ -26,6 +26,7 @@ import committee.nova.mods.avaritia.client.render.entity.StormProRender;
 import committee.nova.mods.avaritia.client.render.entity.SunProRender;
 import committee.nova.mods.avaritia.client.render.entity.TNTProEntityRender;
 import committee.nova.mods.avaritia.client.render.entity.TracerArrowRender;
+import committee.nova.mods.avaritia.client.render.item.CompressedChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityShieldRender;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
@@ -357,6 +358,7 @@ public class AvaritiaClient {
     public static void registerSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
         event.register(id("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
         event.register(id("infinity_chest"), InfinityChestItemRender.Unbaked.MAP_CODEC);
+        event.register(id("compressed_chest"), CompressedChestItemRender.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent

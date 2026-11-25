@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.render.item.CompressedChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
 import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,6 +32,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
@@ -112,7 +115,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         simpleBlockWithItem(ModBlocks.extreme_smithing_table.get());
         horizontalBlockWithItem(ModBlocks.extreme_anvil.get(), Quadrant.R180, Quadrant.R270, Quadrant.R0, Quadrant.R90);
 
-        compressedChestBlockWithItem(ModBlocks.compressed_chest.get());
+        simpleBlockWithItem(ModBlocks.compressed_chest.get());
         horizontalBlockWithItem(ModBlocks.infinity_chest.get());
         tesseractBlockWithItem(ModBlocks.tesseract.get());
 
@@ -270,15 +273,8 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                 mod("block/machine/smithing/extreme_smithing_table_bottom"));
     }
 
-    private void compressedChestBlockWithItem(Block block) {
-        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
-        Identifier model = jsonModel(mod("block/chest/compressed_chest_particle"), COMPRESSED_CHEST_PARTICLE_MODEL);
-        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model)))).create());
-        blockItem(block, compressedChestModel());
-    }
-
     private Identifier compressedChestModel() {
-        return jsonModel(mod("block/chest/compressed_chest"), COMPRESSED_CHEST_MODEL);
+        return jsonModel(mod("block/chest/compressed_chest_particle"), COMPRESSED_CHEST_PARTICLE_MODEL);
     }
 
     private Identifier infinityChestModel() {
@@ -347,6 +343,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             Identifier itemModel = switch (path) {
                 case "endless_cake" -> flatItemModel("endless_cake", mod("item/misc/endless_cake"));
                 case "extreme_anvil" -> jsonModel(mod("item/extreme_anvil"), EXTREME_ANVIL_ITEM_MODEL);
+                case "compressed_chest" -> jsonModel(mod("item/compressed_chest"), COMPRESSED_CHEST_ITEM_MODEL);
                 case "infinity_chest" -> jsonModel(mod("item/infinity_chest"), INFINITY_CHEST_ITEM_MODEL);
                 case "tesseract" -> jsonModel(mod("item/tesseract"), TESSERACT_ITEM_MODEL);
                 case "neutron_collector", "dense_neutron_collector", "denser_neutron_collector", "densest_neutron_collector",
@@ -354,9 +351,14 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                         machineBlockItemModel(path, model);
                 default -> model;
             };
-            var clientModel = path.equals("infinity_chest")
-                    ? ItemModelUtils.specialModel(itemModel, new InfinityChestItemRender.Unbaked())
-                    : ItemModelUtils.plainModel(itemModel);
+            var clientModel = switch (path) {
+                case "compressed_chest" -> ItemModelUtils.select(new DisplayContext(),
+                        ItemModelUtils.specialModel(itemModel, new CompressedChestItemRender.Unbaked(false)),
+                        ItemModelUtils.when(ItemDisplayContext.GUI,
+                                ItemModelUtils.specialModel(itemModel, new CompressedChestItemRender.Unbaked(true))));
+                case "infinity_chest" -> ItemModelUtils.specialModel(itemModel, new InfinityChestItemRender.Unbaked());
+                default -> ItemModelUtils.plainModel(itemModel);
+            };
             this.generatedClientItems.put(itemKey, new ClientItem(clientModel, ClientItem.Properties.DEFAULT));
         }
     }
@@ -411,51 +413,12 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             }
             """;
 
-    private static final String COMPRESSED_CHEST_MODEL = """
+    private static final String COMPRESSED_CHEST_ITEM_MODEL = """
             {
-              "parent": "block/block",
+              "parent": "minecraft:item/template_chest",
               "textures": {
-                "texture": "avaritia:block/chest/compressed_chest",
                 "particle": "avaritia:block/chest/compressed_chest_break"
-              },
-              "elements": [
-                {
-                  "from": [1, 0, 1],
-                  "to": [15, 10, 15],
-                  "faces": {
-                    "down": {"uv": [7, 4.75, 10.5, 8.25], "texture": "#texture"},
-                    "up": {"uv": [3.5, 4.75, 7, 8.25], "texture": "#texture"},
-                    "north": {"uv": [3.5, 8.25, 7, 10.75], "texture": "#texture"},
-                    "south": {"uv": [10.5, 8.25, 14, 10.75], "texture": "#texture"},
-                    "west": {"uv": [7, 8.25, 10.5, 10.75], "texture": "#texture"},
-                    "east": {"uv": [0, 8.25, 3.5, 10.75], "texture": "#texture"}
-                  }
-                },
-                {
-                  "from": [1, 9, 1],
-                  "to": [15, 14, 15],
-                  "faces": {
-                    "up": {"uv": [7, 0, 10.5, 3.5], "texture": "#texture"},
-                    "down": {"uv": [3.5, 0, 7, 3.5], "texture": "#texture"},
-                    "north": {"uv": [3.5, 3.5, 7, 4.75], "texture": "#texture"},
-                    "south": {"uv": [10.5, 3.5, 14, 4.75], "texture": "#texture"},
-                    "west": {"uv": [7, 3.5, 10.5, 4.75], "texture": "#texture"},
-                    "east": {"uv": [0, 3.5, 3.5, 4.75], "texture": "#texture"}
-                  }
-                },
-                {
-                  "from": [7, 7, 0],
-                  "to": [9, 11, 1],
-                  "faces": {
-                    "down": {"uv": [0, 0.75, 1.25, 0.5], "texture": "#texture"},
-                    "up": {"uv": [0, 0.25, 0.75, 0.5], "texture": "#texture"},
-                    "north": {"uv": [0.25, 0.25, 0.75, 1.25], "texture": "#texture"},
-                    "south": {"uv": [1, 0.25, 1.5, 1.25], "texture": "#texture"},
-                    "west": {"uv": [0.75, 0.25, 1, 1.25], "texture": "#texture"},
-                    "east": {"uv": [0, 0.25, 0.25, 1.25], "texture": "#texture"}
-                  }
-                }
-              ]
+              }
             }
             """;
 
