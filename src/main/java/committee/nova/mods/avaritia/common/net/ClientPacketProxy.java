@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 public final class ClientPacketProxy {
     public static Consumer<S2CInfinityRingOpenPack> infinityRingOpen = packet -> {
     };
+    public static Consumer<S2CInfinityRingSpawnPack> infinityRingSpawn = packet -> {
+    };
     public static Consumer<S2CUpdateDimensionsPack> updateDimensions = packet -> {
     };
     public static Consumer<S2CNeutronRingOpenPack> neutronRingOpen = packet -> {

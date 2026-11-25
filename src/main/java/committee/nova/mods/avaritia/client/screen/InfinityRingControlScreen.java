@@ -5,9 +5,13 @@ import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingKeys;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingSpawnPoint;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
+import committee.nova.mods.avaritia.common.net.C2SInfinityRingSpawnPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
+import committee.nova.mods.avaritia.common.net.S2CInfinityRingSpawnPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,6 +42,7 @@ public final class InfinityRingControlScreen extends Screen {
     private static final int FOOTER_H = 24;
     private static final int BTN_H = 20;
     private static final int GAP = 3;
+    private static final String SPAWN_KEY = "gui.avaritia.infinity_ring.spawn.";
 
     private int time;
     private int weather;
@@ -52,6 +57,16 @@ public final class InfinityRingControlScreen extends Screen {
     private double listScroll;
     private ScreenRectangle panel;
     private ScreenRectangle roster;
+    private ScreenRectangle spawnStatusArea;
+    @Nullable
+    private Button spawnButton;
+    @Nullable
+    private UUID pendingSpawnRequest;
+    @Nullable
+    private InfinityRingSpawnPoint spawn;
+    @Nullable
+    private Component spawnFeedback;
+    private boolean spawnReady;
 
     @Nullable
     private PlayerList playerList;
@@ -93,6 +108,22 @@ public final class InfinityRingControlScreen extends Screen {
                 packet.owner(), packet.canDelete()));
     }
 
+    public static void acceptSpawn(S2CInfinityRingSpawnPack packet) {
+        Screen root = PortableUi.root(Minecraft.getInstance().screen);
+        if (root instanceof InfinityRingControlScreen screen && screen.owner.equals(packet.owner())
+                && packet.request().equals(screen.pendingSpawnRequest)) {
+            screen.pendingSpawnRequest = null;
+            screen.spawn = packet.spawn();
+            screen.spawnReady = packet.result() != S2CInfinityRingSpawnPack.Result.DENIED || packet.spawn() != null;
+            screen.spawnFeedback = switch (packet.result()) {
+                case UNSAFE -> Component.translatable(SPAWN_KEY + "unsafe");
+                case DENIED -> Component.translatable(SPAWN_KEY + "denied");
+                case SAVED, STATUS -> null;
+            };
+            screen.updateSpawnButton();
+        }
+    }
+
     private void apply(S2CInfinityRingOpenPack packet) {
         captureTransientState();
         time = packet.time();
@@ -110,6 +141,9 @@ public final class InfinityRingControlScreen extends Screen {
             menuRole = null;
         }
         rebuildWidgets();
+        if (spawnButton != null) {
+            requestSpawn(false);
+        }
     }
 
     @Override
@@ -184,6 +218,19 @@ public final class InfinityRingControlScreen extends Screen {
         addRenderableWidget(UiInspector.name(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, BTN_H,
                 CommonComponents.GUI_DONE, button -> onClose()), "ring.control.done"));
 
+        spawnButton = null;
+        if (supportsSpawn()) {
+            int spawnWidth = Math.min(184, innerW - doneW - GAP);
+            spawnButton = addRenderableWidget(UiInspector.name(PortableUi.button(innerX, footerY, spawnWidth, BTN_H,
+                    Component.translatable(SPAWN_KEY + "set_here"), button -> requestSpawn(true)), "ring.control.spawn"));
+            int statusY = left.getY() + left.getHeight() + GAP;
+            spawnStatusArea = new ScreenRectangle(innerX, statusY, leftW, Math.max(0, footerY - statusY));
+            updateSpawnButton();
+            if (!spawnReady && spawnFeedback == null) {
+                requestSpawn(false);
+            }
+        }
+
         int searchH = BTN_H;
         int listY = contentY + searchH + GAP;
         int listH = Math.max(16, contentH - searchH - GAP);
@@ -227,6 +274,10 @@ public final class InfinityRingControlScreen extends Screen {
                             ? "gui.avaritia.infinity_ring.empty_players"
                             : "gui.avaritia.infinity_ring.no_matching_players"),
                     playerList.getX() + 4, textY, textW, PortableUi.MUTED);
+        }
+        if (spawnButton != null && spawnStatusArea.height() >= font.lineHeight) {
+            PortableUi.text(graphics, font, spawnStatus(), spawnStatusArea.left(), spawnStatusArea.top(),
+                    spawnStatusArea.width(), PortableUi.MUTED);
         }
         menu.render(graphics, font, mouseX, mouseY);
     }
@@ -282,6 +333,58 @@ public final class InfinityRingControlScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private boolean supportsSpawn() {
+        var connection = Minecraft.getInstance().getConnection();
+        return connection != null && NetworkHandler.RING_SPAWN.isRemotePresent(connection.getConnection());
+    }
+
+    private boolean inManagedDimension() {
+        var level = Minecraft.getInstance().level;
+        return level != null && level.dimension().equals(InfinityRingKeys.levelKey(owner));
+    }
+
+    private void requestSpawn(boolean save) {
+        if (pendingSpawnRequest == null && supportsSpawn()) {
+            pendingSpawnRequest = UUID.randomUUID();
+            spawnFeedback = null;
+            NetworkHandler.RING_SPAWN.sendToServer(new C2SInfinityRingSpawnPack(owner, pendingSpawnRequest, save));
+            updateSpawnButton();
+        }
+    }
+
+    private Component spawnStatus() {
+        if (spawnFeedback != null) {
+            return spawnFeedback;
+        }
+        if (pendingSpawnRequest != null) {
+            return Component.translatable(SPAWN_KEY + "waiting");
+        }
+        return spawn == null ? Component.translatable(SPAWN_KEY + "default") : spawnPosition();
+    }
+
+    private Component spawnPosition() {
+        return Component.translatable(SPAWN_KEY + "position", coordinate(spawn.x()), coordinate(spawn.y()), coordinate(spawn.z()));
+    }
+
+    private void updateSpawnButton() {
+        if (spawnButton != null) {
+            boolean inside = inManagedDimension();
+            spawnButton.active = inside && spawnReady && pendingSpawnRequest == null;
+            var tooltip = Component.empty().append(spawnStatus());
+            if (spawnFeedback != null && spawn != null) {
+                tooltip.append("\n").append(spawnPosition());
+            }
+            if (!inside) {
+                tooltip.append("\n").append(Component.translatable(SPAWN_KEY + "inside"));
+            }
+            spawnButton.setTooltip(Tooltip.create(tooltip));
+        }
+    }
+
+    private static String coordinate(double value) {
+        return String.format(Locale.ROOT, "%.2f", value);
     }
 
     private void sendModes() {
