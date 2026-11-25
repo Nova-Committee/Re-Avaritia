@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.api.iface.IDataReceiver;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.api.init.handler.NetBaseHandler;
 import committee.nova.mods.avaritia.api.init.registry.DataMenuType;
+import committee.nova.mods.avaritia.client.screen.InfinityRingControlScreen;
 import committee.nova.mods.avaritia.common.net.*;
 import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
@@ -27,6 +28,8 @@ public final class NetworkClientPackets {
             ClientPlayNetworking.send(payload);
         });
         ClientPacketProxy.initialize(NetworkClientPackets::handle);
+        ClientPlayNetworking.registerGlobalReceiver(InfinityRingSpawnPayloads.Reply.TYPE,
+                (reply, context) -> InfinityRingControlScreen.acceptSpawn(reply));
     }
     private static void handle(Object packet) {
         Minecraft minecraft = Minecraft.getInstance();

@@ -2,11 +2,16 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.init.handler.NetBaseHandler;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingDimensions;
 import committee.nova.mods.avaritia.common.net.*;
+import committee.nova.mods.avaritia.common.net.InfinityRingSpawnPayloads.Reply;
+import committee.nova.mods.avaritia.common.net.InfinityRingSpawnPayloads.Request;
 import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.common.net.chest.*;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,6 +28,14 @@ public final class NetworkHandler {
     public static void init() {
         if (initialized) return;
         initialized = true;
+        PayloadTypeRegistry.serverboundPlay().register(Request.TYPE, Request.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(Reply.TYPE, Reply.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(Request.TYPE, (request, context) -> {
+            ServerPlayer player = context.player();
+            if (ServerPlayNetworking.canSend(player, Reply.TYPE)) {
+                ServerPlayNetworking.send(player, InfinityRingDimensions.handleSpawnRequest(player, request));
+            }
+        });
         CHANNEL.register(NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run, NetBaseHandler.Direction.BOTH);
         CHANNEL.register(S2CTotemPack.class, S2CTotemPack::write, S2CTotemPack::new, S2CTotemPack::run, NetBaseHandler.Direction.CLIENTBOUND);
         CHANNEL.register(S2CSingularitiesPack.class, S2CSingularitiesPack::write, S2CSingularitiesPack::new, S2CSingularitiesPack::run, NetBaseHandler.Direction.CLIENTBOUND);

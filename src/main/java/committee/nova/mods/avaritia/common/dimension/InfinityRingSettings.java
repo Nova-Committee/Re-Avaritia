@@ -11,6 +11,7 @@ import net.minecraft.nbt.Tag;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,6 +66,8 @@ public final class InfinityRingSettings {
     public TimeMode time = TimeMode.DAY;
     public WeatherMode weather = WeatherMode.CLEAR;
     public Access access = Access.PRIVATE;
+    public Optional<InfinityRingSpawnPoint> defaultSpawn = Optional.empty();
+    public Optional<InfinityRingSpawnPoint> spawn = Optional.empty();
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
 
@@ -74,6 +77,8 @@ public final class InfinityRingSettings {
         tag.putInt("Time", time.ordinal());
         tag.putInt("Weather", weather.ordinal());
         tag.putInt("Access", access.ordinal());
+        defaultSpawn.ifPresent(point -> tag.store("DefaultSpawn", InfinityRingSpawnPoint.CODEC, point));
+        spawn.ifPresent(point -> tag.store("Spawn", InfinityRingSpawnPoint.CODEC, point));
         ListTag playerList = new ListTag();
         players.forEach((id, role) -> {
             CompoundTag entry = new CompoundTag();
@@ -96,6 +101,8 @@ public final class InfinityRingSettings {
         settings.time = TimeMode.byId(tag.getIntOr("Time", 1));
         settings.weather = WeatherMode.byId(tag.getIntOr("Weather", 0));
         settings.access = Access.byId(tag.getIntOr("Access", 0));
+        settings.defaultSpawn = tag.read("DefaultSpawn", InfinityRingSpawnPoint.CODEC);
+        settings.spawn = tag.read("Spawn", InfinityRingSpawnPoint.CODEC);
         ListTag playerList = tag.getListOrEmpty("Players");
         for (int i = 0; i < playerList.size(); i++) {
             CompoundTag entry = playerList.getCompoundOrEmpty(i);
