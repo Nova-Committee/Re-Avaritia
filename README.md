@@ -1,10 +1,10 @@
 <p align="center">
-    <img width="690" src="web/logo.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">
 </p>
 <hr>
 <p align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1/1.21.1/26.1.2-c70039" alt="Supported Versions">
+        <img src="https://img.shields.io/badge/Minecraft-26.3%20NeoForge-c70039" alt="Supported Versions">
     </a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
@@ -13,21 +13,13 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
+    <a href="README.md">English</a> |
+    <a href="README_CN.md">简体中文</a>
 </p>
-
-
-
-
 
 ## **📕Introduction:**
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
 * This mod is <span style="color: #ff6600;">unofficial</span>!
-
-## **Infinity Sword AoE entity exclusions:**
-
-In the server's `config/avaritia-local.toml`, under `[tools]`, set `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`; the default is `[]`. Restart the server after editing. This list affects both sword right-click AoE modes only, not direct left-click attacks or the Infinity Totem. Sword AoE skips the verified Lootr loot minecart entity IDs (`lootr:lootr_minecart`, `lootr:chest_minecart`) without requiring Lootr as a dependency, and does not change block chest behavior.
 
 ## **✏️Authors:**
 
@@ -46,154 +38,33 @@ In the server's `config/avaritia-local.toml`, under `[tools]`, set `sword_attack
 ## **❗Attention:**
 * Including this mod with its texture resources in a modpack requires prior written permission from the texture author.
 * Recipe viewing is supported via JEI.
-* You can add&nbsp;singularity by using json!
-* You can add recipes by CraftTweaker!
-* You can add recipes by KubeJs!
 * If an older NeoForge 26.3 build changed the world spawn, an administrator can restore it with `/setworldspawn <x> <y> <z>` in the original dimension, for example `/execute in minecraft:overworld run setworldspawn 96 -60 -72` for an original Overworld spawn at `(96, -60, -72)`.
 
-## **🔎Wiki:**
-* [Wiki](wiki)
 
-## **🦀Discord:**
+## Discord
+
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
-## **⚙️Develop:**
-### **Singularities:**
-Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
-```json
-{
-  "name": "example:iron",
-  "displayName": "singularity.example.iron",
-  "overlayColor": 14803425,
-  "underlayColor": 7105644,
-  "count": 1000,
-  "timeCost": 240,
-  "ingredient": { "item": "minecraft:iron_ingot" },
-  "enabled": true,
-  "recipeEnabled": true
-}
-```
-The 1.20 aliases `timeRequired`, `recipeDisabled`, and hexadecimal string colors are migrated while loading. To preserve old data, the stored `recipeDisabled` boolean keeps its historical `recipeEnabled` meaning and is not inverted. Datapack and script changes take effect on `/reload`.
+## Develop
 
-### **CraftTweaker:**
-```
-mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
-mods.avaritia.Compressor.remove(output);
-mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.remove(output);
+Use the [Re:Avaritia customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts supported by this branch.
 
-mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnabled);
-mods.avaritia.Singularity.remove("key");
-mods.avaritia.Singularity.removeAll();
-mods.avaritia.Singularity.removeRecipe("key");
-mods.avaritia.Singularity.removeAllRecipe();
-```
-`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged until the current resource reload finishes its script phase and then committed once. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. Script changes take effect only after `/reload`.
+### Singularities and datapacks
 
-### **KubeJs:**
-```javascript
-ServerEvents.recipes(
-    event => {
-        const { avaritia } = event.recipes;
-        avaritia.shaped_table(
-            // shapeless is avaritia.shapeless_table
-            4,
-            "avaritia:infinity_sword",
-            [
-                "       I ",
-                "      III",
-                "     III ",
-                "    III  ",
-                " C III   ",
-                "  CII    ",
-                "  NC     ",
-                " N  C    ",
-                "X        ",
-            ],
-            {
-                C: "avaritia:crystal_matrix_ingot",
-                I: "avaritia:infinity_ingot",
-                N: "avaritia:neutron_ingot",
-                X: "avaritia:infinity_catalyst",
-            }
-        );
-        //compressor
-        avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
-            .timeCost(240)
-            .inputCount(2000);
-        //infinity catalyst
-        avaritia.infinity_catalyst(
-            [
-                "minecraft:emerald_block",
-                "avaritia:crystal_matrix_ingot",
-                "avaritia:neutron_ingot",
-                "avaritia:cosmic_meatballs",
-                "avaritia:ultimate_stew",
-                "avaritia:endest_pearl",
-                "avaritia:record_fragment",
-            ]
-        );
-        console.log('Hello! The avaritia recipe event has fired!')
-    }
-)
-AvaritiaEvents.singularity(event => {
-    event.register("avaritia:example", s => {
-        s
-            .setDisplayName("singularity.avaritia.example")
-            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
-            .setCount(1000)
-            .setTimeCost(200)
-            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
-            .setEnabled(true)
-            .setRecipeEnabled(true)
-    })
-})
-```
-### **InfinityCatalyst:**
-```json5
-{
-  "type": "avaritia:infinity_catalyst",//Infinity Catalyst recipe type
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:emerald_block"
-    },
-    {
-      "item": "avaritia:crystal_matrix_ingot"
-    },
-    {
-      "item": "avaritia:neutron_ingot"
-    },
-    {
-      "item": "avaritia:cosmic_meatballs"
-    },
-    {
-      "item": "avaritia:ultimate_stew"
-    },
-    {
-      "item": "avaritia:endest_pearl"
-    },
-    {
-      "item": "avaritia:record_fragment"
-    }
-  ]
-}
-```
-### **Dependencies:**
-avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+Put definitions in `data/<namespace>/singularities/<path>.json` and match `name` to the file ID. Run `/reload` after edits. [Fields and recipe examples](skills/re-avaritia-datapack/references/datapack.md#singularities)
+
+### KubeJS
+
+This build includes KubeJS hooks. Running them requires KubeJS and Rhino builds compatible with NeoForge 26.3. Put scripts in `kubejs/server_scripts/` when using a matching runtime. [Script API](skills/re-avaritia-datapack/references/scripts.md#kubejs)
+
+### Infinity Catalyst
+
+Use `avaritia:infinity_catalyst` to add a recipe. Group `"default"` includes eligible singularities. [Recipe example](skills/re-avaritia-datapack/references/datapack.md#tiered-crafting-tables)
+
+### Addon dependencies
+
+Place the matching `Re-Avaritia-neoforge-26.3-1.4.4-release.jar` in the addon’s `libs/` directory and add it as a development dependency in the NeoForge project.
+
 ```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/s3"
-    }
-}
-
-dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
-}
+dependencies { implementation files('libs/Re-Avaritia-neoforge-26.3-1.4.4-release.jar') }
 ```
-
-
-
