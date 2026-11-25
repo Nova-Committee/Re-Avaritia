@@ -49,6 +49,7 @@ In the server's `config/avaritia-common.toml`, under `[tools]`, set `sword_attac
 * You can add&nbsp;singularity by using json!
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
+* If an older version changed the server's world spawn to an Infinity Ring dimension, run `/setworldspawn <x> <y> <z>` in the original dimension with the original coordinates. For an Overworld spawn, use `/execute in minecraft:overworld run setworldspawn <x> <y> <z>`.
 
 ## **🔎Wiki:**
 * [Wiki](wiki)

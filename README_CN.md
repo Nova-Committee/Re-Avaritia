@@ -49,6 +49,7 @@
 * 可以利用json自定义奇点!
 * 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
 * 使用KubeJs修改无尽工作台和中子态素压缩机配方!
+* 如果旧版将全服出生点改到了穹宇洞虚之戒维度，请在原维度使用原坐标执行 `/setworldspawn <x> <y> <z>`。原出生点在主世界时，可用 `/execute in minecraft:overworld run setworldspawn <x> <y> <z>`。
 
 ## **🔎文档:**
 * [Wiki](wiki)
