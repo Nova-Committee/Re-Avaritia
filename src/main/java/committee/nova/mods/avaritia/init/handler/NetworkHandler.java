@@ -36,6 +36,14 @@ public class NetworkHandler {
     }, (s) -> {
         return true;
     });
+    private static final String RING_SPAWN_VERSION = "1";
+    public static final SimpleChannel RING_SPAWN = NetworkRegistry.newSimpleChannel(Const.rl("infinity_ring_spawn"),
+            () -> RING_SPAWN_VERSION, NetworkHandler::acceptRingSpawn, NetworkHandler::acceptRingSpawn);
+
+    private static boolean acceptRingSpawn(String version) {
+        return RING_SPAWN_VERSION.equals(version) || NetworkRegistry.ABSENT.version().equals(version);
+    }
+
     public static int id = 0;
     ;
 
@@ -78,7 +86,10 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, S2CNeutronRingPreviewPack.class, S2CNeutronRingPreviewPack::write, S2CNeutronRingPreviewPack::new, S2CNeutronRingPreviewPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SInfinityBucketActionPack.class, C2SInfinityBucketActionPack::write, C2SInfinityBucketActionPack::new, C2SInfinityBucketActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
-
+        RING_SPAWN.registerMessage(0, C2SInfinityRingSpawnPack.class, C2SInfinityRingSpawnPack::write,
+                C2SInfinityRingSpawnPack::new, C2SInfinityRingSpawnPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        RING_SPAWN.registerMessage(1, S2CInfinityRingSpawnPack.class, S2CInfinityRingSpawnPack::write,
+                S2CInfinityRingSpawnPack::new, S2CInfinityRingSpawnPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     public static void sendNbtDataToServer(CompoundTag tag) {

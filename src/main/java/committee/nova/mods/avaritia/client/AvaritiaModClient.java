@@ -81,6 +81,7 @@ public class AvaritiaModClient {
         ModTileEntities.onClientSetup();
         ModSearches.onClientSetup();
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.infinityRingSpawn = InfinityRingControlScreen::acceptSpawn;
         ClientPacketProxy.updateDimensions = InfinityRingClient::applyDimensions;
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
         ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;

@@ -2,7 +2,10 @@ package committee.nova.mods.avaritia.common.dimension;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.misc.InfinityRingItem;
+import committee.nova.mods.avaritia.common.net.C2SInfinityRingSpawnPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
+import committee.nova.mods.avaritia.common.net.S2CInfinityRingSpawnPack;
+import committee.nova.mods.avaritia.common.net.S2CInfinityRingSpawnPack.Result;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -15,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.LevelStem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +97,27 @@ public final class InfinityRingDimensions {
                 target.equals(player.getUUID()));
     }
 
+    public static S2CInfinityRingSpawnPack handleSpawnRequest(ServerPlayer actor, C2SInfinityRingSpawnPack request) {
+        InfinityRingSettings settings = actor.isAlive() ? managedSettings(actor, request.owner()) : null;
+        if (settings == null) {
+            return S2CInfinityRingSpawnPack.reply(request, Result.DENIED, null);
+        }
+        if (!request.save()) {
+            return S2CInfinityRingSpawnPack.reply(request, Result.STATUS, settings.spawn);
+        }
+        if (!actor.level().dimension().equals(InfinityRingKeys.levelKey(request.owner()))) {
+            return S2CInfinityRingSpawnPack.reply(request, Result.DENIED, settings.spawn);
+        }
+        InfinityRingSpawnPoint point = new InfinityRingSpawnPoint(actor.getX(), actor.getY(), actor.getZ(),
+                actor.getYRot(), actor.getXRot());
+        if (!point.isSafe(actor.serverLevel(), actor, false)) {
+            return S2CInfinityRingSpawnPack.reply(request, Result.UNSAFE, settings.spawn);
+        }
+        settings.spawn = point;
+        InfinityRingSavedData.get(actor.server).touch();
+        return S2CInfinityRingSpawnPack.reply(request, Result.SAVED, point);
+    }
+
     /** Backward-compatible overload: structure generation and natural spawning stay enabled. */
     public static boolean create(ServerPlayer player, InfinityRingSettings.Terrain terrain,
                                  InfinityRingSettings.TimeMode time, InfinityRingSettings.WeatherMode weather,
@@ -120,8 +145,11 @@ public final class InfinityRingDimensions {
         settings.access = access;
         settings.generateStructures = generateStructures;
         settings.mobSpawning = mobSpawning;
+        LevelStem stem = DynamicDimensions.stemFor(player.server, terrain, generateStructures);
+        settings.defaultSpawn = defaultSpawn(stem.type().value().minY(), terrain);
+        // Chunk generation consults the owner's natural-spawning setting.
         data.create(player.getUUID(), settings);
-        ServerLevel level = getOrCreateLevel(player.server, player.getUUID());
+        ServerLevel level = DynamicDimensions.getOrCreate(player.server, InfinityRingKeys.levelKey(player.getUUID()), () -> stem);
         if (level == null) {
             data.removeOwner(player.getUUID());
             return false;
@@ -132,15 +160,14 @@ public final class InfinityRingDimensions {
         BlockPos spawn = buildSpawn(level, terrain);
         // Initialize this dimension without a permanent spawn-region ticket or a global broadcast.
         level.serverLevelData.setSpawn(spawn, 0.0F);
-        rememberReturn(player);
-        teleportToPersonalSpawn(player, level);
+        teleportToPersonalSpawn(player, level, settings, true);
         return true;
     }
 
     public static void travelOwn(ServerPlayer player) {
         InfinityRingSavedData data = InfinityRingSavedData.get(player.server);
-        if (!data.hasDimension(player.getUUID())
-                || DynamicDimensions.isClosing(InfinityRingKeys.levelKey(player.getUUID()))) {
+        InfinityRingSettings settings = data.settings(player.getUUID());
+        if (settings == null || DynamicDimensions.isClosing(InfinityRingKeys.levelKey(player.getUUID()))) {
             return;
         }
         if (isPersonal(player.level())
@@ -148,18 +175,14 @@ public final class InfinityRingDimensions {
             teleportReturn(player);
             return;
         }
-        if (!isPersonal(player.level())) {
-            rememberReturn(player);
-        }
         ServerLevel level = getOrCreateLevel(player.server, player.getUUID());
         if (level == null) {
             return;
         }
-        InfinityRingSettings settings = data.settings(player.getUUID());
-        if (level.getLevelData() instanceof PersonalLevelData personal && settings != null) {
+        if (level.getLevelData() instanceof PersonalLevelData personal) {
             personal.apply(settings, player.server.overworld());
         }
-        teleportToPersonalSpawn(player, level);
+        teleportToPersonalSpawn(player, level, settings, !isPersonal(player.level()));
     }
 
     public static boolean visit(ServerPlayer actor, String ownerName) {
@@ -184,15 +207,8 @@ public final class InfinityRingDimensions {
             actor.sendSystemMessage(Component.translatable("message.avaritia.infinity_ring.missing"));
             return false;
         }
-        if (!isPersonal(actor.level())) {
-            rememberReturn(actor);
-        }
         ServerLevel level = getOrCreateLevel(actor.server, owner.get());
-        if (level == null) {
-            return false;
-        }
-        teleportToPersonalSpawn(actor, level);
-        return true;
+        return level != null && teleportToPersonalSpawn(actor, level, settings, !isPersonal(actor.level()));
     }
 
     public static boolean addFriend(ServerPlayer actor, UUID target, String name) {
@@ -483,11 +499,34 @@ public final class InfinityRingDimensions {
         return start;
     }
 
-    private static void teleportToPersonalSpawn(ServerPlayer player, ServerLevel level) {
-        BlockPos spawn = level.getSharedSpawnPos();
-        double y = standingFeetY(level, spawn);
-        player.server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, y, spawn.getZ() + 0.5,
-                player.getYRot(), player.getXRot()));
+    private static boolean teleportToPersonalSpawn(ServerPlayer player, ServerLevel level,
+                                                    InfinityRingSettings settings, boolean trackReturn) {
+        InfinityRingSpawnPoint destination = settings.spawn;
+        if (destination == null || !destination.isSafe(level, player, true)) {
+            InfinityRingSpawnPoint fallback = settings.defaultSpawn;
+            if (fallback == null) {
+                fallback = defaultSpawn(level.getMinBuildHeight(), settings.terrain);
+            }
+            if (fallback.equals(destination) || !fallback.isSafe(level, player, true)) {
+                player.sendSystemMessage(Component.translatable("message.avaritia.infinity_ring.spawn_unavailable"));
+                return false;
+            }
+            if (destination != null) {
+                player.sendSystemMessage(Component.translatable("message.avaritia.infinity_ring.spawn_fallback"));
+            }
+            destination = fallback;
+        }
+        if (trackReturn) {
+            rememberReturn(player);
+        }
+        player.teleportTo(level, destination.x(), destination.y(), destination.z(), destination.yaw(), destination.pitch());
+        return true;
+    }
+
+    private static InfinityRingSpawnPoint defaultSpawn(int minBuildHeight, InfinityRingSettings.Terrain terrain) {
+        int feetY = terrain == InfinityRingSettings.Terrain.FLAT
+                ? minBuildHeight + DynamicDimensions.flatLayerHeight() : SPAWN_ORIGIN.getY() + 1;
+        return new InfinityRingSpawnPoint(0.5, feetY, 0.5, 0.0F, 0.0F);
     }
 
     private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {

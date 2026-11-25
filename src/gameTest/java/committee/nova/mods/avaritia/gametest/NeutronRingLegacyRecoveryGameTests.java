@@ -13,8 +13,8 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +46,7 @@ public final class NeutronRingLegacyRecoveryGameTests {
     @GameTest(template = TEMPLATE, timeoutTicks = 100)
     public static void creativeFullInventoryRetainsRecoveredStacks(GameTestHelper helper) {
         FakePlayer player = player(helper, "NRLegCrea", GameType.CREATIVE);
+        List<UUID> previousDrops = nearbyItemIds(player);
         fillMain(player, new ItemStack(Items.DIRT, 64));
         ItemStack ring = new ItemStack(ModItems.neutron_ring.get());
         ItemStack named = new ItemStack(Items.DIAMOND, 7);
@@ -66,13 +67,14 @@ public final class NeutronRingLegacyRecoveryGameTests {
         helper.assertTrue(escrowOf(player).size() == 1 && escrowOf(player).get(0).getCount() == 7,
                 "repeated recover must not duplicate or destroy escrow");
         helper.assertTrue(countMain(player, Items.DIAMOND) == 0, "retry must not insert into a still-full inventory");
-        assertNoItemDrops(helper, player);
+        assertNoNewItemDrops(helper, player, previousDrops);
         helper.succeed();
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 100)
     public static void survivalPartialCapacityRetainsExactRemainder(GameTestHelper helper) {
         FakePlayer player = player(helper, "NRLegSurv", GameType.SURVIVAL);
+        List<UUID> previousDrops = nearbyItemIds(player);
         fillMain(player, new ItemStack(Items.COBBLESTONE, 64));
         player.getInventory().items.set(0, new ItemStack(Items.DIRT, 60));
         ItemStack ring = new ItemStack(ModItems.neutron_ring.get());
@@ -92,13 +94,14 @@ public final class NeutronRingLegacyRecoveryGameTests {
         helper.assertTrue(countMain(player, Items.DIRT) == 64, "retry without space must not grow inventory");
         helper.assertTrue(escrowOf(player).size() == 1 && escrowOf(player).get(0).getCount() == 12,
                 "retry without space must keep the exact remainder once");
-        assertNoItemDrops(helper, player);
+        assertNoNewItemDrops(helper, player, previousDrops);
         helper.succeed();
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 100)
     public static void freeingCapacityThenDrainReturnsNamedNbtOnce(GameTestHelper helper) {
         FakePlayer player = player(helper, "NRLegFree", GameType.SURVIVAL);
+        List<UUID> previousDrops = nearbyItemIds(player);
         fillMain(player, new ItemStack(Items.DIRT, 64));
         ItemStack ring = new ItemStack(ModItems.neutron_ring.get());
         ItemStack heirloom = new ItemStack(Items.DIAMOND_SWORD);
@@ -128,7 +131,7 @@ public final class NeutronRingLegacyRecoveryGameTests {
         NeutronRingLegacyRecovery.recover(player, ring);
         helper.assertTrue(countNamed(player, HEIRLOOM) == 1 && escrowOf(player).isEmpty(),
                 "later drain must not clone the restored sword");
-        assertNoItemDrops(helper, player);
+        assertNoNewItemDrops(helper, player, previousDrops);
         helper.succeed();
     }
 
@@ -219,10 +222,15 @@ public final class NeutronRingLegacyRecoveryGameTests {
         return ItemStack.EMPTY;
     }
 
-    private static void assertNoItemDrops(GameTestHelper helper, ServerPlayer player) {
-        helper.assertEntityNotPresent(EntityType.ITEM);
+    private static List<UUID> nearbyItemIds(ServerPlayer player) {
         AABB area = player.getBoundingBox().inflate(16.0);
-        List<ItemEntity> nearby = player.serverLevel().getEntities(EntityType.ITEM, area, entity -> true);
-        helper.assertTrue(nearby.isEmpty(), "recovery must not drop leftover stacks into the world");
+        return player.serverLevel().getEntities(EntityType.ITEM, area, entity -> true)
+                .stream().map(Entity::getUUID).toList();
+    }
+
+    private static void assertNoNewItemDrops(GameTestHelper helper, ServerPlayer player, List<UUID> previousDrops) {
+        // Adjacent GameTests can already have dropped items in this search area.
+        helper.assertTrue(previousDrops.containsAll(nearbyItemIds(player)),
+                "recovery must not drop leftover stacks into the world");
     }
 }
