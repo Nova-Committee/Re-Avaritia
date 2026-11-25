@@ -24,10 +24,13 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -276,15 +279,13 @@ public final class InfinityRingControlScreen extends Screen {
                             : "gui.avaritia.infinity_ring.no_matching_players"),
                     playerList.getX() + 4, textY, textW, PortableUi.MUTED);
         }
-        if (spawnFeedback != null && Util.getMillis() < spawnFeedbackUntil) {
-            int y = deleteButton.getY() + BTN_H + GAP;
-            for (var line : font.split(spawnFeedback, deleteButton.getWidth())) {
-                if (y + font.lineHeight > feedbackBottom) {
-                    break;
-                }
-                graphics.drawString(font, line, deleteButton.getX(), y, PortableUi.DANGER, false);
-                y += font.lineHeight + 1;
+        int feedbackY = spawnFeedbackTop();
+        for (var line : spawnFeedbackLines()) {
+            if (feedbackY + font.lineHeight > feedbackBottom) {
+                break;
             }
+            graphics.drawString(font, line, deleteButton.getX(), feedbackY, PortableUi.DANGER, false);
+            feedbackY += font.lineHeight + 1;
         }
         menu.render(graphics, font, mouseX, mouseY);
     }
@@ -340,6 +341,38 @@ public final class InfinityRingControlScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void setTooltipForNextRenderPass(Tooltip tooltip, ClientTooltipPositioner positioner, boolean override) {
+        if (spawnButton == null || tooltip != spawnButton.getTooltip()) {
+            super.setTooltipForNextRenderPass(tooltip, positioner, override);
+            return;
+        }
+
+        int padding = 4;
+        int tooltipWidth = Math.max(1, deleteButton.getWidth() - 2 * padding);
+        var lines = font.split(spawnTooltip(), tooltipWidth);
+        int lineHeight = font.lineHeight + 1;
+        int feedbackEnd = spawnFeedbackTop() + spawnFeedbackLines().size() * lineHeight;
+        int tooltipBottom = feedbackBottom - padding;
+        // Leave space for the frame and give the visible rejection priority in short windows.
+        if (tooltipBottom - lines.size() * lineHeight - padding >= feedbackEnd) {
+            setTooltipForNextRenderPass(lines,
+                    (screenWidth, screenHeight, mouseX, mouseY, width, height) -> new Vector2i(
+                            deleteButton.getX() + padding, tooltipBottom - height), override);
+        }
+    }
+
+    private int spawnFeedbackTop() {
+        return deleteButton.getY() + BTN_H + GAP;
+    }
+
+    private List<FormattedCharSequence> spawnFeedbackLines() {
+        if (spawnFeedback != null && Util.getMillis() < spawnFeedbackUntil) {
+            return font.split(spawnFeedback, deleteButton.getWidth());
+        }
+        return List.of();
     }
 
     private boolean inManagedDimension() {
