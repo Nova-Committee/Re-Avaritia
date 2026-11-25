@@ -42,7 +42,16 @@ public final class DynamicDimensions {
     private static final RegistrationInfo REGISTRATION =
             new RegistrationInfo(Optional.empty(), Lifecycle.stable());
 
+    private static final List<FlatLayerInfo> FLAT_LAYERS = List.of(
+            new FlatLayerInfo(1, Blocks.BEDROCK),
+            new FlatLayerInfo(2, Blocks.DIRT),
+            new FlatLayerInfo(1, Blocks.GRASS_BLOCK));
+
     private DynamicDimensions() {
+    }
+
+    static int flatLayerHeight() {
+        return FLAT_LAYERS.stream().mapToInt(FlatLayerInfo::getHeight).sum();
     }
 
     public static LevelStem voidStem(MinecraftServer server) {
@@ -50,10 +59,7 @@ public final class DynamicDimensions {
     }
 
     public static LevelStem flatStem(MinecraftServer server) {
-        return stem(server, List.of(
-                new FlatLayerInfo(1, Blocks.BEDROCK),
-                new FlatLayerInfo(2, Blocks.DIRT),
-                new FlatLayerInfo(1, Blocks.GRASS_BLOCK)));
+        return stem(server, FLAT_LAYERS);
     }
 
     public static LevelStem stemFor(MinecraftServer server, InfinityRingSettings.Terrain terrain) {

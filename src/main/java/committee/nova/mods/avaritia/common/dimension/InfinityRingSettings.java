@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -64,6 +65,8 @@ public final class InfinityRingSettings {
     public Access access = Access.PRIVATE;
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
+    @Nullable
+    InfinityRingSpawnPoint spawn;
 
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
@@ -71,6 +74,9 @@ public final class InfinityRingSettings {
         tag.putInt("Time", time.ordinal());
         tag.putInt("Weather", weather.ordinal());
         tag.putInt("Access", access.ordinal());
+        if (spawn != null) {
+            tag.put("Spawn", spawn.save());
+        }
         ListTag playerList = new ListTag();
         players.forEach((id, role) -> {
             CompoundTag entry = new CompoundTag();
@@ -93,6 +99,9 @@ public final class InfinityRingSettings {
         settings.time = TimeMode.byId(tag.getInt("Time"));
         settings.weather = WeatherMode.byId(tag.getInt("Weather"));
         settings.access = Access.byId(tag.getInt("Access"));
+        if (tag.contains("Spawn", Tag.TAG_COMPOUND)) {
+            settings.spawn = InfinityRingSpawnPoint.load(tag.getCompound("Spawn"));
+        }
         ListTag playerList = tag.getList("Players", Tag.TAG_COMPOUND);
         for (int i = 0; i < playerList.size(); i++) {
             CompoundTag entry = playerList.getCompound(i);

@@ -86,6 +86,7 @@ public class AvaritiaModClient {
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
         ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.infinityRingSpawn = InfinityRingControlScreen::acceptSpawn;
         ModList.get().getModContainerById(Const.MOD_ID).orElseThrow().registerExtensionPoint(IConfigScreenFactory.class,
                 (container, last) -> new AvaritiaConfigScreen(last));
         ModEntities.onClientSetup();
