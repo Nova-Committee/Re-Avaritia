@@ -70,6 +70,12 @@ public class AvaritiaTagProvider implements DataProvider {
                         itemKey(ModItems.blaze_sword.get())
                 );
 
+                tag(ItemTags.SPEARS).add(
+                        itemKey(ModItems.blaze_spear.get()),
+                        itemKey(ModItems.crystal_spear.get()),
+                        itemKey(ModItems.infinity_spear.get())
+                );
+
                 tag(ItemTags.AXES).add(
                         itemKey(ModItems.infinity_axe.get()),
                         itemKey(ModItems.crystal_axe.get()),
