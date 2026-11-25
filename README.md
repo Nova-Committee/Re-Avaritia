@@ -49,6 +49,7 @@ In the server's `config/avaritia-local.toml`, under `[tools]`, set `sword_attack
 * You can add&nbsp;singularity by using json!
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
+* If an older NeoForge 26.3 build changed the world spawn, an administrator can restore it with `/setworldspawn <x> <y> <z>` in the original dimension, for example `/execute in minecraft:overworld run setworldspawn 96 -60 -72` for an original Overworld spawn at `(96, -60, -72)`.
 
 ## **🔎Wiki:**
 * [Wiki](wiki)

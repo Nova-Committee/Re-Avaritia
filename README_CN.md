@@ -49,6 +49,7 @@
 * 可以利用json自定义奇点!
 * 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
 * 使用KubeJs修改无尽工作台和中子态素压缩机配方!
+* 若旧版 NeoForge 26.3 改写了全服出生点，管理员可在原维度用 `/setworldspawn <x> <y> <z>` 恢复原坐标，例如原点为主世界 `(96, -60, -72)` 时执行 `/execute in minecraft:overworld run setworldspawn 96 -60 -72`。
 
 ## **🔎文档:**
 * [Wiki](wiki)
