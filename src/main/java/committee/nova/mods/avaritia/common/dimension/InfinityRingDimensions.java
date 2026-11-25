@@ -113,12 +113,12 @@ public final class InfinityRingDimensions {
         settings.time = time;
         settings.weather = weather;
         settings.access = access;
-        data.create(player.getUUID(), settings);
-        ServerLevel level = getOrCreateLevel(server, player.getUUID());
+        ServerLevel level = getOrCreateLevel(server, player.getUUID(), terrain);
         if (level.getLevelData() instanceof PersonalLevelData personal) {
             personal.apply(settings, server.overworld(), level);
         }
         settings.spawn = Optional.of(buildSpawn(level, terrain));
+        data.create(player.getUUID(), settings);
         rememberReturn(player);
         teleportToPersonalSpawn(player, level, settings);
         return true;
@@ -315,6 +315,10 @@ public final class InfinityRingDimensions {
     public static ServerLevel getOrCreateLevel(MinecraftServer server, UUID owner) {
         InfinityRingSettings settings = InfinityRingSavedData.get(server).settings(owner);
         InfinityRingSettings.Terrain terrain = settings == null ? InfinityRingSettings.Terrain.VOID : settings.terrain;
+        return getOrCreateLevel(server, owner, terrain);
+    }
+
+    private static ServerLevel getOrCreateLevel(MinecraftServer server, UUID owner, InfinityRingSettings.Terrain terrain) {
         return DynamicDimensions.getOrCreate(server, InfinityRingKeys.levelKey(owner),
                 () -> DynamicDimensions.stemFor(server, terrain));
     }
