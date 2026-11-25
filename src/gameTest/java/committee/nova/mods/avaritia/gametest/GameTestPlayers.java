@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.gametest;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.NameAndId;
@@ -33,6 +34,11 @@ public final class GameTestPlayers {
     public static FakePlayer occupy(GameTestHelper helper, String name) {
         ServerLevel level = helper.getLevel();
         FakePlayer player = create(helper, name);
+        // Level changes query channel attributes even for NeoForge's shared fake connection.
+        var connection = player.connection.getConnection();
+        if (connection.channel() == null) {
+            new EmbeddedChannel(connection);
+        }
         level.getServer().services().nameToIdCache().add(new NameAndId(player.getGameProfile()));
         if (!level.players().contains(player)) {
             level.addNewPlayer(player);

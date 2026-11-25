@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.dimension;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -74,7 +76,9 @@ public final class InfinityRingSettings {
             Codec.INT.optionalFieldOf("access", Access.PRIVATE.ordinal()).forGetter(settings -> settings.access.ordinal()),
             PLAYER_CODEC.listOf().optionalFieldOf("players", List.of()).forGetter(InfinityRingSettings::playerEntries),
             UUIDUtil.CODEC.listOf().optionalFieldOf("banned", List.of()).forGetter(settings -> List.copyOf(settings.banned)),
-            UUIDUtil.CODEC.listOf().optionalFieldOf("friends", List.of()).forGetter(settings -> List.of())
+            UUIDUtil.CODEC.listOf().optionalFieldOf("friends", List.of()).forGetter(settings -> List.of()),
+            BlockPos.CODEC.optionalFieldOf("spawn").forGetter(settings -> settings.spawn),
+            InfinityRingSpawnPoint.CODEC.optionalFieldOf("custom_spawn").forGetter(settings -> settings.customSpawn)
     ).apply(instance, InfinityRingSettings::fromCodec));
 
     public Terrain terrain = Terrain.VOID;
@@ -83,14 +87,19 @@ public final class InfinityRingSettings {
     public Access access = Access.PRIVATE;
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
+    Optional<BlockPos> spawn = Optional.empty();
+    public Optional<InfinityRingSpawnPoint> customSpawn = Optional.empty();
 
     private static InfinityRingSettings fromCodec(int terrain, int time, int weather, int access,
-                                                 List<PlayerRole> players, List<UUID> banned, List<UUID> friends) {
+                                                 List<PlayerRole> players, List<UUID> banned, List<UUID> friends,
+                                                  Optional<BlockPos> spawn, Optional<InfinityRingSpawnPoint> customSpawn) {
         InfinityRingSettings settings = new InfinityRingSettings();
         settings.terrain = Terrain.byId(terrain);
         settings.time = TimeMode.byId(time);
         settings.weather = WeatherMode.byId(weather);
         settings.access = Access.byId(access);
+        settings.spawn = spawn;
+        settings.customSpawn = customSpawn;
         for (PlayerRole player : players) {
             settings.players.put(player.id(), Role.byId(player.role()));
         }

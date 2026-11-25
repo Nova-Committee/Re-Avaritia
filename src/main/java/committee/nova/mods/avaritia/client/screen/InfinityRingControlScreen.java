@@ -5,9 +5,13 @@ import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingKeys;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingSpawnPoint;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
+import committee.nova.mods.avaritia.common.net.C2SInfinityRingSpawnPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
+import committee.nova.mods.avaritia.common.net.S2CInfinityRingSpawnPack;
 import committee.nova.mods.avaritia.common.net.S2CUpdateDimensionsPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
@@ -26,9 +30,12 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -45,6 +52,8 @@ public final class InfinityRingControlScreen extends Screen {
     private static final int FOOTER_H = 24;
     private static final int BTN_H = 20;
     private static final int GAP = 3;
+    private static final long SPAWN_FEEDBACK_MS = 5000;
+    private static final String SPAWN_KEY = "gui.avaritia.infinity_ring.spawn.";
 
     private int time;
     private int weather;
@@ -59,6 +68,17 @@ public final class InfinityRingControlScreen extends Screen {
     private double listScroll;
     private ScreenRectangle panel;
     private ScreenRectangle roster;
+    private ScreenRectangle spawnDetails;
+    @Nullable
+    private Button spawnButton;
+    @Nullable
+    private UUID pendingSpawnRequest;
+    @Nullable
+    private InfinityRingSpawnPoint spawn;
+    @Nullable
+    private Component spawnFeedback;
+    private long spawnFeedbackUntil;
+    private boolean spawnReady;
 
     @Nullable
     private PlayerList playerList;
@@ -99,6 +119,26 @@ public final class InfinityRingControlScreen extends Screen {
                 packet.owner(), packet.canDelete()));
     }
 
+    public static void acceptSpawn(S2CInfinityRingSpawnPack packet) {
+        Screen root = PortableUi.root(Minecraft.getInstance().screen);
+        if (!(root instanceof InfinityRingControlScreen screen) || !screen.owner.equals(packet.owner())
+                || !packet.request().equals(screen.pendingSpawnRequest)) {
+            return;
+        }
+        screen.pendingSpawnRequest = null;
+        if (packet.result() != S2CInfinityRingSpawnPack.Result.DENIED) {
+            screen.spawn = packet.spawn().orElse(null);
+            screen.spawnReady = true;
+        }
+        switch (packet.result()) {
+            case SAVED -> screen.spawnFeedback = null;
+            case UNSAFE -> screen.showSpawnFailure("unsafe");
+            case DENIED -> screen.showSpawnFailure("denied");
+            case STATUS -> { }
+        }
+        screen.updateSpawnButton();
+    }
+
     public static void applyKnownLevels(S2CUpdateDimensionsPack packet) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
@@ -129,6 +169,9 @@ public final class InfinityRingControlScreen extends Screen {
             menuRole = null;
         }
         rebuildWidgets();
+        if (spawnButton != null) {
+            requestSpawn(false);
+        }
     }
 
     @Override
@@ -165,11 +208,16 @@ public final class InfinityRingControlScreen extends Screen {
         int footerY = panelY + panelH - FOOTER_H;
         int contentH = Math.max(48, footerY - contentY - GAP);
         int colGap = 6;
+        boolean spawnSupported = supportsSpawn();
+        Component spawnLabel = Component.translatable(SPAWN_KEY + "set_here");
         int leftW = Math.min(168, Math.max(120, (innerW - colGap) / 2));
+        if (spawnSupported) {
+            leftW = Math.max(leftW, font.width(spawnLabel) + 12);
+        }
         int listW = Math.max(80, innerW - leftW - colGap);
         leftW = innerW - listW - colGap;
         int listX = innerX + leftW + colGap;
-        int rows = 4;
+        int rows = spawnSupported ? 5 : 4;
         int rowGap = Math.max(1, Math.min(GAP, (contentH - rows * BTN_H) / Math.max(1, rows - 1)));
         GridLayout left = new GridLayout(innerX, contentY);
         left.rowSpacing(rowGap);
@@ -191,13 +239,27 @@ public final class InfinityRingControlScreen extends Screen {
                     access = value.ordinal();
                     sendModes();
                 }), 2, 0);
+        spawnButton = null;
+        if (spawnSupported) {
+            spawnButton = UiInspector.name(PortableUi.button(0, 0, leftW, BTN_H, spawnLabel,
+                    button -> requestSpawn(true)), "ring.control.spawn");
+            left.addChild(spawnButton, 3, 0);
+        }
         Button delete = PortableUi.dangerButton(0, 0, leftW, BTN_H,
                 Component.translatable("gui.avaritia.infinity_ring.delete"),
                 button -> confirmDelete());
         delete.active = canDelete;
-        left.addChild(UiInspector.name(delete, "ring.control.delete"), 3, 0);
+        left.addChild(UiInspector.name(delete, "ring.control.delete"), rows - 1, 0);
         left.arrangeElements();
         left.visitWidgets(this::addRenderableWidget);
+        if (spawnButton != null) {
+            int detailsY = left.getY() + left.getHeight() + GAP;
+            spawnDetails = new ScreenRectangle(innerX, detailsY, leftW, Math.max(0, footerY - detailsY));
+            updateSpawnButton();
+            if (!spawnReady && spawnFeedback == null) {
+                requestSpawn(false);
+            }
+        }
 
         int doneW = 80;
         addRenderableWidget(UiInspector.name(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, BTN_H,
@@ -241,6 +303,9 @@ public final class InfinityRingControlScreen extends Screen {
                             ? "gui.avaritia.infinity_ring.empty_players"
                             : "gui.avaritia.infinity_ring.no_matching_players"),
                     playerList.getX() + 4, textY, textW, PortableUi.MUTED);
+        }
+        if (spawnButton != null) {
+            renderSpawnDetails(graphics, mouseX, mouseY);
         }
         menu.render(graphics, font, mouseX, mouseY);
     }
@@ -304,6 +369,74 @@ public final class InfinityRingControlScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private boolean supportsSpawn() {
+        var connection = Minecraft.getInstance().getConnection();
+        return connection != null && C2SInfinityRingSpawnPack.supported(connection);
+    }
+
+    private void requestSpawn(boolean save) {
+        if (pendingSpawnRequest != null || !supportsSpawn()) {
+            return;
+        }
+        var level = Minecraft.getInstance().level;
+        if (save && (level == null || !level.dimension().equals(InfinityRingKeys.levelKey(owner)))) {
+            showSpawnFailure("inside");
+            return;
+        }
+        pendingSpawnRequest = UUID.randomUUID();
+        NetworkHandler.sendToServer(new C2SInfinityRingSpawnPack(owner, pendingSpawnRequest, save));
+        updateSpawnButton();
+    }
+
+    private void showSpawnFailure(String reason) {
+        spawnFeedback = Component.translatable(SPAWN_KEY + reason);
+        spawnFeedbackUntil = Util.getMillis() + SPAWN_FEEDBACK_MS;
+    }
+
+    private Component spawnStatus() {
+        if (pendingSpawnRequest != null || !spawnReady) {
+            return Component.translatable(SPAWN_KEY + "waiting");
+        }
+        return spawn == null ? Component.translatable(SPAWN_KEY + "default")
+                : Component.translatable(SPAWN_KEY + "position", coordinate(spawn.x()), coordinate(spawn.y()), coordinate(spawn.z()));
+    }
+
+    private void updateSpawnButton() {
+        if (spawnButton != null) {
+            spawnButton.active = pendingSpawnRequest == null;
+        }
+    }
+
+    private void renderSpawnDetails(GuiGraphics graphics, int mouseX, int mouseY) {
+        int y = spawnDetails.top();
+        if (spawnFeedback != null && Util.getMillis() < spawnFeedbackUntil) {
+            for (var line : font.split(spawnFeedback, spawnDetails.width())) {
+                if (y + font.lineHeight > spawnDetails.bottom()) {
+                    break;
+                }
+                graphics.drawString(font, line, spawnDetails.left(), y, PortableUi.DANGER, false);
+                y += font.lineHeight;
+            }
+        }
+        boolean keyboardFocus = spawnButton.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
+        if (menu.isOpen() || (!spawnButton.isHovered() && !keyboardFocus)) {
+            return;
+        }
+        // Keep the tooltip frame inside the left column, below both buttons and rejection feedback.
+        int padding = 8;
+        List<FormattedCharSequence> lines = font.split(spawnStatus(), Math.max(1, spawnDetails.width() - padding * 2));
+        int bottom = spawnDetails.bottom() - padding;
+        if (bottom - lines.size() * (font.lineHeight + 1) - padding >= y) {
+            graphics.setTooltipForNextFrame(font, lines,
+                    (screenWidth, screenHeight, x, mouse, width, height) ->
+                            new Vector2i(spawnDetails.left() + padding, bottom - height), mouseX, mouseY, false);
+        }
+    }
+
+    private static String coordinate(double value) {
+        return String.format(Locale.ROOT, "%.2f", value);
     }
 
     private void sendModes() {
