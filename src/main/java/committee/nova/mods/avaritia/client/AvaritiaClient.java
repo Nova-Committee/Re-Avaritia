@@ -291,6 +291,7 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.infinityRingSpawn = InfinityRingControlScreen::acceptSpawn;
         ClientPacketProxy.updateDimensions = InfinityRingControlScreen::applyKnownLevels;
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
         ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
