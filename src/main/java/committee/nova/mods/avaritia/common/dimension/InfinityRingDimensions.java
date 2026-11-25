@@ -146,7 +146,7 @@ public final class InfinityRingDimensions {
         settings.generateStructures = generateStructures;
         settings.mobSpawning = mobSpawning;
         LevelStem stem = DynamicDimensions.stemFor(player.server, terrain, generateStructures);
-        settings.spawn = defaultSpawn(stem.type().value().minY(), terrain);
+        settings.defaultSpawn = defaultSpawn(stem.type().value().minY(), terrain);
         // Chunk generation consults the owner's natural-spawning setting.
         data.create(player.getUUID(), settings);
         ServerLevel level = DynamicDimensions.getOrCreate(player.server, InfinityRingKeys.levelKey(player.getUUID()), () -> stem);
@@ -503,7 +503,10 @@ public final class InfinityRingDimensions {
                                                     InfinityRingSettings settings, boolean trackReturn) {
         InfinityRingSpawnPoint destination = settings.spawn;
         if (destination == null || !destination.isSafe(level, player, true)) {
-            InfinityRingSpawnPoint fallback = defaultSpawn(level.getMinBuildHeight(), settings.terrain);
+            InfinityRingSpawnPoint fallback = settings.defaultSpawn;
+            if (fallback == null) {
+                fallback = defaultSpawn(level.getMinBuildHeight(), settings.terrain);
+            }
             if (fallback.equals(destination) || !fallback.isSafe(level, player, true)) {
                 player.sendSystemMessage(Component.translatable("message.avaritia.infinity_ring.spawn_unavailable"));
                 return false;
