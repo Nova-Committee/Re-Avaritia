@@ -136,8 +136,8 @@ public final class InfinityRingDimensions {
         if (level.getLevelData() instanceof PersonalLevelData personal) {
             personal.apply(settings, player.server.overworld());
         }
-        settings.spawn = defaultSpawn(level, terrain);
-        buildSpawnPlatform(level, terrain, settings.spawn);
+        settings.defaultSpawn = defaultSpawn(level, terrain);
+        buildSpawnPlatform(level, terrain, settings.defaultSpawn);
         data.create(player.getUUID(), settings);
         teleportToPersonalSpawn(player, level, settings, true);
         return true;
@@ -412,9 +412,12 @@ public final class InfinityRingDimensions {
 
     private static boolean teleportToPersonalSpawn(ServerPlayer player, ServerLevel level,
                                                     InfinityRingSettings settings, boolean trackReturn) {
-        InfinityRingSpawnPoint fallback = defaultSpawn(level, settings.terrain);
         InfinityRingSpawnPoint destination = settings.spawn;
         if (destination == null || !destination.isSafe(level, player, true)) {
+            InfinityRingSpawnPoint fallback = settings.defaultSpawn;
+            if (fallback == null) {
+                fallback = defaultSpawn(level, settings.terrain);
+            }
             if (fallback.equals(destination) || !fallback.isSafe(level, player, true)) {
                 player.sendSystemMessage(Component.translatable("message.avaritia.infinity_ring.spawn_unavailable"));
                 return false;

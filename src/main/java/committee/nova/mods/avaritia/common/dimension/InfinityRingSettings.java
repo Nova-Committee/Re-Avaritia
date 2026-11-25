@@ -66,6 +66,8 @@ public final class InfinityRingSettings {
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
     @Nullable
+    InfinityRingSpawnPoint defaultSpawn;
+    @Nullable
     InfinityRingSpawnPoint spawn;
 
     public CompoundTag save() {
@@ -74,6 +76,9 @@ public final class InfinityRingSettings {
         tag.putInt("Time", time.ordinal());
         tag.putInt("Weather", weather.ordinal());
         tag.putInt("Access", access.ordinal());
+        if (defaultSpawn != null) {
+            tag.put("DefaultSpawn", defaultSpawn.save());
+        }
         if (spawn != null) {
             tag.put("Spawn", spawn.save());
         }
@@ -99,6 +104,9 @@ public final class InfinityRingSettings {
         settings.time = TimeMode.byId(tag.getInt("Time"));
         settings.weather = WeatherMode.byId(tag.getInt("Weather"));
         settings.access = Access.byId(tag.getInt("Access"));
+        if (tag.contains("DefaultSpawn", Tag.TAG_COMPOUND)) {
+            settings.defaultSpawn = InfinityRingSpawnPoint.load(tag.getCompound("DefaultSpawn"));
+        }
         if (tag.contains("Spawn", Tag.TAG_COMPOUND)) {
             settings.spawn = InfinityRingSpawnPoint.load(tag.getCompound("Spawn"));
         }
