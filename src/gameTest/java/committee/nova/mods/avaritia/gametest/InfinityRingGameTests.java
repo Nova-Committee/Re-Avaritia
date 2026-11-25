@@ -5,6 +5,9 @@ import committee.nova.mods.avaritia.common.dimension.InfinityRingDimensions;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingKeys;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSavedData;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
+import committee.nova.mods.avaritia.common.dimension.InfinityRingSpawnPoint;
+import committee.nova.mods.avaritia.common.net.C2SInfinityRingSpawnPack;
+import committee.nova.mods.avaritia.common.net.S2CInfinityRingSpawnPack.Result;
 import committee.nova.mods.avaritia.init.handler.AbilityHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
@@ -48,6 +51,9 @@ public final class InfinityRingGameTests {
     private static final Identifier DELETE_RECREATE = Const.rl("infinity_ring_delete_and_recreate");
     private static final Identifier FLIGHT = Const.rl("infinity_ring_flight_owned_then_revoked");
 
+    private static final Identifier SPAWN_REQUEST = Const.rl("infinity_ring_spawn_request");
+    private static final Identifier SPAWN_SAFETY = Const.rl("infinity_ring_spawn_safety");
+
     private InfinityRingGameTests() {
     }
 
@@ -60,6 +66,8 @@ public final class InfinityRingGameTests {
         event.register(Registries.TEST_FUNCTION, EVICT_BAN, () -> InfinityRingGameTests::banEvictsOccupant);
         event.register(Registries.TEST_FUNCTION, DELETE_RECREATE, () -> InfinityRingGameTests::deleteUnregistersThenRecreateWorks);
         event.register(Registries.TEST_FUNCTION, FLIGHT, () -> InfinityRingGameTests::personalFlightGrantedThenRevokedWithoutChest);
+        event.register(Registries.TEST_FUNCTION, SPAWN_REQUEST, () -> InfinityRingGameTests::spawnRequestRequiresAuthorityAndTargetLevel);
+        event.register(Registries.TEST_FUNCTION, SPAWN_SAFETY, () -> InfinityRingGameTests::spawnSafetyChecksStandingBody);
     }
 
     @SubscribeEvent
@@ -73,6 +81,8 @@ public final class InfinityRingGameTests {
         register(event, EVICT_BAN, environment);
         register(event, DELETE_RECREATE, environment);
         register(event, FLIGHT, environment);
+        register(event, SPAWN_REQUEST, environment);
+        register(event, SPAWN_SAFETY, environment);
     }
 
     private static void register(RegisterGameTestsEvent event, Identifier id,
@@ -116,10 +126,14 @@ public final class InfinityRingGameTests {
         ServerPlayer owner = survivalWithRing(helper);
         BlockPos origin = helper.absolutePos(new BlockPos(4, 2, 4));
         owner.snapTo(origin.getX() + 0.5, origin.getY(), origin.getZ() + 0.5, 33.0F, 7.0F);
+        var overworldData = owner.level().getServer().getWorldData().overworldData();
+        var worldSpawn = overworldData.getRespawnData();
         helper.assertTrue(InfinityRingDimensions.create(owner,
                 InfinityRingSettings.Terrain.VOID, InfinityRingSettings.TimeMode.DAY,
                 InfinityRingSettings.WeatherMode.CLEAR, InfinityRingSettings.Access.PRIVATE),
                 "owner should create a personal dimension");
+        helper.assertTrue(overworldData.getRespawnData().equals(worldSpawn),
+                "creating a ring dimension must preserve the world's respawn data");
         helper.runAtTickTime(1, () -> {
             ResourceKey<Level> personal = InfinityRingKeys.levelKey(owner.getUUID());
             helper.assertTrue(owner.level().dimension().equals(personal), "create should move the owner into the personal dim");
@@ -147,7 +161,7 @@ public final class InfinityRingGameTests {
                 "owner should create a public personal dimension");
         helper.runAtTickTime(1, () -> {
             ServerLevel personal = personalLevel(helper, owner.getUUID());
-            enterPersonal(visitor, personal);
+            enterPersonal(visitor, personal, owner.blockPosition());
             helper.assertTrue(visitor.level().dimension().equals(personal.dimension()),
                     "visitor should occupy the public personal dim");
             InfinityRingDimensions.updateModes(owner, owner.getUUID(),
@@ -171,7 +185,7 @@ public final class InfinityRingGameTests {
                 "owner should create a public personal dimension");
         helper.runAtTickTime(1, () -> {
             ServerLevel personal = personalLevel(helper, owner.getUUID());
-            enterPersonal(visitor, personal);
+            enterPersonal(visitor, personal, owner.blockPosition());
             helper.assertTrue(visitor.level().dimension().equals(personal.dimension()),
                     "visitor should occupy the public personal dim");
             InfinityRingSettings settings = InfinityRingSavedData.get(owner.level().getServer()).settings(owner.getUUID());
@@ -241,6 +255,71 @@ public final class InfinityRingGameTests {
         });
     }
 
+    private static void spawnRequestRequiresAuthorityAndTargetLevel(GameTestHelper helper) {
+        ServerPlayer owner = survivalWithRing(helper);
+        ServerPlayer visitor = survivalWithRing(helper);
+        UUID ownerId = owner.getUUID();
+        UUID visitorId = visitor.getUUID();
+        var request = new C2SInfinityRingSpawnPack(ownerId, UUID.randomUUID(), true);
+        helper.assertTrue(InfinityRingDimensions.create(owner, InfinityRingSettings.Terrain.VOID,
+                InfinityRingSettings.TimeMode.DAY, InfinityRingSettings.WeatherMode.CLEAR,
+                InfinityRingSettings.Access.PUBLIC), "owner should create a public personal dimension");
+        helper.runAtTickTime(1, () -> {
+            ServerLevel personal = personalLevel(helper, ownerId);
+            var settings = InfinityRingSavedData.get(personal.getServer()).settings(ownerId);
+            settings.players.put(visitorId, InfinityRingSettings.Role.ADMIN);
+            helper.assertTrue(InfinityRingDimensions.handleSpawnRequest(visitor, request).result() == Result.DENIED,
+                    "a remote administrator must be denied outside the target level");
+            enterPersonal(visitor, personal, owner.blockPosition());
+            settings.players.put(visitorId, InfinityRingSettings.Role.VISITOR);
+            helper.assertTrue(InfinityRingDimensions.handleSpawnRequest(visitor, request).result() == Result.DENIED,
+                    "a visitor standing on the platform must be denied without management authority");
+            helper.assertTrue(settings.customSpawn.isEmpty(), "denied requests must leave the default spawn selected");
+
+            settings.players.put(visitorId, InfinityRingSettings.Role.ADMIN);
+            visitor.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            visitor.getInventory().setItem(9, new ItemStack(ModItems.infinity_ring.get()));
+            helper.assertTrue(InfinityRingDimensions.handleSpawnRequest(visitor, request).result() == Result.DENIED,
+                    "a ring in the backpack alone must not authorize saving");
+            visitor.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.infinity_ring.get()));
+            BlockPos feet = new BlockPos(5, 65, 5);
+            personal.getChunkAt(feet);
+            personal.setBlockAndUpdate(feet.below(), Blocks.STONE.defaultBlockState());
+            var point = new InfinityRingSpawnPoint(feet.getX() + 0.43, feet.getY(), feet.getZ() + 0.61, -137.0F, 27.0F);
+            visitor.snapTo(point.x(), point.y(), point.z(), point.yaw(), point.pitch());
+            helper.assertTrue(visitor.level() == personal && visitor.isAlive()
+                    && point.isSafe(personal, visitor, false), "administrator fixture must stand safely in the target level");
+            var saved = InfinityRingDimensions.handleSpawnRequest(visitor, request);
+            helper.assertTrue(saved.result() == Result.SAVED && saved.request().equals(request.request())
+                            && settings.customSpawn.filter(point::equals).isPresent(),
+                    "an administrator holding the ring offhand should save the exact server feet and view");
+            personal.setBlockAndUpdate(feet.below(), Blocks.MAGMA_BLOCK.defaultBlockState());
+            helper.assertTrue(InfinityRingDimensions.handleSpawnRequest(visitor, request).result() == Result.UNSAFE
+                            && settings.customSpawn.filter(point::equals).isPresent(),
+                    "hazardous support must not replace the last saved point");
+            cleanup(owner);
+            helper.succeed();
+        });
+    }
+
+    private static void spawnSafetyChecksStandingBody(GameTestHelper helper) {
+        ServerPlayer player = survivalWithRing(helper);
+        BlockPos floor = new BlockPos(4, 2, 4);
+        helper.setBlock(floor, Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.BOTTOM));
+        helper.setBlock(floor.above(), Blocks.AIR);
+        helper.setBlock(floor.above(2), Blocks.AIR);
+        BlockPos absolute = helper.absolutePos(floor);
+        var point = new InfinityRingSpawnPoint(absolute.getX() + 0.45, absolute.getY() + 0.5,
+                absolute.getZ() + 0.6, 35.0F, -20.0F);
+        helper.assertTrue(point.isSafe(helper.getLevel(), player, true), "a bottom slab should support fractional feet");
+        helper.setBlock(floor.above(2), Blocks.STONE);
+        helper.assertTrue(!point.isSafe(helper.getLevel(), player, true), "the whole standing body must clear the ceiling");
+        helper.setBlock(floor.above(2), Blocks.AIR);
+        helper.setBlock(floor.above(), Blocks.WATER);
+        helper.assertTrue(!point.isSafe(helper.getLevel(), player, true), "liquid intersecting the body must be rejected");
+        helper.succeed();
+    }
+
     private static ServerPlayer survivalWithRing(GameTestHelper helper) {
         ServerPlayer player = GameTestPlayers.occupy(helper, "AvaritiaRing-" + UUID.randomUUID().toString().substring(0, 8));
         player.setGameMode(GameType.SURVIVAL);
@@ -259,10 +338,9 @@ public final class InfinityRingGameTests {
         return level;
     }
 
-    private static void enterPersonal(ServerPlayer visitor, ServerLevel personal) {
-        BlockPos spawn = personal.getRespawnData().pos();
-        double y = InfinityRingDimensions.standingFeetY(personal, spawn);
-        visitor.teleportTo(personal, spawn.getX() + 0.5, y, spawn.getZ() + 0.5, Set.of(), visitor.getYRot(), visitor.getXRot(), false);
+    private static void enterPersonal(ServerPlayer visitor, ServerLevel personal, BlockPos feet) {
+        visitor.teleportTo(personal, feet.getX() + 0.5, feet.getY(), feet.getZ() + 0.5,
+                Set.of(), visitor.getYRot(), visitor.getXRot(), false);
     }
 
     private static void tickFlight(ServerPlayer player) {
