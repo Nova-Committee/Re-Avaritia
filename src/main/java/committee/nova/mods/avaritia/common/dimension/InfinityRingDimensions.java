@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.LevelData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,17 +118,17 @@ public final class InfinityRingDimensions {
         if (level.getLevelData() instanceof PersonalLevelData personal) {
             personal.apply(settings, server.overworld(), level);
         }
-        BlockPos spawn = buildSpawn(level, terrain);
-        level.setRespawnData(LevelData.RespawnData.of(level.dimension(), spawn, 0.0F, 0.0F));
+        settings.spawn = Optional.of(buildSpawn(level, terrain));
         rememberReturn(player);
-        teleportToPersonalSpawn(player, level);
+        teleportToPersonalSpawn(player, level, settings);
         return true;
     }
 
     public static void travelOwn(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
         InfinityRingSavedData data = InfinityRingSavedData.get(server);
-        if (!data.hasDimension(player.getUUID())) {
+        InfinityRingSettings settings = data.settings(player.getUUID());
+        if (settings == null) {
             return;
         }
         if (isPersonal(player.level())
@@ -141,11 +140,10 @@ public final class InfinityRingDimensions {
             rememberReturn(player);
         }
         ServerLevel level = getOrCreateLevel(server, player.getUUID());
-        InfinityRingSettings settings = data.settings(player.getUUID());
-        if (level.getLevelData() instanceof PersonalLevelData personal && settings != null) {
+        if (level.getLevelData() instanceof PersonalLevelData personal) {
             personal.apply(settings, server.overworld(), level);
         }
-        teleportToPersonalSpawn(player, level);
+        teleportToPersonalSpawn(player, level, settings);
     }
 
     public static boolean visit(ServerPlayer actor, String ownerName) {
@@ -171,7 +169,7 @@ public final class InfinityRingDimensions {
             rememberReturn(actor);
         }
         ServerLevel level = getOrCreateLevel(server, owner.get());
-        teleportToPersonalSpawn(actor, level);
+        teleportToPersonalSpawn(actor, level, settings);
         return true;
     }
 
@@ -450,22 +448,27 @@ public final class InfinityRingDimensions {
         return start;
     }
 
-    private static void teleportToPersonalSpawn(ServerPlayer player, ServerLevel level) {
+    private static void teleportToPersonalSpawn(ServerPlayer player, ServerLevel level, InfinityRingSettings settings) {
         MinecraftServer server = player.level().getServer();
-        BlockPos spawn = level.getRespawnData().pos();
+        BlockPos spawn = settings.spawn.orElseGet(() -> defaultSpawn(level, settings.terrain));
         double y = standingFeetY(level, spawn);
         server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, y, spawn.getZ() + 0.5,
                 Set.of(), player.getYRot(), player.getXRot(), false));
     }
 
-    private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
+    private static BlockPos defaultSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
         if (terrain == InfinityRingSettings.Terrain.FLAT) {
-            BlockPos origin = BlockPos.ZERO;
-            level.getChunkAt(origin);
-            int feet = (int) Math.floor(standingFeetY(level, origin));
+            int feet = (int) Math.floor(standingFeetY(level, BlockPos.ZERO));
             return new BlockPos(0, Math.max(level.getMinY(), feet - 1), 0);
         }
-        BlockPos origin = new BlockPos(0, 64, 0);
+        return new BlockPos(0, 64, 0);
+    }
+
+    private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
+        BlockPos origin = defaultSpawn(level, terrain);
+        if (terrain == InfinityRingSettings.Terrain.FLAT) {
+            return origin;
+        }
         if (terrain == InfinityRingSettings.Terrain.VOID) {
             placePlatform(level, origin, 2);
             return origin;
