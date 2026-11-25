@@ -36,6 +36,7 @@ public final class AvaritiaModClient implements ClientModInitializer {
     @Override public void onInitializeClient() {
         NetworkClientPackets.initialize();
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
+        ClientPacketProxy.infinityRingSpawn = InfinityRingControlScreen::acceptSpawn;
         ClientPacketProxy.updateDimensions = InfinityRingClient::applyDimensions;
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
         ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;

@@ -41,6 +41,11 @@ import java.util.function.Supplier;
 public final class DynamicDimensions {
     private static final ConcurrentHashMap<ResourceKey<Level>, CompletableFuture<Boolean>> CLOSING = new ConcurrentHashMap<>();
 
+    private static final List<FlatLayerInfo> FLAT_LAYERS = List.of(
+            new FlatLayerInfo(1, Blocks.BEDROCK),
+            new FlatLayerInfo(2, Blocks.DIRT),
+            new FlatLayerInfo(1, Blocks.GRASS_BLOCK));
+
     private DynamicDimensions() {
     }
 
@@ -49,10 +54,11 @@ public final class DynamicDimensions {
     }
 
     public static LevelStem flatStem(MinecraftServer server) {
-        return stem(server, List.of(
-                new FlatLayerInfo(1, Blocks.BEDROCK),
-                new FlatLayerInfo(2, Blocks.DIRT),
-                new FlatLayerInfo(1, Blocks.GRASS_BLOCK)));
+        return stem(server, FLAT_LAYERS);
+    }
+
+    static int flatLayerHeight() {
+        return FLAT_LAYERS.stream().mapToInt(FlatLayerInfo::getHeight).sum();
     }
 
     public static LevelStem stemFor(MinecraftServer server, InfinityRingSettings.Terrain terrain) {

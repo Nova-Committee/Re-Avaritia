@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 
 public final class NetworkHandler {
     public static final NetBaseHandler CHANNEL = new NetBaseHandler(Const.rl("main"));
+    public static final NetBaseHandler RING_SPAWN = new NetBaseHandler(Const.rl("infinity_ring_spawn"));
     private static final ThreadLocal<Consumer<FriendlyByteBuf>> OPENING_DATA = new ThreadLocal<>();
     private static boolean initialized;
     private NetworkHandler() {}
@@ -54,6 +55,10 @@ public final class NetworkHandler {
         CHANNEL.register(S2CNeutronRingPreviewPack.class, S2CNeutronRingPreviewPack::write, S2CNeutronRingPreviewPack::new, S2CNeutronRingPreviewPack::run, NetBaseHandler.Direction.CLIENTBOUND);
         CHANNEL.register(C2SInfinityBucketActionPack.class, C2SInfinityBucketActionPack::write, C2SInfinityBucketActionPack::new, C2SInfinityBucketActionPack::run, NetBaseHandler.Direction.SERVERBOUND);
         CHANNEL.register(S2CMenuDataPack.class, S2CMenuDataPack::write, S2CMenuDataPack::new, S2CMenuDataPack::run, NetBaseHandler.Direction.CLIENTBOUND);
+        RING_SPAWN.register(C2SInfinityRingSpawnPack.class, C2SInfinityRingSpawnPack::write,
+                C2SInfinityRingSpawnPack::new, C2SInfinityRingSpawnPack::run, NetBaseHandler.Direction.SERVERBOUND);
+        RING_SPAWN.register(S2CInfinityRingSpawnPack.class, S2CInfinityRingSpawnPack::write,
+                S2CInfinityRingSpawnPack::new, S2CInfinityRingSpawnPack::run, NetBaseHandler.Direction.CLIENTBOUND);
     }
     public static void openScreen(ServerPlayer player, MenuProvider provider, BlockPos pos) {
         openScreen(player, provider, buffer -> buffer.writeBlockPos(pos));
