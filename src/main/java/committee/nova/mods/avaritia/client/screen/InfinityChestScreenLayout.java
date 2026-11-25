@@ -14,12 +14,12 @@ final class InfinityChestScreenLayout {
     static final int LOCK_BUTTON_X = 231;
     static final int LOCK_BUTTON_Y = 188;
     static final int LOCK_TEXTURE_Y = 36;
-    static final int SEARCH_X = 8;
+    static final int SEARCH_X = 187;
     static final int SEARCH_Y = 4;
-    static final int SEARCH_WIDTH = 132;
-    static final int SEARCH_HEIGHT = 12;
-    static final int TITLE_X = 152;
-    static final int TITLE_Y = 6;
+    static final int SEARCH_WIDTH = 88;
+    static final int SEARCH_HEIGHT = 10;
+    static final int TITLE_X = 8;
+    static final int TITLE_Y = 5;
     static final int SCROLLBAR_X = 282;
     static final int SCROLLBAR_Y = 16;
     static final int SCROLLBAR_WIDTH = 12;

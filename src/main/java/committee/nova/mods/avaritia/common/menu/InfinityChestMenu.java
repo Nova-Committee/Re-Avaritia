@@ -103,6 +103,9 @@ public class InfinityChestMenu extends AbstractContainerMenu {
             ((ServerChestHandler) this.chest).addListener(serverPlayer);
         }
         addSlots(player, player.getInventory());
+        if (player instanceof ServerPlayer serverPlayer) {
+            blockEntity.startOpen(serverPlayer);
+        }
     }
 
 
@@ -513,10 +516,11 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     @ParametersAreNonnullByDefault
     public void removed(Player player) {
         super.removed(player);
-        if (level.isClientSide() || chestTile == null) {
+        if (!(player instanceof ServerPlayer serverPlayer) || chestTile == null) {
             return;
         }
-        if (!chest.isRemoved() && player instanceof ServerPlayer serverPlayer) {
+        chestTile.stopOpen(serverPlayer);
+        if (!chest.isRemoved()) {
             ((ServerChestHandler) chest).removeListener(serverPlayer);
         }
         if (!chestTile.isLocked()) {
