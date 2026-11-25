@@ -15,6 +15,7 @@ public final class ClientPacketProxy {
         handler.accept(packet);
     }
     public static Consumer<S2CInfinityRingOpenPack> infinityRingOpen = ClientPacketProxy::uninitialized;
+    public static Consumer<S2CInfinityRingSpawnPack> infinityRingSpawn = ClientPacketProxy::uninitialized;
     public static Consumer<S2CUpdateDimensionsPack> updateDimensions = ClientPacketProxy::uninitialized;
     public static Consumer<S2CNeutronRingOpenPack> neutronRingOpen = ClientPacketProxy::uninitialized;
     public static Consumer<S2CNeutronRingPreviewPack> neutronRingPreview = ClientPacketProxy::uninitialized;

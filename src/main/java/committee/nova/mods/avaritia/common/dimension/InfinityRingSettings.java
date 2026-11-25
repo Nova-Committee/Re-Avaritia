@@ -62,6 +62,8 @@ public final class InfinityRingSettings {
     public TimeMode time = TimeMode.DAY;
     public WeatherMode weather = WeatherMode.CLEAR;
     public Access access = Access.PRIVATE;
+    InfinityRingSpawnPoint defaultSpawn;
+    public InfinityRingSpawnPoint spawn;
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
 
@@ -71,6 +73,12 @@ public final class InfinityRingSettings {
         tag.putInt("Time", time.ordinal());
         tag.putInt("Weather", weather.ordinal());
         tag.putInt("Access", access.ordinal());
+        if (defaultSpawn != null) {
+            tag.put("DefaultSpawn", defaultSpawn.save());
+        }
+        if (spawn != null) {
+            tag.put("Spawn", spawn.save());
+        }
         ListTag playerList = new ListTag();
         players.forEach((id, role) -> {
             CompoundTag entry = new CompoundTag();
@@ -93,6 +101,12 @@ public final class InfinityRingSettings {
         settings.time = TimeMode.byId(tag.getInt("Time"));
         settings.weather = WeatherMode.byId(tag.getInt("Weather"));
         settings.access = Access.byId(tag.getInt("Access"));
+        if (tag.contains("DefaultSpawn", Tag.TAG_COMPOUND)) {
+            settings.defaultSpawn = InfinityRingSpawnPoint.load(tag.getCompound("DefaultSpawn"));
+        }
+        if (tag.contains("Spawn", Tag.TAG_COMPOUND)) {
+            settings.spawn = InfinityRingSpawnPoint.load(tag.getCompound("Spawn"));
+        }
         ListTag playerList = tag.getList("Players", Tag.TAG_COMPOUND);
         for (int i = 0; i < playerList.size(); i++) {
             CompoundTag entry = playerList.getCompound(i);
