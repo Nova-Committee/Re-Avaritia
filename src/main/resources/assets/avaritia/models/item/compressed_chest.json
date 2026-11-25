@@ -1,3 +1,6 @@
 {
-  "parent": "avaritia:block/chest/compressed_chest"
+  "parent": "minecraft:item/template_chest",
+  "textures": {
+    "particle": "avaritia:block/chest/compressed_chest_break"
+  }
 }

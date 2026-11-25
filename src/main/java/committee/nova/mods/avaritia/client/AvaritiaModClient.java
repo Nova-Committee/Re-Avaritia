@@ -13,6 +13,7 @@ import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
 import committee.nova.mods.avaritia.client.render.NeutronRingPreviewRenderer;
 import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
 import committee.nova.mods.avaritia.client.render.entity.*;
+import committee.nova.mods.avaritia.client.render.item.CompressedChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
 import committee.nova.mods.avaritia.client.render.item.InfinityShieldRender;
 import committee.nova.mods.avaritia.client.render.item.ShieldObjRender;
@@ -88,6 +89,7 @@ public final class AvaritiaModClient implements ClientModInitializer {
         // 自定义 special model renderer。
         SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
         SpecialModelRenderers.ID_MAPPER.put(Const.rl("infinity_chest"), InfinityChestItemRender.Unbaked.MAP_CODEC);
+        SpecialModelRenderers.ID_MAPPER.put(Const.rl("compressed_chest"), CompressedChestItemRender.Unbaked.MAP_CODEC);
         SpecialModelRenderers.ID_MAPPER.put(Const.rl("shield_obj"), ShieldObjRender.Unbaked.MAP_CODEC);
         // 世界提交阶段的宇宙渲染队列（Neo 版对应 SubmitCustomGeometryEvent）。
         LevelRenderEvents.COLLECT_SUBMITS.register(context -> CosmicRenderQueue.renderAll(context.submitNodeCollector()));
