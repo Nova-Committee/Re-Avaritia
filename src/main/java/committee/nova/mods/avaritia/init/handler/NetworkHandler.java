@@ -32,6 +32,11 @@ public class NetworkHandler {
                 new S2CSingularitiesPack.Handler());
         registrar.playToClient(S2CInfinityRingOpenPack.TYPE, S2CInfinityRingOpenPack.STREAM_CODEC,
                 new S2CInfinityRingOpenPack.Handler());
+        var optional = registrar.optional();
+        optional.playToServer(C2SInfinityRingSpawnPack.TYPE, C2SInfinityRingSpawnPack.STREAM_CODEC,
+                C2SInfinityRingSpawnPack::handle);
+        optional.playToClient(S2CInfinityRingSpawnPack.TYPE, S2CInfinityRingSpawnPack.STREAM_CODEC,
+                (packet, context) -> ClientPacketProxy.infinityRingSpawn.accept(packet));
         registrar.playToClient(S2CUpdateDimensionsPack.TYPE, S2CUpdateDimensionsPack.STREAM_CODEC,
                 new S2CUpdateDimensionsPack.Handler());
         registrar.playToClient(S2CNeutronRingOpenPack.TYPE, S2CNeutronRingOpenPack.STREAM_CODEC,

@@ -11,6 +11,9 @@ public final class ClientPacketProxy {
     public static Consumer<S2CInfinityRingOpenPack> infinityRingOpen = packet -> {
     };
 
+    public static Consumer<S2CInfinityRingSpawnPack> infinityRingSpawn = packet -> {
+    };
+
     private ClientPacketProxy() {
     }
 }
