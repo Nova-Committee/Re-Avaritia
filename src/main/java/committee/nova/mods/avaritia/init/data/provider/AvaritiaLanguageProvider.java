@@ -201,6 +201,15 @@ public class AvaritiaLanguageProvider implements DataProvider {
         language.addProperty("gui.avaritia.infinity_ring.role.banned", zh ? "封禁" : "Banned");
         language.addProperty("gui.avaritia.infinity_ring.ban", zh ? "封禁" : "Ban");
         language.addProperty("gui.avaritia.infinity_ring.unban", zh ? "解封" : "Unban");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.default", zh ? "默认平台" : "Default platform");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.denied", zh ? "你无法在这里设置该戒指出生点。" : "You cannot set this ring spawn here.");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.inside", zh ? "进入此维度后才可设置戒指出生点。" : "Enter this dimension to set its ring spawn.");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.position", zh ? "当前出生点：%s, %s, %s" : "Current spawn: %s, %s, %s");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.set_here", zh ? "将当前位置设为戒指出生点" : "Set Ring Spawn Here");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.unsafe", zh ? "请先站在安全的位置。" : "Stand in a safe spot first.");
+        language.addProperty("gui.avaritia.infinity_ring.spawn.waiting", zh ? "正在获取…" : "Checking ring spawn…");
+        language.addProperty("message.avaritia.infinity_ring.no_safe_spawn", zh ? "戒指出生点和默认平台均不安全，无法进入。" : "Neither the ring spawn nor its default platform is safe.");
+        language.addProperty("message.avaritia.infinity_ring.spawn_fallback", zh ? "已保存的戒指出生点不安全，已落到默认平台。" : "The saved ring spawn is unsafe. Entered at the default platform.");
         language.addProperty("gui.avaritia.infinity_ring.search_players", zh ? "搜索玩家" : "Search players");
         language.addProperty("gui.avaritia.infinity_ring.no_matching_players", zh ? "没有匹配的玩家。" : "No matching players.");
         language.addProperty("gui.avaritia.infinity_ring.empty_players", zh ? "还没有玩家。" : "No players yet.");

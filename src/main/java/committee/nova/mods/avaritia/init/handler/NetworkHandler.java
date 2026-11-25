@@ -130,6 +130,12 @@ public final class NetworkHandler {
         // === 双向 ===
         registrar.playBidirectional(NbtDataPacket.TYPE, NbtDataPacket.STREAM_CODEC,
                 new NbtDataPacket.Handler(), new NbtDataPacket.Handler());
+
+        PayloadRegistrar optional = registrar.optional();
+        optional.playToServer(C2SInfinityRingSpawnPack.TYPE, C2SInfinityRingSpawnPack.STREAM_CODEC,
+                C2SInfinityRingSpawnPack::handle);
+        optional.playToClient(S2CInfinityRingSpawnPack.TYPE, S2CInfinityRingSpawnPack.STREAM_CODEC,
+                S2CInfinityRingSpawnPack::handle);
     }
 
     public static void sendNbtDataToServer(CompoundTag tag) {
