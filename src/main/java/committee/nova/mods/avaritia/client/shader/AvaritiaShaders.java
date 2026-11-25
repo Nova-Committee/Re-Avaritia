@@ -36,8 +36,20 @@ public class AvaritiaShaders {
     public static RenderPipeline ETERNAL_SHADER;
     public static RenderPipeline UNSTABLE_SHADER;
     public static RenderPipeline BLACK_HOLE_SHADER;
+    public static RenderPipeline COMPRESSED_CHEST_GUI;
 
     public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
+        // GuiItemAtlas already supplies full packed light. Adjust only this item's GUI exposure.
+        COMPRESSED_CHEST_GUI = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
+                .withLocation(Const.rl("pipeline/compressed_chest_gui"))
+                .withFragmentShader(Const.rl("core/compressed_chest_gui"))
+                .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                .withShaderDefine("NO_CARDINAL_LIGHTING")
+                .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
+                .withCull(false)
+                .withColorTargetState(ColorTargetState.DEFAULT)
+                .build();
+        event.registerPipeline(COMPRESSED_CHEST_GUI);
         COSMIC_SHADER = registerItemPipeline(event, "cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
         COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", "cosmic", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);
         HELL_SHADER = registerItemPipeline(event, "hell", DefaultVertexFormat.ENTITY, PrimitiveTopology.QUADS);

@@ -193,7 +193,7 @@ public class AvaritiaModelProvider implements DataProvider {
                     "item/tools/infinity_sword/layer_1");
             case "infinity_crossbow" -> crossbowModel("infinity_crossbow", "item/tools/infinity_crossbow/standby");
             case "infinity_shield" -> shieldModel("infinity_shield", false);
-            case "blaze_bow", "crystal_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
+            case "blaze_bow", "crystal_bow", "infinity_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
         clientItem(item, clientItemModel(id, model));
@@ -244,19 +244,19 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked infinityBowModel() {
-        ItemModel.Unbaked idle = cosmicHandheld("infinity_bow/idle", "item/tools/infinity_bow/idle", "infinity_bow/idle_mask");
-        ItemModel.Unbaked pull0 = cosmicHandheld("infinity_bow/pull_0", "item/tools/infinity_bow/pull_0", "infinity_bow/pull_0_mask");
-        ItemModel.Unbaked pull1 = cosmicHandheld("infinity_bow/pull_1", "item/tools/infinity_bow/pull_1", "infinity_bow/pull_1_mask");
-        ItemModel.Unbaked pull2 = cosmicHandheld("infinity_bow/pull_2", "item/tools/infinity_bow/pull_2", "infinity_bow/pull_2_mask");
+        ItemModel.Unbaked idle = cosmicBow("infinity_bow/idle", "item/tools/infinity_bow/idle", "infinity_bow/idle_mask");
+        ItemModel.Unbaked pull0 = cosmicBow("infinity_bow/pull_0", "item/tools/infinity_bow/pull_0", "infinity_bow/pull_0_mask");
+        ItemModel.Unbaked pull1 = cosmicBow("infinity_bow/pull_1", "item/tools/infinity_bow/pull_1", "infinity_bow/pull_1_mask");
+        ItemModel.Unbaked pull2 = cosmicBow("infinity_bow/pull_2", "item/tools/infinity_bow/pull_2", "infinity_bow/pull_2_mask");
         ItemModel.Unbaked normal = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), idle,
                 ItemModelUtils.override(pull0, 0.05F),
                 ItemModelUtils.override(pull1, 0.65F),
                 ItemModelUtils.override(pull2, 0.9F));
 
-        ItemModel.Unbaked tracerIdle = hellHandheld("infinity_bow/tracer_idle", "item/tools/infinity_bow/tracer/idle", "infinity_bow/idle_mask");
-        ItemModel.Unbaked tracerPull0 = hellHandheld("infinity_bow/tracer_pull_0", "item/tools/infinity_bow/tracer/pull_0", "infinity_bow/pull_0_mask");
-        ItemModel.Unbaked tracerPull1 = hellHandheld("infinity_bow/tracer_pull_1", "item/tools/infinity_bow/tracer/pull_1", "infinity_bow/pull_1_mask");
-        ItemModel.Unbaked tracerPull2 = hellHandheld("infinity_bow/tracer_pull_2", "item/tools/infinity_bow/tracer/pull_2", "infinity_bow/pull_2_mask");
+        ItemModel.Unbaked tracerIdle = hellBow("infinity_bow/tracer_idle", "item/tools/infinity_bow/tracer/idle", "infinity_bow/idle_mask");
+        ItemModel.Unbaked tracerPull0 = hellBow("infinity_bow/tracer_pull_0", "item/tools/infinity_bow/tracer/pull_0", "infinity_bow/pull_0_mask");
+        ItemModel.Unbaked tracerPull1 = hellBow("infinity_bow/tracer_pull_1", "item/tools/infinity_bow/tracer/pull_1", "infinity_bow/pull_1_mask");
+        ItemModel.Unbaked tracerPull2 = hellBow("infinity_bow/tracer_pull_2", "item/tools/infinity_bow/tracer/pull_2", "infinity_bow/pull_2_mask");
         ItemModel.Unbaked tracer = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), tracerIdle,
                 ItemModelUtils.override(tracerPull0, 0.05F),
                 ItemModelUtils.override(tracerPull1, 0.65F),
@@ -393,16 +393,16 @@ public class AvaritiaModelProvider implements DataProvider {
                 ItemModelUtils.plainModel(fallbackModel));
     }
 
-    private ItemModel.Unbaked cosmicHandheld(String modelPath, String texturePath, String maskPath) {
-        return new AvaritiaItemModelLoaders.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+    private ItemModel.Unbaked cosmicBow(String modelPath, String texturePath, String maskPath) {
+        return new AvaritiaItemModelLoaders.Cosmic(bowModel(modelPath, texturePath), List.of(mask(maskPath)));
     }
 
     private ItemModel.Unbaked cosmicCrossbow(String modelPath, String texturePath, String maskPath) {
         return new AvaritiaItemModelLoaders.Cosmic(crossbowModel(modelPath, texturePath), List.of(mask(maskPath)));
     }
 
-    private ItemModel.Unbaked hellHandheld(String modelPath, String texturePath, String maskPath) {
-        return new AvaritiaItemModelLoaders.Hell(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+    private ItemModel.Unbaked hellBow(String modelPath, String texturePath, String maskPath) {
+        return new AvaritiaItemModelLoaders.Hell(bowModel(modelPath, texturePath), List.of(mask(maskPath)));
     }
 
     private Identifier handheldModel(String modelPath, String texturePath) {
