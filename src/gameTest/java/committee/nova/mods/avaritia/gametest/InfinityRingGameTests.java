@@ -116,10 +116,14 @@ public final class InfinityRingGameTests {
         ServerPlayer owner = survivalWithRing(helper);
         BlockPos origin = helper.absolutePos(new BlockPos(4, 2, 4));
         owner.snapTo(origin.getX() + 0.5, origin.getY(), origin.getZ() + 0.5, 33.0F, 7.0F);
+        var overworldData = owner.level().getServer().getWorldData().overworldData();
+        var worldSpawn = overworldData.getRespawnData();
         helper.assertTrue(InfinityRingDimensions.create(owner,
                 InfinityRingSettings.Terrain.VOID, InfinityRingSettings.TimeMode.DAY,
                 InfinityRingSettings.WeatherMode.CLEAR, InfinityRingSettings.Access.PRIVATE),
                 "owner should create a personal dimension");
+        helper.assertTrue(overworldData.getRespawnData().equals(worldSpawn),
+                "creating a ring dimension must preserve the world's respawn data");
         helper.runAtTickTime(1, () -> {
             ResourceKey<Level> personal = InfinityRingKeys.levelKey(owner.getUUID());
             helper.assertTrue(owner.level().dimension().equals(personal), "create should move the owner into the personal dim");
@@ -147,7 +151,7 @@ public final class InfinityRingGameTests {
                 "owner should create a public personal dimension");
         helper.runAtTickTime(1, () -> {
             ServerLevel personal = personalLevel(helper, owner.getUUID());
-            enterPersonal(visitor, personal);
+            enterPersonal(visitor, personal, owner.blockPosition());
             helper.assertTrue(visitor.level().dimension().equals(personal.dimension()),
                     "visitor should occupy the public personal dim");
             InfinityRingDimensions.updateModes(owner, owner.getUUID(),
@@ -171,7 +175,7 @@ public final class InfinityRingGameTests {
                 "owner should create a public personal dimension");
         helper.runAtTickTime(1, () -> {
             ServerLevel personal = personalLevel(helper, owner.getUUID());
-            enterPersonal(visitor, personal);
+            enterPersonal(visitor, personal, owner.blockPosition());
             helper.assertTrue(visitor.level().dimension().equals(personal.dimension()),
                     "visitor should occupy the public personal dim");
             InfinityRingSettings settings = InfinityRingSavedData.get(owner.level().getServer()).settings(owner.getUUID());
@@ -259,10 +263,9 @@ public final class InfinityRingGameTests {
         return level;
     }
 
-    private static void enterPersonal(ServerPlayer visitor, ServerLevel personal) {
-        BlockPos spawn = personal.getRespawnData().pos();
-        double y = InfinityRingDimensions.standingFeetY(personal, spawn);
-        visitor.teleportTo(personal, spawn.getX() + 0.5, y, spawn.getZ() + 0.5, Set.of(), visitor.getYRot(), visitor.getXRot(), false);
+    private static void enterPersonal(ServerPlayer visitor, ServerLevel personal, BlockPos feet) {
+        visitor.teleportTo(personal, feet.getX() + 0.5, feet.getY(), feet.getZ() + 0.5,
+                Set.of(), visitor.getYRot(), visitor.getXRot(), false);
     }
 
     private static void tickFlight(ServerPlayer player) {

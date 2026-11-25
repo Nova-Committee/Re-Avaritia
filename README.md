@@ -49,6 +49,7 @@ In the server's `config/avaritia-common.toml`, under `[tools]`, set `sword_attac
 * You can add&nbsp;singularity by using json!
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
+* If an older Infinity Ring changed the server-wide respawn point, an operator can restore it with `/execute in <original_dimension> run setworldspawn <x> <y> <z>` using the server's original spawn dimension and coordinates.
 
 ## **🔎Wiki:**
 * [Wiki](wiki)

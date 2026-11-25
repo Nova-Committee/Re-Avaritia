@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.dimension;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -74,18 +76,21 @@ public final class InfinityRingSettings {
             Codec.INT.optionalFieldOf("access", Access.PRIVATE.ordinal()).forGetter(settings -> settings.access.ordinal()),
             PLAYER_CODEC.listOf().optionalFieldOf("players", List.of()).forGetter(InfinityRingSettings::playerEntries),
             UUIDUtil.CODEC.listOf().optionalFieldOf("banned", List.of()).forGetter(settings -> List.copyOf(settings.banned)),
-            UUIDUtil.CODEC.listOf().optionalFieldOf("friends", List.of()).forGetter(settings -> List.of())
+            UUIDUtil.CODEC.listOf().optionalFieldOf("friends", List.of()).forGetter(settings -> List.of()),
+            BlockPos.CODEC.optionalFieldOf("spawn").forGetter(settings -> settings.spawn)
     ).apply(instance, InfinityRingSettings::fromCodec));
 
     public Terrain terrain = Terrain.VOID;
     public TimeMode time = TimeMode.DAY;
     public WeatherMode weather = WeatherMode.CLEAR;
     public Access access = Access.PRIVATE;
+    public Optional<BlockPos> spawn = Optional.empty();
     public final Map<UUID, Role> players = new LinkedHashMap<>();
     public final Set<UUID> banned = new LinkedHashSet<>();
 
     private static InfinityRingSettings fromCodec(int terrain, int time, int weather, int access,
-                                                 List<PlayerRole> players, List<UUID> banned, List<UUID> friends) {
+                                                 List<PlayerRole> players, List<UUID> banned, List<UUID> friends,
+                                                  Optional<BlockPos> spawn) {
         InfinityRingSettings settings = new InfinityRingSettings();
         settings.terrain = Terrain.byId(terrain);
         settings.time = TimeMode.byId(time);
@@ -98,6 +103,7 @@ public final class InfinityRingSettings {
             settings.players.putIfAbsent(friend, Role.MEMBER);
         }
         settings.banned.addAll(banned);
+        settings.spawn = spawn;
         return settings;
     }
 
