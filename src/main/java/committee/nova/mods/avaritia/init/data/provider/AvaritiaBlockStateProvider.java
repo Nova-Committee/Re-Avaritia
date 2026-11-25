@@ -112,7 +112,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         simpleBlockWithItem(ModBlocks.extreme_smithing_table.get());
         horizontalBlockWithItem(ModBlocks.extreme_anvil.get(), Quadrant.R180, Quadrant.R270, Quadrant.R0, Quadrant.R90);
 
-        simpleBlockWithItem(ModBlocks.compressed_chest.get());
+        compressedChestBlockWithItem(ModBlocks.compressed_chest.get());
         horizontalBlockWithItem(ModBlocks.infinity_chest.get());
         tesseractBlockWithItem(ModBlocks.tesseract.get());
 
@@ -270,6 +270,13 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                 mod("block/machine/smithing/extreme_smithing_table_bottom"));
     }
 
+    private void compressedChestBlockWithItem(Block block) {
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier model = jsonModel(mod("block/chest/compressed_chest_particle"), COMPRESSED_CHEST_PARTICLE_MODEL);
+        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model)))).create());
+        blockItem(block, compressedChestModel());
+    }
+
     private Identifier compressedChestModel() {
         return jsonModel(mod("block/chest/compressed_chest"), COMPRESSED_CHEST_MODEL);
     }
@@ -395,6 +402,14 @@ public class AvaritiaBlockStateProvider implements DataProvider {
     private Material texture(Identifier id) {
         return new Material(id);
     }
+
+    private static final String COMPRESSED_CHEST_PARTICLE_MODEL = """
+            {
+              "textures": {
+                "particle": "avaritia:block/chest/compressed_chest_break"
+              }
+            }
+            """;
 
     private static final String COMPRESSED_CHEST_MODEL = """
             {
