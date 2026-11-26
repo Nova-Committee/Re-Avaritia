@@ -79,6 +79,8 @@
     "ClientBlockModelDeserializerMixin",
     "ClientModelBakerMixin",
     "ClientGuiMixin",
+    "ClientHorseArmorAccessor",
+    "ClientHorseArmorValueMixin",
     "ClientScreenEffectMixin",
     "ClientFogMixin",
     "ClientPlayerRendererMixin",
