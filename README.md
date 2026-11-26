@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="690" src="web/logo.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">
 </p>
 <hr>
 <p align="center">
@@ -13,42 +13,17 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
+    <a href="README.md">English</a> |
+    <a href="README_CN.md">简体中文</a>
 </p>
-
-
-
-
 
 ## **📕Introduction:**
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
 * This mod is <span style="color: #ff6600;">unofficial</span>!
 
-## **Infinity Shield:**
-
-Sneak + use cycles through four modes. Existing shields without mode data default to Normal.
-
-- **Normal:** the original shield appearance and active blocking.
-- **Defending:** reflects blocked damage while raised and deflects projectiles while held.
-- **Ultimate Defense:** grants passive protection while held, except against Infinity damage and damage that bypasses invulnerability.
-- **Floating:** prevents sinking in water/lava, hovers while sneaking, slows falling, and prevents fall damage. Creative flight and swimming movement are left unchanged.
-
-Active blocking is immediate and omnidirectional, does not slow movement, and permits sprinting. Piercing arrows and shield-bypassing damage still bypass active blocking. Raising and lowering the shield do not emit item-interaction vibrations.
-
-## **Sword AoE entity exclusions:**
-
-In `config/avaritia-common.toml`, set `sword_attack_entity_blacklist` under `[tools.config.avaritia]` to a list of entity type IDs, for example `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`. The default is `[]`. Configure this on the server and restart it after editing; the list applies to both right-click AoE modes, not direct left-click attacks or the Infinity Totem. Sword AoE skips the verified Lootr loot minecart entity IDs (`lootr:lootr_minecart`, `lootr:chest_minecart`) without requiring Lootr as a dependency. This does not change block chest behavior.
-
-## **Neutron Compressor side modes:**
-
-Side settings are relative to the machine's facing. For external item automation, Input exposes only the material input slot and accepts insertion; Output exposes only the product slot and permits extraction; Mixed supports both; OFF exposes no item capability. These restrictions apply to both passive and active mode variants. Materials in the input slot cannot be extracted by external automation.
-
-**Behavior change for Forge 1.20.1:** Input faces no longer allow product extraction, and Output faces no longer accept materials. Existing setups that used either behavior must change that face to Mixed or use separate Input and Output faces.
-
 ## **✏️Authors:**
 
-- Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3` 
+- Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3`
 - Artist: `MHanHanBing` `Neo-Tix`
 
 ## **🔒License:**
@@ -64,150 +39,37 @@ Side settings are relative to the machine's facing. For external item automation
 ## **❗Attention:**
 * Including this mod with its texture resources in a modpack requires prior written permission from the texture author.
 * Recipe viewing is supported via JEI.
-* You can add&nbsp;singularity by using CraftTweaker and KubeJs!
-* You can add recipes by CraftTweaker!
-* You can add recipes by KubeJs!
 
 ## **🔎Wiki:**
 * [Wiki](wiki)
 
-## **🦀Discord:**
+## Discord
+
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
-## **⚙️Develop:**
-### **Singularities:**
-Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
-```json
-{
-  "name": "example:iron",
-  "displayName": "singularity.example.iron",
-  "overlayColor": "e1e1e1",
-  "underlayColor": "6c6c6c",
-  "count": 1000,
-  "timeCost": 240,
-  "ingredient": { "item": "minecraft:iron_ingot" },
-  "enabled": true,
-  "recipeEnabled": true
-}
-```
-The historical `timeRequired` and `recipeDisabled` aliases are still read with a deprecation warning. To preserve old 1.20 data, the stored `recipeDisabled` boolean keeps its historical `recipeEnabled` meaning and is not inverted. Datapack and script changes take effect on `/reload`.
+## Develop
 
-### **CraftTweaker:**
-```
-mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.remove(output);
+Use the [Re:Avaritia customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts supported by this branch.
 
-mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
-mods.avaritia.Compressor.remove(output);
+### Singularities and datapacks
 
-mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnable);
-mods.avaritia.Singularity.remove("key");
-mods.avaritia.Singularity.removeAll();
-mods.avaritia.Singularity.removeRecipe("key");
-mods.avaritia.Singularity.removeAllRecipe();
+Put definitions in `data/<namespace>/singularities/<path>.json` and match `name` to the file ID. Run `/reload` after edits. [Fields and recipe examples](skills/re-avaritia-datapack/references/datapack.md#singularities)
 
-mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)
-mods.avaritia.CraftingTable.addEternal("name", ingredients)
-```
-`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged until the current resource reload finishes its script phase and then committed once. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. Script changes take effect only after `/reload`.
+### CraftTweaker
 
-### **KubeJs:**
-```javascript
-AvaritiaEvents.singularity(event => {
-    event.removeRecipe("avaritia:coal")//remove recipe
-    event.remove("avaritia:coal")//remove singularity
-    event.removeAllRecipe()//remove all singularity recipe
-    event.removeAll()//remove all singularity
-    event.register("avaritia:example", s => {
-        s
-            .setDisplayName("singularity.avaritia.example")
-            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
-            .setCount(1000)
-            .setTimeCost(200)
-            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
-            .setEnabled(true)
-            .setRecipeEnabled(true)
-    })
-})
-ServerEvents.recipes(
-    event => {
-        const { avaritia } = event.recipes;
-        avaritia.shaped_table(
-            // shapeless is avaritia.shapeless_table
-            4,
-            "avaritia:infinity_sword",
-            [
-                "       I ",
-                "      III",
-                "     III ",
-                "    III  ",
-                " C III   ",
-                "  CII    ",
-                "  NC     ",
-                " N  C    ",
-                "X        ",
-            ],
-            {
-                C: "avaritia:crystal_matrix_ingot",
-                I: "avaritia:infinity_ingot",
-                N: "avaritia:neutron_ingot",
-                X: "avaritia:infinity_catalyst",
-            }
-        );
-        //compressor
-        avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
-            .timeCost(240)
-            .inputCount(2000);
-        avaritia.compressor(Item.of("minecraft:coal"), Item.of("avaritia:singularity", '{Id:"avaritia:coal"}'))
-            .inputCount(10000)
-            .timeCost(100)
-        ;//remove singularity recipe first
-        //infinity catalyst
-        avaritia.infinity_catalyst(
-            "default1",
-            [
-                "minecraft:emerald_block",
-                "avaritia:crystal_matrix_ingot",
-                "avaritia:neutron_ingot",
-                "avaritia:cosmic_meatballs",
-                "avaritia:ultimate_stew",
-                "avaritia:endest_pearl",
-                "avaritia:record_fragment"
-            ],
-            2//custom infinity catalyst count
-        );
+Put `.zs` files in `scripts/`. Use `mods.avaritia.Singularity` for definitions and follow the branch’s worktable and compressor calls. The eternal-singularity method is `addEnternal`. [Examples](skills/re-avaritia-datapack/references/scripts.md#crafttweaker)
 
-        avaritia.eternal_singularity(
-            [
-                "minecraft:emerald_block",
-                "avaritia:crystal_matrix_ingot",
-                "avaritia:neutron_ingot",
-                "avaritia:cosmic_meatballs",
-                "avaritia:ultimate_stew",
-                "avaritia:endest_pearl",
-                "avaritia:record_fragment"
-            ],
-        );
-        console.log('Hello! The avaritia recipe event has fired!')
-    }
-)
-```
+### KubeJS
 
-### **Dependencies:**
-avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+Put `.js` files in `kubejs/server_scripts/`. Use `AvaritiaEvents.singularity` for definitions and `ServerEvents.recipes` for recipes. [Examples](skills/re-avaritia-datapack/references/scripts.md#kubejs)
+
+### Addon dependencies
+
+Add the project Maven repository to your ForgeGradle project and set `avaritia_version` to the chosen Forge release.
+
 ```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/releases"
-    }
-}
-
-dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
-}
+repositories { maven { url "https://maven.nova-committee.cn/releases" } }
+dependencies { implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}") }
 ```
 
-
-
+For a local build, run `./gradlew publishToMavenLocal` in this repository and add `mavenLocal()` in the addon. Use the same coordinates.
