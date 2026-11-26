@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="690" src="web/logo.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">
 </p>
 <hr>
 <p align="center">
@@ -13,21 +13,13 @@
 </p>
 
 <p align="center">
-    <a href="README.md">English</a> | 
+    <a href="README.md">English</a> |
     <a href="README_CN.md">简体中文</a>
 </p>
-
-
-
-
 
 ## **📕介绍:**
 * 此模组是[无尽贪婪](https://www.mcmod.cn/class/505.html)的重铸版
 * 此模组是非官方版本!
-
-## **寰宇剑范围攻击实体排除：**
-
-在服务端 `config/avaritia-common.toml` 的 `[tools]` 下设置 `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`，填写实体类型 ID，默认 `[]`。修改后重启服务端；该列表只影响剑的两种右键范围攻击，不影响左键直接攻击或无尽图腾。剑的范围攻击会跳过已核实的 Lootr 战利品矿车实体 ID（`lootr:lootr_minecart`、`lootr:chest_minecart`），无需将 Lootr 设为前置，也不改变方块箱子的行为。
 
 ## **✏️作者:**
 
@@ -46,166 +38,45 @@
 ## **❗Attention:**
 * 将包含贴图资源的本模组用于整合包前，须取得贴图作者的事先书面许可。
 * JEI查看无尽工作台和中子态素压缩机配方.
-* 可以利用json自定义奇点!
-* 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
-* 使用KubeJs修改无尽工作台和中子态素压缩机配方!
 
 ## **🔎文档:**
 * [Wiki](wiki)
 
-## 无尽盾牌
+## Discord
 
-潜行右键在四种模式间循环；普通右键举盾格挡。主手和副手均可使用。
+* [Discord](https://discord.gg/u5GN2Wqsbx)
 
-| 模式 | 效果 |
-| --- | --- |
-| 普通 | 主动举盾格挡。 |
-| 防御 | 格挡时反伤；持有时反弹命中的弹射物。 |
-| 绝对防御 | 持有时免疫大多数伤害；无尽伤害和绕过无敌的伤害仍保留例外。 |
-| 浮空 | 免疫摔落伤害，缓降，潜行悬停，并在水和熔岩中提供浮力。 |
+## 开发
 
-举盾立即生效，不降低移动速度，且允许疾跑；穿透箭和绕过盾牌的伤害保留例外。举盾和收盾不会发出物品交互振动。浮空模式不等同于创造飞行。
-
-## **⚙️开发:**
+可以使用 [Re:Avaritia 魔改 Skill](skills/re-avaritia-datapack/SKILL.md) 编写数据包和本分支支持的脚本。
 
 ### UI 几何检查（仅开发环境）
 
-运行 `./gradlew runClient -PuiInspect=true`（Windows 使用 `gradlew.bat`）。该模式使用独立的 `build/ui-preview` 游戏目录；请在其中新建专用检查世界，不打开已有存档。
+运行 `./gradlew runClient -PuiInspect=true`，Windows 使用 `gradlew.bat`。使用 `build/ui-preview` 下的专用检查世界。
 
-* **Ctrl+Alt+F8** 切换控件边界、裁剪框、命中框和节点状态。
-* **Ctrl+Alt+F9** 请求导出同一渲染帧的无标注 PNG、标注 PNG 和 schemaVersion=1 的 JSON，保存到 `build/ui-inspection`。不覆盖已有文件；两张 PNG 写完后才写 JSON，收到成功路径后再使用导出。
-* 静态控件 ID 在其 `screenInstance` 内定位；结合 `layoutRevision` 和 `frameId` 排除旧坐标。匿名 widget/行 ID 不保证重建后稳定。出现 `duplicate_id` 或 `invalid_bounds` 时不能作为自动定位依据；隐藏、完全裁剪或输入被阻挡的节点不提供建议点击点。
-* GUI 绘制按 `guiScale` 换算，鼠标按 GUI/窗口尺寸比例换算。`scissorPixels` 使用 OpenGL 左下角原点及原版整数截断。`pixelMappingValid=false` 时只提供 GUI 几何；桌面/DPI 坐标必须另行校准。
-* JSON 不包含输入值、名字、物品内容、NBT 或服务器地址；PNG 可能包含屏幕上可见的私密信息。导出仅保存在本机，分享前请自行检查。
+- **Ctrl+Alt+F8** 切换控件边界、裁剪框、命中框和状态。
+- **Ctrl+Alt+F9** 把同一渲染帧的两张 PNG 和 JSON 导出到 `build/ui-inspection`。收到成功路径后查看。
 
-检查器仅提供观察，不替代输入分发，也不证明未知第三方绘制。普通 `runClient` 和生产安装不启用检查器，生产环境即使设置系统属性也不会开启。
+### 奇点与数据包
 
-继续推广界面前，应在真实容器中检查 F8/F9、按观察到的槽位拿放物品，并在改变窗口/GUI 缩放后再次导出。编译与服务端 GameTests 不能验证截图或客户端输入。
+把定义放在 `data/<命名空间>/singularities/<路径>.json`，让 `name` 与文件 ID 对应。修改后执行 `/reload`。[字段与配方示例](skills/re-avaritia-datapack/references/datapack.md#singularities)
 
-### **Singularities**
-数据包定义位于 `data/<命名空间>/singularities/<路径>.json`。JSON 内的 `name` 必须等于文件资源 ID，且 `count`、`timeCost` 必须大于 0。
-```json
-{
-  "name": "example:iron",
-  "displayName": "singularity.example.iron",
-  "overlayColor": 14803425,
-  "underlayColor": 7105644,
-  "count": 1000,
-  "timeCost": 240,
-  "ingredient": { "item": "minecraft:iron_ingot" },
-  "enabled": true,
-  "recipeEnabled": true
-}
-```
-1.20 历史字段 `timeRequired`、`recipeDisabled` 和十六进制字符串颜色仍可迁移读取。为保持旧数据语义，`recipeDisabled` 中保存的布尔值仍按历史上的 `recipeEnabled` 含义读取，不会取反。数据包和脚本修改在执行 `/reload` 后生效。
+### CraftTweaker
 
-### **CraftTweaker:**
-```
-mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);//添加中子态素压缩配方。
-mods.avaritia.Compressor.remove(output);//移除中子态素压缩配方。
-mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);//添加无尽工作台有序配方。
-mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);//添加无尽工作台无序配方。
-mods.avaritia.CraftingTable.remove(output);//删除无尽工作台配方。
+把 `.zs` 文件放进 `scripts/`。使用 `mods.avaritia.Singularity` 管理奇点，按本分支参考调用压缩机与工作台接口，永恒奇点方法名为 `addEnternal`。[调用示例](skills/re-avaritia-datapack/references/scripts.md#crafttweaker)
 
-mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnabled);//添加或替换奇点
-mods.avaritia.Singularity.remove("key");//删除指定奇点
-mods.avaritia.Singularity.removeAll();//删除所有奇点
-mods.avaritia.Singularity.removeRecipe("key");//禁用指定奇点配方
-mods.avaritia.Singularity.removeAllRecipe();//禁用所有奇点配方
-```
-`mods.avaritia.Singularity.register` 为静态调用。非法 ID、非正数 `count` 或 `timeCost` 会记录错误并只跳过当前定义；与奇点校验无关的脚本异常仍交给脚本引擎报告。奇点操作会暂存到本轮资源重载的脚本阶段结束，再统一提交一次；冲突优先级为“数据包 < Java API < CraftTweaker < KubeJS”，同一来源内后操作覆盖前操作。脚本变更仅在执行 `/reload` 后生效。
+### KubeJS
 
-### **KubeJs:**
-```javascript
-ServerEvents.recipes(
-    event => {
-        const { avaritia } = event.recipes;
-        avaritia.shaped_table(
-            // 无序配方是 avaritia.shapeless_table
-            4,//工作台等级
-            "avaritia:infinity_sword",//产品
-            [
-                "       I ",
-                "      III",
-                "     III ",
-                "    III  ",
-                " C III   ",
-                "  CII    ",
-                "  NC     ",
-                " N  C    ",
-                "X        ",
-            ],
-            {
-                C: "avaritia:crystal_matrix_ingot",
-                I: "avaritia:infinity_ingot",
-                N: "avaritia:neutron_ingot",
-                X: "avaritia:infinity_catalyst",
-            }//输入
-        );
-        //compressor
-        avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
-            .timeCost(240)//所需时间
-            .inputCount(2000);//所需数量
-        //infinity catalyst
-        avaritia.infinity_catalyst(
-            [
-                "minecraft:emerald_block",
-                "avaritia:crystal_matrix_ingot",
-                "avaritia:neutron_ingot",
-                "avaritia:cosmic_meatballs",
-                "avaritia:ultimate_stew",
-                "avaritia:endest_pearl",
-                "avaritia:record_fragment",
-            ]
-        );
-        console.log('Hello! The avaritia recipe event has fired!')
-    }
-)
-```
-### **InfinityCatalyst:**
-```json5
-{
-  "type": "avaritia:infinity_catalyst",//Infinity Catalyst recipe type
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:emerald_block"
-    },
-    {
-      "item": "avaritia:crystal_matrix_ingot"
-    },
-    {
-      "item": "avaritia:neutron_ingot"
-    },
-    {
-      "item": "avaritia:cosmic_meatballs"
-    },
-    {
-      "item": "avaritia:ultimate_stew"
-    },
-    {
-      "item": "avaritia:endest_pearl"
-    },
-    {
-      "item": "avaritia:record_fragment"
-    }
-  ]
-}
-```
-### **Dependencies:**
-avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+把 `.js` 文件放进 `kubejs/server_scripts/`。用 `AvaritiaEvents.singularity` 写奇点，用 `ServerEvents.recipes` 写配方。[调用示例](skills/re-avaritia-datapack/references/scripts.md#kubejs)
+
+### 无尽催化剂
+
+使用 `avaritia:infinity_catalyst` 添加配方。`group: "default"` 会加入符合条件的奇点。[配方示例](skills/re-avaritia-datapack/references/datapack.md#tiered-crafting-tables)
+
+### 附属模组依赖
+
+把与目标版本一致的 `Re-Avaritia-neoforge-1.21.1-1.4.4-release.jar` 放到附属模组的 `libs/`，加入 NeoForge 工程的开发依赖。
+
 ```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/s3"
-    }
-}
-
-dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
-}
+dependencies { implementation files('libs/Re-Avaritia-neoforge-1.21.1-1.4.4-release.jar') }
 ```
-
-
-

@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="690" src="web/logo.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">
 </p>
 <hr>
 <p align="center">
@@ -13,21 +13,13 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
+    <a href="README.md">English</a> |
+    <a href="README_CN.md">简体中文</a>
 </p>
-
-
-
-
 
 ## **📕Introduction:**
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
 * This mod is <span style="color: #ff6600;">unofficial</span>!
-
-## **Infinity Sword AoE entity exclusions:**
-
-In the server's `config/avaritia-common.toml`, under `[tools]`, set `sword_attack_entity_blacklist = ["minecraft:zombie", "minecraft:chest_minecart"]`; the default is `[]`. Restart the server after editing. This list affects both sword right-click AoE modes only, not direct left-click attacks or the Infinity Totem. Sword AoE skips the verified Lootr loot minecart entity IDs (`lootr:lootr_minecart`, `lootr:chest_minecart`) without requiring Lootr as a dependency, and does not change block chest behavior.
 
 ## **✏️Authors:**
 
@@ -46,181 +38,45 @@ In the server's `config/avaritia-common.toml`, under `[tools]`, set `sword_attac
 ## **❗Attention:**
 * Including this mod with its texture resources in a modpack requires prior written permission from the texture author.
 * Recipe viewing is supported via JEI.
-* You can add&nbsp;singularity by using json!
-* You can add recipes by CraftTweaker!
-* You can add recipes by KubeJs!
 
 ## **🔎Wiki:**
 * [Wiki](wiki)
 
-## **🦀Discord:**
+## Discord
+
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
-## Infinity Shield
+## Develop
 
-Sneak-right-click to cycle through four modes; right-click normally to block. Both main-hand and off-hand use are supported.
-
-| Mode | Effect |
-| --- | --- |
-| Normal | Active shield blocking. |
-| Defending | Reflects blocked damage and deflects incoming projectiles while held. |
-| Ultimate defending | Prevents most damage while held; Infinity damage and damage that bypasses invulnerability remain exceptions. |
-| Floating | Prevents fall damage, slows descent, hovers while sneaking, and provides buoyancy in water and lava. |
-
-Blocking takes effect immediately, does not slow movement, and allows sprinting. Piercing arrows and shield-bypassing damage retain their exceptions. Raising and lowering this shield emit no item-interaction vibrations. Floating mode does not grant creative flight.
-
-## **⚙️Develop:**
+Use the [Re:Avaritia customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts supported by this branch.
 
 ### UI geometry inspection (development only)
 
-Run `./gradlew runClient -PuiInspect=true` (`gradlew.bat` on Windows). This uses the isolated `build/ui-preview` game directory; create a disposable review world there instead of opening existing saves.
+Run `./gradlew runClient -PuiInspect=true` or use `gradlew.bat` on Windows. Use a dedicated inspection world in `build/ui-preview`.
 
-* **Ctrl+Alt+F8** toggles GUI bounds, clip bounds, hit bounds, and node status.
-* **Ctrl+Alt+F9** requests a plain PNG, annotated PNG, and schema-version-1 JSON from the same rendered frame in `build/ui-inspection`. Files are never overwritten; JSON is written after both PNGs. Wait for the success path before using an export.
-* Locate named controls within their `screenInstance`; use `layoutRevision` and `frameId` to reject stale coordinates. Anonymous widget/row IDs are not stable across rebuilding. `duplicate_id` or `invalid_bounds` issues disqualify automatic location; hidden, clipped, or input-blocked nodes provide no suggested click.
-* GUI rendering uses `guiScale`, while mouse positions use the GUI/window-size ratio. `scissorPixels` uses OpenGL's bottom-left origin and Minecraft's integer truncation. `pixelMappingValid=false` means only GUI geometry is available; desktop/DPI coordinates require separate calibration.
-* JSON omits entered text, names, item contents, NBT, and server addresses. PNGs can contain visible private information. Exports stay local; inspect them before sharing.
+- **Ctrl+Alt+F8** toggles control bounds, clipping, hit areas, and state.
+- **Ctrl+Alt+F9** exports two PNGs and JSON from one rendered frame to `build/ui-inspection`. Wait for the success path before reading the files.
 
-This is an observation tool, not an input dispatcher or proof of unknown third-party rendering. Normal `runClient` and production installations leave it disabled, including production launches with the inspector system property set.
+### Singularities and datapacks
 
-Before further screen migrations, verify F8/F9 in an actual container, move an item through an observed slot, and repeat the export after resize/GUI-scale changes. Compilation and server GameTests do not validate screenshots or client input.
+Put definitions in `data/<namespace>/singularities/<path>.json` and match `name` to the file ID. Run `/reload` after edits. [Fields and recipe examples](skills/re-avaritia-datapack/references/datapack.md#singularities)
 
-### **Singularities:**
-Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
-```json
-{
-  "name": "example:iron",
-  "displayName": "singularity.example.iron",
-  "overlayColor": 14803425,
-  "underlayColor": 7105644,
-  "count": 1000,
-  "timeCost": 240,
-  "ingredient": { "item": "minecraft:iron_ingot" },
-  "enabled": true,
-  "recipeEnabled": true
-}
-```
-The 1.20 aliases `timeRequired`, `recipeDisabled`, and hexadecimal string colors are migrated while loading. To preserve old data, the stored `recipeDisabled` boolean keeps its historical `recipeEnabled` meaning and is not inverted. Datapack and script changes take effect on `/reload`.
+### CraftTweaker
 
-### **CraftTweaker:**
-```
-mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
-mods.avaritia.Compressor.remove(output);
-mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);
-mods.avaritia.CraftingTable.remove(output);
+Put `.zs` files in `scripts/`. Use `mods.avaritia.Singularity` for definitions and follow the branch’s worktable and compressor calls. The eternal-singularity method is `addEnternal`. [Examples](skills/re-avaritia-datapack/references/scripts.md#crafttweaker)
 
-mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnabled);
-mods.avaritia.Singularity.remove("key");
-mods.avaritia.Singularity.removeAll();
-mods.avaritia.Singularity.removeRecipe("key");
-mods.avaritia.Singularity.removeAllRecipe();
-```
-`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged until the current resource reload finishes its script phase and then committed once. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. Script changes take effect only after `/reload`.
+### KubeJS
 
-### **KubeJs:**
-```javascript
-ServerEvents.recipes(
-    event => {
-        const { avaritia } = event.recipes;
-        avaritia.shaped_table(
-            // shapeless is avaritia.shapeless_table
-            4,
-            "avaritia:infinity_sword",
-            [
-                "       I ",
-                "      III",
-                "     III ",
-                "    III  ",
-                " C III   ",
-                "  CII    ",
-                "  NC     ",
-                " N  C    ",
-                "X        ",
-            ],
-            {
-                C: "avaritia:crystal_matrix_ingot",
-                I: "avaritia:infinity_ingot",
-                N: "avaritia:neutron_ingot",
-                X: "avaritia:infinity_catalyst",
-            }
-        );
-        //compressor
-        avaritia
-            .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
-            .timeCost(240)
-            .inputCount(2000);
-        //infinity catalyst
-        avaritia.infinity_catalyst(
-            [
-                "minecraft:emerald_block",
-                "avaritia:crystal_matrix_ingot",
-                "avaritia:neutron_ingot",
-                "avaritia:cosmic_meatballs",
-                "avaritia:ultimate_stew",
-                "avaritia:endest_pearl",
-                "avaritia:record_fragment",
-            ]
-        );
-        console.log('Hello! The avaritia recipe event has fired!')
-    }
-)
-AvaritiaEvents.singularity(event => {
-    event.register("avaritia:example", s => {
-        s
-            .setDisplayName("singularity.avaritia.example")
-            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
-            .setCount(1000)
-            .setTimeCost(200)
-            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
-            .setEnabled(true)
-            .setRecipeEnabled(true)
-    })
-})
-```
-### **InfinityCatalyst:**
-```json5
-{
-  "type": "avaritia:infinity_catalyst",//Infinity Catalyst recipe type
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:emerald_block"
-    },
-    {
-      "item": "avaritia:crystal_matrix_ingot"
-    },
-    {
-      "item": "avaritia:neutron_ingot"
-    },
-    {
-      "item": "avaritia:cosmic_meatballs"
-    },
-    {
-      "item": "avaritia:ultimate_stew"
-    },
-    {
-      "item": "avaritia:endest_pearl"
-    },
-    {
-      "item": "avaritia:record_fragment"
-    }
-  ]
-}
-```
-### **Dependencies:**
-avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+Put `.js` files in `kubejs/server_scripts/`. Use `AvaritiaEvents.singularity` for definitions and `ServerEvents.recipes` for recipes. [Examples](skills/re-avaritia-datapack/references/scripts.md#kubejs)
+
+### Infinity Catalyst
+
+Use `avaritia:infinity_catalyst` to add a recipe. Group `"default"` includes eligible singularities. [Recipe example](skills/re-avaritia-datapack/references/datapack.md#tiered-crafting-tables)
+
+### Addon dependencies
+
+Place the matching `Re-Avaritia-neoforge-1.21.1-1.4.4-release.jar` in the addon’s `libs/` directory and add it as a development dependency in the NeoForge project.
+
 ```groovy
-repositories {
-    maven {
-        url "https://maven.nova-committee.cn/s3"
-    }
-}
-
-dependencies {
-    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
-}
+dependencies { implementation files('libs/Re-Avaritia-neoforge-1.21.1-1.4.4-release.jar') }
 ```
-
-
-
