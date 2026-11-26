@@ -19,6 +19,8 @@
     "ServerPlayerGameModeAccessor"
   ],
   "client": [
+    "ClientHorseArmorAccessor",
+    "ClientHorseArmorValueMixin",
     "ItemRendererMixin",
     "LocalPlayerMixin",
     "PlayerRendererMixin"
