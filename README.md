@@ -40,8 +40,6 @@
 * Including this mod with its texture resources in a modpack requires prior written permission from the texture author.
 * Recipe viewing is supported via JEI.
 
-## **🔎Wiki:**
-* [Wiki](wiki)
 
 ## Discord
 
