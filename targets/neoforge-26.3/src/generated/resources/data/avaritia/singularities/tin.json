@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/tin"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.tin",
+  "ingredient": {
+    "neoforge:ingredient_type": "avaritia:tag",
+    "tag": "c:ingots/tin"
+  },
+  "name": "avaritia:tin",
+  "overlayColor": 10534589,
+  "underlayColor": 5404809
+}

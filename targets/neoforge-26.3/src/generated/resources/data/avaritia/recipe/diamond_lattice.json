@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "x": "minecraft:diamond",
+    "y": "minecraft:netherite_scrap"
+  },
+  "pattern": [
+    "x x",
+    " y ",
+    "x x"
+  ],
+  "result": {
+    "id": "avaritia:diamond_lattice"
+  },
+  "tier": 1
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_cube_bottom_top_indented",
+  "textures": {
+    "bottom": "minecraft:block/soul_soil",
+    "side": "minecraft:block/soul_soil",
+    "top": "avaritia:block/resource/soul_farmland"
+  }
+}

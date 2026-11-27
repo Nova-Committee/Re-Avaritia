@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "avaritia:crystal_matrix"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "avaritia:blocks/crystal_matrix"
+}

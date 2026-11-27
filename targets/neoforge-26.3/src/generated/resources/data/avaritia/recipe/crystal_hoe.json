@@ -1,0 +1,21 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron_ingot",
+    "C": "avaritia:crystal_matrix_ingot"
+  },
+  "pattern": [
+    "CAAAAA ",
+    " CCCA A",
+    "     AA",
+    "   B CA",
+    "  B   C",
+    " B     ",
+    "A      "
+  ],
+  "result": {
+    "id": "avaritia:crystal_hoe"
+  },
+  "tier": 3
+}

@@ -1,0 +1,174 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+group = mod_group_id
+version = "${mc_version}-${mod_version}-${mod_version_tag}"
+base { archivesName = "${mod_name}-${mod_platform}" }
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "BlameJared"
+        url = "https://maven.blamejared.com/"
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mc_version}"
+    // 26.3 is unobfuscated: no mappings, plain configurations (Loom 1.18+).
+    implementation "net.fabricmc:fabric-loader:${loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    // JEI (compile only, not bundled; optional at runtime)
+    compileOnly "mezz.jei:jei-${mc_version}-fabric-api:${jei_version}"
+    // Optional mod integrations (compile-time API only; the mod works without them).
+    // 26.3 无混淆无 mappings，mod 无需重映射，与 JEI 一样用纯 compileOnly 即可。
+    compileOnly "maven.modrinth:XaT8sLP6:lVR1OKgV" // Trinkets Updated
+    compileOnly "maven.modrinth:nvQzSEkH:71CTWqdE" // Jade
+    compileOnly "org.projectlombok:lombok:${lombok_version}"
+    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+    compileOnly "org.jetbrains:annotations:${annotations_version}"
+    compileOnly "com.google.code.findbugs:jsr305:${jsr305_version}"
+    testImplementation platform("org.junit:junit-bom:${junit_version}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+// Current native Fabric tests are isolated from legacy fixtures using removed vanilla APIs.
+if (project.hasProperty('armorTests')) {
+    sourceSets {
+        armorTest {
+            java.srcDir 'src/gameTest/java'
+            java.include 'committee/nova/mods/avaritia/gametest/NeutronArmorGameTests.java'
+            java.include 'committee/nova/mods/avaritia/gametest/ArmorPersistenceProbe.java'
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+        }
+    }
+}
+
+// Optional compat integrations kept in source but excluded from compilation until their 26.3 Fabric
+// dependencies are available (JEI/Jade compiled directly; Trinkets stays runtime-optional, accessed
+// reflectively via TrinketsIntegration so the mod loads fine without it).
+def excludedCompat = [
+        'committee/nova/mods/avaritia/init/compat/emi/**',
+        'committee/nova/mods/avaritia/init/compat/kubejs/**',
+        'committee/nova/mods/avaritia/init/compat/crafttweaker/**'
+]
+sourceSets.main.java {
+    excludedCompat.each { exclude it }
+}
+
+// Tests covering the excluded compat integrations cannot compile without the
+// CraftTweaker/KubeJS dependencies, so they are excluded until those mods ship 26.3 builds.
+def excludedCompatTests = [
+        'committee/nova/mods/avaritia/init/compat/crafttweaker/**',
+        'committee/nova/mods/avaritia/init/compat/kubejs/**'
+]
+sourceSets.test.java {
+    excludedCompatTests.each { exclude it }
+}
+
+loom {
+    accessWidenerPath = file('src/main/resources/avaritia.accesswidener')
+    mods {
+        avaritia { sourceSet sourceSets.main }
+        if (project.hasProperty('armorTests')) {
+            avaritia_armor_test { sourceSet sourceSets.armorTest }
+        }
+        if (project.hasProperty('gameTests')) {
+            avaritia_gametest { sourceSet sourceSets.gameTest }
+        }
+    }
+    runs {
+        client { runDir 'run/client' }
+        server { runDir 'run/server' }
+        if (project.hasProperty('armorTests')) {
+            armorPersistence {
+                server()
+                source sourceSets.armorTest
+                runDir 'build/armor-persistence'
+                programArg '--nogui'
+                programArg '--port'
+                programArg '25593'
+                vmArg "-Davaritia.armor.persistence=${providers.gradleProperty('armorPhase').getOrElse('')}"
+                vmArg "-Davaritia.armor.evidence=${project.file('.dsh/evidence/armor-port-fabric-26.3/persistence')}"
+                vmArg '-Xmx2G'
+            }
+            armorTestServer {
+                server()
+                source sourceSets.armorTest
+                runDir 'build/armor-gametest'
+                vmArg '-Dfabric-api.gametest'
+                vmArg "-Dfabric-api.gametest.report-file=${project.file('.dsh/evidence/armor-port-fabric-26.3/gametest.xml')}"
+                vmArg '-Xmx2G'
+            }
+        }
+        if (project.hasProperty('gameTests')) {
+            gameTestServer {
+                server()
+                source sourceSets.gameTest
+                runDir 'run/gametest'
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.compileClasspath
+test { useJUnitPlatform() }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
+    withSourcesJar()
+}
+if (project.hasProperty('gameTests')) {
+    tasks.named('runGameTestServer').configure {
+        dependsOn tasks.named('gameTestClasses')
+    }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = java_version.toInteger()
+    options.compilerArgs += ['-Xmaxerrs', '2000', '-Xlint:-removal']
+}
+Map<String, Object> expansionVariables = [
+        version: project.version,
+        mod_id: project.mod_id,
+        mod_name: project.mod_name,
+        mc_version: project.mc_version,
+        loader_version: project.loader_version,
+        java_version: project.java_version,
+        game_test_version: project.game_test_version
+]
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties expansionVariables
+    filesMatching('fabric.mod.json') { expand expansionVariables }
+}
+tasks.named('wrapper').configure {
+    gradleVersion = project.gradle_version
+}
+jar {
+    from('LICENSE') { rename { "${it}_Re-Avaritia" } }
+}
+
+apply from: '../../gradle/shared-sources.gradle'

@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Isolated Avaritia gameplay test fixtures",
+    "min_format": [101, 1],
+    "max_format": [101, 1]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:neutron"
+    },
+    "b": {
+      "item": "avaritia:blaze_cube_block"
+    },
+    "c": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "d": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "e": {
+      "item": "avaritia:neutron_gear"
+    },
+    "f": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "g": {
+      "item": "avaritia:star_fuel"
+    },
+    "h": {
+      "item": "avaritia:eternal_singularity"
+    },
+    "i": {
+      "item": "avaritia:neutron_nugget"
+    }
+  },
+  "pattern": [
+    " aaadaaa ",
+    "baeegeea ",
+    "baegggea ",
+    "bdiegeid ",
+    "bdfehefdc",
+    " diegeidc",
+    " aedgdeac",
+    " aeegeeac",
+    " aaadaaa "
+  ],
+  "result": {
+    "item": "avaritia:infinity_upgrade"
+  },
+  "show_notification": true,
+  "tier": 4
+}

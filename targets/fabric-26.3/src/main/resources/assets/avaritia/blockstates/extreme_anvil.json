@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "avaritia:block/machine/extreme_anvil",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "avaritia:block/machine/extreme_anvil",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "avaritia:block/machine/extreme_anvil"
+    },
+    "facing=west": {
+      "model": "avaritia:block/machine/extreme_anvil",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.redstone",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:redstone"
+  },
+  "name": "avaritia:redstone",
+  "overlayColor": "ff0000",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "8a0901"
+}

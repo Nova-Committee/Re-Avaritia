@@ -1,0 +1,40 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "P": {
+      "item": "avaritia:neutron_pile"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "   IIIIIP",
+    " AC N  C ",
+    " CXN  C  ",
+    "I NIPC   ",
+    "IN PCN   ",
+    "I  CNIN  ",
+    "I C  NNA ",
+    "IC    AAN",
+    "P      NN"
+  ],
+  "result": {
+    "item": "avaritia:infinity_crossbow"
+  },
+  "show_notification": true,
+  "tier": 4
+}

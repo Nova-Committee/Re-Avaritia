@@ -1,0 +1,96 @@
+name: Bug Report / 错误报告
+description: Report a Re-Avaritia Fabric bug to help us improve. / 报告 Re-Avaritia Fabric 错误以帮助我们改进。
+title: "[Bug/漏洞] "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks / 检查
+      description: |
+        Please complete these checks before submitting an issue. / 请在提交问题之前完成以下检查。
+      options:
+        - label: I have [searched existing issues and pull requests](https://github.com/Nova-Committee/Re-Avaritia/issues?q=) to avoid duplicate reports. / 我已[搜索现有问题和拉取请求](https://github.com/Nova-Committee/Re-Avaritia/issues?q=)，以避免重复报告。
+          required: true
+        - label: I have read the README and CHANGELOG supplied with the Fabric branch or build I am using, but the problem still exists. / 我已阅读所用 Fabric 分支或构建附带的 README 和 CHANGELOG，但问题仍然存在。
+          required: true
+        - label: I understand that reports not following these instructions may be closed. / 我理解未按说明填写的报告可能会被关闭。
+          required: true
+  - type: input
+    id: java_version
+    attributes:
+      label: Java Version / Java 版本
+      description: |
+        Which Java version runs Minecraft? This Fabric port requires Java 17 or newer. / Minecraft 实际使用哪个 Java 版本？此 Fabric 移植需要 Java 17 或更高版本。
+      placeholder: "17.0.6"
+    validations:
+      required: true
+  - type: input
+    id: minecraft_version
+    attributes:
+      label: Minecraft Version / Minecraft 版本
+      description: |
+        Which Minecraft version are you using? This branch targets 1.20.1. / 您使用哪个 Minecraft 版本？此分支面向 1.20.1。
+      placeholder: "1.20.1"
+    validations:
+      required: true
+  - type: input
+    id: re_avaritia_fabric_version
+    attributes:
+      label: Re-Avaritia Fabric Version / Re-Avaritia Fabric 版本
+      description: |
+        Provide the exact mod version. For a source build, also include the commit if known. / 请提供准确的模组版本；若自行构建，已知时请同时提供提交编号。
+      placeholder: "1.20.1-1.4.2-fabric"
+    validations:
+      required: true
+  - type: input
+    id: fabric_loader_version
+    attributes:
+      label: Fabric Loader Version / Fabric Loader 版本
+      description: |
+        Provide the installed Fabric Loader version (0.17.2 or newer). / 请提供安装的 Fabric Loader 版本（0.17.2 或更高版本）。
+      placeholder: "0.17.2"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description / 描述
+      description: |
+        Describe the bug clearly, including expected and actual behavior. Add screenshots if helpful, after removing private information. / 请清晰描述错误，包括预期行为和实际行为；可附上有助于解释的截图，并先移除私人信息。
+    validations:
+      required: true
+  - type: textarea
+    id: to_reproduce
+    attributes:
+      label: To Reproduce / 重现步骤
+      description: |
+        Explain how to trigger the bug step by step, including whether it occurs on a client, dedicated server, or both. / 请逐步说明如何触发错误，并说明发生在客户端、独立服务器还是两者上。
+    validations:
+      required: true
+  - type: textarea
+    id: mod_list
+    attributes:
+      label: Installed Mods and Optional Integrations / 已安装模组和可选联动
+      description: |
+        List other installed mods and their versions, especially Trinkets, EMI, JEI, Jade, KubeJS, or CraftTweaker if present. These integrations are optional, not required prerequisites. Write "none" if no other mods are installed. / 请列出其他已安装模组及其版本，尤其是已安装的 Trinkets、EMI、JEI、Jade、KubeJS 或 CraftTweaker。这些联动均为可选项，不是必需前置；若未安装其他模组，请填写 "none"。
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Logs / 日志
+      description: |
+        Provide the relevant latest.log and crash report, if one exists, as text or an attachment. Preserve diagnostic context, but redact access tokens, passwords, private server addresses, and personal information before posting publicly. / 请以文本或附件提供相关 latest.log，以及存在时的崩溃报告。请保留诊断上下文，但在公开提交前隐去访问令牌、密码、私人服务器地址和个人信息。
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Config / 配置
+      description: |
+        Provide config/avaritia-common.json, or write "default" if unchanged. Remove secrets and personal information before posting; do not include unrelated configuration files. / 请提供 config/avaritia-common.json；若未修改默认配置，请填写 "default"。提交前请移除秘密凭据和个人信息，不要附上无关配置文件。
+      render: text
+    validations:
+      required: true

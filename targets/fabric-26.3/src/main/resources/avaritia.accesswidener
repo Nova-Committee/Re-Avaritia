@@ -1,0 +1,63 @@
+accessWidener v2 official
+# Allow building untrimmed CraftingInput grids (oversized crafting tables rely on
+# the raw slot grid to derive the table tier and absolute slot indices).
+accessible method net/minecraft/world/item/crafting/CraftingInput <init> (IILjava/util/List;)V
+# Oversized shaped-table codec mirrors vanilla's own MAP_CODEC wiring (NeoForge
+# counterpart uses equivalent access transformer entries).
+accessible method net/minecraft/world/item/crafting/ShapedRecipePattern unpack (Lnet/minecraft/world/item/crafting/ShapedRecipePattern$Data;)Lcom/mojang/serialization/DataResult;
+accessible field net/minecraft/world/item/crafting/ShapedRecipePattern data Ljava/util/Optional;
+
+# --- Dimension runtime creation (DynamicDimensions / InfinityRingDimensions) ---
+# Per-player Infinity Ring levels read the server's level map and storage access.
+accessible field net/minecraft/server/MinecraftServer levels Ljava/util/Map;
+accessible field net/minecraft/server/MinecraftServer executor Ljava/util/concurrent/Executor;
+accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+# PersonalLevelData must be installed onto reloaded levels.
+accessible field net/minecraft/world/level/Level levelData Lnet/minecraft/world/level/storage/WritableLevelData;
+mutable field net/minecraft/world/level/Level levelData Lnet/minecraft/world/level/storage/WritableLevelData;
+accessible field net/minecraft/server/level/ServerLevel serverLevelData Lnet/minecraft/world/level/storage/ServerLevelData;
+mutable field net/minecraft/server/level/ServerLevel serverLevelData Lnet/minecraft/world/level/storage/ServerLevelData;
+# Force day-cycle ticking on personal dimensions.
+accessible field net/minecraft/server/level/ServerLevel tickTime Z
+mutable field net/minecraft/server/level/ServerLevel tickTime Z
+# LevelStem registry is frozen at boot; runtime-added personal dimensions inject into it.
+accessible field net/minecraft/core/MappedRegistry frozen Z
+accessible field net/minecraft/core/MappedRegistry byId Lit/unimi/dsi/fastutil/objects/ObjectList;
+accessible field net/minecraft/core/MappedRegistry toId Lit/unimi/dsi/fastutil/objects/Reference2IntMap;
+accessible field net/minecraft/core/MappedRegistry byLocation Ljava/util/Map;
+accessible field net/minecraft/core/MappedRegistry byKey Ljava/util/Map;
+accessible field net/minecraft/core/MappedRegistry byValue Ljava/util/Map;
+accessible field net/minecraft/core/MappedRegistry registrationInfos Ljava/util/Map;
+# Commands / handlers resolve the owning server off the player.
+accessible field net/minecraft/server/level/ServerPlayer server Lnet/minecraft/server/MinecraftServer;
+# Side checks from common handlers.
+accessible field net/minecraft/world/level/Level isClientSide Z
+
+# --- Client UI / rendering introspection (UiInspector) ---
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+accessible field net/minecraft/client/renderer/GameRenderer fogRenderer Lnet/minecraft/client/renderer/fog/FogRenderer;
+accessible field net/minecraft/client/renderer/GameRenderer guiRenderer Lnet/minecraft/client/gui/render/GuiRenderer;
+accessible method com/mojang/blaze3d/platform/NativeImage writeToChannel (Ljava/nio/channels/WritableByteChannel;)Z
+
+# --- Misc 26.3 access ---
+# Runtime dimension bootstrap rebinds registry reference holders.
+accessible method net/minecraft/core/Holder$Reference bindValue (Ljava/lang/Object;)V
+# Custom particle types reuse the vanilla protected limiter-override constructor.
+accessible method net/minecraft/core/particles/SimpleParticleType <init> (Z)V
+# JEI slot-render interception walks the screen's widget list.
+accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+# Compressed crops tick randomly through the shared block behaviour hook.
+accessible method net/minecraft/world/level/block/state/BlockBehaviour isRandomlyTicking (Lnet/minecraft/world/level/block/state/BlockState;)Z
+# Infinity barrage collects the arrow drops after piercing sweeps.
+accessible method net/minecraft/world/entity/projectile/arrow/AbstractArrow getPickupItem ()Lnet/minecraft/world/item/ItemStack;
+# Immortal item entities inherit the vanilla return-to-player target UUID.
+accessible field net/minecraft/world/entity/item/ItemEntity target Ljava/util/UUID;
+
+# --- Custom halo texture atlas ---
+# Registering avaritia:halo at AtlasManager construction needs the private
+# AtlasEntry record constructor (NeoForge exposes the same via RegisterTextureAtlasesEvent).
+accessible class net/minecraft/client/resources/model/sprite/AtlasManager$AtlasEntry
+accessible method net/minecraft/client/resources/model/sprite/AtlasManager$AtlasEntry <init> (Lnet/minecraft/client/renderer/texture/TextureAtlas;Lnet/minecraft/client/resources/model/sprite/AtlasManager$AtlasConfig;)V

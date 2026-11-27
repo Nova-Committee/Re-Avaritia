@@ -1,0 +1,18 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:brick",
+    "b": "minecraft:egg",
+    "c": "minecraft:gravel",
+    "d": "minecraft:sand"
+  },
+  "pattern": [
+    "aaa",
+    "dbd",
+    "ccc"
+  ],
+  "result": {
+    "id": "minecraft:sniffer_egg"
+  },
+  "tier": 1
+}

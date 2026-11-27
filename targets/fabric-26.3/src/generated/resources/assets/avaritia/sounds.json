@@ -1,0 +1,10 @@
+{
+  "gaping_void": {
+    "sounds": [
+      {
+        "name": "avaritia:gaping_void",
+        "stream": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+package committee.nova.mods.avaritia.api.utils.vec.uv;
+
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+public class IconTransformation extends UVTransformation {
+
+    public TextureAtlasSprite icon;
+
+    public IconTransformation(TextureAtlasSprite icon) {
+        this.icon = icon;
+    }
+
+    public IconTransformation(IconTransformation other) {
+        this(other.icon);
+    }
+
+    @Override
+    public void apply(UV uv) {
+        uv.u = icon.getU((float) (uv.u * 16));
+        uv.v = icon.getV((float) (uv.v * 16));
+    }
+
+    @Override
+    public UVTransformation inverse() {
+        return new Inverse(icon);
+    }
+
+    @Override
+    public IconTransformation copy() {
+        return new IconTransformation(this);
+    }
+
+    private static class Inverse extends IconTransformation {
+
+        public Inverse(TextureAtlasSprite icon) {
+            super(icon);
+        }
+
+        public Inverse(Inverse other) {
+            super(other);
+        }
+
+        @Override
+        public void apply(UV uv) {
+            uv.u = ((float) uv.u - icon.getU0()) / (icon.getU1() - icon.getU0()) / 16.0F;
+            uv.v = ((float) uv.v - icon.getV0()) / (icon.getV1() - icon.getV0()) / 16.0F;
+        }
+
+        @Override
+        public UVTransformation inverse() {
+            return new IconTransformation(icon);
+        }
+
+        @Override
+        public IconTransformation copy() {
+            return new Inverse(this);
+        }
+    }
+}

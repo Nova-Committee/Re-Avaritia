@@ -1,0 +1,528 @@
+package committee.nova.mods.avaritia.common.tile;
+
+import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
+import committee.nova.mods.avaritia.api.iface.ITileIO;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
+import committee.nova.mods.avaritia.api.util.lang.Localizable;
+import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
+import committee.nova.mods.avaritia.core.io.TileIOHandler;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+/**
+ * Description:
+ * @author cnlimiter
+ * Date: 2022/4/2 17:39
+ * Version: 1.0
+ */
+public class NeutronCompressorTile extends BaseInventoryTileEntity implements ITileIO {
+    // 面配置系统
+    private SideConfiguration sideConfig = new SideConfiguration();
+    // 主动IO操作计时器
+    private int activeIOtick = 0;
+    private static final int ACTIVE_IO_INTERVAL = 20; // 每秒执行一次主动IO
+    // IO处理器
+    private final TileIOHandler ioHandler = new TileIOHandler(this, NeutronCompressorBlock.FACING);
+
+    private final ItemStackWrapper inventory;
+    private final ItemStackWrapper recipeInventory;
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case NeutronCompressorMenu.DATA_PROGRESS -> progress;
+                case NeutronCompressorMenu.DATA_MATERIAL_COUNT -> materialCount;
+                case NeutronCompressorMenu.DATA_MATERIALS_REQUIRED -> getMaterialsRequired();
+                case NeutronCompressorMenu.DATA_TIME_REQUIRED -> getTimeRequired();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == NeutronCompressorMenu.DATA_PROGRESS) {
+                progress = value;
+            } else if (index == NeutronCompressorMenu.DATA_MATERIAL_COUNT) {
+                materialCount = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NeutronCompressorMenu.DATA_COUNT;
+        }
+    };
+    private ICompressorRecipe recipe;
+    private ItemStack materialStack = ItemStack.EMPTY;
+    private int materialCount;
+    private int progress;
+    private boolean recipeLocked = false;
+    private ICompressorRecipe lockedRecipe = null;
+    private CompressorTier tier;
+
+    public NeutronCompressorTile(BlockPos pos, BlockState state) {
+        super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
+        this.inventory = createInventoryHandler(slot -> setChangedFast());
+        this.recipeInventory = ItemStackWrapper.create(1);
+        if (state.is(ModBlocks.neutron_compressor.get())) {
+            tier = CompressorTier.DEFAULT;
+        } else if (state.is(ModBlocks.dense_neutron_compressor.get())) {
+            tier = CompressorTier.DENSE;
+        } else if (state.is(ModBlocks.denser_neutron_compressor.get())) {
+            tier = CompressorTier.DENSER;
+        } else if (state.is(ModBlocks.densest_neutron_compressor.get())) {
+            tier = CompressorTier.DENSEST;
+        }
+    }
+
+    public static ItemStackWrapper createInventoryHandler() { return createInventoryHandler(null); }
+
+    private static ItemStackWrapper createInventoryHandler(committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction changed) {
+        return ItemStackWrapper.create(2, changed, builder -> {
+                    builder.setOutputSlots(0);
+                    builder.setCanInsert((slot, stack) -> slot == 1);
+                    builder.setCanExtract((slot) -> slot == 0 || slot == 1);
+                }
+        );
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
+
+        var output = tile.inventory.getStackInSlot(0);
+        var input = tile.inventory.getStackInSlot(1);
+
+        tile.recipeInventory.setStackInSlot(0, tile.materialStack);
+
+        // 处理主动IO操作
+        if (!level.isClientSide()) {
+            tile.activeIOtick++;
+            if (tile.activeIOtick >= ACTIVE_IO_INTERVAL) {
+                tile.activeIOtick = 0;
+                tile.handleActiveIO();
+            }
+        }
+
+        if (tile.recipeLocked && tile.lockedRecipe != null) {
+            // 锁定状态下使用锁定的配方
+            tile.recipe = tile.lockedRecipe.matches(tile.toCraftingInput(), level) ? tile.lockedRecipe : null;
+        } else {
+            // 正常状态查找配方
+            if (tile.recipe == null || !tile.recipe.matches(tile.toCraftingInput(), level)) {
+                tile.recipe = level.recipeAccess().getSynchronizedRecipes()
+                        .getFirstMatch(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.toCraftingInput(), level)
+                        .map(RecipeHolder::value)
+                        .orElse(null);
+            }
+        }
+
+        if (!level.isClientSide()) {
+            if (!input.isEmpty()) {
+                if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
+                    // 外部存储可能绕过槽位上限直接塞入 >64 的堆叠；materialStack 只用于
+                    // 配方匹配/显示，数量由 materialCount 单独记录，因此这里必须夹到合法堆叠数，
+                    // 否则 saveAdditional 的 ItemStack.OPTIONAL_CODEC 会因 count>99 抛错。
+                    tile.materialStack = tile.legalMaterialStack(input);
+
+                    tile.setChangedFast();
+                }
+
+                if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
+                    if (tile.doesItemMatchMaterialStack(input, tile.materialStack)) {
+                        int consumeAmount = input.getCount();
+
+                        consumeAmount = Math.min(consumeAmount, Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier) - tile.materialCount);
+
+
+                        input.shrink(consumeAmount);
+                        tile.materialCount += consumeAmount;
+
+                        tile.setChangedFast();
+
+                    }
+                }
+            }
+
+            if (tile.recipe != null) {
+                if (tile.materialCount >= tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
+                    tile.setProgress(tile.progress + 1);
+                    if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
+                        var result = tile.recipe.assemble(tile.toCraftingInput());
+                        int produced = tile.producedCount(result);
+
+                        // 输出槽容量必须按“放大后的实际产出”判断，否则 result.getCount()=1、
+                        // outputAmplifier=2、输出槽已有 63 个时会通过检查并 grow 到 65，产生
+                        // 超过最大堆叠/超过 99 的非法 ItemStack（保存/网络同步时崩溃）。
+                        if (produced > 0 && ItemUtils.canCombineStacks(result.copyWithCount(produced), output)) {
+                            tile.updateResult(result.copyWithCount(produced));
+                            tile.setProgress(0);
+                            tile.materialCount -= Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier);
+
+                            if (tile.materialCount <= 0) {
+                                tile.materialStack = ItemStack.EMPTY;
+                            }
+
+                            tile.setChangedFast();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        tile.dispatchIfChanged();
+    }
+
+    @Override
+    public @NotNull ItemStackWrapper getInventory() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.materialCount = input.getIntOr("MaterialCount", 0);
+        this.materialStack = input.read("MaterialStack", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        this.setProgress(input.getIntOr("Progress", 0));
+        this.recipeLocked = input.getBooleanOr("RecipeLocked", false);
+        // 加载面配置
+        input.read("SideConfig", CompoundTag.CODEC).ifPresent(tag -> this.sideConfig = SideConfiguration.fromNBT(tag));
+        this.lockedRecipe = null;
+    }
+
+    @Override
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("MaterialCount", this.materialCount);
+        output.store("MaterialStack", ItemStack.OPTIONAL_CODEC, this.materialStack);
+        output.putInt("Progress", this.progress);
+        output.putBoolean("RecipeLocked", this.recipeLocked);
+
+        // 保存面配置
+        output.store("SideConfig", CompoundTag.CODEC, sideConfig.toNBT());
+    }
+
+    /** 单格 CraftingInput，包装当前材料栈以驱动配方匹配/组装。 */
+    private CraftingInput toCraftingInput() {
+        return new CraftingInput(1, 1, List.of(this.recipeInventory.getStackInSlot(0)));
+    }
+
+    @Override
+    public @NotNull Component getDisplayName() {
+        return Localizable.of("block.avaritia." + tier.name).build();
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
+        return new NeutronCompressorMenu(windowId, playerInventory, this.inventory, this.getBlockPos(), this.data);
+    }
+
+    @Override
+    public ItemHandler getItemHandler(@Nullable Direction side) {
+        return isRemoved() ? null : ioHandler.getItemHandler(getInventory(), side);
+    }
+
+
+    public CompressorTier getTier() {
+        return tier;
+    }
+
+    public void setTier(CompressorTier tier) {
+        this.tier = tier;
+    }
+
+    public ItemStack getMaterialStack() {
+        return this.materialStack;
+    }
+
+    public boolean hasMaterialStack() {
+        return !this.materialStack.isEmpty();
+    }
+
+    public int getMaterialCount() {
+        return this.materialCount;
+    }
+
+    public boolean hasRecipe() {
+        return this.recipe != null;
+    }
+
+    public ICompressorRecipe getActiveRecipe() {
+        return this.recipe;
+    }
+
+    public int getMaterialsRequired() {
+        if (this.hasRecipe())
+            return Mth.ceil(this.recipe.getInputCount() * this.tier.inputAmplifier);
+        return 0;
+    }
+
+    public int getTimeRequired() {
+        if (this.hasRecipe())
+            return Mth.ceil(this.recipe.getTimeCost() * this.tier.timeAmplifier);
+        return 0;
+    }
+
+
+    private void updateResult(ItemStack produced) {
+        var result = this.inventory.getStackInSlot(0);
+
+        if (result.isEmpty()) {
+            this.inventory.setStackInSlot(0, produced.copy());
+        } else {
+            this.inventory.setStackInSlot(0, ItemUtils.grow(result, produced.getCount()));
+        }
+    }
+
+    /**
+     * 按机器等级计算单次实际产出数量，并夹到物品自身的最大堆叠数。
+     */
+    private int producedCount(ItemStack result) {
+        if (result.isEmpty()) {
+            return 0;
+        }
+        long count = (long) result.getCount() * this.tier.outputAmplifier;
+        return (int) Math.min(result.getMaxStackSize(), Math.max(1L, count));
+    }
+
+    private ItemStack legalMaterialStack(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return stack.copyWithCount(Math.min(stack.getCount(), stack.getMaxStackSize()));
+    }
+
+    // 新增方法：配方锁定相关
+    public boolean isRecipeLocked() {
+        return this.recipeLocked;
+    }
+
+    public void setRecipeLock(boolean locked, ICompressorRecipe recipe) {
+        this.recipeLocked = locked;
+        this.lockedRecipe = locked && recipe != null ? recipe : null;
+        this.setChangedAndDispatch();
+    }
+
+    public ICompressorRecipe getLockedRecipe() {
+        return this.lockedRecipe;
+    }
+
+    // 新增方法：材料弹出相关
+    public void clearMaterials() {
+        this.materialStack = ItemStack.EMPTY;
+        this.materialCount = 0;
+        this.setProgress(0);
+        this.setChangedAndDispatch();
+    }
+
+    public boolean canEjectMaterials() {
+        return this.materialCount > 0 &&
+                (this.recipe == null ||
+                        this.materialCount < this.recipe.getInputCount() * this.tier.inputAmplifier);
+    }
+
+    /**
+     * 处理主动输入输出操作
+     */
+    private void handleActiveIO() {
+        ioHandler.handleActiveIO();
+    }
+
+
+    // IO接口实现方法
+    /**
+     * 获取方块配置
+     */
+    @Override
+    public SideConfiguration getSideConfiguration() {
+        return this.sideConfig;
+    }
+
+    @Override
+    public void setSideConfiguration(SideConfiguration config) {
+        this.sideConfig = config;
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, config);
+        }
+    }
+
+
+    @Override
+    public void cycleSideModeForNeutronCollector(Direction direction) {
+        SideConfiguration.SideMode current = sideConfig.getSideMode(direction);
+        SideConfiguration.SideMode nextMode;
+
+        if (current == SideConfiguration.SideMode.OFF) {
+            nextMode = SideConfiguration.SideMode.PASSIVE_MIXIN;
+        } else if (current == SideConfiguration.SideMode.PASSIVE_MIXIN) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_INPUT;
+        } else if (current == SideConfiguration.SideMode.ACTIVE_INPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_OUTPUT;
+        } else if (current == SideConfiguration.SideMode.ACTIVE_OUTPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_MIXIN;
+        } else {
+            // 默认从PASSIVE_OUTPUT开始
+            nextMode = SideConfiguration.SideMode.OFF;
+        }
+
+        sideConfig.setSideMode(direction, nextMode);
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, sideConfig);
+        }
+    }
+
+    @Override
+    public void setIOChange() {
+        this.setChangedAndDispatch();
+    }
+
+    @Override
+    public void extractFromHandler(ItemHandler externalHandler, Direction fromSide) {
+        var inputSlot = this.inventory.getStackInSlot(1);
+
+        // 检查当前输入槽是否已满或材料类型不匹配
+        if (!inputSlot.isEmpty() && !doesItemMatchMaterialStack(inputSlot, materialStack)) {
+            return;
+        }
+
+        for (int i = 0; i < externalHandler.getSlots(); i++) {
+            ItemStack stack = externalHandler.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+
+            // 检查输入物品是否在配方中
+            //if (!canInsertItem(stack)) continue;
+
+            // 检查是否与当前材料类型匹配
+            if (!materialStack.isEmpty() && !doesItemMatchMaterialStack(stack, materialStack)) {
+                continue;
+            }
+
+            // 计算可转移的数量
+            int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
+            int spaceInInput = materialStack.isEmpty() || this.recipe == null ? 64 : (int) (this.recipe.getInputCount() * this.tier.inputAmplifier - materialCount);
+
+            int inputCount = inputSlot.isEmpty() ? 64 : inputSlot.getMaxStackSize() - inputSlot.getCount();
+
+            if (spaceInInput + inputCount <= 0) break;
+
+            int transferAmount = Math.min(maxTransfer, spaceInInput + inputCount);
+            ItemStack extractedStack = externalHandler.extractItem(i, transferAmount, false);
+
+            if (!extractedStack.isEmpty()) {
+                if (materialStack.isEmpty()) {
+                    materialStack = legalMaterialStack(extractedStack);
+                }
+
+                // 将物品放入输入槽
+                if (inputSlot.isEmpty()) {
+                    this.inventory.setStackInSlot(1, extractedStack.copy());
+                } else {
+                    inputSlot.grow(extractedStack.getCount());
+                }
+                this.setChanged();
+                break;
+            }
+        }
+    }
+
+    /**
+     * 向外部物品处理器插入物品
+     */
+    @Override
+    public void insertToHandler(ItemHandler externalHandler, Direction toSide) {
+        // 检查输出槽是否有物品
+        var outputSlot = this.inventory.getStackInSlot(0);
+        if (outputSlot.isEmpty()) return;
+
+        ItemStack remaining = outputSlot.copy();
+
+        for (int i = 0; i < externalHandler.getSlots() && !remaining.isEmpty(); i++) {
+            ItemStack insertResult = externalHandler.insertItem(i, remaining, false);
+            int transferred = remaining.getCount() - insertResult.getCount();
+
+            if (transferred > 0) {
+                outputSlot.shrink(transferred);
+                remaining = insertResult;
+            }
+        }
+
+        if (!remaining.equals(outputSlot)) {
+            this.setChanged();
+        }
+    }
+
+    /** progress的setter；ContainerData 实时读取字段，无需手动写入数据槽 */
+    private void setProgress(int progress)
+    {
+        this.progress = progress;
+    }
+
+    public boolean canInsertItem(ItemStack stack) {
+        if (this.recipeLocked && this.lockedRecipe != null) {
+            return doesItemMatchRecipeIngredient(stack, this.lockedRecipe);
+        } else if (this.level != null) {
+            var recipes = this.level.recipeAccess().getSynchronizedRecipes().getAllOfType(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+            for (var holder : recipes) {
+                if (doesItemMatchRecipeIngredient(stack, holder.value())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //检查物品是否匹配配方的Ingredient
+    private boolean doesItemMatchRecipeIngredient(ItemStack stack, ICompressorRecipe recipe) {
+        if (recipe == null) return false;
+        Ingredient ingredient = recipe.getInput();
+        return ingredient.test(stack);
+    }
+
+    //检查物品是否匹配当前材料栈
+    private boolean doesItemMatchMaterialStack(ItemStack stack, ItemStack materialStack) {
+        if (materialStack.isEmpty()) return true;
+
+        // 如果有配方，使用配方的Ingredient进行匹配
+        if (this.recipe != null) {
+            return doesItemMatchRecipeIngredient(stack, this.recipe);
+        }
+
+        // 如果没有配方，回退到简单的物品ID比较
+        return stack.is(materialStack.getItem());
+    }
+
+}

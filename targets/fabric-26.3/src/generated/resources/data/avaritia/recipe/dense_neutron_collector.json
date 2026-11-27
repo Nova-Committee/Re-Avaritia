@@ -1,0 +1,43 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:ender_pearl"
+    },
+    "B": {
+      "item": "minecraft:nether_star"
+    },
+    "C": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "D": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "E": {
+      "item": "minecraft:emerald_block"
+    },
+    "F": {
+      "item": "avaritia:endest_pearl"
+    },
+    "G": {
+      "item": "avaritia:neutron_collector"
+    }
+  },
+  "pattern": [
+    "AAC   CAA",
+    "AB     BA",
+    "C DEEED C",
+    "  EGGGE  ",
+    "  EGFGE  ",
+    "  EGGGE  ",
+    "C DEEED C",
+    "AB     BA",
+    "AAC   CAA"
+  ],
+  "result": {
+    "item": "avaritia:dense_neutron_collector"
+  },
+  "show_notification": true,
+  "tier": 4
+}

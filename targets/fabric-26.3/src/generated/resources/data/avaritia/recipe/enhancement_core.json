@@ -1,0 +1,43 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "B": {
+      "item": "avaritia:infinity_nugget"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "E": {
+      "item": "avaritia:endest_pearl"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "P": {
+      "item": "avaritia:neutron_pile"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "   PPP   ",
+    " NPCCCPN ",
+    " PABBBAP ",
+    "PCBBXBBCP",
+    "PCBXEXBCP",
+    "PCBBXBBCP",
+    " PABBBAP ",
+    " NPCCCPN ",
+    "   PPP   "
+  ],
+  "result": {
+    "item": "avaritia:enhancement_core"
+  },
+  "show_notification": true,
+  "tier": 4
+}

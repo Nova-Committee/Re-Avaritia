@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.quartz",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:quartz"
+  },
+  "name": "avaritia:quartz",
+  "overlayColor": "eae5de",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "b6a48e"
+}

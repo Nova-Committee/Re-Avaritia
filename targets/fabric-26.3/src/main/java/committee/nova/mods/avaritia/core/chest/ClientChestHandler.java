@@ -1,0 +1,129 @@
+package committee.nova.mods.avaritia.core.chest;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+
+import javax.annotation.Nullable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * @author cnlimiter
+ */
+public class ClientChestHandler extends ChestHandler {
+    @Nullable
+    public InfinityChestContainer container;
+
+    public ClientChestHandler() {
+    }
+
+    public void addListener(InfinityChestContainer container) {
+        this.container = container;
+    }
+
+    public void removeListener() {
+        this.container = null;
+        storageItems.clear();
+        componentDataCache.clear();
+        nbtDataCache.clear();
+    }
+
+    @Override
+    public void onItemChanged(String itemId, boolean listChanged) {
+        super.onItemChanged(itemId, listChanged);
+        if (container != null) container.refreshContainer(listChanged);
+    }
+
+    public void update(CompoundTag tag) {
+        if (container == null) return;
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag components = tag.contains("components") ? tag.getCompoundOrEmpty("components") : null;
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
+
+        AtomicBoolean fullUpdate = new AtomicBoolean(false);
+        AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
+        items.keySet().forEach(itemId -> {
+            long count = items.getLongOr(itemId, 0L);
+            if (count <= 0L) {
+                if (storageItems.containsKey(itemId)) {
+                    storageItems.remove(itemId);
+                    componentDataCache.remove(itemId);
+                    nbtDataCache.remove(itemId);
+                    fullUpdate.set(true);
+                    needRefreshContainer.set(true);
+                }
+            } else {
+                if (storageItems.containsKey(itemId)) {
+                    if (storageItems.get(itemId) != count) {
+                        storageItems.replace(itemId, count);
+                        needRefreshContainer.set(true);
+                    }
+                } else {
+                    storageItems.put(itemId, count);
+                    fullUpdate.set(true);
+                    needRefreshContainer.set(true);
+                }
+            }
+        });
+
+        // 处理完整组件快照
+        if (components != null) {
+            components.keySet().forEach(itemId -> {
+                if (components.get(itemId) instanceof CompoundTag snapshot) {
+                    componentDataCache.put(itemId, snapshot);
+                }
+            });
+        }
+
+        // 处理旧版NBT数据
+        if (nbtData != null) {
+            nbtData.keySet().forEach(itemId -> {
+                Tag nbtTag = nbtData.get(itemId);
+                if (nbtTag instanceof CompoundTag) {
+                    nbtDataCache.put(itemId, nbtTag);
+                }
+            });
+        }
+
+        if (needRefreshContainer.get()) container.refreshContainer(fullUpdate.get());
+        if (fullUpdate.get()) {updateItemKeys();}
+    }
+
+    public void fullUpdate(CompoundTag tag) {
+        CompoundTag items = tag.getCompoundOrEmpty("items");
+        CompoundTag components = tag.contains("components") ? tag.getCompoundOrEmpty("components") : null;
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompoundOrEmpty("nbtData") : null;
+
+        storageItems.clear();
+        componentDataCache.clear();
+        nbtDataCache.clear();
+
+        items.keySet().forEach(itemId -> storageItems.put(itemId, items.getLongOr(itemId, 0L)));
+
+        if (components != null) {
+            components.keySet().forEach(itemId -> {
+                if (components.get(itemId) instanceof CompoundTag snapshot) {
+                    componentDataCache.put(itemId, snapshot);
+                }
+            });
+        }
+
+        if (nbtData != null) {
+            nbtData.keySet().forEach(itemId -> {
+                Tag nbtTag = nbtData.get(itemId);
+                if (nbtTag instanceof CompoundTag) {
+                    nbtDataCache.put(itemId, nbtTag);
+                }
+            });
+        }
+
+        updateItemKeys();
+        if (container != null) {
+            container.refreshContainer(true);
+        }
+    }
+
+    @Override
+    public boolean isRemoved() {
+        return false;
+    }
+}

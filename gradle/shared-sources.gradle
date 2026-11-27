@@ -1,31 +1,32 @@
-def shared = layout.projectDirectory.dir('../../shared/src/main')
+def shared = layout.projectDirectory.dir('../../shared')
+def minecraftVersion = findProperty('mc_version') ?: property('minecraft_version')
 def sharedSources = [
-        java: [root: shared.dir('java').asFile,
+        java: [root: shared.dir("${minecraftVersion}/src/main/java").asFile,
                path: 'committee/nova/mods/avaritia/api/client/screen/component/PortableLayout.java'],
-        resources: [root: shared.dir('resources').asFile,
+        resources: [root: shared.dir('src/main/resources').asFile,
                     path: 'assets/avaritia/textures/block/chest/compressed_chest.png']
 ]
 
-sharedSources.each { kind, source ->
+def checks = sharedSources.collect { kind, source ->
     sourceSets.main[kind].srcDir(source.root)
+    def duplicates = sourceSets.collectEntries { sourceSet ->
+        def candidates = sourceSet[kind].srcDirs.findAll { directory ->
+            sourceSet.name != 'main' || directory != source.root
+        }.collect { directory -> new File(directory, source.path) }
+        [(sourceSet.name): candidates]
+    }
+    [canonical: new File(source.root, source.path), duplicates: duplicates]
 }
 
 def validateSharedSources = tasks.register('validateSharedSources') {
     doLast {
-        sharedSources.each { kind, source ->
-            File canonical = new File(source.root, source.path)
-            if (!canonical.isFile()) {
-                throw new GradleException("Missing shared source: ${canonical}")
+        checks.each { source ->
+            if (!source.canonical.isFile()) {
+                throw new GradleException("Missing shared source: ${source.canonical}")
             }
-            sourceSets.each { sourceSet ->
-                sourceSet[kind].srcDirs.each { directory ->
-                    if (sourceSet.name == 'main' && directory == source.root) {
-                        return
-                    }
-                    File candidate = new File(directory, source.path)
-                    if (candidate.exists()) {
-                        throw new GradleException("Source set ${sourceSet.name} shadows shared source: ${candidate}")
-                    }
+            source.duplicates.each { sourceSet, candidates ->
+                candidates.findAll { it.exists() }.each { candidate ->
+                    throw new GradleException("Source set ${sourceSet} shadows shared source: ${candidate}")
                 }
             }
         }
@@ -35,5 +36,7 @@ def validateSharedSources = tasks.register('validateSharedSources') {
 // Check before either consumer, including direct task invocations and generated resource roots.
 tasks.withType(JavaCompile).configureEach { dependsOn(validateSharedSources) }
 tasks.withType(ProcessResources).configureEach { dependsOn(validateSharedSources) }
-tasks.named('sourcesJar') { dependsOn(validateSharedSources) }
-tasks.named('javadoc') { dependsOn(validateSharedSources) }
+tasks.withType(Jar).configureEach {
+    if (name == 'sourcesJar') dependsOn(validateSharedSources)
+}
+tasks.withType(Javadoc).configureEach { dependsOn(validateSharedSources) }

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": "avaritia:crystal_matrix_ingot"
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "id": "avaritia:crystal_matrix"
+  }
+}

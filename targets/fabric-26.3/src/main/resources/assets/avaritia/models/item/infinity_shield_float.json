@@ -1,0 +1,6 @@
+{
+  "parent": "avaritia:item/infinity_shield_defending",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_shield/infinity_shield_model"
+  }
+}

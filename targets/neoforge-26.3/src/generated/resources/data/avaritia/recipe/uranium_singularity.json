@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/uranium"
+      }
+    }
+  ],
+  "type": "avaritia:compressor",
+  "ingredient": {
+    "neoforge:ingredient_type": "avaritia:tag",
+    "tag": "c:ingots/uranium"
+  },
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:uranium"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

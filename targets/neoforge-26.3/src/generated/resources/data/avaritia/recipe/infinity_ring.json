@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:infinity_ingot",
+    "b": "avaritia:neutron_ingot",
+    "c": "avaritia:crystal_matrix_ingot",
+    "d": "avaritia:endest_pearl",
+    "e": "avaritia:neutron_ring"
+  },
+  "pattern": [
+    "  aaaaa  ",
+    " accccca ",
+    "ac bbb ca",
+    "acb d bca",
+    "acbdedbca",
+    "acb d bca",
+    "ac bbb ca",
+    " accccca ",
+    "  aaaaa  "
+  ],
+  "result": {
+    "id": "avaritia:infinity_ring"
+  },
+  "tier": 4
+}

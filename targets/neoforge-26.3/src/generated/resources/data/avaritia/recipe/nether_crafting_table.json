@@ -1,0 +1,20 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:double_compressed_crafting_table",
+    "b": "minecraft:respawn_anchor",
+    "c": "minecraft:wither_skeleton_skull",
+    "d": "minecraft:netherrack",
+    "e": "minecraft:netherite_ingot",
+    "f": "minecraft:nether_star"
+  },
+  "pattern": [
+    "cbc",
+    "dad",
+    "efe"
+  ],
+  "result": {
+    "id": "avaritia:nether_crafting_table"
+  },
+  "tier": 1
+}

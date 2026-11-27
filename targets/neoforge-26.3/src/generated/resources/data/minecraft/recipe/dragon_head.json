@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:wither_skeleton_skull",
+    "b": "minecraft:end_crystal",
+    "c": "minecraft:dragon_egg"
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " b "
+  ],
+  "result": {
+    "id": "minecraft:dragon_head"
+  },
+  "tier": 1
+}

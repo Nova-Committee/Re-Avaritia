@@ -1,0 +1,26 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "when": "gui",
+        "model": {
+          "type": "minecraft:special",
+          "base": "avaritia:item/compressed_chest",
+          "model": {
+            "type": "avaritia:compressed_chest",
+            "gui": true
+          }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:special",
+      "base": "avaritia:item/compressed_chest",
+      "model": {
+        "type": "avaritia:compressed_chest"
+      }
+    },
+    "property": "minecraft:display_context"
+  }
+}

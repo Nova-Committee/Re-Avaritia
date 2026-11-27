@@ -1,0 +1,262 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    alias libs.plugins.moddevgradle
+    id 'idea'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
+group = mod_group_id
+
+base {
+    archivesName = mod_name + "-" + mod_loader
+}
+
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    exclude("**/*.bbmodel")
+    exclude("src/generated/**/.cache")
+}
+
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
+
+sourceSets {
+    gameTest
+}
+
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+repositories {
+    mavenCentral()
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Aliyun Maven Central"
+                url = uri("https://maven.aliyun.com/repository/central")
+            }
+        }
+        filter {
+            includeGroup "org.junit"
+            includeGroup "org.junit.jupiter"
+            includeGroup "org.junit.platform"
+            includeGroup "org.opentest4j"
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Jared's maven"
+                url = "https://maven.blamejared.com/"
+            }
+        }
+        filter {
+            includeGroup "mezz.jei"
+            includeGroup "net.mezzdev.config"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth Maven"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Illusive Soulworks maven"
+                url = "https://maven.theillusivec4.top/"
+            }
+        }
+        filter {
+            includeGroup "top.theillusivec4.curios"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Curse Maven"
+                url = "https://www.cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    version = project.neo_version
+    addModdingDependenciesTo sourceSets.gameTest
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+        "${mod_id}_gametest" {
+            sourceSet(sourceSets.gameTest)
+        }
+    }
+
+    runs {
+        client {
+            client()
+            loadedMods = [mods."${mod_id}"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            if (providers.gradleProperty('uiInspect').map { it.toBoolean() }.getOrElse(false)) {
+                systemProperty 'avaritia.ui.inspect', 'true'
+                systemProperty 'avaritia.ui.inspectOutput', layout.buildDirectory.dir('ui-inspection').get().asFile.absolutePath
+                gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
+            }
+        }
+
+        server {
+            server()
+            loadedMods = [mods."${mod_id}"]
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            gameDirectory = layout.buildDirectory.dir('gametest').get().asFile
+            sourceSet = sourceSets.gameTest
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_gametest"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        serverData {
+            serverData()
+            loadedMods = [mods."${mod_id}"]
+            gameDirectory.set(layout.projectDirectory.dir('run-data'))
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath,
+                    '--existing', file('../../shared/src/main/resources').absolutePath
+        }
+
+        clientData {
+            clientData()
+            loadedMods = [mods."${mod_id}"]
+            gameDirectory.set(layout.projectDirectory.dir('run-data'))
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath,
+                    '--existing', file('../../shared/src/main/resources').absolutePath
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+}
+
+dependencies {
+    // MixinExtras — needed by RecipeManagerMixin @Local
+    implementation libs.mixinextras
+
+    // JEI (compile only, not bundled)
+    compileOnly libs.jei.api
+    runtimeOnly libs.jei.runtime
+
+    // Jade
+    implementation libs.jade
+
+    // Curios API（compileOnly：17.0.0-beta.2 引用了 FML 26.3 已移除的 ModConfig.Type.COMMON，
+    // 与 NeoForge 26.3.0.45-beta 运行时不兼容；模组对 curios 本就是可选集成）
+    compileOnly libs.curios.neoforge
+
+    // KubeJS integration (compile only, optional at runtime)
+    compileOnly libs.kubejs.neoforge
+    compileOnly libs.rhino
+
+    // Equivox API: optional integration, never bundled or added to runtime.
+    compileOnly("curse.maven:equivox-1597601:9035761") { transitive = false }
+
+    // Lombok
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+
+    // JUnit (test)
+    gameTestImplementation sourceSets.main.output
+
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.api
+    testRuntimeOnly libs.junit.engine
+    testRuntimeOnly libs.junit.platform.launcher
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            issue_tracker          : issue_tracker,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:-removal')
+}
+
+apply from: '../../gradle/shared-sources.gradle'

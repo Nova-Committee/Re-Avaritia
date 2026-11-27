@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "avaritia_armor_test",
+  "version": "1.0.0",
+  "name": "Re-Avaritia armor regression fixtures",
+  "environment": "server",
+  "entrypoints": {"main": ["committee.nova.mods.avaritia.gametest.ArmorPersistenceProbe"], "fabric-gametest": ["committee.nova.mods.avaritia.gametest.NeutronArmorGameTests"]},
+  "depends": {"fabricloader": ">=0.19.5", "minecraft": "26.3", "avaritia": "*", "fabric-gametest-api-v1": "*"}
+}

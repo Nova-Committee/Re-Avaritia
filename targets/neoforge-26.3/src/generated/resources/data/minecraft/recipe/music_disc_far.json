@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:record_fragment",
+    "b": "minecraft:lime_dye"
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "id": "minecraft:music_disc_far"
+  },
+  "tier": 1
+}

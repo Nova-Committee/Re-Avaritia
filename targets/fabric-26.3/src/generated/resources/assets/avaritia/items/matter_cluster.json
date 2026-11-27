@@ -1,0 +1,20 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "avaritia:cosmic",
+      "mask": [
+        "avaritia:mask/item/matter_cluster_empty_mask"
+      ],
+      "model": "avaritia:item/matter_cluster"
+    },
+    "on_true": {
+      "type": "avaritia:cosmic",
+      "mask": [
+        "avaritia:mask/item/matter_cluster_full_mask"
+      ],
+      "model": "avaritia:item/matter_cluster/full"
+    },
+    "property": "avaritia:matter_cluster_full"
+  }
+}

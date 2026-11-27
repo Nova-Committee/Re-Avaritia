@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "avaritia:block/resource/diamond_lattice_block"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:infinity_nugget",
+    "C": "avaritia:crystal_matrix_ingot",
+    "E": "avaritia:endest_pearl",
+    "N": "avaritia:neutron_ingot",
+    "P": "avaritia:neutron_pile",
+    "X": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    "   PPP   ",
+    " NPCCCPN ",
+    " PABBBAP ",
+    "PCBBXBBCP",
+    "PCBXEXBCP",
+    "PCBBXBBCP",
+    " PABBBAP ",
+    " NPCCCPN ",
+    "   PPP   "
+  ],
+  "result": {
+    "id": "avaritia:enhancement_core"
+  },
+  "tier": 4
+}

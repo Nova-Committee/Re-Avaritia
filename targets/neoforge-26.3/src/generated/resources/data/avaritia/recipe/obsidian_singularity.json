@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:obsidian",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:obsidian"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

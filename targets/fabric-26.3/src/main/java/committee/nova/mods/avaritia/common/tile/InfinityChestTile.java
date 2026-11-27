@@ -1,0 +1,254 @@
+package committee.nova.mods.avaritia.common.tile;
+
+import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
+import committee.nova.mods.avaritia.api.util.lang.Localizable;
+import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
+import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import lombok.Getter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.ChestLidController;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
+import net.minecraft.world.level.block.entity.LidBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.UUID;
+
+/**
+ * @author cnlimiter
+ */
+public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity, committee.nova.mods.avaritia.core.io.NativeInventory {
+    @Getter
+    private UUID owner;
+    @Getter
+    private boolean locked = false;
+    @Getter
+    private String filter = "";
+    @Getter
+    private byte sortType = 4;
+    @Getter
+    private UUID channelID = UUID.randomUUID();
+    private ServerChestHandler channel = new ServerChestHandler();
+    private int[] automationSlots = committee.nova.mods.avaritia.core.io.NativeInventory.EMPTY_SLOTS;
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public InfinityChestTile(BlockPos pos, BlockState state) {
+        super(ModTileEntities.infinity_chest_tile.get(), pos, state);
+    }
+
+
+    @Override
+    public @NotNull Component getDisplayName() {
+        return Localizable.of("block.avaritia.infinity_chest").build();
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
+        return new InfinityChestMenu(containerId, player, this);
+    }
+
+    public void handleUpdateTag(ValueInput input) {
+        readChestData(input);
+    }
+
+    /**
+     * 将方块实体数据写入掉落物的 BLOCK_ENTITY_DATA 组件（放置时由 BlockItem 自动还原）。
+     */
+    public void saveToItem(net.minecraft.world.item.ItemStack stack) {
+        if (this.level == null) return;
+        TagValueOutput output = TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, this.level.registryAccess());
+        this.saveAdditional(output);
+        net.minecraft.world.item.BlockItem.setBlockEntityData(stack, this.getType(), output);
+    }
+
+    /**
+     * 26.3 中方块实体移除前钩子。不调用 super：默认实现检测到本类是 Container
+     * （NativeInventory）会调用 Containers.dropContents，把虚拟存储中每种物品
+     * 最多散落一组（64 个）到世界，而物品本体仍在 ServerChestManager 虚拟存储中，
+     * 由掉落物携带的 channelID 在重放时整体恢复，散落纯属复制/吞物品。
+     */
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
+    }
+
+    @Override
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        readChestData(input);
+    }
+
+    @Override
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        if (owner != null) {
+            output.store("owner", UUIDUtil.CODEC, owner);
+            output.putBoolean("locked", locked);
+        }
+        output.putString("filter", filter);
+        output.putByte("sortType", sortType);
+        output.store("channelID", UUIDUtil.CODEC, channelID);
+    }
+
+    @Override
+    public committee.nova.mods.avaritia.api.common.wrapper.ItemHandler getItemHandler(Direction side) {
+        bindChannel();
+        return isRemoved() || channel.isRemoved() ? null : channel;
+    }
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        var handler = getItemHandler(side);
+        return handler == null ? committee.nova.mods.avaritia.core.io.NativeInventory.EMPTY_SLOTS : (automationSlots = committee.nova.mods.avaritia.core.io.NativeInventory.slotIndices(handler.getSlots(), automationSlots));
+    }
+
+    @Override
+    public boolean stillValid(Player player) { return !isRemoved() && player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5) <= 64; }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
+        resetChannelBinding();
+        this.setChanged();
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+        this.setChanged();
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
+        this.setChanged();
+    }
+
+    public void setSortType(byte sortType) {
+        this.sortType = sortType;
+        this.setChanged();
+    }
+
+    public void setChannelId(UUID id) {
+        this.channelID = id;
+        resetChannelBinding();
+        this.setChanged();
+    }
+
+    public ServerChestHandler getChannel() {
+        bindChannel();
+        return channel;
+    }
+
+    private void readChestData(ValueInput input) {
+        input.read("owner", UUIDUtil.CODEC).ifPresent(uuid -> {
+            owner = uuid;
+            locked = input.getBooleanOr("locked", false);
+        });
+        filter = input.getStringOr("filter", filter);
+        sortType = input.getByteOr("sortType", sortType);
+        channelID = input.read("channelID", UUIDUtil.CODEC).orElse(channelID);
+        resetChannelBinding();
+    }
+
+    private void bindChannel() {
+        if (level == null || level.isClientSide || owner == null || channelID == null) return;
+
+        ServerChestManager manager = ServerChestManager.getInstance();
+        if (manager == null) {
+            LOGGER.warn("[InfinityChestTile] ServerChestManager is null during channel binding. pos={}", getBlockPos());
+            return;
+        }
+
+        ServerChestHandler resolved = manager.getChest(owner, channelID);
+        if (channel != resolved) {
+            channel = resolved;
+        }
+    }
+
+    private void resetChannelBinding() {
+        channel = new ServerChestHandler();
+    }
+
+    private final ChestLidController chestLidController = new ChestLidController();
+    private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
+        @Override
+        protected void onOpen(Level level, BlockPos pos, BlockState state) {
+            playSound(level, pos, SoundEvents.CHEST_OPEN);
+        }
+
+        @Override
+        protected void onClose(Level level, BlockPos pos, BlockState state) {
+            playSound(level, pos, SoundEvents.CHEST_CLOSE);
+        }
+
+        @Override
+        protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+            level.blockEvent(pos, state.getBlock(), 1, newCount);
+        }
+
+        @Override
+        public boolean isOwnContainer(Player player) {
+            return player.containerMenu instanceof InfinityChestMenu menu && menu.chestTile == InfinityChestTile.this;
+        }
+    };
+
+    public void startOpen(ServerPlayer player) {
+        if (!isRemoved() && !player.isSpectator() && level != null) {
+            openersCounter.incrementOpeners(player, level, worldPosition, getBlockState(), player.getContainerInteractionRange());
+        }
+    }
+
+    public void stopOpen(ServerPlayer player) {
+        if (!isRemoved() && !player.isSpectator() && level != null) {
+            openersCounter.decrementOpeners(player, level, worldPosition, getBlockState());
+        }
+    }
+
+    public void recheckOpen(Level level) {
+        openersCounter.recheckOpeners(level, worldPosition, getBlockState());
+    }
+
+    public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, InfinityChestTile blockEntity) {
+        blockEntity.chestLidController.tickLid();
+    }
+
+    @Override
+    public boolean triggerEvent(int id, int type) {
+        if (id == 1) {
+            this.chestLidController.shouldBeOpen(type > 0);
+            return true;
+        } else {
+            return super.triggerEvent(id, type);
+        }
+    }
+
+    @Override
+    public float getOpenNess(float partialTicks) {
+        return this.chestLidController.getOpenness(partialTicks);
+    }
+
+    public static void playSound(Level pLevel, BlockPos pPos, SoundEvent pSound) {
+        double d0 = (double) pPos.getX() + 0.5;
+        double d1 = (double) pPos.getY() + 0.5;
+        double d2 = (double) pPos.getZ() + 0.5;
+        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.getRandom().nextFloat() * 0.1F + 0.9F);
+    }
+}

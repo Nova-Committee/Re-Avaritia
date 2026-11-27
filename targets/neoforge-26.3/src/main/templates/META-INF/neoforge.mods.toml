@@ -1,0 +1,84 @@
+# NeoForge 模组元数据 — ${mod_id}
+# 此文件为模板，构建时通过 Gradle 的 ProcessResources 展开变量。
+
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+issueTrackerURL = "${issue_tracker}"
+
+[[mods]]
+    modId = "${mod_id}"
+    version = "${mod_version}"
+    displayName = "${mod_name}"
+    iconFile = "logo.png"
+    credits = "Cnlimiter & Nova Committee"
+    authors = "${mod_authors}"
+    description = '''${mod_description}'''
+
+# ── Mixin ─────────────────────────────────────────────────
+# 声明 Mixin 配置文件，供 MDG 自动处理 Mixin AP 与 refmap
+
+    enumExtensions = "META-INF/enumextensions.json"
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
+
+# ── 必要依赖 ──────────────────────────────────────────────
+
+[[dependencies.${mod_id}]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "${neo_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "${minecraft_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+# ── 可选兼容 ──────────────────────────────────────────────
+
+[[dependencies.${mod_id}]]
+    modId = "jei"
+    type = "optional"
+    versionRange = "[31,)"
+    ordering = "NONE"
+    side = "CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId = "jade"
+    type = "optional"
+    versionRange = "[15,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "curios"
+    type = "optional"
+    versionRange = "[9,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "kubejs"
+    type = "optional"
+    versionRange = "[26.1.2-8.0.1,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "rhino"
+    type = "optional"
+    versionRange = "[2101.2.7-build.85,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "equivox"
+    type = "optional"
+    versionRange = "[1.4.0,)"
+    ordering = "AFTER"
+    side = "BOTH"

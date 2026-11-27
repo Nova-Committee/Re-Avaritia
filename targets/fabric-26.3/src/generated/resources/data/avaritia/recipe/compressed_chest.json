@@ -1,0 +1,15 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "c": "minecraft:chest",
+    "g": "avaritia:neutron_gear"
+  },
+  "pattern": [
+    "ccc",
+    "cgc",
+    "ccc"
+  ],
+  "result": "avaritia:compressed_chest",
+  "show_notification": true
+}

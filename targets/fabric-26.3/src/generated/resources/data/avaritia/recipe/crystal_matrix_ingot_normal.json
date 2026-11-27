@@ -1,0 +1,15 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": "minecraft:nether_star",
+    "i": "avaritia:diamond_lattice"
+  },
+  "pattern": [
+    "iai",
+    "iai",
+    "iai"
+  ],
+  "result": "avaritia:crystal_matrix_ingot",
+  "show_notification": true
+}

@@ -1,0 +1,99 @@
+package committee.nova.mods.avaritia.client.screen;
+
+import committee.nova.mods.avaritia.common.item.misc.InfinityClockTimes;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
+import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
+
+public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> {
+    private EditBox timeInput;
+
+    public InfinityClockScreen(InfinityClockMenu container, Inventory inventory, Component title) {
+        super(container, inventory, title, ScreenTextures.INFINITY_CLOCK_TIME, 176, 166);
+    }
+
+    @Override
+    protected void subInit() {
+        super.subInit();
+        int startX = this.leftPos + 17;
+        int startY = this.topPos + 22;
+        int buttonW = 22;
+        int spacing = 2;
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, InfinityClockTimes.SUNRISE), "clock.preset.0"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, InfinityClockTimes.DAY), "clock.preset.6000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, InfinityClockTimes.SUNSET), "clock.preset.12000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, InfinityClockTimes.NIGHT), "clock.preset.14000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, InfinityClockTimes.MIDNIGHT), "clock.preset.18000"));
+        addRenderableWidget(UiInspector.name(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, InfinityClockTimes.LATE_NIGHT), "clock.preset.22000"));
+        this.titleLabelX = 62;
+        timeInput = new EditBox(this.font, this.leftPos + 38, this.topPos + 52, 113, 10, Component.literal(""));
+        timeInput.setMaxLength(10);
+        addRenderableWidget(UiInspector.name(timeInput, "clock.input"));
+    }
+
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (timeInput.isFocused() && event.isConfirmation()) {
+            try {
+                int time = Integer.parseInt(timeInput.getValue());
+                // 发送网络包到服务端
+                NetworkHandler.sendToServer(new C2SSetTimePacket(time));
+                return true;
+            } catch (NumberFormatException ignored) {
+                // 输入不是有效数字，忽略
+            }
+        }
+        return super.keyPressed(event);
+    }
+
+    // 自定义按钮
+    static class TimeButton extends AbstractWidget {
+        private final int texU, texV;
+        private final int index;
+        private final int timeValue; // 存储时间值
+        private final int w = 22;
+        private final int h = 24;
+
+        public TimeButton(int x, int y, int texU, int texV, int index, int timeValue) {
+            super(x, y, 22, 24, Component.empty());
+            this.texU = texU;
+            this.texV = texV;
+            this.index = index;
+            this.timeValue = timeValue;
+        }
+
+        @Override
+        protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            if (isHovered()) {
+                int hoverU = 177 + (index % 2) * (w + 1);
+                int hoverV = 1 + (index / 2) * (h + 1);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.INFINITY_CLOCK_TIME, getX(), getY(), hoverU, hoverV, w, h, 256, 256);
+            } else {
+                graphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.INFINITY_CLOCK_TIME, getX(), getY(), texU, texV, w, h, 256, 256);
+            }
+        }
+
+        @Override
+        public void onClick(MouseButtonEvent event, boolean doubleClick) {
+            // 发送网络包到服务端
+            NetworkHandler.sendToServer(new C2SSetTimePacket(timeValue));
+        }
+
+        @Override
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
+            defaultButtonNarrationText(output);
+        }
+    }
+}
