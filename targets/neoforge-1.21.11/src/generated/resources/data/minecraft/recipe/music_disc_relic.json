@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:record_fragment",
+    "b": "minecraft:waxed_weathered_copper"
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:music_disc_relic"
+  },
+  "tier": 1
+}

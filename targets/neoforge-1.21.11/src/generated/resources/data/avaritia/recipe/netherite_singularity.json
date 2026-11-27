@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:netherite_ingot",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:netherite"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

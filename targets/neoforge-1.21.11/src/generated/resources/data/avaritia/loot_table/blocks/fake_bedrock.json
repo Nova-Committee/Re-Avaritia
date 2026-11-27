@@ -1,0 +1,4 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "avaritia:blocks/fake_bedrock"
+}

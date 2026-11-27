@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": "minecraft:echo_shard",
+    "b": "minecraft:sculk_shrieker",
+    "c": "minecraft:sculk",
+    "d": "minecraft:sculk_catalyst",
+    "x": "avaritia:double_compressed_crafting_table"
+  },
+  "pattern": [
+    "aba",
+    "cxc",
+    "ada"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:sculk_crafting_table"
+  }
+}

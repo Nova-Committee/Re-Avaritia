@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:glowstone_dust",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:glowstone"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

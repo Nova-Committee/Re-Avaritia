@@ -1,0 +1,196 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "botania"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "B": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_envy"
+        }
+      ]
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_gluttony"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_winter"
+        }
+      ]
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_lust"
+        }
+      ]
+    },
+    "F": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_pride"
+        }
+      ]
+    },
+    "G": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_wrath"
+        }
+      ]
+    },
+    "H": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_greed"
+        }
+      ]
+    },
+    "I": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:rune_sloth"
+        }
+      ]
+    },
+    "J": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:infinite_fruit"
+        }
+      ]
+    },
+    "K": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:flight_tiara"
+        }
+      ]
+    },
+    "L": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:king_key"
+        }
+      ]
+    },
+    "M": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:flugel_eye"
+        }
+      ]
+    },
+    "N": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:odin_ring"
+        }
+      ]
+    },
+    "O": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:spawner_mover"
+        }
+      ]
+    },
+    "P": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:mana_mirror"
+        }
+      ]
+    },
+    "Q": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:thor_ring"
+        }
+      ]
+    },
+    "R": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:mana_tablet"
+        }
+      ]
+    },
+    "S": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:dice"
+        }
+      ]
+    },
+    "T": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:fabulous_pool"
+        }
+      ]
+    },
+    "U": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "botania:terrasteel_block"
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "BAAACAAAD",
+    "ATTJKLTTA",
+    "ATUUMUUTA",
+    "ANUOPOUQA",
+    "EUUPRPUUF",
+    "ASUOPOUSA",
+    "ATUUUUUTA",
+    "ATTSISTTA",
+    "GAAAHAAAA"
+  ],
+  "result": {
+    "components": {
+      "minecraft:custom_data": {
+        "creative": true,
+        "mana": 500000
+      }
+    },
+    "count": 1,
+    "id": "botania:mana_tablet"
+  },
+  "tier": 4
+}

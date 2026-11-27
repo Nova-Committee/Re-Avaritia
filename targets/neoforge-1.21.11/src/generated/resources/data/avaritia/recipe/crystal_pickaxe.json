@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron_ingot",
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "avaritia:neutron"
+  },
+  "pattern": [
+    "CAAAA D",
+    " CCCC  ",
+    "    CCA",
+    "   B CA",
+    "  B  CA",
+    " B   CA",
+    "A     C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:crystal_pickaxe"
+  },
+  "tier": 3
+}

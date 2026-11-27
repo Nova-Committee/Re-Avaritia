@@ -1,0 +1,34 @@
+{
+  "parent": "avaritia:main/neutron_pile",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:neutron_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.neutron_ingot.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "avaritia:neutron_ingot"
+    },
+    "title": {
+      "translate": "advancements.avaritia.neutron_ingot.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

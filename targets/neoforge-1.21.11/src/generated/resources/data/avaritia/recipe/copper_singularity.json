@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:copper_ingot",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:copper"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

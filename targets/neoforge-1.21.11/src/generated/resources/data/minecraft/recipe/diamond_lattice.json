@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "avaritia:diamond_lattice_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "avaritia:diamond_lattice"
+  }
+}

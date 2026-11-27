@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:blue_ice",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:blue_ice"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

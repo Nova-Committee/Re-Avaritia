@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron",
+    "C": "avaritia:crystal_matrix_ingot"
+  },
+  "pattern": [
+    "     CA",
+    "    CAC",
+    " C CAC ",
+    " CCAC  ",
+    "CAAC   ",
+    " BACC  ",
+    "A C    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:crystal_sword"
+  },
+  "tier": 3
+}

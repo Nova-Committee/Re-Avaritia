@@ -1,0 +1,10 @@
+{
+  "type": "avaritia:shapeless_table",
+  "tier": 4,
+  "ingredients": [
+    "minecraft:milk_bucket"
+  ],
+  "result": {
+    "id": "avaritia_gametest:equivox_remainder"
+  }
+}

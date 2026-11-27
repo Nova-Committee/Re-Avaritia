@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:block/chest/compressed_chest",
+      "sprite": "avaritia:entity/chest/compressed_chest"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:block/chest/infinity_chest",
+      "sprite": "avaritia:entity/chest/infinity_chest"
+    }
+  ]
+}

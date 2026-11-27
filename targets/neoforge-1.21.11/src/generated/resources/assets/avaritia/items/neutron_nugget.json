@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "color": 1308622847,
+    "model": "avaritia:item/neutron_nugget",
+    "pulse": false,
+    "size": 6,
+    "texture": "avaritia:misc/halo_noise"
+  },
+  "oversized_in_gui": true
+}

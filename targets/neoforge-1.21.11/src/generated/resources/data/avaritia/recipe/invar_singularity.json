@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/invar"
+      }
+    }
+  ],
+  "type": "avaritia:compressor",
+  "ingredient": {
+    "neoforge:ingredient_type": "avaritia:tag",
+    "tag": "c:ingots/invar"
+  },
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:invar"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

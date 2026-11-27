@@ -1,0 +1,80 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:ultimate_energy_cube"
+        }
+      ]
+    },
+    "B": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:induction_casing"
+        }
+      ]
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:induction_port"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:ultimate_induction_cell"
+        }
+      ]
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:ultimate_induction_provider"
+        }
+      ]
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "S": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "BBBCECBBB",
+    "BDDDADDDB",
+    "BDSDADSDB",
+    "CDDDIDDDC",
+    "EAAISIAAE",
+    "CDDDIDDDC",
+    "BDSDADSDB",
+    "BDDDADDDB",
+    "BBBCECBBB"
+  ],
+  "result": {
+    "components": {
+      "mekanism:energy": {
+        "energy_containers": [
+          9223372036854775807
+        ]
+      }
+    },
+    "count": 1,
+    "id": "mekanism:creative_energy_cube"
+  },
+  "tier": 4
+}

@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:record_fragment",
+    "b": "minecraft:nether_gold_ore"
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:music_disc_pigstep"
+  },
+  "tier": 1
+}

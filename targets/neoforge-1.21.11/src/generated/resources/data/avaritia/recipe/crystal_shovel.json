@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron_ingot",
+    "C": "avaritia:crystal_matrix_ingot"
+  },
+  "pattern": [
+    "    CCC",
+    "   CCCC",
+    "    CCC",
+    "   B C ",
+    "  B    ",
+    " B     ",
+    "A      "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:crystal_shovel"
+  },
+  "tier": 3
+}

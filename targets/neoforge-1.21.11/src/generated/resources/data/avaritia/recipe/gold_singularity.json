@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:gold_ingot",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:gold"
+    },
+    "count": 1,
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

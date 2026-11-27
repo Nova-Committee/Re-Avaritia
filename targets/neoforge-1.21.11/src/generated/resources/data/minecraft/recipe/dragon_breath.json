@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:end_crystal"
+  },
+  "pattern": [
+    " a ",
+    "a a",
+    " a "
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:dragon_breath"
+  },
+  "tier": 1
+}
