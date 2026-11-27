@@ -36,7 +36,8 @@ export JAVA_HOME=/path/to/jdk-25
 ## 源码归属
 
 - `targets/<目标>/src/main` 放平台专用代码、资源、元数据与模板。`src/generated/resources` 放该目标使用的已提交生成资源或保留资源。`src/test` 放单元测试，部分目标另有 `src/gameTest`。
-- [共享 Java](../shared/src/main/java/) 维护 `PortableLayout`，[共享资源](../shared/src/main/resources/) 维护压缩箱主贴图。各版本的图集、模型和内嵌资源包仍由目标目录提供。[共享源检查](../gradle/shared-sources.gradle) 会拒绝覆盖这两份共享文件的同路径副本。
+- [全局共享 Java](../shared/src/main/java/) 由七个目标直接编译。`shared/<组>/src/main/java/` 按目标清单分配给字节一致的实现，包含 `1.20.1`、`26.3`、`neoforge` 和 `neoforge-modern`（1.21.11、26.1.2、26.3）。在目标目录里维护有加载器或游戏接口差异的实现。
+- [共享资源](../shared/src/main/resources/) 存放同路径、同字节的普通贴图和内嵌资源包贴图及动画元数据。运行时的内嵌资源包仍使用原路径，各目标保留自己的 `pack.mcmeta`、图集、模型和有差异的资源。[共享源检查](../gradle/shared-sources.gradle) 拒绝会覆盖共享文件的同路径副本。
 - [Stonecutter 源码](../src/main/java/) 存放 Forge 和 Fabric 共用的 `ResourceUtil`。[控制器](../stonecutter.gradle.kts) 为 Fabric 26.3 生成 `Identifier` 版本。
 
 ## 数据生成

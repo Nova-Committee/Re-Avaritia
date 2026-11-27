@@ -36,7 +36,8 @@ The [build workflow](../.github/workflows/build.yml) reads the same [target list
 ## Source ownership
 
 - `targets/<target>/src/main` holds loader- and version-specific code, resources, metadata and templates. `src/generated/resources` holds checked-in generator output or retained resources used by that target. `src/test` holds unit tests. Some targets also provide `src/gameTest`.
-- [Shared Java](../shared/src/main/java/) holds `PortableLayout`. [Shared resources](../shared/src/main/resources/) hold the main compressed chest texture. Target-specific atlases, models and embedded resource packs stay with their target. [Shared source checks](../gradle/shared-sources.gradle) reject copies that would shadow either shared file.
+- [Global Java sources](../shared/src/main/java/) compile into all seven targets. `shared/<group>/src/main/java/` holds byte-identical implementations assigned by the target list. The groups are `1.20.1`, `26.3`, `neoforge`, and `neoforge-modern` (1.21.11, 26.1.2 and 26.3). Keep code with loader or game API differences in its target.
+- [Shared resources](../shared/src/main/resources/) hold identical textures and their animation metadata for the main and embedded resource packs. The built-in pack keeps its runtime paths. Target-specific `pack.mcmeta`, atlases, models and differing resources live with each target. [Shared source checks](../gradle/shared-sources.gradle) reject copies that would shadow a shared file.
 - [Stonecutter sources](../src/main/java/) hold the versioned `ResourceUtil` shared by Forge and Fabric. The [controller](../stonecutter.gradle.kts) generates the `Identifier` variant for Fabric 26.3.
 
 ## Data generation

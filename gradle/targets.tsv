@@ -1,7 +1,7 @@
-forge	1.20.1	17
-fabric	1.20.1	17
-fabric-26.3	26.3	25
-neoforge-1.21.1	1.21.1	21
-neoforge-1.21.11	1.21.11	21	neo12111
-neoforge-26.1.2	26.1.2	25	neo2612
-neoforge-26.3	26.3	25	neo263
+forge	1.20.1	17	-	1.20.1
+fabric	1.20.1	17	-	1.20.1
+fabric-26.3	26.3	25	-	26.3
+neoforge-1.21.1	1.21.1	21	-	neoforge
+neoforge-1.21.11	1.21.11	21	neo12111	neoforge,neoforge-modern
+neoforge-26.1.2	26.1.2	25	neo2612	neoforge,neoforge-modern
+neoforge-26.3	26.3	25	neo263	neoforge,neoforge-modern,26.3

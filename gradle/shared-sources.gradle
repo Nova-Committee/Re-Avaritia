@@ -1,29 +1,42 @@
-def shared = layout.projectDirectory.dir('../../shared')
+def shared = rootProject.layout.projectDirectory.dir('shared')
+def targetManifest = rootProject.layout.projectDirectory.file('gradle/targets.tsv')
+def target = providers.fileContents(targetManifest).asText.get().readLines()
+        .collect { it.split('\t') }.find { it[0] == project.name }
+def javaRoots = [[root: shared.dir('src/main/java').asFile,
+                  required: 'committee/nova/mods/avaritia/api/client/screen/component/PortableLayout.java']]
+target[4].split(',').each { group ->
+    javaRoots.add([root: shared.dir("${group}/src/main/java").asFile])
+}
 def sharedSources = [
-        java: [root: shared.dir('src/main/java').asFile,
-               path: 'committee/nova/mods/avaritia/api/client/screen/component/PortableLayout.java'],
-        resources: [root: shared.dir('src/main/resources').asFile,
-                    path: 'assets/avaritia/textures/block/chest/compressed_chest.png']
+        java: javaRoots,
+        resources: [[root: shared.dir('src/main/resources').asFile,
+                     required: 'assets/avaritia/textures/block/chest/compressed_chest.png']]
 ]
 
-def checks = sharedSources.collect { kind, source ->
-    sourceSets.main[kind].srcDir(source.root)
-    Set<String> paths = [source.path] as Set
-    fileTree(source.root).visit { entry ->
-        if (!entry.directory) paths.add(entry.relativePath.pathString)
-    }
-    def otherRoots = sourceSets.collectEntries { sourceSet ->
-        def directories = sourceSet[kind].srcDirs.findAll { directory ->
-            sourceSet.name != 'main' || directory != source.root
+def checks = sharedSources.collectMany { kind, sources ->
+    sourceSets.main[kind].srcDirs(sources.collect { it.root })
+    sources.collect { source ->
+        Set<String> paths = [] as Set
+        if (source.required) paths.add(source.required)
+        fileTree(source.root).visit { entry ->
+            if (!entry.directory) paths.add(entry.relativePath.pathString)
         }
-        [(sourceSet.name): directories]
+        def otherRoots = sourceSets.collectEntries { sourceSet ->
+            def directories = sourceSet[kind].srcDirs.findAll { directory ->
+                sourceSet.name != 'main' || directory != source.root
+            }
+            [(sourceSet.name): directories]
+        }
+        [root: source.root, paths: paths, otherRoots: otherRoots]
     }
-    [root: source.root, paths: paths, otherRoots: otherRoots]
 }
 
 def validateSharedSources = tasks.register('validateSharedSources') {
     doLast {
         checks.each { source ->
+            if (!source.root.isDirectory()) {
+                throw new GradleException("Missing shared source directory: ${source.root}")
+            }
             source.paths.each { path ->
                 def canonical = new File(source.root, path)
                 if (!canonical.isFile()) {

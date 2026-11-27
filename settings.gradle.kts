@@ -46,7 +46,7 @@ for (name in selected) {
 dependencyResolutionManagement {
     versionCatalogs {
         for (name in selected) {
-            val catalog = targets.getValue(name).getOrNull(3) ?: continue
+            val catalog = targets.getValue(name)[3].takeUnless { it == "-" } ?: continue
             create(catalog) { from(files("targets/$name/gradle/libs.versions.toml")) }
         }
     }
