@@ -1,0 +1,21 @@
+{
+  "model": {
+    "type": "avaritia:halo_cosmic",
+    "color": -872415232,
+    "mask": [
+      "avaritia:mask/item/eternal_singularity_mask"
+    ],
+    "model": "avaritia:item/eternal_singularity",
+    "size": 6,
+    "texture": "avaritia:misc/halo",
+    "tints": [
+      {
+        "type": "avaritia:rainbow"
+      },
+      {
+        "type": "avaritia:rainbow"
+      }
+    ]
+  },
+  "oversized_in_gui": true
+}

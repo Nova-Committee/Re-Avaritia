@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "refinedstorage"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:infinity"
+    },
+    "B": {
+      "item": "avaritia:neutron_compressor"
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:creative_controller"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:64k_storage_part"
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "CAAABAAAC",
+    "AAAABAAAA",
+    "AAAABAAAA",
+    "AAADCDAAA",
+    "BBBCDCBBB",
+    "AAADCDAAA",
+    "AAAABAAAA",
+    "AAAABAAAA",
+    "CAAABAAAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "refinedstorage:creative_storage_disk"
+  },
+  "tier": 4
+}

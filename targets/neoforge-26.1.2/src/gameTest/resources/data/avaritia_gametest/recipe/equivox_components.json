@@ -1,0 +1,17 @@
+{
+  "type": "avaritia:shapeless_table",
+  "tier": 4,
+  "ingredients": [
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "avaritia:singularity",
+      "components": {
+        "avaritia:singularity_id": "avaritia_gametest:emc_fixture"
+      },
+      "strict": false
+    }
+  ],
+  "result": {
+    "id": "avaritia_gametest:equivox_components"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "enderio"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:ender_crystal"
+        }
+      ]
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:sentient_ender"
+        }
+      ]
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "V": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:vibrant_capacitor_bank"
+        }
+      ]
+    },
+    "W": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:weather_crystal"
+        }
+      ]
+    },
+    "Z": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:frank_n_zombie"
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "INIIIIINI",
+    "NZEEEEEZN",
+    "IECWWWCEI",
+    "IEWZIZWEI",
+    "IEWIVIWEI",
+    "IEWZIZWEI",
+    "IECWWWCEI",
+    "NZEEEEEZN",
+    "INIIIIINI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "enderio:creative_power"
+  },
+  "tier": 4
+}

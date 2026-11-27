@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "color": -872415232,
+    "model": "avaritia:item/infinity_upgrade",
+    "pulse": false,
+    "size": 4,
+    "texture": "avaritia:misc/halo"
+  },
+  "oversized_in_gui": true
+}

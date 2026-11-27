@@ -1,0 +1,32 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:neutron",
+    "b": "avaritia:neutron_ingot",
+    "c": "avaritia:diamond_lattice",
+    "d": "avaritia:blaze_cube",
+    "e": "avaritia:crystal_matrix",
+    "f": "avaritia:infinity_nugget",
+    "g": "avaritia:infinity_ingot",
+    "h": "avaritia:neutron_gear",
+    "i": "avaritia:infinity_catalyst",
+    "j": "minecraft:smithing_table",
+    "k": "avaritia:extreme_crafting_table",
+    "l": "avaritia:crystal_matrix_ingot"
+  },
+  "pattern": [
+    "aaaaaaaaa",
+    "bccfgfccb",
+    "bcdhhhdcb",
+    "lfhijihfl",
+    "eghjkjhge",
+    "lfhijihfl",
+    "bcdhhhdcb",
+    "bccfgfccb",
+    "bleeeeelb"
+  ],
+  "result": {
+    "id": "avaritia:extreme_smithing_table"
+  },
+  "tier": 4
+}

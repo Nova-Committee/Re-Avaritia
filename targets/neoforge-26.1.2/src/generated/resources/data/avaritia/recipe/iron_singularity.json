@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:iron_ingot",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:iron"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

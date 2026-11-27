@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:gold_nugget",
+    "b": "minecraft:blackstone"
+  },
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "result": {
+    "id": "minecraft:gilded_blackstone"
+  },
+  "tier": 1
+}

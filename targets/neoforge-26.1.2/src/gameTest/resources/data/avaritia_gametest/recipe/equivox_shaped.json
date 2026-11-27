@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:shaped_table",
+  "tier": 4,
+  "pattern": [
+    "NN       ",
+    " B       ",
+    "         ",
+    "         ",
+    "         ",
+    "         ",
+    "         ",
+    "         ",
+    "         "
+  ],
+  "key": {
+    "N": "avaritia:neutron_pile",
+    "B": "avaritia:blaze_cube"
+  },
+  "result": {
+    "id": "avaritia_gametest:equivox_shaped",
+    "count": 2
+  }
+}

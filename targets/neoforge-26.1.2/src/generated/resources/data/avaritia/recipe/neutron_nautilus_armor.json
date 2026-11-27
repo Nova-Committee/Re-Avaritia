@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      {
+        "neoforge:ingredient_type": "neoforge:components",
+        "components": {
+          "minecraft:potion_contents": {
+            "potion": "minecraft:water_breathing"
+          }
+        },
+        "items": "minecraft:potion"
+      },
+      "avaritia:enhancement_core",
+      "minecraft:water_bucket"
+    ]
+  },
+  "base": "minecraft:netherite_nautilus_armor",
+  "result": {
+    "id": "avaritia:neutron_nautilus_armor"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

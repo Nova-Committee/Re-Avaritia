@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:diamond",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:diamond"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

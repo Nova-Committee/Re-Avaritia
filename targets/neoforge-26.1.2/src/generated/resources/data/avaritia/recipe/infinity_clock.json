@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "minecraft:enchanted_golden_apple",
+      "avaritia:enhancement_core",
+      "avaritia:eternal_singularity"
+    ]
+  },
+  "base": "minecraft:clock",
+  "result": {
+    "id": "avaritia:infinity_clock"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

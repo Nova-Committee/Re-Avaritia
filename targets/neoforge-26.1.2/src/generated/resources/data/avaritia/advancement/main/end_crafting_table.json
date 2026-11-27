@@ -1,0 +1,33 @@
+{
+  "parent": "avaritia:main/nether_crafting_table",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:end_crafting_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.end_crafting_table.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "avaritia:end_crafting_table"
+    },
+    "title": {
+      "translate": "advancements.avaritia.end_crafting_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

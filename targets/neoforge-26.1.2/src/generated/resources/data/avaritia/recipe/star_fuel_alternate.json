@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:refined_coal_block",
+    "b": "avaritia:eternal_singularity"
+  },
+  "pattern": [
+    "         ",
+    "         ",
+    "         ",
+    "   aaa   ",
+    "   aba   ",
+    "   aaa   ",
+    "         ",
+    "         ",
+    "         "
+  ],
+  "result": {
+    "id": "avaritia:star_fuel"
+  },
+  "tier": 4
+}

@@ -1,0 +1,18 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:coal",
+    "b": "avaritia:neutron_nugget"
+  },
+  "pattern": [
+    "     ",
+    " aaa ",
+    " aba ",
+    " aaa ",
+    "     "
+  ],
+  "result": {
+    "id": "avaritia:refined_coal"
+  },
+  "tier": 2
+}

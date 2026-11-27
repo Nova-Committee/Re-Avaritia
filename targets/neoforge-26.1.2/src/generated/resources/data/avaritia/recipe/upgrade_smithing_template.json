@@ -1,0 +1,44 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:crystal_matrix_ingot",
+    "b": "avaritia:crystal_matrix",
+    "c": "avaritia:neutron_ingot",
+    "d": "avaritia:neutron_pile",
+    "e": "avaritia:infinity_nugget",
+    "f": "avaritia:infinity_ingot",
+    "g": "avaritia:infinity_catalyst",
+    "h": "minecraft:netherite_upgrade_smithing_template",
+    "i": "minecraft:sentry_armor_trim_smithing_template",
+    "j": "minecraft:dune_armor_trim_smithing_template",
+    "k": "minecraft:coast_armor_trim_smithing_template",
+    "l": "minecraft:wild_armor_trim_smithing_template",
+    "m": "minecraft:ward_armor_trim_smithing_template",
+    "n": "minecraft:eye_armor_trim_smithing_template",
+    "o": "minecraft:vex_armor_trim_smithing_template",
+    "p": "minecraft:tide_armor_trim_smithing_template",
+    "q": "minecraft:snout_armor_trim_smithing_template",
+    "r": "minecraft:rib_armor_trim_smithing_template",
+    "s": "minecraft:spire_armor_trim_smithing_template",
+    "t": "minecraft:wayfinder_armor_trim_smithing_template",
+    "u": "minecraft:shaper_armor_trim_smithing_template",
+    "v": "minecraft:silence_armor_trim_smithing_template",
+    "w": "minecraft:raiser_armor_trim_smithing_template",
+    "x": "minecraft:host_armor_trim_smithing_template"
+  },
+  "pattern": [
+    " aaabaaa ",
+    " accecca ",
+    " acefeca ",
+    "dijkelmnd",
+    "dogphqgrd",
+    "dstufvwxd",
+    " acdfdca ",
+    " accecca ",
+    " aaabaaa "
+  ],
+  "result": {
+    "id": "avaritia:upgrade_smithing_template"
+  },
+  "tier": 4
+}

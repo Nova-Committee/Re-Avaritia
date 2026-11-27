@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:amethyst_block",
+    "b": "minecraft:obsidian"
+  },
+  "pattern": [
+    "bab",
+    "aba",
+    "bab"
+  ],
+  "result": {
+    "id": "minecraft:crying_obsidian"
+  },
+  "tier": 1
+}

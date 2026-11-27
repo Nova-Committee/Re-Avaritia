@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:sculk_catalyst",
+    "b": "minecraft:sculk_sensor",
+    "c": "minecraft:bone_block"
+  },
+  "pattern": [
+    "cac",
+    " b "
+  ],
+  "result": {
+    "id": "minecraft:sculk_shrieker"
+  },
+  "tier": 1
+}

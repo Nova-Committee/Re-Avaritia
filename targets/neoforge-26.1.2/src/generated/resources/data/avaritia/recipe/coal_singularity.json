@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:coal",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:coal"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

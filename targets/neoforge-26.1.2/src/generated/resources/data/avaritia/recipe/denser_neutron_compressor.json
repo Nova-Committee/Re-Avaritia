@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:neutron_gear",
+    "B": "avaritia:neutron_pile",
+    "C": "avaritia:blaze_cube",
+    "D": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "components": {
+        "avaritia:singularity_id": "avaritia:gold"
+      },
+      "items": "avaritia:singularity"
+    },
+    "E": "avaritia:blaze_cube_block",
+    "F": "minecraft:gold_block",
+    "G": "avaritia:dense_neutron_compressor"
+  },
+  "pattern": [
+    "ABB F BBA",
+    "BCC   CCB",
+    "BCDEEEDCB",
+    "  EGGGE  ",
+    "F EGEGE F",
+    "  EGGGE  ",
+    "BCDEEEDCB",
+    "BCC   CCB",
+    "ABB F BBA"
+  ],
+  "result": {
+    "id": "avaritia:denser_neutron_compressor"
+  },
+  "tier": 4
+}

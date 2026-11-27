@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "avaritia:halo_cosmic",
+    "color": -872415232,
+    "mask": [
+      "avaritia:mask/item/matter_cluster_full_mask"
+    ],
+    "model": "avaritia:item/full_matter_cluster",
+    "texture": "avaritia:misc/halo"
+  },
+  "oversized_in_gui": true
+}

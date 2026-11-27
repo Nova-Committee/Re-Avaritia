@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shapeless_table",
+  "ingredients": [
+    "minecraft:apple",
+    "minecraft:golden_apple",
+    "minecraft:melon_slice",
+    "minecraft:glistering_melon_slice",
+    "minecraft:sweet_berries",
+    "minecraft:chorus_fruit",
+    "minecraft:carrot",
+    "minecraft:golden_carrot",
+    "minecraft:potato",
+    "minecraft:poisonous_potato",
+    "minecraft:beetroot",
+    "minecraft:kelp",
+    "minecraft:nether_wart",
+    "minecraft:cocoa_beans",
+    "minecraft:pitcher_pod",
+    "minecraft:honey_bottle",
+    "minecraft:cactus",
+    "minecraft:bamboo",
+    "minecraft:sugar_cane",
+    "minecraft:sea_pickle",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:crimson_fungus",
+    "minecraft:warped_fungus",
+    "minecraft:wheat",
+    "minecraft:pumpkin",
+    "avaritia:neutron_nugget"
+  ],
+  "result": {
+    "id": "avaritia:ultimate_stew"
+  },
+  "tier": 4
+}

@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "avaritia:neutron_pile",
+  "inputCount": 2000,
+  "timeCost": 240,
+  "result": {
+    "id": "avaritia:singularity",
+    "components": {
+      "avaritia:singularity_id": "avaritia_gametest:emc_fixture"
+    }
+  }
+}

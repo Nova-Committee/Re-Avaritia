@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron_ingot",
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "avaritia:diamond_lattice"
+  },
+  "pattern": [
+    "  CDAAC",
+    "   CCCD",
+    "C A  B ",
+    "DC  B  ",
+    "AC B   ",
+    "ACB    ",
+    "CD     "
+  ],
+  "result": {
+    "id": "avaritia:crystal_bow"
+  },
+  "tier": 3
+}
