@@ -28,7 +28,7 @@ mods.avaritia.CraftingTable.addCatalyst("catalyst2",
 ]
 , 1);
 
-mods.avaritia.CraftingTable.addEternal("eternal2",
+mods.avaritia.CraftingTable.addEnternal("eternal2",
 [
     <item:minecraft:coal_block>, <item:minecraft:coal_block>, <item:minecraft:coal_block>,
     <item:minecraft:coal_block>, <item:minecraft:diamond>, <item:minecraft:coal_block>,

@@ -1,8 +1,8 @@
-# KubeJS奇点创建指南
-<p>
-    <a href="KUBEJS_SINGULARITY_GUIDE.md">English</a> | 
-    <a href="KUBEJS_SINGULARITY_GUIDE_CN.md">简体中文</a>
-</p>
+# Forge 1.20.1 KubeJS 奇点指南
+
+[English](KUBEJS_SINGULARITY_GUIDE.md) · [脚本 API](../../skills/re-avaritia-datapack/references/scripts.md#kubejs) · [返回项目首页](../../README_CN.md)
+
+在 Forge 1.20.1 中把脚本放入 `kubejs/server_scripts/`。
 
 ## 概述
 
@@ -14,7 +14,7 @@
 - [高级功能](#高级功能)
 
 
-## 🚀 基础用法
+## 基础用法
 
 ### 最简单的奇点
 
@@ -50,7 +50,7 @@ AvaritiaEvents.singularity(event => {
 })
 ```
 
-## 🔧 高级功能
+## 高级功能
 
 ### 字段说明
 

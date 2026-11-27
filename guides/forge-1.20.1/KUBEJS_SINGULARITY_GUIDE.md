@@ -1,8 +1,8 @@
-# KubeJS Singularity Creation Guide
-<p>
-    <a href="KUBEJS_SINGULARITY_GUIDE.md">English</a> | 
-    <a href="KUBEJS_SINGULARITY_GUIDE_CN.md">简体中文</a>
-</p>
+# KubeJS singularities on Forge 1.20.1
+
+[简体中文](KUBEJS_SINGULARITY_GUIDE_CN.md) · [Scripting API](../../skills/re-avaritia-datapack/references/scripts.md#kubejs) · [Project home](../../README.md)
+
+Put the script in `kubejs/server_scripts/` on Forge 1.20.1.
 
 ## Overview
 
@@ -10,10 +10,10 @@ The singularity system supports reload-based KubeJS definitions. Script addition
 
 ## 📋 Table of Contents
 
-- [Basic Usage](#-basic-usage)
-- [Advanced Features](#-advanced-features)
+- [Basic Usage](#basic-usage)
+- [Advanced Features](#advanced-features)
 
-## 🚀 Basic Usage
+## Basic Usage
 
 ### Simplest Singularity
 
@@ -49,7 +49,7 @@ AvaritiaEvents.singularity(event => {
 })
 ```
 
-## 🔧 Advanced Features
+## Advanced Features
 
 ### Field Description
 
