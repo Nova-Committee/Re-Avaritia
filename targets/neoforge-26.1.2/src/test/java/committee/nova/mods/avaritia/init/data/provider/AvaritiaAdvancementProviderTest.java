@@ -40,10 +40,11 @@ class AvaritiaAdvancementProviderTest {
                         .get(0).getAsJsonObject()
                         .get("items").getAsString());
 
-        Path texture = Path.of("src/main/resources/assets/avaritia/textures/block/resource/neutron.png");
-        assertTrue(Files.exists(texture), "advancement background must resolve to an existing direct texture");
-        assertArrayEquals(new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A},
-                java.util.Arrays.copyOf(Files.readAllBytes(texture), 8));
+        try (var texture = getClass().getResourceAsStream("/assets/avaritia/textures/block/resource/neutron.png")) {
+            assertNotNull(texture, "advancement background must resolve to an existing direct texture");
+            assertArrayEquals(new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A},
+                    texture.readNBytes(8));
+        }
         assertFalse(Files.exists(GENERATED_RESOURCES.resolve("assets/minecraft/atlases/gui.json")),
                 "advancement backgrounds are direct textures and must not depend on the GUI atlas");
     }

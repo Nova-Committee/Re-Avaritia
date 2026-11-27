@@ -8,24 +8,34 @@ def sharedSources = [
 
 def checks = sharedSources.collect { kind, source ->
     sourceSets.main[kind].srcDir(source.root)
-    def duplicates = sourceSets.collectEntries { sourceSet ->
-        def candidates = sourceSet[kind].srcDirs.findAll { directory ->
-            sourceSet.name != 'main' || directory != source.root
-        }.collect { directory -> new File(directory, source.path) }
-        [(sourceSet.name): candidates]
+    Set<String> paths = [source.path] as Set
+    fileTree(source.root).visit { entry ->
+        if (!entry.directory) paths.add(entry.relativePath.pathString)
     }
-    [canonical: new File(source.root, source.path), duplicates: duplicates]
+    def otherRoots = sourceSets.collectEntries { sourceSet ->
+        def directories = sourceSet[kind].srcDirs.findAll { directory ->
+            sourceSet.name != 'main' || directory != source.root
+        }
+        [(sourceSet.name): directories]
+    }
+    [root: source.root, paths: paths, otherRoots: otherRoots]
 }
 
 def validateSharedSources = tasks.register('validateSharedSources') {
     doLast {
         checks.each { source ->
-            if (!source.canonical.isFile()) {
-                throw new GradleException("Missing shared source: ${source.canonical}")
-            }
-            source.duplicates.each { sourceSet, candidates ->
-                candidates.findAll { it.exists() }.each { candidate ->
-                    throw new GradleException("Source set ${sourceSet} shadows shared source: ${candidate}")
+            source.paths.each { path ->
+                def canonical = new File(source.root, path)
+                if (!canonical.isFile()) {
+                    throw new GradleException("Missing shared source: ${canonical}")
+                }
+                source.otherRoots.each { sourceSet, directories ->
+                    directories.each { directory ->
+                        def candidate = new File(directory, path)
+                        if (candidate.exists()) {
+                            throw new GradleException("Source set ${sourceSet} shadows shared source: ${candidate}")
+                        }
+                    }
                 }
             }
         }
