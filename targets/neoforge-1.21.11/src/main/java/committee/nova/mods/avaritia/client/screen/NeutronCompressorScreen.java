@@ -58,6 +58,12 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
 
+    @Override
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        this.renderTooltip(graphics, mouseX, mouseY);
+    }
+
     private void lockRecipe() {
         if (this.minecraft != null && this.minecraft.player != null) {
             NetworkHandler.sendCompressorLockPacket(this.menu.getBlockPos(), !isRecipeLocked());
