@@ -1,0 +1,44 @@
+package committee.nova.mods.avaritia.init.data.provider.loot;
+
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+/**
+ * Name: Avaritia-forge / ModBlockLootTables
+ * Author: cnlimiter
+ * CreateTime: 2023/8/24 13:39
+ * Description:
+ */
+
+public class ModBlockLootTables extends BlockLootSubProvider {
+
+    public ModBlockLootTables(HolderLookup.Provider registries) {
+        super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags(), registries);
+    }
+
+    @Override
+    protected void generate() {
+        for (var block : ModBlocks.BLOCKS.getEntries()) {
+            dropSelf(block.get());
+        }
+        this.add(ModBlocks.infinity_chest.get(),block -> BlockLootSubProvider.createShearsOnlyDrop(Items.AIR));
+    }
+
+    @Override
+    protected @NotNull Iterable<Block> getKnownBlocks() {
+        return BuiltInRegistries.BLOCK.stream()
+                .filter(block -> Const.MOD_ID.equals(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)).getNamespace()))
+                .collect(Collectors.toSet());
+    }
+}

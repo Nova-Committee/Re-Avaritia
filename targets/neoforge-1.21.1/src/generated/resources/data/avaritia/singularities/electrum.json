@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/electrum"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.electrum",
+  "ingredient": {
+    "tag": "c:ingots/electrum"
+  },
+  "name": "avaritia:electrum",
+  "overlayColor": 16118158,
+  "underlayColor": 10390846
+}

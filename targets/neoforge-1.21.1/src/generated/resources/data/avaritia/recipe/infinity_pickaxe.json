@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "B": {
+      "item": "avaritia:neutron"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    " IIIIII B",
+    "    IIAA ",
+    "     AXAI",
+    "     AAII",
+    "    N  II",
+    "   N    I",
+    "  N     I",
+    " N      I",
+    "A        "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_pickaxe"
+  },
+  "tier": 4
+}

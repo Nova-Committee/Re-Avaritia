@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "package": "committee.nova.mods.avaritia.init.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "avaritia.refmap.json",
+  "mixins": [
+    "EnchantmentHelperMixin",
+    "IItemStackExtensionMixin",
+    "ItemMixin",
+    "ItemStackMixin",
+    "LivingEntityShieldMixin",
+    "NetherWartBlockMixin",
+    "PlayerMixin",
+    "ServerPlayerDeathMixin",
+    "RecipeManagerMixin",
+    "WolfMixin",
+    "ReloadableServerResourcesMixin",
+    "accessor.MappedRegistryAccessor"
+  ],
+  "client": [
+    "ItemRendererMixin",
+    "LocalPlayerMixin",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

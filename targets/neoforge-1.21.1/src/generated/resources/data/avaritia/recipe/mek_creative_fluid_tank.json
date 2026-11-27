@@ -1,0 +1,65 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:ultimate_fluid_tank"
+        }
+      ]
+    },
+    "B": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:dynamic_tank"
+        }
+      ]
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:structural_glass"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:dynamic_valve"
+        }
+      ]
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "S": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "         ",
+    " SAADAAS ",
+    " ABBCBBA ",
+    " ABBCBBA ",
+    " ACCICCA ",
+    " ABBCBBA ",
+    " ABBCBBA ",
+    " SAADAAS ",
+    "         "
+  ],
+  "result": {
+    "count": 1,
+    "id": "mekanism:creative_fluid_tank"
+  },
+  "tier": 4
+}

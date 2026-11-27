@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/refined_obsidian"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.refined_obsidian",
+  "ingredient": {
+    "tag": "c:ingots/refined_obsidian"
+  },
+  "name": "avaritia:refined_obsidian",
+  "overlayColor": 11116984,
+  "underlayColor": 9271479
+}

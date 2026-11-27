@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "avaritia:block/resource/star_fuel_block"
+    }
+  }
+}

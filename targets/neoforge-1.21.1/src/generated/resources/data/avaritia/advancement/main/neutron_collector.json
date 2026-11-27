@@ -1,0 +1,34 @@
+{
+  "parent": "avaritia:main/extreme_crafting_table",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:neutron_collector"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.neutron_collector.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "avaritia:neutron_collector"
+    },
+    "title": {
+      "translate": "advancements.avaritia.neutron_collector.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

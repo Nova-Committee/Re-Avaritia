@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:crystal_matrix"
+    }
+  },
+  "pattern": [
+    " NN   NN ",
+    "NNN   NNN",
+    "NNN   NNN",
+    " NIIIIIN ",
+    " NIIXIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    "  NNNNN  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_chestplate"
+  },
+  "tier": 4
+}

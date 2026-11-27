@@ -1,0 +1,12 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": {
+    "item": "minecraft:deepslate"
+  },
+  "inputCount": 10000,
+  "result": {
+    "count": 1,
+    "id": "minecraft:bedrock"
+  },
+  "timeCost": 240
+}

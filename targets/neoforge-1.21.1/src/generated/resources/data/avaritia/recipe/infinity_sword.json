@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "       II",
+    "      III",
+    "     III ",
+    "  C III  ",
+    "CCAIII   ",
+    " CAXI    ",
+    "  NAAC   ",
+    " N CC    ",
+    "A   C    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_sword"
+  },
+  "tier": 4
+}

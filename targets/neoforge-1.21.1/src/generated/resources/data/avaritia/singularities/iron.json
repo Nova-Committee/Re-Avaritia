@@ -1,0 +1,9 @@
+{
+  "displayName": "singularity.avaritia.iron",
+  "ingredient": {
+    "item": "minecraft:iron_ingot"
+  },
+  "name": "avaritia:iron",
+  "overlayColor": 14803425,
+  "underlayColor": 7105644
+}

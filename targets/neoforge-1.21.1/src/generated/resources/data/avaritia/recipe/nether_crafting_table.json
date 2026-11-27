@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "avaritia:double_compressed_crafting_table"
+    },
+    "b": {
+      "item": "minecraft:respawn_anchor"
+    },
+    "c": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "d": {
+      "item": "minecraft:netherrack"
+    },
+    "e": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "f": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "cbc",
+    "dad",
+    "efe"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:nether_crafting_table"
+  },
+  "tier": 1
+}

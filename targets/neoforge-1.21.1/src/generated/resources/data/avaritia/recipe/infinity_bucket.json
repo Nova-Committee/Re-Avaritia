@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:lava_bucket"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "minecraft:powder_snow_bucket"
+    }
+  ],
+  "base": {
+    "item": "minecraft:bucket"
+  },
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_bucket"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

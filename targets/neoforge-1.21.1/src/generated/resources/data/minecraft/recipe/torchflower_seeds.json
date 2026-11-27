@@ -1,0 +1,13 @@
+{
+  "type": "avaritia:shapeless_table",
+  "ingredients": [
+    {
+      "item": "minecraft:torchflower"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:torchflower_seeds"
+  },
+  "tier": 1
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "n": {
+      "item": "avaritia:neutron_ingot"
+    }
+  },
+  "pattern": [
+    " n ",
+    "ncn",
+    " n "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:neutron_gear"
+  }
+}

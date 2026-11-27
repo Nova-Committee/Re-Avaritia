@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "  NNNNN  ",
+    " NIIIIIN ",
+    " N XIX N ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    " NI I IN ",
+    "         ",
+    "         ",
+    "         "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_helmet"
+  },
+  "tier": 4
+}

@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/nickel"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.nickel",
+  "ingredient": {
+    "tag": "c:ingots/nickel"
+  },
+  "name": "avaritia:nickel",
+  "overlayColor": 14800792,
+  "underlayColor": 11638636
+}

@@ -1,0 +1,35 @@
+{
+  "parent": "avaritia:infinity/enhancement_core",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:extreme_smithing_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.extreme_smithing_table.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "avaritia:extreme_smithing_table"
+    },
+    "title": {
+      "translate": "advancements.avaritia.extreme_smithing_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

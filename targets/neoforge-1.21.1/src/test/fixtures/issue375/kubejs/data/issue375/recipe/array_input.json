@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "template": { "tag": "issue375:templates" },
+  "base": { "item": "minecraft:diamond" },
+  "addition": [
+    { "item": "minecraft:lava_bucket" },
+    { "item": "minecraft:water_bucket" },
+    { "item": "minecraft:powder_snow_bucket" }
+  ],
+  "result": { "id": "minecraft:diamond", "count": 2 }
+}

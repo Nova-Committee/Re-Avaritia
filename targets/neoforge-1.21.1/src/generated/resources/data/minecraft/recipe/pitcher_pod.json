@@ -1,0 +1,13 @@
+{
+  "type": "avaritia:shapeless_table",
+  "ingredients": [
+    {
+      "item": "minecraft:pitcher_plant"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:pitcher_pod"
+  },
+  "tier": 1
+}

@@ -1,0 +1,8 @@
+{
+  "displayName": "singularity.avaritia.obsidian",
+  "ingredient": {
+    "item": "minecraft:obsidian"
+  },
+  "name": "avaritia:obsidian",
+  "underlayColor": 1051676
+}

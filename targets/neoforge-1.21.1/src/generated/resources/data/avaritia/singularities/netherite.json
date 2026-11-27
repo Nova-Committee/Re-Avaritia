@@ -1,0 +1,9 @@
+{
+  "displayName": "singularity.avaritia.netherite",
+  "ingredient": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "name": "avaritia:netherite",
+  "overlayColor": 4471355,
+  "underlayColor": 1709590
+}

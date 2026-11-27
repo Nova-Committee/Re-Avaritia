@@ -1,0 +1,38 @@
+{
+  "type": "avaritia:no_consume_catalyst_shaped",
+  "key": {
+    "a": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "b": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "c": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "d": {
+      "item": "avaritia:neutron_pile"
+    },
+    "e": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "f": {
+      "item": "avaritia:upgrade_smithing_template"
+    }
+  },
+  "pattern": [
+    "         ",
+    " abbbbba ",
+    " bdcccdb ",
+    " bceeecb ",
+    " bcefecb ",
+    " bceeecb ",
+    " bdcccdb ",
+    " abbbbba ",
+    "         "
+  ],
+  "result": {
+    "count": 2,
+    "id": "avaritia:upgrade_smithing_template"
+  }
+}

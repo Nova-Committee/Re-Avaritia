@@ -1,0 +1,52 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "avaritia:double_compressed_crafting_table"
+    },
+    "b": {
+      "item": "minecraft:lodestone"
+    },
+    "c": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "d": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "e": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "f": {
+      "item": "minecraft:recovery_compass"
+    },
+    "g": {
+      "item": "minecraft:dragon_egg"
+    },
+    "h": {
+      "item": "minecraft:beacon"
+    },
+    "i": {
+      "item": "minecraft:reinforced_deepslate"
+    },
+    "j": {
+      "item": "minecraft:netherite_block"
+    },
+    "k": {
+      "item": "minecraft:heart_of_the_sea"
+    }
+  },
+  "pattern": [
+    "bccfccb",
+    "cddgddc",
+    "cdihidc",
+    "cdiaidc",
+    "cdjkjdc",
+    "cdddddc",
+    "beeeeeb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:extreme_crafting_table"
+  },
+  "tier": 3
+}

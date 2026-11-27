@@ -1,0 +1,27 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "minecraft:obsidian"
+    },
+    "b": {
+      "item": "minecraft:deepslate"
+    },
+    "c": {
+      "item": "minecraft:dripstone_block"
+    },
+    "d": {
+      "item": "minecraft:sculk_catalyst"
+    }
+  },
+  "pattern": [
+    "ada",
+    "cbc",
+    "aba"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:reinforced_deepslate"
+  },
+  "tier": 1
+}

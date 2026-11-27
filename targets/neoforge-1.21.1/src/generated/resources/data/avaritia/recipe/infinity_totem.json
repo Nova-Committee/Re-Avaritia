@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:experience_bottle"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "minecraft:beacon"
+    }
+  ],
+  "base": {
+    "item": "minecraft:totem_of_undying"
+  },
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_totem"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "displayName": "singularity.avaritia.lapis_lazuli",
+  "ingredient": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "name": "avaritia:lapis_lazuli",
+  "overlayColor": 6786538,
+  "underlayColor": 1790887
+}

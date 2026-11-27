@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:infinity_catalyst"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "avaritia:textures/block/resource/neutron.png",
+    "description": {
+      "translate": "advancements.avaritia.start.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "avaritia:infinity_catalyst"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.avaritia.start.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

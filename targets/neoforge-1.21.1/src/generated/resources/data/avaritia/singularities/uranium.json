@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/uranium"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.uranium",
+  "ingredient": {
+    "tag": "c:ingots/uranium"
+  },
+  "name": "avaritia:uranium",
+  "overlayColor": 13826513,
+  "underlayColor": 10929572
+}

@@ -1,0 +1,269 @@
+import org.slf4j.event.Level
+
+plugins {
+    id 'idea'
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.116'
+}
+
+version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
+group = mod_group_id
+
+base {
+    archivesName = mod_name + "-" + mod_loader
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets {
+    gameTest
+}
+
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+neoForge {
+    version = project.neo_version
+    addModdingDependenciesTo sourceSets.gameTest
+
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    //accessTransformers.add('src/main/resources/META-INF/accesstransformer.cfg')
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+        "${mod_id}_gametest" {
+            sourceSet(sourceSets.gameTest)
+        }
+    }
+
+    runs {
+        client {
+            client()
+            loadedMods = [mods."${mod_id}"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            if (providers.gradleProperty('uiInspect').map { it.toBoolean() }.getOrElse(false)) {
+                systemProperty 'avaritia.ui.inspect', 'true'
+                systemProperty 'avaritia.ui.inspectOutput', layout.buildDirectory.dir('ui-inspection').get().asFile.absolutePath
+                gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
+            }
+        }
+
+        server {
+            server()
+            loadedMods = [mods."${mod_id}"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            gameDirectory = project.file('build/gametest')
+            sourceSet = sourceSets.gameTest
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_gametest"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+
+        data {
+            data()
+            loadedMods = [mods."${mod_id}"]
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath(),
+                    '--existing', file('../../shared/src/main/resources').absolutePath
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = Level.DEBUG
+        }
+    }
+
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
+}
+
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url = "https://maven.covers1624.net/" }
+    maven { url = "https://maven.blamejared.com" }
+    maven { url = "https://maven.theillusivec4.top/" }
+    maven { url = "https://maven.melanx.de/" }
+    maven { url = "https://maven.architectury.dev" }
+    maven { url = "https://maven.saps.dev/minecraft" }
+    maven { url = "https://www.jitpack.io" }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven { url = "https://maven.rover656.dev/releases" }
+    maven { url = "https://modmaven.dev/" }
+    maven { url = "https://maven.creeperhost.net/release" }
+    maven {
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url = "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+
+    maven {
+        url = 'https://jitpack.io'
+        content {
+            includeGroup "com.github.rtyley"
+        }
+    }
+    maven {
+        url = "https://nexus.covers1624.net/repository/maven-releases/"
+        content {
+            includeGroup "com.brandon3055.draconicevolution"
+        }
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.11.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    gameTestImplementation sourceSets.main.output
+
+    implementation ("com.blamejared.crafttweaker:CraftTweaker-neoforge-${minecraft_version}:${crafttweaker_version}")
+    implementation ("curse.maven:jade-324717:${jade_id}")
+
+    compileOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
+    runtimeOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+    runtimeOnly ("curse.maven:elytra-slot-317716:${elytra_slot_version}")
+    runtimeOnly ("curse.maven:caelus-308989:${caelus_version}")
+
+    implementation ("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
+    implementation ("io.codechicken:CodeChickenLib:${ccl_version}")
+    implementation ("com.brandon3055.brandonscore:BrandonsCore:${bdc_version}")
+    implementation ("com.brandon3055.draconicevolution:Draconic-Evolution:${de_version}")
+    implementation ("mekanism:Mekanism:${mek_version}")
+    implementation ("mekanism:Mekanism:${mek_version}:generators")
+    implementation ("org.appliedenergistics:guideme:${gd_version}")
+    implementation ("org.appliedenergistics:appliedenergistics2:${ae2_version}")
+    implementation ("com.enderio:enderio-machines:${eio_version}")
+    implementation ("com.enderio:enderio-base:${eio_version}")
+
+    implementation ("curse.maven:charm-of-undying-316873:${cou_version}")
+    implementation ("curse.maven:projecte-226410:${projecte_version}")
+    implementation ("curse.maven:storage-drawers-223852:${sd_version}")
+    implementation ("curse.maven:refined-storage-243076:${rs_version}")
+
+    compileOnly ("org.projectlombok:lombok:$lombok_version")
+    annotationProcessor ("org.projectlombok:lombok:$lombok_version")
+
+    // compile against the JEI API but do not include it at runtime
+    compileOnly ("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly ("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    // REI
+    compileOnly ("me.shedaniel:RoughlyEnoughItems-api-neoforge:${rei_version}")
+    compileOnly ("me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}")
+
+    // EMI
+    compileOnly ("maven.modrinth:emi:${emi_version}+neoforge")
+
+    if (recipe_viewer == 'jei')
+        runtimeOnly ("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+    else if (recipe_viewer == 'rei')
+        runtimeOnly ("me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}")
+    else if (recipe_viewer == 'emi')
+        runtimeOnly ("maven.modrinth:emi:${emi_version}+neoforge")
+    else
+        println("unknown recipe viewer: $recipe_viewer")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [minecraft_version      : minecraft_version,
+                             minecraft_version_range: minecraft_version_range,
+                             neo_version            : neo_version,
+                             neo_version_range      : neo_version_range,
+                             loader_version_range   : loader_version_range,
+                             issue_tracker          : issue_tracker,
+                             mod_id                 : mod_id,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : mod_version,
+                             mod_authors            : mod_authors,
+                             mod_description        : mod_description]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
+            maven {
+                name 'S3'
+                url = 'https://maven.nova-committee.cn/s3'
+
+                credentials {
+                    username System.getenv('MAVEN_USERNAME')
+                    password System.getenv('MAVEN_PASSWORD')
+                }
+            }
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+apply from: '../../gradle/shared-sources.gradle'

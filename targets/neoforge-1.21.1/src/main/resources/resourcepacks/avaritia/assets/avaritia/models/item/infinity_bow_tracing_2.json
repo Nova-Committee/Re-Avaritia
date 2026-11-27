@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_bow/tracer/pull_2"
+  },
+  "loader": "avaritia:unstable",
+  "unstable": {
+    "mask": "avaritia:mask/item/infinity_bow/pull_2_mask"
+  }
+}

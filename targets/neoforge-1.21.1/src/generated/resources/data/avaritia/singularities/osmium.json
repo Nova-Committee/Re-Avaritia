@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/osmium"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.osmium",
+  "ingredient": {
+    "tag": "c:ingots/osmium"
+  },
+  "name": "avaritia:osmium",
+  "overlayColor": 15134455,
+  "underlayColor": 12633293
+}

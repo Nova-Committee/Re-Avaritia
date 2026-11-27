@@ -1,0 +1,18 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:item/resource/singularity/eternal_singularity",
+    "layer1": "avaritia:item/resource/singularity/eternal_singularity2",
+    "halo": "avaritia:misc/halo"
+  },
+  "loader": "avaritia:halo_cosmic",
+  "halo": {
+    "texture": "#halo",
+    "color": -16777216,
+    "size": 6,
+    "pulse": false
+  },
+  "cosmic": {
+    "mask": "avaritia:mask/item/eternal_singularity_mask"
+  }
+}

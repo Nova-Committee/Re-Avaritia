@@ -1,0 +1,20 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "x": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "y": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "xyx",
+    "xyx"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:crystal_matrix_ingot"
+  },
+  "tier": 1
+}

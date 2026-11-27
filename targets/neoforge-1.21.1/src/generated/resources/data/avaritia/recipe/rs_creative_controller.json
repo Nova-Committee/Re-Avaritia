@@ -1,0 +1,60 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "refinedstorage"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "B": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:advanced_processor"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:4096b_fluid_storage_part"
+        }
+      ]
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:64k_storage_part"
+        }
+      ]
+    },
+    "F": {
+      "tag": "refinedstorage:controllers"
+    }
+  },
+  "pattern": [
+    "ABBBCBBBA",
+    "BDDDCDDDB",
+    "BDDCCCDDB",
+    "BDCCFCCDB",
+    "CCCFAFCCC",
+    "BECCFCCEB",
+    "BEECCCEEB",
+    "BEEECEEEB",
+    "ABBBCBBBA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "refinedstorage:creative_controller"
+  },
+  "tier": 4
+}

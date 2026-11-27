@@ -1,0 +1,9 @@
+{
+  "displayName": "singularity.avaritia.glowstone",
+  "ingredient": {
+    "item": "minecraft:glowstone_dust"
+  },
+  "name": "avaritia:glowstone",
+  "overlayColor": 16765839,
+  "underlayColor": 10510645
+}

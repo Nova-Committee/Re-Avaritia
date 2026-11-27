@@ -1,0 +1,41 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/misc/infinity_umbrella",
+    "halo": "avaritia:misc/halo"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:mode": 0
+      },
+      "model": "avaritia:item/infinity_umbrella_normal"
+    },
+
+    {
+      "predicate": {
+        "avaritia:mode": 1
+      },
+      "model": "avaritia:item/infinity_umbrella_sun"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 2
+      },
+      "model": "avaritia:item/infinity_umbrella_rain"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 3
+      },
+      "model": "avaritia:item/infinity_umbrella_storm"
+    }
+  ],
+  "loader": "avaritia:halo",
+  "halo": {
+    "texture": "#halo",
+    "color": -16777216,
+    "size": 6,
+    "pulse": false
+  }
+}

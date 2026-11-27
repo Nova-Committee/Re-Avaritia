@@ -1,0 +1,9 @@
+{
+  "displayName": "singularity.avaritia.blue_ice",
+  "ingredient": {
+    "item": "minecraft:blue_ice"
+  },
+  "name": "avaritia:blue_ice",
+  "overlayColor": 9353470,
+  "underlayColor": 7052795
+}

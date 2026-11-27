@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "Q": {
+      "item": "minecraft:quartz_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "pattern": [
+    "IIQQQQQII",
+    "I QQQQQ I",
+    "I  RRR  I",
+    "C RRRRR C",
+    "I RRCRR I",
+    "C RRRRR C",
+    "I  RRR  I",
+    "I       I",
+    "IIICICIII"
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:neutron_collector"
+  },
+  "tier": 4
+}

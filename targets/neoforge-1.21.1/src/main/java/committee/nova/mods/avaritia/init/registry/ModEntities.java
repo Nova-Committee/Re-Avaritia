@@ -1,0 +1,170 @@
+package committee.nova.mods.avaritia.init.registry;
+
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.render.entity.*;
+import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
+import committee.nova.mods.avaritia.common.entity.*;
+import committee.nova.mods.avaritia.common.entity.arrow.*;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ItemEntityRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+
+/**
+ * Description:
+ * Author: cnlimiter
+ * Date: 2022/3/31 14:52
+ * Version: 1.0
+ */
+public class ModEntities {
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Const.MOD_ID);
+
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ImmortalItemEntity>> IMMORTAL = ENTITIES.register("immortal",
+            () -> EntityType.Builder.of(ImmortalItemEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
+                    .build(Const.rl( "immortal").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<EndestPearlEntity>> ENDER_PEARL = ENTITIES.register("enderst_pearl",
+            () -> EntityType.Builder.<EndestPearlEntity>of(EndestPearlEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
+                    .build(Const.rl("enderst_pearl").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<GapingVoidEntity>> GAPING_VOID = ENTITIES.register("gaping_void",
+            () -> EntityType.Builder.<GapingVoidEntity>of(GapingVoidEntity::new, MobCategory.MISC)
+                    .build(Const.rl("gaping_void").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<HeavenArrowEntity>> HEAVEN_ARROW = ENTITIES.register("heaven_arrow",
+            () -> EntityType.Builder.<HeavenArrowEntity>of(HeavenArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("heaven_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<NeutronArrowEntity>> NEUTRON_ARROW = ENTITIES.register("neutron_arrow",
+            () -> EntityType.Builder.<NeutronArrowEntity>of(NeutronArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("neutron_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<HeavenSubArrowEntity>> HEAVEN_SUB_ARROW = ENTITIES.register("heaven_sub_arrow",
+            () -> EntityType.Builder.<HeavenSubArrowEntity>of(HeavenSubArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("heaven_sub_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ExplosionsArrowEntity>> EXPLOSIONS_ARROW = ENTITIES.register("explosions_arrow",
+            () -> EntityType.Builder.<ExplosionsArrowEntity>of(ExplosionsArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("explosions_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BurningArrowEntity>> BURNING_ARROW = ENTITIES.register("burning_arrow",
+            () -> EntityType.Builder.<BurningArrowEntity>of(BurningArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("burning_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
+            () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .fireImmune()
+                    .noSummon()
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("trace_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball",
+            () -> EntityType.Builder.of(FireBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(Const.rl("fire_ball").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BurningBallEntity>> BURNING_BALL = ENTITIES.register("burning_ball",
+            () -> EntityType.Builder.of(BurningBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(Const.rl("burning_ball").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
+            () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("blade_slash").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<SunProEntity>> SUN_PRO = ENTITIES.register("sun_pro",
+            () -> EntityType.Builder.<SunProEntity>of(SunProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("sun_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<RainProEntity>> RAIN_PRO = ENTITIES.register("rain_pro",
+            () -> EntityType.Builder.<RainProEntity>of(RainProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("rain_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<StormProEntity>> STORM_PRO = ENTITIES.register("storm_pro",
+            () -> EntityType.Builder.<StormProEntity>of(StormProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("storm_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<AcceleratorDisplayEntity>> acceleratorDisplayEntity =
+            ENTITIES.register("accelerator_display", () -> EntityType.Builder.<AcceleratorDisplayEntity>of(
+                            AcceleratorDisplayEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .build(Const.rl("accelerator_display").toString())
+            );
+    public static final DeferredHolder<EntityType<?>, EntityType<TNTProEntity>> tntProEntity =
+            ENTITIES.register("tnt_pro", () -> EntityType.Builder.<TNTProEntity>of(
+                            TNTProEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(Const.rl( "tnt_pro").toString())
+            );
+    public static final DeferredHolder<EntityType<?>, EntityType<InfinityThrownTrident>> infinity_thrown_trident =
+            ENTITIES.register("infinity_thrown_trident", () -> EntityType.Builder.<InfinityThrownTrident>of(
+                            InfinityThrownTrident::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .fireImmune()
+                    .build(Const.rl("infinity_thrown_trident").toString())
+            );
+
+    @OnlyIn(Dist.CLIENT)
+    public static void onClientSetup() {
+        EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
+        EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
+        EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
+        EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
+        EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(),NeutronArrowRender::new);
+        EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
+        EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_BALL.get(), BurningBallRender::new);
+        EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
+        EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
+        EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
+        EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
+        EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
+        EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
+        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRender::new);
+        EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
+        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityThrownTridentRender::new);
+    }
+
+}

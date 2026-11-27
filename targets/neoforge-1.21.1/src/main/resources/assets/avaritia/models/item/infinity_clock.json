@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:item/misc/infinity_clock"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:up": 1
+      },
+        "model": "avaritia:item/infinity_clock_up"
+    }
+  ]
+}
