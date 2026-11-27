@@ -52,7 +52,7 @@ Forge 1.20.1 和 NeoForge 1.21.1 使用 `runData`。NeoForge 1.21.11、26.1.2 �
 
 ### Fabric 数据导出
 
-两个 Fabric 目标以 `src/main/resources/` 与 `src/generated/resources/` 内提交的资源为输入。[1.20.1 的 `ModDataGen`](../targets/fabric/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) 和 [26.3 的 `ModDataGen`](../targets/fabric-26.3/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) 会导出目标资源及共享箱子贴图。在对应目标的 Gradle `main` 运行类路径上执行 `main`，传入目标目录和独立输出目录两个绝对路径。可以在源码目录外保存以下 Gradle 初始化脚本，命名为 `export-fabric.gradle`。
+两个 Fabric 目标以 `src/main/resources/` 与 `src/generated/resources/` 内提交的资源为输入。[1.20.1 的 `ModDataGen`](../targets/fabric/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) 和 [26.3 的 `ModDataGen`](../targets/fabric-26.3/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) 会导出目标和共享目录中的 `assets`、`data` 及可用的 `pack.mcmeta`。在对应目标的 Gradle `main` 运行类路径上执行 `main`，传入目标目录和独立输出目录两个绝对路径。可以在源码目录外保存以下 Gradle 初始化脚本，命名为 `export-fabric.gradle`。
 
 ```groovy
 gradle.projectsEvaluated {

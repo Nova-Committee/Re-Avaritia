@@ -16,8 +16,6 @@
 
 Re:Avaritia is an unofficial recreation of Avaritia, with extreme crafting, neutron compression and singularities. Choose a mod file for your Minecraft version and loader. [CurseForge](https://www.curseforge.com/minecraft/mc-mods/re-avaritia) · [Modrinth](https://modrinth.com/mod/re-avaritia)
 
-See the [build guide](guides/building.md) for supported targets. Use the [Forge 1.20.1 customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts.
-
 ## Authors
 
 - Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3`
@@ -35,6 +33,7 @@ See the [build guide](guides/building.md) for supported targets. Use the [Forge 
 
 ## In-game support
 * Recipe viewing is supported via JEI.
+* Use the [Forge 1.20.1 customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts.
 
 ## Discord
 

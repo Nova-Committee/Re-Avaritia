@@ -52,7 +52,7 @@ Forge 1.20.1 and NeoForge 1.21.1 use `runData`. NeoForge 1.21.11, 26.1.2 and 26.
 
 ### Fabric data export
 
-The two Fabric targets keep their source data under `src/main/resources/` and `src/generated/resources/`. [`ModDataGen` (1.20.1)](../targets/fabric/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) and [`ModDataGen` (26.3)](../targets/fabric-26.3/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) export those resources and the shared chest texture. To use either entry point, run its `main` on the target's Gradle `main` runtime classpath with two arguments: the absolute target directory and a separate output directory. For example, save this Gradle init script outside the source directories as `export-fabric.gradle`.
+The two Fabric targets keep their source data under `src/main/resources/` and `src/generated/resources/`. [`ModDataGen` (1.20.1)](../targets/fabric/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) and [`ModDataGen` (26.3)](../targets/fabric-26.3/src/main/java/committee/nova/mods/avaritia/init/data/ModDataGen.java) export `assets`, `data`, and any `pack.mcmeta` from the target and shared resource roots. To use either entry point, run its `main` on the target's Gradle `main` runtime classpath with two arguments: the absolute target directory and a separate output directory. For example, save this Gradle init script outside the source directories as `export-fabric.gradle`.
 
 ```groovy
 gradle.projectsEvaluated {

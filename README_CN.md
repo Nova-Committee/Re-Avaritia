@@ -16,8 +16,6 @@
 
 Re:Avaritia 是 [Avaritia（无尽贪婪）](https://www.mcmod.cn/class/505.html) 的非官方重制版，提供无尽工作台、中子态素压缩机与奇点等内容。安装时请为你的游戏版本和加载器选择对应的模组文件。 [CurseForge](https://www.curseforge.com/minecraft/mc-mods/re-avaritia) · [Modrinth](https://modrinth.com/mod/re-avaritia)
 
-支持的构建目标见[构建指南](guides/building_CN.md)。编写数据包和脚本可使用 [Forge 1.20.1 魔改 Skill](skills/re-avaritia-datapack/SKILL.md)。
-
 ## 作者
 
 - 程序: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3`
@@ -35,6 +33,7 @@ Re:Avaritia 是 [Avaritia（无尽贪婪）](https://www.mcmod.cn/class/505.html
 
 ## 游戏内支持
 * 可用 JEI 查看无尽工作台和中子态素压缩机配方。
+* 编写 Forge 1.20.1 数据包和脚本可使用 [魔改 Skill](skills/re-avaritia-datapack/SKILL.md)。
 
 ## Discord
 
