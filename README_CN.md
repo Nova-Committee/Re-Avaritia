@@ -16,23 +16,7 @@
 
 Re:Avaritia 是 [Avaritia（无尽贪婪）](https://www.mcmod.cn/class/505.html) 的非官方重制版，提供无尽工作台、中子态素压缩机与奇点等内容。安装时请为你的游戏版本和加载器选择对应的模组文件。 [CurseForge](https://www.curseforge.com/minecraft/mc-mods/re-avaritia) · [Modrinth](https://modrinth.com/mod/re-avaritia)
 
-## 开发入口
-
-| 游戏版本 | 构建目标 |
-| --- | --- |
-| 1.20.1 | [Forge](targets/forge/) · [Fabric](targets/fabric/) |
-| 1.21.1 | [NeoForge](targets/neoforge-1.21.1/) |
-| 1.21.11 | [NeoForge](targets/neoforge-1.21.11/) |
-| 26.1.2 | [NeoForge](targets/neoforge-26.1.2/) |
-| 26.3 | [Fabric](targets/fabric-26.3/) · [NeoForge](targets/neoforge-26.3/) |
-
-在仓库根目录执行 `bash build-targets.sh forge` 构建单个目标，或执行 `bash build-targets.sh all` 构建七个目标。各目标在 `targets/<目标>/build/libs/` 生成 JAR。[构建、测试与数据生成](guides/building_CN.md)
-
-加载器专用源码位于各 [目标目录](targets/)，共享 Java 和资源在 [shared/src/main](shared/src/main/)。
-
-## 数据包与脚本
-
-Forge 1.20.1 的[数据包](skills/re-avaritia-datapack/references/datapack.md)、[脚本 API](skills/re-avaritia-datapack/references/scripts.md)和 [KubeJS 奇点指南](guides/forge-1.20.1/KUBEJS_SINGULARITY_GUIDE_CN.md)可用于编写奇点和配方，也可以使用[魔改 Skill](skills/re-avaritia-datapack/SKILL.md)。
+支持的构建目标见[构建指南](guides/building_CN.md)。编写数据包和脚本可使用 [Forge 1.20.1 魔改 Skill](skills/re-avaritia-datapack/SKILL.md)。
 
 ## 作者
 

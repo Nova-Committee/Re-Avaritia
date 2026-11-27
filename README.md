@@ -16,23 +16,7 @@
 
 Re:Avaritia is an unofficial recreation of Avaritia, with extreme crafting, neutron compression and singularities. Choose a mod file for your Minecraft version and loader. [CurseForge](https://www.curseforge.com/minecraft/mc-mods/re-avaritia) · [Modrinth](https://modrinth.com/mod/re-avaritia)
 
-## Develop
-
-| Minecraft | Build targets |
-| --- | --- |
-| 1.20.1 | [Forge](targets/forge/) · [Fabric](targets/fabric/) |
-| 1.21.1 | [NeoForge](targets/neoforge-1.21.1/) |
-| 1.21.11 | [NeoForge](targets/neoforge-1.21.11/) |
-| 26.1.2 | [NeoForge](targets/neoforge-26.1.2/) |
-| 26.3 | [Fabric](targets/fabric-26.3/) · [NeoForge](targets/neoforge-26.3/) |
-
-From the repository root, run `bash build-targets.sh forge` for one target or `bash build-targets.sh all` for all seven. Each target writes its JARs to `targets/<target>/build/libs/`. [Build, test and generate data](guides/building.md)
-
-Loader-specific code lives under [targets](targets/). Common Java and resources are in [shared/src/main](shared/src/main/).
-
-## Datapacks and scripts
-
-For Forge 1.20.1, see the [datapack reference](skills/re-avaritia-datapack/references/datapack.md), [scripting API](skills/re-avaritia-datapack/references/scripts.md) and [KubeJS singularity guide](guides/forge-1.20.1/KUBEJS_SINGULARITY_GUIDE.md), or use the [customization skill](skills/re-avaritia-datapack/SKILL.md).
+See the [build guide](guides/building.md) for supported targets. Use the [Forge 1.20.1 customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts.
 
 ## Authors
 
