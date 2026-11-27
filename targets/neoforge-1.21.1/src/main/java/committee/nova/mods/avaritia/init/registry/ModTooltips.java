@@ -28,7 +28,8 @@ public class ModTooltips {
 
 
     public static Component getAddedByTooltip(String modid) {
-        var name = ModList.get().getModFileById(modid).getMods().getFirst().getDisplayName();
+        var modFile = ModList.get().getModFileById(modid);
+        var name = modFile == null ? modid : modFile.getMods().getFirst().getDisplayName();
         return ADDED_BY.args(name).build();
     }
 }
