@@ -1,7 +1,6 @@
 def shared = layout.projectDirectory.dir('../../shared')
-def minecraftVersion = findProperty('mc_version') ?: property('minecraft_version')
 def sharedSources = [
-        java: [root: shared.dir("${minecraftVersion}/src/main/java").asFile,
+        java: [root: shared.dir('src/main/java').asFile,
                path: 'committee/nova/mods/avaritia/api/client/screen/component/PortableLayout.java'],
         resources: [root: shared.dir('src/main/resources').asFile,
                     path: 'assets/avaritia/textures/block/chest/compressed_chest.png']

@@ -1,0 +1,69 @@
+name: Build and test
+
+on:
+  pull_request:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  targets:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Read build targets
+        id: matrix
+        run: echo "value=$(bash build-targets.sh --matrix)" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: ${{ matrix.target }}
+    needs: targets
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.targets.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up separate compiler JDK
+        if: matrix.toolchain_jdk != matrix.gradle_jdk
+        id: toolchain
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.toolchain_jdk }}
+      - name: Set up Gradle JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.gradle_jdk }}
+      - name: Build and test
+        env:
+          BUILD_TARGET: ${{ matrix.target }}
+          TOOLCHAIN_JDK: ${{ matrix.toolchain_jdk }}
+          TOOLCHAIN_HOME: ${{ steps.toolchain.outputs.path }}
+        run: |
+          if [[ -n "$TOOLCHAIN_HOME" ]]; then
+            export "AVARITIA_JAVA${TOOLCHAIN_JDK}_HOME=$TOOLCHAIN_HOME"
+          fi
+          bash build-targets.sh "$BUILD_TARGET" build --no-daemon --max-workers=2
+      - name: Archive JARs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-jars
+          path: targets/${{ matrix.target }}/build/libs/*.jar
+          if-no-files-found: error
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-tests
+          path: targets/${{ matrix.target }}/build/test-results/test/TEST-*.xml
