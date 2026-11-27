@@ -266,4 +266,8 @@ idea {
     }
 }
 
+jar {
+    from('../../LICENSE')
+}
+
 apply from: '../../gradle/shared-sources.gradle'

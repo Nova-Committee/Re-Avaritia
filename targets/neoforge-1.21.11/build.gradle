@@ -267,4 +267,8 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add('-Xlint:-removal')
 }
 
+jar {
+    from('../../LICENSE')
+}
+
 apply from: '../../gradle/shared-sources.gradle'

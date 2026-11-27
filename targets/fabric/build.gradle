@@ -128,8 +128,11 @@ tasks.withType(ProcessResources).configureEach {
 tasks.named('wrapper').configure {
     gradleVersion = project.gradle_version
 }
-jar {
-    from('LICENSE') { rename { "${it}_Re-Avaritia" } }
+tasks.named('jar', Jar) {
+    from('../../LICENSE') { rename { "${it}_Re-Avaritia" } }
+}
+tasks.named('sourcesJar', Jar) {
+    from('../../LICENSE') { rename { "${it}_Re-Avaritia" } }
 }
 tasks.withType(net.fabricmc.loom.task.RunGameTask).configureEach {
     standardInput = System.in
