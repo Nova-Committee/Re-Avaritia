@@ -33,8 +33,15 @@ jobs:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Set up separate compiler JDK
-        if: matrix.toolchain_jdk != matrix.gradle_jdk
+      - name: Set up Java 21 for NeoForm Runtime
+        if: matrix.target == 'forge'
+        id: neoform
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up compiler JDK
+        if: matrix.toolchain_jdk != 25
         id: toolchain
         uses: actions/setup-java@v5
         with:
@@ -44,17 +51,18 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: ${{ matrix.gradle_jdk }}
+          java-version: '25'
       - name: Build and test
         env:
           BUILD_TARGET: ${{ matrix.target }}
           TOOLCHAIN_JDK: ${{ matrix.toolchain_jdk }}
           TOOLCHAIN_HOME: ${{ steps.toolchain.outputs.path }}
+          AVARITIA_JAVA21_HOME: ${{ steps.neoform.outputs.path }}
         run: |
           if [[ -n "$TOOLCHAIN_HOME" ]]; then
             export "AVARITIA_JAVA${TOOLCHAIN_JDK}_HOME=$TOOLCHAIN_HOME"
           fi
-          bash build-targets.sh "$BUILD_TARGET" build --no-daemon --max-workers=2
+          ./gradlew -Ptarget="$BUILD_TARGET" build --no-daemon --max-workers=2
       - name: Archive JARs
         uses: actions/upload-artifact@v4
         with:

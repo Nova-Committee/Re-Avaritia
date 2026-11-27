@@ -125,9 +125,6 @@ tasks.withType(ProcessResources).configureEach {
     inputs.properties expansionVariables
     filesMatching('fabric.mod.json') { expand expansionVariables }
 }
-tasks.named('wrapper').configure {
-    gradleVersion = project.gradle_version
-}
 tasks.named('jar', Jar) {
     from('../../LICENSE') { rename { "${it}_Re-Avaritia" } }
 }

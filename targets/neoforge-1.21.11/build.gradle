@@ -1,12 +1,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    alias libs.plugins.moddevgradle
+    alias neo12111.plugins.moddevgradle
     id 'idea'
-}
-
-tasks.named('wrapper', Wrapper).configure {
-    distributionType = Wrapper.DistributionType.BIN
 }
 
 version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
@@ -183,32 +179,32 @@ neoForge {
 
 dependencies {
     // MixinExtras — needed by RecipeManagerMixin @Local
-    implementation libs.mixinextras
+    implementation neo12111.mixinextras
 
     // JEI (compile only, not bundled)
-    compileOnly libs.jei.api
-    runtimeOnly libs.jei.runtime
+    compileOnly neo12111.jei.api
+    runtimeOnly neo12111.jei.runtime
 
     // Jade
-    implementation libs.jade
+    implementation neo12111.jade
 
     // Curios API
-    implementation libs.curios.neoforge
+    implementation neo12111.curios.neoforge
 
     // KubeJS / Rhino / Equivox integrations are disabled for the 1.21.11 backport:
     // none of them publish a 1.21.11 build.
 
     // Lombok
-    compileOnly libs.lombok
-    annotationProcessor libs.lombok
+    compileOnly neo12111.lombok
+    annotationProcessor neo12111.lombok
 
     // JUnit (test)
     gameTestImplementation sourceSets.main.output
 
-    testImplementation platform(libs.junit.bom)
-    testImplementation libs.junit.api
-    testRuntimeOnly libs.junit.engine
-    testRuntimeOnly libs.junit.platform.launcher
+    testImplementation platform(neo12111.junit.bom)
+    testImplementation neo12111.junit.api
+    testRuntimeOnly neo12111.junit.engine
+    testRuntimeOnly neo12111.junit.platform.launcher
 }
 
 tasks.withType(Test).configureEach {

@@ -1,12 +1,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    alias libs.plugins.moddevgradle
+    alias neo263.plugins.moddevgradle
     id 'idea'
-}
-
-tasks.named('wrapper', Wrapper).configure {
-    distributionType = Wrapper.DistributionType.BIN
 }
 
 version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
@@ -170,37 +166,37 @@ neoForge {
 
 dependencies {
     // MixinExtras — needed by RecipeManagerMixin @Local
-    implementation libs.mixinextras
+    implementation neo263.mixinextras
 
     // JEI (compile only, not bundled)
-    compileOnly libs.jei.api
-    runtimeOnly libs.jei.runtime
+    compileOnly neo263.jei.api
+    runtimeOnly neo263.jei.runtime
 
     // Jade
-    implementation libs.jade
+    implementation neo263.jade
 
     // Curios API（compileOnly：17.0.0-beta.2 引用了 FML 26.3 已移除的 ModConfig.Type.COMMON，
     // 与 NeoForge 26.3.0.45-beta 运行时不兼容；模组对 curios 本就是可选集成）
-    compileOnly libs.curios.neoforge
+    compileOnly neo263.curios.neoforge
 
     // KubeJS integration (compile only, optional at runtime)
-    compileOnly libs.kubejs.neoforge
-    compileOnly libs.rhino
+    compileOnly neo263.kubejs.neoforge
+    compileOnly neo263.rhino
 
     // Equivox API: optional integration, never bundled or added to runtime.
     compileOnly("curse.maven:equivox-1597601:9035761") { transitive = false }
 
     // Lombok
-    compileOnly libs.lombok
-    annotationProcessor libs.lombok
+    compileOnly neo263.lombok
+    annotationProcessor neo263.lombok
 
     // JUnit (test)
     gameTestImplementation sourceSets.main.output
 
-    testImplementation platform(libs.junit.bom)
-    testImplementation libs.junit.api
-    testRuntimeOnly libs.junit.engine
-    testRuntimeOnly libs.junit.platform.launcher
+    testImplementation platform(neo263.junit.bom)
+    testImplementation neo263.junit.api
+    testRuntimeOnly neo263.junit.engine
+    testRuntimeOnly neo263.junit.platform.launcher
 }
 
 tasks.withType(Test).configureEach {
