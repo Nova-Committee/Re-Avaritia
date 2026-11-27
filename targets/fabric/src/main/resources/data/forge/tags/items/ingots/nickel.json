@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:ingots/nickel",
+      "required": false
+    },
+    {
+      "id": "#c:nickel_ingots",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:ingots/platinum",
+      "required": false
+    },
+    {
+      "id": "#c:platinum_ingots",
+      "required": false
+    }
+  ]
+}

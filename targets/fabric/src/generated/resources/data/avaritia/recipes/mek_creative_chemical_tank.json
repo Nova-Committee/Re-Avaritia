@@ -1,0 +1,46 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "mekanism:ultimate_chemical_tank"
+    },
+    "B": {
+      "item": "mekanism:dynamic_tank"
+    },
+    "C": {
+      "item": "mekanism:structural_glass"
+    },
+    "D": {
+      "item": "mekanism:dynamic_valve"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "S": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "   B B   ",
+    " SAADAAS ",
+    " ABBBBBA ",
+    " ABBCBBA ",
+    " ABCICBA ",
+    " ABBCBBA ",
+    " ABBBBBA ",
+    " SAADAAS ",
+    "         "
+  ],
+  "result": {
+    "item": "mekanism:creative_chemical_tank"
+  },
+  "show_notification": true,
+  "tier": 4,
+  "avaritia:conditions": [
+    {
+      "type": "avaritia:mod_loaded",
+      "modid": "mekanism"
+    }
+  ]
+}

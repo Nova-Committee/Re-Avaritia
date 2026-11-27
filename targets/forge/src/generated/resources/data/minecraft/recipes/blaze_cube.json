@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "avaritia:blaze_cube_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "avaritia:blaze_cube"
+  }
+}

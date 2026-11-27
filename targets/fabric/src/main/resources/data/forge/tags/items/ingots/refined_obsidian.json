@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:ingots/refined_obsidian",
+      "required": false
+    },
+    {
+      "id": "#c:refined_obsidian_ingots",
+      "required": false
+    }
+  ]
+}

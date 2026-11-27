@@ -1,0 +1,113 @@
+package committee.nova.mods.avaritia.client.render.entity;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.render.CCRenderState;
+import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
+import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
+import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+
+
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Description:
+ * @author cnlimiter
+ * Date: 2022/4/3 10:34
+ * Version: 1.0
+ */
+
+public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
+    private final committee.nova.mods.avaritia.api.client.render.CCModel hemisphere;
+    public GapingVoidRender(EntityRendererProvider.Context context) {
+        super(context);
+        this.hemisphere = new OBJParser(Const.rl("models/obj/hemisphere.obj")).parse().get("model");
+    }
+
+    public static Color getColour(final double age, final double a) {
+        final double l = age / 186.0;
+        double f = Math.max(0.0, (l - 0.95) / 0.050000000000000044);
+        f = Math.max(f, 1.0 - l * 30.0);
+        return new ColorRGBA(f, f, f, a);
+    }
+
+    @Override
+    public @NotNull ResourceLocation getTextureLocation(@NotNull GapingVoidEntity p_114482_) {
+        return Res.VOID;
+    }
+
+    @Override
+    public void render(@NotNull GapingVoidEntity ent, float entityYaw, float ticks, @NotNull PoseStack stack, @NotNull MultiBufferSource buf, int packedLightIn) {
+        final float age = ent.getAge() + ticks;
+        final Color color = getColour(age, 1.0);
+        final double scale = ent.getScale(age);
+        double halocoord = 0.58 * scale;
+        final double haloScaleDist = 2.2 * scale;
+        final Vec3 cam = this.entityRenderDispatcher.camera.getPosition();
+        final double dx = ent.getX() - cam.x();
+        final double dy = ent.getY() - cam.y();
+        final double dz = ent.getZ() - cam.z();
+        final double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (len <= haloScaleDist) {
+            final double close = (haloScaleDist - len) / haloScaleDist;
+            halocoord *= 1.0 + close * close * close * close * 1.5;
+        }
+        stack.pushPose();
+        stack.mulPose(Axis.YP.rotationDegrees((float) (Math.atan2(dx, dz) * 57.29577951308232)));
+        stack.mulPose(Axis.XP.rotationDegrees((float) (Math.atan2(Math.sqrt(dx * dx + dz * dz), dy) * 57.29577951308232 + 90.0)));
+        stack.mulPose(Axis.XP.rotationDegrees(90.0f));
+
+        // 使用MultiBufferSource渲染光环，替代原来的Tesselator方式
+        VertexConsumer consumer = buf.getBuffer(RenderType.entityTranslucent(Res.VOID_HALO));
+        PoseStack.Pose pose = stack.last();
+
+        // 渲染光环的四个顶点
+        consumer.vertex(pose.pose(), (float) -halocoord, 0.0F, (float) -halocoord)
+                .color(color.r, color.g, color.b, color.a)
+                .uv(0.0F, 0.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) -halocoord, 0.0F, (float) halocoord)
+                .color(color.r, color.g, color.b, color.a)
+                .uv(0.0F, 1.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) halocoord, 0.0F, (float) halocoord)
+                .color(color.r, color.g, color.b, color.a)
+                .uv(1.0F, 1.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) halocoord, 0.0F, (float) -halocoord)
+                .color(color.r, color.g, color.b, color.a)
+                .uv(1.0F, 0.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+
+        stack.scale((float) scale, (float) scale, (float) scale);
+        final CCRenderState cc = CCRenderState.instance();
+        cc.reset();
+        cc.bind(AvaritiaRenderTypes.VOID, buf, stack);
+        cc.baseColour = color.rgba();
+        this.hemisphere.render(cc);
+        stack.popPose();
+    }
+}

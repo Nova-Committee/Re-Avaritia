@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.amethyst_shard",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "name": "avaritia:amethyst_shard",
+  "overlayColor": "cfa0f3",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "8d6acc"
+}

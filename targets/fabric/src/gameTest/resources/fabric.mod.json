@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "avaritia_gametest",
+  "version": "${game_test_version}",
+  "name": "Re-Avaritia native regression fixtures",
+  "environment": "server",
+  "mixins": ["avaritia.gametest.mixins.json"],
+  "entrypoints": {
+    "main": ["committee.nova.mods.avaritia.gametest.AvaritiaGameTestMod"]
+  },
+  "depends": {"fabricloader": ">=${loader_version}", "minecraft": "${mc_version}", "avaritia": "*"}
+}

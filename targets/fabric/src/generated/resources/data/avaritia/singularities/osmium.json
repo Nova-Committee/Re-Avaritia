@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "avaritia:not",
+      "value": {
+        "type": "avaritia:tag_empty",
+        "tag": "forge:ingots/osmium"
+      }
+    }
+  ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.osmium",
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/osmium"
+  },
+  "name": "avaritia:osmium",
+  "overlayColor": "e6eef7",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "c0c4cd"
+}

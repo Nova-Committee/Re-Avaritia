@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:infinity/infinity_pickaxe",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:matter_cluster"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.matter_cluster.desc"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:matter_cluster"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.matter_cluster.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

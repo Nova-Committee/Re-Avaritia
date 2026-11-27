@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.lapis_lazuli",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "name": "avaritia:lapis_lazuli",
+  "overlayColor": "678dea",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "1b53a7"
+}

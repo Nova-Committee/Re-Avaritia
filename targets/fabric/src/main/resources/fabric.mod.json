@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_name} for Minecraft ${mc_version}, native Fabric Loader port.",
+  "icon": "logo.png",
+  "authors": ["cnlimiter", "cu6", "MHanHanBing", "IAFEnvoy", "Asek3", "MikhailTapio"],
+  "license": ["MIT", "LicenseRef-ARR"],
+  "environment": "*",
+  "entrypoints": {
+    "main": ["committee.nova.mods.avaritia.Avaritia"],
+    "client": ["committee.nova.mods.avaritia.client.AvaritiaModClient"],
+    "emi": ["committee.nova.mods.avaritia.init.compat.emi.AvaritiaEmiPlugin"],
+    "jei_mod_plugin": ["committee.nova.mods.avaritia.init.compat.jei.AvaritiaJeiPlugin"],
+    "jade": ["committee.nova.mods.avaritia.init.compat.JadeCompat"]
+  },
+  "mixins": ["avaritia.mixins.json"],
+  "accessWidener": "avaritia.accesswidener",
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${mc_version}",
+    "java": ">=${java_version}"
+  },
+  "suggests": {
+    "jei": "*",
+    "emi": "*",
+    "jade": "*",
+    "kubejs": "*",
+    "crafttweaker": "*",
+    "trinkets": "*"
+  }
+}

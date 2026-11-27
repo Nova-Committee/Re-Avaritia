@@ -1,0 +1,47 @@
+package committee.nova.mods.avaritia.common.net.channel;
+
+import committee.nova.mods.avaritia.core.channel.ServerChannelManager;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import committee.nova.mods.avaritia.api.common.net.PacketContext;
+
+import java.util.function.Supplier;
+
+/**
+ * @Project: Avaritia
+ * @author cnlimiter
+ * @CreateTime: 2025/3/1 15:05
+ * @Description:
+ */
+public class C2SAddChannelPack {
+
+    private final String name;
+    private final boolean pub;
+
+    public C2SAddChannelPack(FriendlyByteBuf buf) {
+        this.name = buf.readUtf(64);
+        this.pub = buf.readBoolean();
+    }
+
+    public C2SAddChannelPack(String name, boolean pub) {
+        this.name = name;
+        this.pub = pub;
+    }
+
+    public void write(FriendlyByteBuf buf) {
+        buf.writeUtf(name, 64);
+        buf.writeBoolean(pub);
+    }
+
+    public void run(Supplier<PacketContext> context) {
+        context.get().enqueueWork(() -> {
+            if (name.isEmpty()) return;
+            ServerPlayer player = context.get().getSender();
+            if (player == null || !(player.containerMenu instanceof committee.nova.mods.avaritia.common.menu.TesseractChannelMenu)
+                    || !player.containerMenu.stillValid(player)) return;
+            ServerChannelManager.getInstance().tryAddChannel(player, name, pub);
+        });
+        context.get().setPacketHandled(true);
+    }
+}
+

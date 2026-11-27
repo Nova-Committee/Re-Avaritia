@@ -1,0 +1,125 @@
+package committee.nova.mods.avaritia.init.handler;
+
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem;
+import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.mixins.GameplayItemPropertiesAccessor;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Item;
+
+/**
+ * Description:
+ * @author cnlimiter
+ * Date: 2022/3/31 19:50
+ * Version: 1.0
+ */
+
+public class ItemOverrideHandler {
+
+    
+    public static void init() {
+            setPropertyOverride(ModItems.infinity_pickaxe.get(), Const.rl("hammer"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_pickaxe_hammer") ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.infinity_shovel.get(), Const.rl("destroyer"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_shovel_destroyer") ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.infinity_clock.get(), Const.rl("up"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_clock_up") ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("track"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer") ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.infinity_sword.get(), Const.rl("kill"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_sword_kill") ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.matter_cluster.get(), Const.rl("cap"), (itemStack, world, livingEntity, d) -> {
+                return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
+            });
+            setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("blocking"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("mode"),
+                    (stack, world, entity, seed) -> InfinityShieldItem.getShieldMode(stack));
+            setPropertyOverride(ModItems.infinity_trident.get(), new ResourceLocation("throwing"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.infinity_umbrella.get(),
+                    new ResourceLocation("mode"),
+                    (stack, world, entity, seed) -> {
+                        return ISwitchable.getCurrentMode(stack, InfinityUmbrellaItem.MODES);
+                    });
+            setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
+            setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
+            setPropertyOverride(ModItems.blaze_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
+            setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.blaze_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracer"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return livingEntity.getUseItem() == itemStack && itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer") ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
+            setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracing"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem()
+                        && livingEntity.getUseItem() == itemStack
+                        && itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer")
+                        ? 1.0F : 0.0F;
+            });
+
+
+            setPropertyOverride(ModItems.infinity_crossbow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : Math.min((float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) itemStack.getUseDuration(), 1.0F);
+                }
+            });
+            setPropertyOverride(ModItems.infinity_crossbow.get(), Const.rl("pulling"), (itemStack, level, livingEntity, i) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !InfinityCrossBowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.infinity_crossbow.get(), Const.rl("charged"), (itemStack, world, livingEntity, d) -> {
+                return InfinityCrossBowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+            });
+
+
+    }
+
+    public static void setPropertyOverride(Item itemProvider, ResourceLocation override, ItemPropertyFunction propertyGetter) {
+        GameplayItemPropertiesAccessor.avaritia$properties()
+                .computeIfAbsent(itemProvider.asItem(), item -> new java.util.HashMap<>())
+                .put(override, propertyGetter);
+    }
+}

@@ -1,0 +1,58 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "avaritia:neutron"
+    },
+    "b": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "c": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "d": {
+      "item": "avaritia:blaze_cube"
+    },
+    "e": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "f": {
+      "item": "avaritia:infinity_nugget"
+    },
+    "g": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "h": {
+      "item": "avaritia:neutron_gear"
+    },
+    "i": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "j": {
+      "item": "minecraft:smithing_table"
+    },
+    "k": {
+      "item": "avaritia:extreme_crafting_table"
+    },
+    "l": {
+      "item": "avaritia:crystal_matrix_ingot"
+    }
+  },
+  "pattern": [
+    "aaaaaaaaa",
+    "bccfgfccb",
+    "bcdhhhdcb",
+    "lfhijihfl",
+    "eghjkjhge",
+    "lfhijihfl",
+    "bcdhhhdcb",
+    "bccfgfccb",
+    "bleeeeelb"
+  ],
+  "result": {
+    "item": "avaritia:extreme_smithing_table"
+  },
+  "show_notification": true,
+  "tier": 4
+}

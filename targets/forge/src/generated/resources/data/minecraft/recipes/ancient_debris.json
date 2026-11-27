@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "b": {
+      "item": "minecraft:crying_obsidian"
+    }
+  },
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "result": {
+    "item": "minecraft:ancient_debris"
+  },
+  "show_notification": true,
+  "tier": 1
+}

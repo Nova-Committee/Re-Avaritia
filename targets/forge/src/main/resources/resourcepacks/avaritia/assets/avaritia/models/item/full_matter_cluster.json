@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:item/misc/matter_cluster/full",
+    "halo": "avaritia:misc/halo"
+  },
+  "loader": "avaritia:halo_eternal",
+  "halo": {
+    "texture": "#halo",
+    "color": -16777216,
+    "size": 10,
+    "pulse": false
+  },
+  "eternal": {
+    "mask": "avaritia:mask/item/matter_cluster_full_mask"
+  }
+}

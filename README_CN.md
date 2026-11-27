@@ -47,6 +47,8 @@
 
 ## 开发
 
+Forge 与 Fabric 1.20.1 的构建和开发启动见[双加载器试点说明](MULTITARGET.md)。
+
 可以使用 [Re:Avaritia 魔改 Skill](skills/re-avaritia-datapack/SKILL.md) 编写数据包和本分支支持的脚本。
 
 ### 奇点与数据包

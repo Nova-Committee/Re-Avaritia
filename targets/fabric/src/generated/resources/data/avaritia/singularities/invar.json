@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "avaritia:not",
+      "value": {
+        "type": "avaritia:tag_empty",
+        "tag": "forge:ingots/invar"
+      }
+    }
+  ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.invar",
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/invar"
+  },
+  "name": "avaritia:invar",
+  "overlayColor": "bcc5bb",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "5d7877"
+}

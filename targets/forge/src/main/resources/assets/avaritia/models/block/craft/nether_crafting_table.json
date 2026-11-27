@@ -1,0 +1,13 @@
+{
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/machine/craft/nether_crafting_table_side",
+    "east": "avaritia:block/machine/craft/nether_crafting_table_side",
+    "south": "avaritia:block/machine/craft/nether_crafting_table_side",
+    "west": "avaritia:block/machine/craft/nether_crafting_table_side",
+    "up": "avaritia:block/machine/craft/nether_crafting_table_top",
+    "down": "avaritia:block/machine/craft/nether_crafting_table_bottom",
+    "particle": "avaritia:block/machine/craft/nether_crafting_table_side"
+  }
+}

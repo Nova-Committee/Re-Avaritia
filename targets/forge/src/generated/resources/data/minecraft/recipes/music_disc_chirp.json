@@ -1,0 +1,22 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:record_fragment"
+    },
+    "b": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "item": "minecraft:music_disc_chirp"
+  },
+  "show_notification": true,
+  "tier": 1
+}

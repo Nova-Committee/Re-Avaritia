@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "neutron_pile",
+  "key": {
+    "#": {
+      "item": "avaritia:neutron_pile"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "item": "avaritia:neutron_nugget"
+  },
+  "show_notification": true
+}

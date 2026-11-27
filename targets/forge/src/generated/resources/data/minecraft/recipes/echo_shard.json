@@ -1,0 +1,13 @@
+{
+  "type": "avaritia:shapeless_table",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:sculk"
+    }
+  ],
+  "result": {
+    "item": "minecraft:echo_shard"
+  },
+  "tier": 1
+}

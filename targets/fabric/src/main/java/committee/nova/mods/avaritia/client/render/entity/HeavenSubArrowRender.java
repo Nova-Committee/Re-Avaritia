@@ -1,0 +1,28 @@
+package committee.nova.mods.avaritia.client.render.entity;
+
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
+import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+
+
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Description:
+ * @author cnlimiter
+ * Date: 2022/4/20 18:54
+ * Version: 1.0
+ */
+
+public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
+    public HeavenSubArrowRender(EntityRendererProvider.Context p_174008_) {
+        super(p_174008_);
+    }
+
+    @Override
+    public @NotNull ResourceLocation getTextureLocation(@NotNull HeavenSubArrowEntity entity) {
+        return Res.HEAVEN_ARROW;
+    }
+}

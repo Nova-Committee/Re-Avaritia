@@ -1,0 +1,14 @@
+{
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.netherite",
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "name": "avaritia:netherite",
+  "overlayColor": "443a3b",
+  "recipeEnabled": true,
+  "timeCost": 240,
+  "underlayColor": "1a1616"
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_pearl",
+    {
+      "id": "#c:ender_pearls",
+      "required": false
+    }
+  ]
+}

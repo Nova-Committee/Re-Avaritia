@@ -47,6 +47,8 @@
 
 ## Develop
 
+See the [Forge and Fabric 1.20.1 build guide](MULTITARGET.md) for the dual-target pilot.
+
 Use the [Re:Avaritia customization skill](skills/re-avaritia-datapack/SKILL.md) to write datapacks and scripts supported by this branch.
 
 ### Singularities and datapacks

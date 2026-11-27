@@ -1,0 +1,19 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:end_crystal"
+    }
+  },
+  "pattern": [
+    " a ",
+    "a a",
+    " a "
+  ],
+  "result": {
+    "item": "minecraft:dragon_breath"
+  },
+  "show_notification": true,
+  "tier": 1
+}
