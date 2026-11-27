@@ -111,7 +111,7 @@ loom {
                 programArg '--port'
                 programArg '25593'
                 vmArg "-Davaritia.armor.persistence=${providers.gradleProperty('armorPhase').getOrElse('')}"
-                vmArg "-Davaritia.armor.evidence=${project.file('.dsh/evidence/armor-port-fabric-26.3/persistence')}"
+                vmArg "-Davaritia.armor.evidence=${layout.buildDirectory.dir('armor-persistence/reports').get().asFile}"
                 vmArg '-Xmx2G'
             }
             armorTestServer {
@@ -119,7 +119,7 @@ loom {
                 source sourceSets.armorTest
                 runDir 'build/armor-gametest'
                 vmArg '-Dfabric-api.gametest'
-                vmArg "-Dfabric-api.gametest.report-file=${project.file('.dsh/evidence/armor-port-fabric-26.3/gametest.xml')}"
+                vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('armor-gametest/gametest.xml').get().asFile}"
                 vmArg '-Xmx2G'
             }
         }
